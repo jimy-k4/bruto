@@ -114,6 +114,24 @@ describe('parseWorkspace', () => {
     expect(workspace.statusStyles).toEqual({ 'changes-requested': { color: 'oxide' } })
   })
 
+  it('keeps the files the AI touched apart, and drops an empty list', () => {
+    const workspace = parseWorkspace(
+      JSON.stringify({
+        version: 3,
+        notes: [
+          { id: 'a', filePaths: ['ref.png'], aiFilePaths: ['src/a.ts', 3] },
+          { id: 'b', aiFilePaths: [] },
+        ],
+      }),
+    )
+
+    expect(workspace.notes[0]).toMatchObject({ filePaths: ['ref.png'], aiFilePaths: ['src/a.ts'] })
+    expect(workspace.notes[1]).not.toHaveProperty('aiFilePaths')
+    expect(updateNotes(workspace, ['a'], { aiFilePaths: [] }).notes[0]).not.toHaveProperty(
+      'aiFilePaths',
+    )
+  })
+
   it('understands "bucle" or "always" written by hand as the loop status', () => {
     const workspace = parseWorkspace(
       JSON.stringify({

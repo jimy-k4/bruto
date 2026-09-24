@@ -10,8 +10,8 @@ const INSTRUCTIONS = [
   '## HOW TO USE THIS CONTEXT',
   '',
   '- Notes are tasks. Refer to a note by its short id, e.g. [a1b2c3].',
-  '- With file access: notes live in `.bruto/workspace.json` (keep it valid JSON). Find a note by the start of its `id`. When you finish one, write what you did in its `aiResponse` and set `status` to "review". Never delete notes or change `x`, `y` or `zIndex`.',
-  '- Without file access: answer note by note, starting each answer with its id.',
+  '- With file access: notes live in `.bruto/workspace.json` (keep it valid JSON). Find a note by the start of its `id`. When you finish one, write what you did in its `aiResponse`, add the files you created or changed to its `aiFilePaths` (paths relative to the project, keeping the ones already there) and set `status` to "review". Never delete notes or change `x`, `y` or `zIndex`.',
+  '- Without file access: answer note by note, starting each answer with its id and ending it with a `Files:` line listing the files you created or changed.',
   '- Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong in "Feedback": fix that first, say what you fixed in `aiResponse`, empty `feedback` and set the status back to "review".',
 ]
 
@@ -52,6 +52,10 @@ function describeNote(note: Note): string[] {
   }
 
   if (note.aiResponse?.trim()) lines.push('', 'AI response:', quote(note.aiResponse))
+
+  if (note.aiFilePaths?.length) {
+    lines.push('', 'Files changed by the AI:', ...note.aiFilePaths.map((path) => `- ${path}`))
+  }
   if (note.feedback?.trim()) lines.push('', 'Feedback:', quote(note.feedback))
 
   return lines

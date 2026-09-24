@@ -74,9 +74,19 @@ describe('buildStructure', () => {
     ])
 
     expect(broken).toEqual([
-      { noteId: 'a', path: 'src/old.ts' },
-      { noteId: 'b', path: 'docs/gone' },
+      { noteId: 'a', path: 'src/old.ts', byAi: false },
+      { noteId: 'b', path: 'docs/gone', byAi: false },
     ])
+  })
+
+  it('places the files the AI touched too, and tells whose a missing one was', () => {
+    const { root, broken } = buildStructure('demo', FILES, [
+      { ...note('a', ['README.md']), aiFilePaths: ['src/board/NoteCard.tsx', 'src/Deleted.ts'] },
+    ])
+
+    expect(findNode(root, 'README.md').noteIds).toEqual(new Set(['a']))
+    expect(findNode(root, 'src/board/NoteCard.tsx').noteIds).toEqual(new Set(['a']))
+    expect(broken).toEqual([{ noteId: 'a', path: 'src/Deleted.ts', byAi: true }])
   })
 })
 

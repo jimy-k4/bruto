@@ -6,6 +6,7 @@ import {
   buildStructure,
   findNode,
   normalizeLinkedPath,
+  notePaths,
   type StructureNode,
 } from '../domain/structure'
 import { noteTitle, shortId } from '../domain/workspace'
@@ -90,7 +91,7 @@ export function StructureView({
     () =>
       notes
         .filter((note) => selectedIds.includes(note.id))
-        .flatMap((note) => note.filePaths.map(normalizeLinkedPath))
+        .flatMap((note) => notePaths(note).map(({ path }) => normalizeLinkedPath(path)))
         .filter(Boolean),
     [notes, selectedIds],
   )
@@ -113,7 +114,7 @@ export function StructureView({
     .filter((note): note is Note => Boolean(note))
     .sort(byUrgency)
   const broken = truncated ? [] : structure.broken.filter((link) => isIndexable(link.path))
-  const anyLinks = notes.some((note) => note.filePaths.length > 0)
+  const anyLinks = notes.some((note) => notePaths(note).length > 0)
 
   const open = (node: StructureNode) => {
     if (node.kind === 'directory') {
@@ -132,7 +133,7 @@ export function StructureView({
 
   // Paths shown under a note: only those inside the place being looked at.
   const pathsInside = (note: Note) =>
-    note.filePaths.filter((path) => {
+    notePaths(note).filter(({ path }) => {
       const normalized = normalizeLinkedPath(path)
 
       return (
@@ -236,8 +237,9 @@ export function StructureView({
                       <span className="structure-note__title">
                         {noteTitle(note, t('untitled'))}
                       </span>
-                      {pathsInside(note).map((path) => (
-                        <span key={path} className="structure-note__path">
+                      {pathsInside(note).map(({ path, byAi }) => (
+                        <span key={`${byAi}:${path}`} className="structure-note__path">
+                          {byAi && <AiTag />}
                           {path}
                         </span>
                       ))}
@@ -259,7 +261,7 @@ export function StructureView({
 
                   return (
                     note && (
-                      <li key={`${link.noteId}:${link.path}`}>
+                      <li key={`${link.noteId}:${link.byAi}:${link.path}`}>
                         <button
                           type="button"
                           className="structure-note structure-note--broken"
@@ -273,6 +275,7 @@ export function StructureView({
                             {noteTitle(note, t('untitled'))}
                           </span>
                           <span className="structure-note__path">
+                            {link.byAi && <AiTag />}
                             <del>{link.path}</del>
                           </span>
                         </button>
@@ -286,5 +289,16 @@ export function StructureView({
         </aside>
       </div>
     </section>
+  )
+}
+
+/** Marks a path the AI wrote down, as opposed to one the user linked. */
+function AiTag() {
+  const { t } = useI18n()
+
+  return (
+    <abbr className="ai-tag" title={t('aiFiles')}>
+      AI
+    </abbr>
   )
 }

@@ -282,6 +282,11 @@
   text-transform: uppercase;
 }
 
+.note__ai-count {
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
 .note__ai-mark {
   padding: 1px 5px;
   background: var(--note-ink);

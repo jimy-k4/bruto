@@ -46,6 +46,17 @@ describe('buildAiContext', () => {
     expect(text).not.toContain('AAAAAA-1')
   })
 
+  it('lists the files the AI touched apart from the ones the user linked', () => {
+    const workspace = sample()
+    workspace.notes[0] = { ...workspace.notes[0], aiFilePaths: ['app/session.ts'] }
+
+    const text = buildAiContext(workspace, 'current', ['aaaaaa-1'])
+
+    expect(text).toContain('Files:\n- app/login.tsx')
+    expect(text).toContain('Files changed by the AI:\n- app/session.ts')
+    expect(text).toContain('`aiFilePaths`')
+  })
+
   it('always explains how to answer', () => {
     expect(buildAiContext(sample(), 'current', ['aaaaaa-1'])).toContain(
       '## HOW TO USE THIS CONTEXT',

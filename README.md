@@ -68,13 +68,19 @@ these, so the model knows how to answer:
 
 - Notes are tasks. Refer to a note by its short id, e.g. [a1b2c3].
 - With file access: notes live in `.bruto/workspace.json` (keep it valid JSON). Find a note by the
-  start of its `id`. When you finish one, write what you did in its `aiResponse` and set `status`
-  to "review". Never delete notes or change `x`, `y` or `zIndex`.
-- Without file access: answer note by note, starting each answer with its id.
+  start of its `id`. When you finish one, write what you did in its `aiResponse`, add the files you
+  created or changed to its `aiFilePaths` (paths relative to the project, keeping the ones already
+  there) and set `status` to "review". Never delete notes or change `x`, `y` or `zIndex`.
+- Without file access: answer note by note, starting each answer with its id and ending it with a
+  `Files:` line listing the files you created or changed.
 - Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong
   in "Feedback": fix that first, say what you fixed in `aiResponse`, empty `feedback` and set the
   status back to "review".
 ```
+
+**Files the AI touched** go in their own list, `aiFilePaths`, apart from the files and images you
+gave the note. Reviewing an old note, what you asked for and what the AI changed stay easy to tell
+apart; the structure view places both on the project map.
 
 **Standing rules.** A note with the status **Loop** is a rule, not a task: "update the README on every
 change", "run the tests before finishing". It goes into every copy under `## STANDING RULES`, even when
@@ -110,6 +116,7 @@ fields it does not know about, and accepts common status words such as `"pending
       "webUrl": "",
       "images": [".bruto/images/b72f10-20260924-ab12.png"],
       "aiResponse": "Added cancelBooking() with the 2h rule.",
+      "aiFilePaths": ["app/bookings/cancel.ts"], // what the AI created or changed
       "feedback": "Still possible after the deadline on mobile.",
       "x": 420,
       "y": 60,
