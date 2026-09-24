@@ -155,6 +155,7 @@ export const ca: Locale = {
   statusBug: 'Error',
   statusChangesRequested: 'A corregir',
   statusWontfix: 'Descartada',
+  statusLoop: 'Bucle',
 
   // Note editor
   editNote: 'Editar nota',
@@ -182,6 +183,8 @@ export const ca: Locale = {
   feedbackPlaceholder: 'Després de revisar la resposta: què continua malament o què falta.',
   feedbackStatusHint:
     'La IA ha de corregir alguna cosa? Passa la nota a «{status}» perquè ho sàpiga.',
+  loopStatusHint:
+    "Regla permanent: la IA l'aplica a cada tasca, encara que no la seleccionis, i mai no en canvia l'estat.",
   markAsStatus: 'Marcar com a «{status}»',
   color: 'Color',
   pattern: 'Patró',

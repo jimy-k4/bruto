@@ -72,6 +72,7 @@
   --status-bug: #ff7a66;
   --status-changes-requested: #f27ab6;
   --status-wontfix: #8d8c86;
+  --status-loop: #5cc8bd;
 }
 
 /* Light: raw concrete by day. */
@@ -108,4 +109,5 @@
   --status-bug: #a3261a;
   --status-changes-requested: #b0266f;
   --status-wontfix: #5b5b57;
+  --status-loop: #1d6b64;
 }

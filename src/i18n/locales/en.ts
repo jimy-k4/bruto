@@ -155,6 +155,7 @@ export const en: Locale = {
   statusBug: 'Bug',
   statusChangesRequested: 'Changes requested',
   statusWontfix: "Won't fix",
+  statusLoop: 'Loop',
 
   // Note editor
   editNote: 'Edit note',
@@ -181,6 +182,8 @@ export const en: Locale = {
   feedback: "What's wrong",
   feedbackPlaceholder: 'After reviewing the answer: what is still wrong or missing.',
   feedbackStatusHint: 'Does the AI need to fix something? Move the note to “{status}” so it knows.',
+  loopStatusHint:
+    "Standing rule: the AI applies it on every task, even when it isn't selected, and never changes its status.",
   markAsStatus: 'Mark as “{status}”',
   color: 'Colour',
   pattern: 'Pattern',

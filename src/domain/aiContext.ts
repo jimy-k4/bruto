@@ -15,6 +15,10 @@ const INSTRUCTIONS = [
   '- Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong in "Feedback": fix that first, say what you fixed in `aiResponse`, empty `feedback` and set the status back to "review".',
 ]
 
+/** Only added when the project has rules, so other copies stay short. */
+const RULES_INSTRUCTION =
+  '- "STANDING RULES" are notes with status "loop": apply every one of them on each task, every time, even when no note asks for it. Never change their status or answer them in `aiResponse`.'
+
 const DOCUMENTATION_LABELS = {
   obsidian: 'OBSIDIAN',
   notion: 'NOTION',
@@ -82,8 +86,12 @@ export function buildAiContext(
   scope: ContextScope,
   selectedIds: string[],
 ): string {
+  // Rules go in every copy, whatever is selected: that's what makes them rules.
+  const rules = workspace.notes.filter((note) => note.status === 'loop')
   const includedIds = getContextNoteIds(workspace, scope, selectedIds)
-  const included = workspace.notes.filter((note) => includedIds.has(note.id))
+  const included = workspace.notes.filter(
+    (note) => includedIds.has(note.id) && note.status !== 'loop',
+  )
   const isClosed = (note: Note) => Boolean(note.status && CLOSED_STATUSES.includes(note.status))
 
   // In a full copy, finished work is listed briefly so it doesn't drown the rest.
@@ -95,6 +103,7 @@ export function buildAiContext(
   if (workspace.description.trim()) lines.push('', workspace.description.trim())
 
   lines.push('', ...INSTRUCTIONS)
+  if (rules.length > 0) lines.push(RULES_INSTRUCTION)
 
   if (workspace.documentation.length > 0) {
     lines.push(
@@ -109,6 +118,14 @@ export function buildAiContext(
 
   if (workspace.aiContext.trim()) {
     lines.push('', '## GLOBAL AI CONTEXT', '', workspace.aiContext.trim())
+  }
+
+  if (rules.length > 0) {
+    lines.push('', '## STANDING RULES')
+
+    for (const note of rules) {
+      lines.push('', ...describeNote(note))
+    }
   }
 
   lines.push('', '## NOTES')
@@ -130,6 +147,8 @@ export function buildAiContext(
   for (const note of detailed) {
     lines.push('', ...describeNote(note))
   }
+
+  for (const note of rules) includedIds.add(note.id)
 
   const relationships = describeRelationships(workspace, includedIds)
 

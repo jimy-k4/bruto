@@ -42,6 +42,8 @@ export type NoteStatus =
   | 'done'
   | 'bug'
   | 'wontfix'
+  /** A standing rule: the AI applies it on every task and never closes it. */
+  | 'loop'
 
 export interface Note {
   id: string

@@ -73,11 +73,16 @@ these, so the model knows how to answer:
   status back to "review".
 ```
 
+**Standing rules.** A note with the status **Loop** is a rule, not a task: "update the README on every
+change", "run the tests before finishing". It goes into every copy under `## STANDING RULES`, even when
+it isn't selected, and the model is told to apply it on each task and leave it open.
+
 Coding agents that work in your repository can also be pointed at the file directly, for example with
 one line in `AGENTS.md` or `CLAUDE.md`:
 
 ```markdown
-Tasks for this project are in `.bruto/workspace.json`. Work on notes whose status is "todo".
+Tasks for this project are in `.bruto/workspace.json`. Work on notes whose status is "todo", and
+always apply the notes whose status is "loop".
 ```
 
 ## The workspace file
@@ -97,7 +102,7 @@ fields it does not know about, and accepts common status words such as `"pending
       "id": "b72f10aa-…",
       "title": "Cancel a booking",
       "description": "Users can cancel up to 2 hours before the session.",
-      "status": "review", // idea · todo · in-progress · review · changes-requested · done · blocked · bug · wontfix
+      "status": "review", // idea · todo · in-progress · review · changes-requested · done · blocked · bug · wontfix · loop
       "filePaths": ["app/bookings/actions.ts"], // relative to the project
       "webUrl": "",
       "images": [".bruto/images/b72f10-20260924-ab12.png"],

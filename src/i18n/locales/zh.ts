@@ -147,6 +147,7 @@ export const zh: Locale = {
   statusBug: '缺陷',
   statusChangesRequested: '需修改',
   statusWontfix: '不处理',
+  statusLoop: '循环',
 
   // Note editor
   editNote: '编辑笔记',
@@ -172,6 +173,7 @@ export const zh: Locale = {
   feedback: '存在的问题',
   feedbackPlaceholder: '审核回复后:仍然不对或缺少的地方。',
   feedbackStatusHint: '需要 AI 修改什么吗?把笔记改为「{status}」,它就会知道。',
+  loopStatusHint: '常驻规则：即使未选中，AI 也会在每个任务中应用它，并且从不更改其状态。',
   markAsStatus: '标记为「{status}」',
   color: '颜色',
   pattern: '纹理',

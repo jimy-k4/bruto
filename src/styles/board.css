@@ -197,7 +197,17 @@
 .note__title {
   font: 400 21px / 1.08 var(--font-display);
   text-transform: uppercase;
+  /* Long words split at a syllable with a hyphen; "anywhere" is the last resort. */
+  hyphens: auto;
   overflow-wrap: anywhere;
+}
+
+.note__title--small {
+  font-size: 18px;
+}
+
+.note__title--smaller {
+  font-size: 15px;
 }
 
 .note__description {

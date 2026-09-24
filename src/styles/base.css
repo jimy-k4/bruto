@@ -473,6 +473,9 @@ kbd {
 .status-badge--wontfix {
   --status-color: var(--status-wontfix);
 }
+.status-badge--loop {
+  --status-color: var(--status-loop);
+}
 
 /* Painted copy buttons (selection / connections / everything) ------------------- */
 

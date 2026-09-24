@@ -31,6 +31,19 @@ interface NoteCardProps {
 
 const MAX_THUMBNAILS = 3
 
+/** Words longer than this don't fit a card line at the full title size. */
+const LONG_WORD = 13
+const VERY_LONG_WORD = 17
+
+function titleSizeClass(title: string) {
+  const longest = Math.max(...title.split(/\s+/).map((word) => word.length))
+
+  if (longest > VERY_LONG_WORD) return 'note__title note__title--smaller'
+  if (longest > LONG_WORD) return 'note__title note__title--small'
+
+  return 'note__title'
+}
+
 export const NoteCard = memo(function NoteCard({
   note,
   selected,
@@ -95,7 +108,7 @@ export const NoteCard = memo(function NoteCard({
       </header>
 
       <div className="note__body">
-        <h3 className="note__title">{title}</h3>
+        <h3 className={titleSizeClass(title)}>{title}</h3>
 
         {note.description.trim() ? (
           <p className="note__description">{note.description}</p>

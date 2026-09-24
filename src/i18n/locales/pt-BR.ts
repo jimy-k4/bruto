@@ -155,6 +155,7 @@ export const ptBR: Locale = {
   statusBug: 'Defeito',
   statusChangesRequested: 'A corrigir',
   statusWontfix: 'Descartada',
+  statusLoop: 'Loop contínuo',
 
   // Note editor
   editNote: 'Editar nota',
@@ -181,6 +182,8 @@ export const ptBR: Locale = {
   feedback: 'O que está errado',
   feedbackPlaceholder: 'Depois de revisar a resposta: o que ainda está errado ou faltando.',
   feedbackStatusHint: 'A IA precisa corrigir algo? Passe a nota para “{status}” para ela saber.',
+  loopStatusHint:
+    'Regra permanente: a IA a aplica em cada tarefa, mesmo sem estar selecionada, e nunca muda seu status.',
   markAsStatus: 'Marcar como “{status}”',
   color: 'Cor',
   pattern: 'Padrão',
