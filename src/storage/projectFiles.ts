@@ -21,6 +21,10 @@ export const IGNORED_DIRECTORIES = new Set([
   'venv',
   '__pycache__',
   'target',
+  // .NET build output and Visual Studio state.
+  'bin',
+  'obj',
+  '.vs',
 ])
 
 /** Safety net for enormous folders: the index stops growing past this. */
@@ -258,4 +262,37 @@ export async function saveNoteImage(
   await writable.close()
 
   return `${BRUTO_DIRECTORY}/images/${name}`
+}
+
+/** Code files larger than this are skipped when reading sources: generated or minified. */
+const MAX_SOURCE_BYTES = 512 * 1024
+/** Safety net for huge projects: at most this many files are read for one lens. */
+const MAX_SOURCE_FILES = 4000
+
+export interface SourceFile {
+  path: string
+  text: string
+}
+
+/** Reads the text of the indexed files `wanted` accepts, skipping huge ones. */
+export async function readSources(
+  files: IndexedFile[],
+  wanted: (path: string) => boolean,
+): Promise<SourceFile[]> {
+  const sources: SourceFile[] = []
+
+  for (const file of files) {
+    if (sources.length >= MAX_SOURCE_FILES) break
+    if (!wanted(file.path)) continue
+
+    try {
+      const blob = await file.handle.getFile()
+
+      if (blob.size <= MAX_SOURCE_BYTES) sources.push({ path: file.path, text: await blob.text() })
+    } catch {
+      // Deleted or locked since indexing: leave it out.
+    }
+  }
+
+  return sources
 }

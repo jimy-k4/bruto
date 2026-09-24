@@ -1,4 +1,4 @@
-import { useMemo, useSyncExternalStore } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useSyncExternalStore } from 'react'
 import type { AppTheme } from '../types'
 import { Board } from '../board/Board'
 import { BoardSearch } from '../board/BoardSearch'
@@ -28,7 +28,12 @@ import { useToast } from '../ui/toasts'
 import { createWorkspaceActions } from './workspaceActions'
 import { useWorkspaceShortcuts } from './useWorkspaceShortcuts'
 import { useWorkspaceUi } from './useWorkspaceUi'
-import { StructureView } from '../structure/StructureView'
+
+// The structure view and its lenses are the heaviest part of the app: loaded on demand.
+const loadStructureView = () => import('../structure/StructureView')
+const StructureView = lazy(() =>
+  loadStructureView().then((module) => ({ default: module.StructureView })),
+)
 
 interface WorkspaceScreenProps {
   project: ActiveProject
@@ -48,6 +53,13 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
   const actions = createWorkspaceActions({ project, ui, view, sizes, clipboard, toast, t })
 
   useWorkspaceShortcuts(actions, ui, projects)
+
+  // Fetched once the board is up, so the view opens at once and works offline too.
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadStructureView(), 2000)
+
+    return () => window.clearTimeout(timer)
+  }, [])
 
   const { side, modal, selectedIds, selectedNotes, editingNote } = ui
   const singleSelected = selectedNotes.length === 1 ? selectedNotes[0] : null
@@ -207,21 +219,29 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
             </div>
 
             {structureOpen && (
-              <StructureView
-                projectName={project.name}
-                notes={workspace.notes}
-                selectedIds={selectedIds}
-                onShowNote={(id) => {
-                  ui.setView('board')
-                  actions.showNote(id)
-                }}
-                onEditNote={(id) => {
-                  ui.setView('board')
-                  actions.showNote(id)
-                  ui.select([id], { open: true })
-                }}
-                onClose={() => ui.setView('board')}
-              />
+              <Suspense
+                fallback={
+                  <section className="structure" aria-busy="true">
+                    <p className="structure__message">{t('structureLoading')}</p>
+                  </section>
+                }
+              >
+                <StructureView
+                  projectName={project.name}
+                  notes={workspace.notes}
+                  selectedIds={selectedIds}
+                  onShowNote={(id) => {
+                    ui.setView('board')
+                    actions.showNote(id)
+                  }}
+                  onEditNote={(id) => {
+                    ui.setView('board')
+                    actions.showNote(id)
+                    ui.select([id], { open: true })
+                  }}
+                  onClose={() => ui.setView('board')}
+                />
+              </Suspense>
             )}
           </main>
 

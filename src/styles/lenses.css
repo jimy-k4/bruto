@@ -1,0 +1,614 @@
+/* Lenses: the project drawn by what its files are (web, API, database) ----------- */
+
+.lens-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+.lens {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: var(--space-5);
+  min-width: 0;
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+.lens-section {
+  display: grid;
+  flex: 1 1 280px;
+  align-content: start;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.lens-section--wide {
+  flex-basis: 100%;
+}
+
+.lens-section__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-heavy) solid var(--line);
+  font: 400 17px / 1 var(--font-display);
+  text-transform: uppercase;
+}
+
+.lens-section__count {
+  margin-left: auto;
+  font: 600 var(--text-xs) / 1 var(--font-mono);
+  color: var(--ink-muted);
+}
+
+.lens-marks {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  font: 600 10px / 1 var(--font-mono);
+}
+
+/* Shared states for every element: notes, board selection, focus. */
+:is(.lens-tile, .lens-screen, .lens-brick-block, .lens-resource, .lens-table, .lens-package) {
+  border: var(--border) solid var(--line-soft);
+  background: var(--surface);
+  color: var(--ink-muted);
+}
+
+:is(
+  .lens-tile,
+  .lens-screen,
+  .lens-brick-block,
+  .lens-resource,
+  .lens-table,
+  .lens-package
+).has-notes {
+  border-color: var(--line);
+  background: var(--surface-raised);
+  color: var(--ink);
+  box-shadow: 4px 4px 0 var(--line);
+}
+
+:is(
+  .lens-tile,
+  .lens-screen,
+  .lens-brick-block,
+  .lens-resource,
+  .lens-table,
+  .lens-package
+).is-linked {
+  outline: 3px dashed var(--signal);
+  outline-offset: 3px;
+}
+
+:is(
+  .lens-tile,
+  .lens-screen,
+  .lens-brick-block,
+  .lens-resource,
+  .lens-table,
+  .lens-package
+).is-focused {
+  outline: 3px solid var(--signal);
+  outline-offset: 3px;
+}
+
+:is(.lens-tile, .lens-screen, .lens-brick-block, .lens-table):hover {
+  border-color: var(--signal);
+  color: var(--ink);
+}
+
+/* Tiles */
+
+.lens-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--space-2);
+}
+
+.lens-tile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  text-align: left;
+}
+
+.lens-tile__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.lens-tile__name,
+.lens-tile__meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lens-tile__name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.lens-tile__meta {
+  font: 500 var(--text-xs) / 1.3 var(--font-mono);
+  opacity: 0.8;
+}
+
+/* Web: screens as browser windows, components as bricks */
+
+.lens-screens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.lens-screen {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 170px;
+  padding: 0;
+  border-width: var(--border-heavy);
+  text-align: left;
+}
+
+.lens-screen__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 8px;
+  border-bottom: var(--border) solid currentColor;
+}
+
+/* Three window buttons, drawn with one element. */
+.lens-screen__dots {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  box-shadow:
+    12px 0 0 currentColor,
+    24px 0 0 currentColor;
+  margin-right: 26px;
+}
+
+.lens-screen__url {
+  flex: 1;
+  overflow: hidden;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  font: 600 var(--text-xs) / 1.2 var(--font-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lens-screen__body {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.lens-screen__name {
+  font: 400 17px / 1.1 var(--font-display);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.lens-screen__bricks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lens-brick {
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  font: 500 10px / 1.3 var(--font-mono);
+}
+
+.lens-brick--more {
+  border-style: dashed;
+}
+
+.lens-screen__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 4px 8px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.lens-screen__path {
+  overflow: hidden;
+  font: 500 10px / 1.3 var(--font-mono);
+  opacity: 0.7;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lens-wall {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lens-brick-block {
+  display: flex;
+  flex-basis: 150px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 8px;
+  border-top-width: 6px;
+  text-align: left;
+}
+
+.lens-brick-block__name {
+  max-width: 100%;
+  overflow: hidden;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lens-brick-block__uses {
+  font: 500 var(--text-xs) / 1.2 var(--font-mono);
+  opacity: 0.8;
+}
+
+/* API: resources as columns of endpoints */
+
+.lens-resources {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.lens-resource {
+  display: grid;
+  border-width: var(--border-heavy);
+  border-top-width: 8px;
+}
+
+.lens-resource__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-bottom: var(--border) solid currentColor;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+
+.lens-resource__head:hover {
+  color: var(--signal);
+}
+
+.lens-resource__name {
+  font: 400 17px / 1.1 var(--font-display);
+  text-transform: uppercase;
+}
+
+.lens-resource__route {
+  flex-basis: 100%;
+  font: 600 var(--text-xs) / 1.2 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.lens-endpoints {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lens-endpoint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 5px var(--space-3);
+  border-bottom: 1px solid var(--line-soft);
+  font: 500 var(--text-xs) / 1.3 var(--font-mono);
+}
+
+.lens-endpoint--empty {
+  opacity: 0.7;
+}
+
+.lens-verb {
+  flex: none;
+  width: 56px;
+  padding: 2px 0;
+  border: var(--border) solid var(--line);
+  background: var(--verb-color, var(--surface));
+  color: var(--verb-ink, var(--ink));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.lens-verb--get {
+  --verb-color: var(--status-done);
+}
+.lens-verb--post {
+  --verb-color: var(--status-idea);
+}
+.lens-verb--put {
+  --verb-color: var(--status-in-progress);
+}
+.lens-verb--patch {
+  --verb-color: var(--status-review);
+}
+.lens-verb--delete {
+  --verb-color: var(--status-blocked);
+}
+.lens-verb:not(
+  .lens-verb--get,
+  .lens-verb--post,
+  .lens-verb--put,
+  .lens-verb--patch,
+  .lens-verb--delete
+) {
+  --verb-color: var(--surface);
+}
+
+.lens-verb:is(
+  .lens-verb--get,
+  .lens-verb--post,
+  .lens-verb--put,
+  .lens-verb--patch,
+  .lens-verb--delete
+) {
+  --verb-ink: var(--bg);
+}
+
+.lens-endpoint__route {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lens-endpoint__action {
+  opacity: 0.6;
+}
+
+.lens-endpoint__lock {
+  display: inline-flex;
+}
+
+.lens-resource__uses {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.lens-chip {
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  background: none;
+  color: inherit;
+  font: 500 10px / 1.3 var(--font-mono);
+}
+
+.lens-chip:hover {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+/* Database: an entity-relationship diagram */
+
+.lens-er-scroll {
+  overflow: auto;
+  max-height: 70vh;
+  padding: var(--space-2);
+  border: var(--border) solid var(--line-soft);
+  background-image:
+    linear-gradient(var(--board-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--board-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.lens-er {
+  position: relative;
+}
+
+.lens-er__lines {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.lens-er__lines path {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.6;
+}
+
+.lens-er__line {
+  opacity: 0.55;
+}
+
+.lens-er__line.is-active {
+  stroke: var(--signal);
+  stroke-width: 3;
+  opacity: 1;
+}
+
+.lens-table {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  border-width: var(--border-heavy);
+  text-align: left;
+}
+
+.lens-table.is-dimmed {
+  opacity: 0.35;
+}
+
+.lens-table__head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-2);
+  border-bottom: var(--border) solid currentColor;
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.lens-table__name {
+  flex: 1;
+  overflow: hidden;
+  font: 400 14px / 1 var(--font-display);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lens-column {
+  display: grid;
+  flex: none;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+  padding: 0 var(--space-2);
+  font: 500 10.5px / 1 var(--font-mono);
+}
+
+.lens-column + .lens-column {
+  border-top: 1px solid var(--line-soft);
+}
+
+.lens-column__key abbr {
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--signal);
+}
+
+.lens-column__name {
+  overflow: hidden;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lens-column__type {
+  max-width: 96px;
+  overflow: hidden;
+  opacity: 0.7;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lens-column--more {
+  display: flex;
+  opacity: 0.7;
+}
+
+/* Packages: specification and body, side by side */
+
+.lens-packages {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.lens-package {
+  display: grid;
+  border-width: var(--border-heavy);
+}
+
+.lens-package__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-bottom: var(--border) solid currentColor;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+
+.lens-package__head:hover {
+  color: var(--signal);
+}
+
+.lens-package__name {
+  flex: 1;
+  font: 400 17px / 1.1 var(--font-display);
+  overflow-wrap: anywhere;
+}
+
+.lens-package__halves {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.lens-package__half {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+
+.lens-package__half + .lens-package__half {
+  border-left: var(--border) solid currentColor;
+}
+
+.lens-package__half.is-missing {
+  background: repeating-linear-gradient(-45deg, transparent 0 6px, var(--line-soft) 6px 7px);
+}
+
+.lens-members {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 500 var(--text-xs) / 1.3 var(--font-mono);
+}
+
+.lens-members li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lens-members .lens-icon {
+  width: 12px;
+  height: 12px;
+}

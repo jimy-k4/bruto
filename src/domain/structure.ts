@@ -26,6 +26,21 @@ export const notePaths = (note: Note) => [
   ...(note.aiFilePaths ?? []).map((path) => ({ path, byAi: true })),
 ]
 
+/** Whether a path a note links covers `filePath`: the file itself, or a folder around it. */
+export const linkCovers = (linked: string, filePath: string) =>
+  linked !== '' && (linked === filePath || filePath.startsWith(`${linked}/`))
+
+/** Notes that point at any of `paths`, directly or through a folder. */
+export function notesForPaths(notes: Note[], paths: string[]): Note[] {
+  return notes.filter((note) =>
+    notePaths(note).some(({ path }) => {
+      const linked = normalizeLinkedPath(path)
+
+      return paths.some((filePath) => linkCovers(linked, filePath))
+    }),
+  )
+}
+
 export interface ProjectStructure {
   root: StructureNode
   /** Linked paths that match no file or folder of the project. */
