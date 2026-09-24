@@ -31,7 +31,31 @@ async function getWorkspaceFile(root: FileSystemDirectoryHandle): Promise<File |
   }
 }
 
+/** Many tools write files in place: a read in the middle can see half a file. */
+const READ_ATTEMPTS = 4
+const RETRY_DELAY = 120
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 export async function readWorkspaceFile(
+  root: FileSystemDirectoryHandle,
+  fallbackTitle: string,
+): Promise<DiskState> {
+  let state: DiskState = { kind: 'missing' }
+
+  for (let attempt = 1; attempt <= READ_ATTEMPTS; attempt += 1) {
+    state = await readOnce(root, fallbackTitle)
+
+    // Only a broken file is worth a second look: it may be mid-write.
+    if (state.kind !== 'invalid') return state
+
+    await wait(RETRY_DELAY)
+  }
+
+  return state
+}
+
+async function readOnce(
   root: FileSystemDirectoryHandle,
   fallbackTitle: string,
 ): Promise<DiskState> {
@@ -83,6 +107,15 @@ export async function writeBackup(root: FileSystemDirectoryHandle, text: string)
   ).getDirectoryHandle(BACKUP_DIRECTORY, {
     create: true,
   })
+
+  const existing = (await listBackupNames(backups)).sort()
+  const latest = existing.at(-1)
+
+  // Nothing worth keeping, or the same as the last copy: reopening or
+  // switching projects must not push older, different copies out.
+  if (!text.trim()) return
+  if (latest && (await (await (await backups.getFileHandle(latest)).getFile()).text()) === text)
+    return
 
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
 

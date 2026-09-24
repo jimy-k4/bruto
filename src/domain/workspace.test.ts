@@ -114,6 +114,33 @@ describe('parseWorkspace', () => {
     expect(workspace.statusStyles).toEqual({ 'changes-requested': { color: 'oxide' } })
   })
 
+  it('restyles notes whose status changed while Bruto was closed', () => {
+    const styles = {
+      todo: { color: 'sand', pattern: 'grid' },
+      review: { color: 'plum', pattern: 'dots' },
+    }
+    const workspace = parseWorkspace(
+      JSON.stringify({
+        version: 3,
+        statusStyles: styles,
+        notes: [
+          // An AI moved it from todo to review: it still wears the todo look.
+          { id: 'stale', status: 'review', colorTheme: 'sand', pattern: 'grid' },
+          // Created by a tool without any look.
+          { id: 'plain', status: 'review' },
+          // Chosen by hand: kept.
+          { id: 'custom', status: 'review', colorTheme: 'wine', pattern: 'waves' },
+        ],
+      }),
+    )
+
+    expect(workspace.notes.map((note) => [note.colorTheme, note.pattern])).toEqual([
+      ['plum', 'dots'],
+      ['plum', 'dots'],
+      ['wine', 'waves'],
+    ])
+  })
+
   it('does not re-apply status styles to v3 notes', () => {
     const workspace = parseWorkspace(
       JSON.stringify({

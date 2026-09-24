@@ -108,3 +108,33 @@ test('keeps unknown fields other tools wrote', async ({ page }) => {
   expect(disk.customField).toBe(1)
   expect(disk.notes[0]).toMatchObject({ customTag: 'x', title: 'A2' })
 })
+
+test('a status changed by an AI while Bruto was closed gets its look on open', async ({ page }) => {
+  await openProject(
+    page,
+    workspaceWith([note('a', { status: 'review', colorTheme: 'sand', pattern: 'grid' })], {
+      statusStyles: {
+        todo: { color: 'sand', pattern: 'grid' },
+        review: { color: 'plum', pattern: 'dots' },
+      },
+    }),
+  )
+
+  await expect(noteCard(page, 'A')).toHaveClass(/note-color-plum/)
+  await expect(noteCard(page, 'A')).toHaveClass(/note-pattern-dots/)
+  expect((await readDisk(page)).notes[0]).toMatchObject({ colorTheme: 'plum', pattern: 'dots' })
+})
+
+test('a file caught half-written by another tool is read again, not reported as broken', async ({
+  page,
+}) => {
+  await openProject(page, workspaceWith([note('a')]))
+
+  // Empty for a moment, then complete, like an editor saving in place.
+  await writeDisk(page, '')
+  await page.waitForTimeout(150)
+  await writeDisk(page, JSON.stringify(workspaceWith([note('a'), note('b', { x: 500 })])))
+
+  await expect(noteCard(page, 'B')).toBeVisible()
+  await expect(page.locator('.save-status')).not.toContainText(/error/i)
+})

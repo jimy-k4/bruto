@@ -200,9 +200,41 @@ export function normalizeWorkspace(raw: unknown, fallbackTitle = 'BRUTO'): Works
     workspace.notes = workspace.notes.map((note) =>
       note.status ? { ...note, ...styleFor(note.status, statusStyles) } : note,
     )
+  } else if (statusStyles) {
+    workspace.notes = workspace.notes.map((note) => restyleIfStale(note, statusStyles))
   }
 
   return workspace
+}
+
+const DEFAULT_LOOK = { colorTheme: 'concrete', pattern: 'raw' } as const
+
+function looksLike(note: Pick<Note, 'colorTheme' | 'pattern'>, config: StatusStyleConfig) {
+  return (
+    Boolean(config.color || config.pattern) &&
+    (!config.color || note.colorTheme === config.color) &&
+    (!config.pattern || note.pattern === config.pattern)
+  )
+}
+
+/**
+ * A tool may change a note's status while Bruto is closed, leaving the note
+ * with the look of its previous status. A note still wearing an automatic look
+ * (another status's, or the default one) gets the look of its current status;
+ * a look chosen by hand is left alone.
+ */
+function restyleIfStale(note: Note, styles: StatusStyles): Note {
+  const current = note.status ? styles[note.status] : undefined
+
+  if (!note.status || !current || looksLike(note, current)) return note
+
+  const automatic =
+    (note.colorTheme === DEFAULT_LOOK.colorTheme && note.pattern === DEFAULT_LOOK.pattern) ||
+    Object.entries(styles).some(
+      ([status, config]) => status !== note.status && config && looksLike(note, config),
+    )
+
+  return automatic ? { ...note, ...styleFor(note.status, styles) } : note
 }
 
 export function parseWorkspace(text: string, fallbackTitle?: string): Workspace {
