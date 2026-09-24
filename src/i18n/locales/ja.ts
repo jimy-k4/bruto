@@ -62,6 +62,8 @@ export const ja: Locale = {
     'Q、W、E でコンテキストをコピー。ファイルを編集できる AI なら、ノートに直接返答してレビュー待ちにします。',
   localFirst: 'ローカル',
   noCloud: 'クラウドもアカウントも不要',
+  sourceCode: 'ソースコード',
+  supportProject: 'プロジェクトを支援',
 
   // Recovery
   recoveryTitle: 'ワークスペースを読み込めません',

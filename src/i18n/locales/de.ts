@@ -62,6 +62,8 @@ export const de: Locale = {
     'Kopiere den Kontext mit Q, W oder E. Kann die KI Dateien bearbeiten, antwortet sie direkt in der Notiz und markiert sie zur Prüfung.',
   localFirst: 'Lokal',
   noCloud: 'Keine Cloud, keine Konten',
+  sourceCode: 'Quellcode',
+  supportProject: 'Projekt unterstützen',
 
   // Recovery
   recoveryTitle: 'Der Arbeitsbereich kann nicht gelesen werden',

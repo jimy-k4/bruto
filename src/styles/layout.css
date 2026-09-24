@@ -292,6 +292,15 @@
   text-transform: uppercase;
 }
 
+.statusbar__links {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.statusbar__links a:hover {
+  color: var(--signal);
+}
+
 .save-status {
   display: flex;
   align-items: center;

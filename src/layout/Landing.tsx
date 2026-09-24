@@ -1,6 +1,7 @@
 import type { AppTheme } from '../types'
 import { useI18n } from '../i18n'
 import type { RecentProject } from '../storage/recentProjects'
+import { REPOSITORY_URL, SUPPORT_URL } from '../config'
 import { formatDate } from '../ui/format'
 import { TopBar } from './TopBar'
 
@@ -123,7 +124,17 @@ export function Landing({
 
       <footer className="statusbar">
         <span>BRUTO / {t('localFirst')}</span>
-        <span>{t('noCloud')}</span>
+        <span className="statusbar__links">
+          {t('noCloud')}
+          <a href={REPOSITORY_URL} target="_blank" rel="noopener noreferrer">
+            {t('sourceCode')}
+          </a>
+          {SUPPORT_URL && (
+            <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer">
+              {t('supportProject')}
+            </a>
+          )}
+        </span>
       </footer>
     </div>
   )

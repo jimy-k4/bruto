@@ -61,6 +61,8 @@ export const es = {
     'Copia el contexto con Q, W o E. Si la IA puede editar ficheros, contesta en la propia nota y la marca para revisión.',
   localFirst: 'Local',
   noCloud: 'Sin nube, sin cuentas',
+  sourceCode: 'Código fuente',
+  supportProject: 'Apoya el proyecto',
 
   // Recovery
   recoveryTitle: 'No se puede leer el workspace',

@@ -62,6 +62,8 @@ export const fr: Locale = {
     'Copiez le contexte avec Q, W ou E. Si l’IA peut modifier des fichiers, elle répond dans la note et la marque pour relecture.',
   localFirst: 'Local',
   noCloud: 'Sans cloud, sans compte',
+  sourceCode: 'Code source',
+  supportProject: 'Soutenir le projet',
 
   // Recovery
   recoveryTitle: 'Impossible de lire l’espace de travail',

@@ -62,6 +62,8 @@ export const ca: Locale = {
     'Copia el context amb Q, W o E. Si la IA pot editar fitxers, respon a la mateixa nota i la marca per revisar.',
   localFirst: 'Local',
   noCloud: 'Sense núvol, sense comptes',
+  sourceCode: 'Codi font',
+  supportProject: 'Dona suport al projecte',
 
   // Recovery
   recoveryTitle: "No es pot llegir l'espai de treball",

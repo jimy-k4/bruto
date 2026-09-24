@@ -62,6 +62,8 @@ export const ptBR: Locale = {
     'Copie o contexto com Q, W ou E. Se a IA puder editar arquivos, ela responde na própria nota e a marca para revisão.',
   localFirst: 'Local',
   noCloud: 'Sem nuvem, sem contas',
+  sourceCode: 'Código-fonte',
+  supportProject: 'Apoie o projeto',
 
   // Recovery
   recoveryTitle: 'Não é possível ler o espaço de trabalho',

@@ -1,16 +1,24 @@
 {
   "name": "bruto",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A brutalist, local-first task board for projects built with AI.",
+  "license": "MIT",
+  "homepage": "https://jimy-k4.github.io/bruto/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jimy-k4/bruto.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "check": "prettier --check . && eslint . && tsc -b && vitest run",
-    "preview": "vite preview"
+    "test:e2e": "playwright test",
+    "check": "prettier --check . && eslint . && tsc -b && vitest run"
   },
   "dependencies": {
     "@fontsource/archivo-black": "^5.3.0",

@@ -543,6 +543,10 @@ kbd {
 }
 
 .file-table th:first-child {
+  width: 42%;
+}
+
+.file-table--compact th:first-child {
   width: 50%;
 }
 

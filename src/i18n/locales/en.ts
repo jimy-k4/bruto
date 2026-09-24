@@ -62,6 +62,8 @@ export const en: Locale = {
     'Copy the context with Q, W or E. If the AI can edit files, it answers inside the note and marks it for review.',
   localFirst: 'Local',
   noCloud: 'No cloud, no accounts',
+  sourceCode: 'Source code',
+  supportProject: 'Support the project',
 
   // Recovery
   recoveryTitle: 'The workspace cannot be read',

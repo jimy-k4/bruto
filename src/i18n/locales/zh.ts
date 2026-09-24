@@ -61,6 +61,8 @@ export const zh: Locale = {
     '用 Q、W 或 E 复制上下文。如果 AI 能编辑文件,它会直接在笔记中回复,并标记为待审核。',
   localFirst: '本地',
   noCloud: '无需云端,无需账号',
+  sourceCode: '源代码',
+  supportProject: '支持这个项目',
 
   // Recovery
   recoveryTitle: '无法读取工作区',
