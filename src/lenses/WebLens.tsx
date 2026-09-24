@@ -70,7 +70,7 @@ export function WebLens({ model, context }: { model: WebModel; context: LensCont
                   <span className="lens-screen__name">{page.name}</span>
                   <span className="lens-screen__bricks">
                     {bricks.slice(0, MAX_BRICKS).map((brick) => (
-                      <span key={brick.path} className="lens-brick">
+                      <span key={brick.path} className="lens-brick" title={brick.name}>
                         {brick.name}
                       </span>
                     ))}
@@ -111,7 +111,8 @@ export function WebLens({ model, context }: { model: WebModel; context: LensCont
                 // The more a component is used, the bigger its brick.
                 style={{ flexGrow: 1 + (component.usedBy / maxUse) * 3 }}
                 aria-pressed={context.focusKey === key}
-                title={component.path}
+                title={`${component.name}
+${component.path}`}
                 onClick={() =>
                   context.onFocus({ key, label: component.name, paths: [component.path] })
                 }

@@ -78,7 +78,9 @@ export function ApiLens({ model, context }: { model: ApiModel; context: LensCont
                         {relative(endpoint.route, resource.route)}
                       </span>
                       {endpoint.action && (
-                        <span className="lens-endpoint__action">{endpoint.action}</span>
+                        <span className="lens-endpoint__action" title={endpoint.action}>
+                          {endpoint.action}
+                        </span>
                       )}
                       {endpoint.auth && (
                         <span className="lens-endpoint__lock" title={t('requiresAuth')}>
@@ -100,6 +102,7 @@ export function ApiLens({ model, context }: { model: ApiModel; context: LensCont
                         key={type}
                         type="button"
                         className="lens-chip"
+                        title={type}
                         onClick={() =>
                           context.onFocus({
                             key: `api:${part!.path}`,

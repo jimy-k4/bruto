@@ -74,7 +74,7 @@ export function LensTile({
       type="button"
       className={elementClasses('lens-tile', context, focusKey, paths, notes)}
       aria-pressed={context.focusKey === focusKey}
-      title={title ?? paths.join('\n')}
+      title={title ?? [name, ...paths].join('\n')}
       onClick={() => context.onFocus({ key: focusKey, label: name, paths })}
     >
       <LensIcon name={icon} />

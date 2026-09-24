@@ -29,6 +29,16 @@
   min-width: 0;
 }
 
+/* Long names must never widen a section: its content shrinks to the space it has. */
+.lens-section > * {
+  min-width: 0;
+}
+
+:is(.lens-screen, .lens-resource, .lens-package) {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
 .lens-section--wide {
   flex-basis: 100%;
 }
@@ -197,6 +207,7 @@
 
 .lens-screen__body {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: var(--space-2);
   padding: var(--space-3);
@@ -212,6 +223,14 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.lens-brick,
+.lens-chip {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lens-brick {
@@ -234,6 +253,7 @@
 }
 
 .lens-screen__path {
+  min-width: 0;
   overflow: hidden;
   font: 500 10px / 1.3 var(--font-mono);
   opacity: 0.7;
@@ -306,7 +326,9 @@
 }
 
 .lens-resource__name {
+  min-width: 0;
   font: 400 17px / 1.1 var(--font-display);
+  overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 
@@ -394,7 +416,13 @@
 }
 
 .lens-endpoint__action {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 45%;
+  overflow: hidden;
   opacity: 0.6;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lens-endpoint__lock {

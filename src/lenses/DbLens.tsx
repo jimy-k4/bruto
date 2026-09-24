@@ -145,7 +145,8 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
                   className={classes.filter(Boolean).join(' ')}
                   style={{ left: x, top: y, width, height }}
                   aria-pressed={context.focusKey === key}
-                  title={table.path}
+                  title={`${table.name}
+${table.path}`}
                   onClick={() => focusTable(table.name)}
                 >
                   <span className="lens-table__head" style={{ height: CARD_HEADER }}>
@@ -162,7 +163,9 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
                           <abbr title={t('foreignKey')}>FK</abbr>
                         ) : null}
                       </span>
-                      <span className="lens-column__name">{column.name}</span>
+                      <span className="lens-column__name" title={column.name}>
+                        {column.name}
+                      </span>
                       <span className="lens-column__type">{column.type}</span>
                     </span>
                   ))}
@@ -297,7 +300,13 @@ function PackageBlock({
         <div className="lens-resource__uses">
           <span className="eyebrow">{t('lensUses')}</span>
           {program.tables.map((table) => (
-            <button key={table} type="button" className="lens-chip" onClick={() => onTable(table)}>
+            <button
+              key={table}
+              type="button"
+              className="lens-chip"
+              title={table}
+              onClick={() => onTable(table)}
+            >
               {table}
             </button>
           ))}
