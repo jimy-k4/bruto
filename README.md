@@ -38,7 +38,10 @@ Prefer to run it yourself? See [Development](#development).
   with arrows, select many at once and edit them together.
 - **Structure view.** The project's folders and files as blocks sized by how many files they hold,
   marked with the notes that point at them. It shows where the work is, and lists links to files
-  that no longer exist.
+  that no longer exist. _Only with notes_ hides everything no note points at, here, in the lenses and
+  in the files window.
+- **Search.** `Ctrl F` finds notes by text, path or id, and filters them by status and by what they
+  have or lack: files, an AI response, images, a web link.
 - **Lenses.** When Bruto recognises the project, the structure view offers it drawn by what its files
   are, still with the notes on each element:
   - **Web** (React, Vue, Next.js, Nuxt): pages as browser windows with their route and the components on
