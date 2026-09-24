@@ -8,6 +8,7 @@ export type ShortcutAction =
   | 'copyEntire'
   | 'center'
   | 'search'
+  | 'structure'
   | 'connect'
   | 'resetView'
   | 'selectAll'
@@ -148,6 +149,13 @@ export const SHORTCUTS: ShortcutDefinition[] = [
     title: 'shortcutSearch',
     description: 'shortcutSearchDescription',
     patterns: [letter('f', { ctrl: true }), { key: '/' }],
+  },
+  {
+    action: 'structure',
+    keys: ['M'],
+    title: 'shortcutStructure',
+    description: 'shortcutStructureDescription',
+    patterns: [letter('m')],
   },
   {
     action: 'resetView',

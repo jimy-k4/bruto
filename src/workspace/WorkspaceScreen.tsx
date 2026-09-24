@@ -28,6 +28,7 @@ import { useToast } from '../ui/toasts'
 import { createWorkspaceActions } from './workspaceActions'
 import { useWorkspaceShortcuts } from './useWorkspaceShortcuts'
 import { useWorkspaceUi } from './useWorkspaceUi'
+import { StructureView } from '../structure/StructureView'
 
 interface WorkspaceScreenProps {
   project: ActiveProject
@@ -51,7 +52,8 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
   const { side, modal, selectedIds, selectedNotes, editingNote } = ui
   const singleSelected = selectedNotes.length === 1 ? selectedNotes[0] : null
 
-  const search = ui.search
+  const structureOpen = ui.view === 'structure'
+  const search = structureOpen ? null : ui.search
   const matches = useMemo(
     () => (search ? searchNotes(workspace.notes, search) : []),
     [workspace.notes, search],
@@ -100,6 +102,15 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
               >
                 {t('search')}
               </button>
+              <button
+                type="button"
+                className="button"
+                aria-pressed={structureOpen}
+                title={`${t('structure')} (M)`}
+                onClick={() => ui.setView(structureOpen ? 'board' : 'structure')}
+              >
+                {t('structure')}
+              </button>
               <button type="button" className="button" onClick={() => ui.setModal('styles')}>
                 {t('styles')}
               </button>
@@ -133,61 +144,83 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
           />
 
           <main className="board-area" aria-label={t('board')}>
-            <Board
-              workspace={workspace}
-              view={view}
-              canvasRef={canvasRef}
-              sizes={sizes}
-              observe={observe}
-              selectedIds={selectedIds}
-              connectingFrom={ui.connectingFrom}
-              selectedConnectionId={ui.selectedConnectionId}
-              flash={ui.flash}
-              matchIds={matchIds}
-              onSelect={ui.select}
-              onToggleSelect={ui.toggleSelect}
-              onClearSelection={ui.clearSelection}
-              onRaise={actions.raise}
-              onMove={actions.move}
-              onMoveEnd={actions.endMove}
-              onMoveBy={actions.moveBy}
-              onConnectingChange={ui.setConnectingFrom}
-              onConnect={actions.connect}
-              onSelectConnection={ui.setSelectedConnectionId}
-              onDeleteConnection={actions.deleteConnection}
-            />
-
-            {search && (
-              <BoardSearch
-                search={search}
-                matches={matches}
-                statuses={usedStatuses}
-                currentId={singleSelected?.id ?? null}
-                onChange={ui.setSearch}
-                onShow={actions.showNote}
-                onClose={closeSearch}
+            {/* The board stays mounted under the structure view: its pan, zoom and
+                measurements are ready the moment a note is shown from there. */}
+            <div className="board-layer" inert={structureOpen}>
+              <Board
+                workspace={workspace}
+                view={view}
+                canvasRef={canvasRef}
+                sizes={sizes}
+                observe={observe}
+                selectedIds={selectedIds}
+                connectingFrom={ui.connectingFrom}
+                selectedConnectionId={ui.selectedConnectionId}
+                flash={ui.flash}
+                matchIds={matchIds}
+                onSelect={ui.select}
+                onToggleSelect={ui.toggleSelect}
+                onClearSelection={ui.clearSelection}
+                onRaise={actions.raise}
+                onMove={actions.move}
+                onMoveEnd={actions.endMove}
+                onMoveBy={actions.moveBy}
+                onConnectingChange={ui.setConnectingFrom}
+                onConnect={actions.connect}
+                onSelectConnection={ui.setSelectedConnectionId}
+                onDeleteConnection={actions.deleteConnection}
               />
-            )}
 
-            {workspace.notes.length === 0 && <EmptyBoard onCreate={actions.createNote} />}
+              {search && (
+                <BoardSearch
+                  search={search}
+                  matches={matches}
+                  statuses={usedStatuses}
+                  currentId={singleSelected?.id ?? null}
+                  onChange={ui.setSearch}
+                  onShow={actions.showNote}
+                  onClose={closeSearch}
+                />
+              )}
 
-            <ZoomControls
-              zoom={view.zoom}
-              onZoomIn={view.zoomIn}
-              onZoomOut={view.zoomOut}
-              onReset={view.reset}
-            />
+              {workspace.notes.length === 0 && <EmptyBoard onCreate={actions.createNote} />}
 
-            <NewNoteButton onCreate={actions.createNote} />
+              <ZoomControls
+                zoom={view.zoom}
+                onZoomIn={view.zoomIn}
+                onZoomOut={view.zoomOut}
+                onReset={view.reset}
+              />
 
-            {selectedNotes.length > 1 && (
-              <SelectionBar
-                count={selectedNotes.length}
-                onEdit={() => ui.setSide({ kind: 'bulk' })}
-                onCopyContext={() => void actions.copyContext('current')}
-                onDuplicate={() => actions.duplicate(selectedIds)}
-                onDelete={() => actions.deleteNotes(selectedIds)}
-                onClear={ui.clearSelection}
+              <NewNoteButton onCreate={actions.createNote} />
+
+              {selectedNotes.length > 1 && (
+                <SelectionBar
+                  count={selectedNotes.length}
+                  onEdit={() => ui.setSide({ kind: 'bulk' })}
+                  onCopyContext={() => void actions.copyContext('current')}
+                  onDuplicate={() => actions.duplicate(selectedIds)}
+                  onDelete={() => actions.deleteNotes(selectedIds)}
+                  onClear={ui.clearSelection}
+                />
+              )}
+            </div>
+
+            {structureOpen && (
+              <StructureView
+                projectName={project.name}
+                notes={workspace.notes}
+                selectedIds={selectedIds}
+                onShowNote={(id) => {
+                  ui.setView('board')
+                  actions.showNote(id)
+                }}
+                onEditNote={(id) => {
+                  ui.setView('board')
+                  actions.showNote(id)
+                  ui.select([id], { open: true })
+                }}
+                onClose={() => ui.setView('board')}
               />
             )}
           </main>

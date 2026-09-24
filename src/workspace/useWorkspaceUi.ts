@@ -29,6 +29,8 @@ export function useWorkspaceUi(workspace: Workspace, store: WorkspaceStore) {
   const [copiedScope, setCopiedScopeState] = useState<ContextScope | null>(null)
   /** Board search; `null` while the search bar is closed. */
   const [search, setSearch] = useState<NoteSearch | null>(null)
+  /** What fills the main area: the notes, or the project's files with their notes. */
+  const [view, setView] = useState<'board' | 'structure'>('board')
   const timers = useRef<{ flash?: number; copied?: number }>({})
 
   // Notes deleted by undo or by another tool drop out of the selection.
@@ -116,6 +118,8 @@ export function useWorkspaceUi(workspace: Workspace, store: WorkspaceStore) {
     markCopied,
     search,
     setSearch,
+    view,
+    setView,
     select,
     toggleSelect,
     clearSelection,

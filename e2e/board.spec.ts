@@ -311,3 +311,51 @@ test('search finds a note by the short id used with the AI', async ({ page }) =>
   await expect(noteCard(page, 'BETA')).toHaveClass(/is-selected/)
   await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-dimmed/)
 })
+
+test('structure view: find where notes point, jump to a note, spot broken paths', async ({
+  page,
+}) => {
+  await openProject(
+    page,
+    workspaceWith([
+      note('alpha', { x: 80, y: 80, status: 'todo', filePaths: ['src/App.tsx'] }),
+      note('beta', { x: 480, y: 80, filePaths: ['src\\main.ts'] }),
+      note('gamma', { x: 880, y: 80, filePaths: ['src/Old.tsx'] }),
+    ]),
+  )
+
+  await page.locator('.board').click({ position: { x: 700, y: 700 } })
+  await page.keyboard.press('m')
+
+  const map = page.getByRole('group', { name: 'Mapa de ficheros' })
+  await expect(map.getByRole('button', { name: /^src, 2 ficheros, 2 notas/ })).toBeVisible()
+
+  // Board shortcuts are off while the board is hidden.
+  await page.keyboard.press('n')
+  await expect(page.locator('.note')).toHaveCount(3)
+
+  await map.getByRole('button', { name: /^src,/ }).click()
+  await map.getByRole('button', { name: /^App\.tsx/ }).click()
+
+  const side = page.getByRole('complementary', { name: 'Notas de la estructura' })
+  await expect(side.getByText('src/App.tsx', { exact: true }).first()).toBeVisible()
+  await expect(side.getByRole('button', { name: /ALPHA/ })).toBeVisible()
+  await expect(side.getByRole('button', { name: /BETA/ })).toHaveCount(0)
+
+  await expect(side.getByText('Rutas rotas (1)')).toBeVisible()
+  await expect(side.getByRole('button', { name: /GAMMA/ })).toContainText('src/Old.tsx')
+
+  await side.getByRole('button', { name: /ALPHA/ }).click()
+  await expect(page.getByRole('region', { name: 'Estructura' })).toHaveCount(0)
+  await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-selected/)
+})
+
+test('structure view: Esc goes back to the board', async ({ page }) => {
+  await openProject(page, workspaceWith([note('alpha')]))
+
+  await page.getByRole('button', { name: 'Estructura' }).click()
+  await expect(page.getByRole('region', { name: 'Estructura' })).toBeVisible()
+
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('region', { name: 'Estructura' })).toHaveCount(0)
+})

@@ -1,0 +1,340 @@
+/* Structure view: the project's files as blocks of concrete ----------------------- */
+
+.board-layer {
+  display: contents;
+}
+
+.structure {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: var(--bg);
+}
+
+.structure__message {
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--ink-muted);
+  font: 600 var(--text-sm) / 1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.structure__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-heavy) solid var(--line);
+  background: var(--surface);
+}
+
+.structure__crumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.structure__crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 600 var(--text-xs) / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.structure__crumbs li + li::before {
+  content: '/';
+  padding: 0 var(--space-1);
+  color: var(--ink-muted);
+}
+
+.structure__crumbs li button {
+  padding: 6px 4px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.structure__crumbs li button:hover,
+.structure__crumbs li button[aria-current] {
+  color: var(--signal);
+}
+
+.structure__up {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: var(--border) solid var(--line);
+  background: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.structure__up:hover:not(:disabled) {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.structure__up:disabled {
+  opacity: 0.35;
+}
+
+.structure__actions {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+}
+
+.structure__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  min-height: 0;
+}
+
+/* The map ---------------------------------------------------------------------- */
+
+.structure-map {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  margin: var(--space-3);
+}
+
+.structure-block {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  overflow: hidden;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border) solid var(--line-soft);
+  background: var(--surface);
+  color: var(--ink-muted);
+  text-align: left;
+}
+
+/* A folder carries a heavy lintel: it holds more inside. */
+.structure-block--folder {
+  border-top-width: 8px;
+}
+
+.structure-block.has-notes {
+  border-color: var(--line);
+  background: var(--surface-raised);
+  color: var(--ink);
+  box-shadow: 4px 4px 0 var(--line);
+}
+
+.structure-block:hover {
+  border-color: var(--signal);
+  color: var(--ink);
+}
+
+.structure-block.is-linked {
+  outline: 3px dashed var(--signal);
+  outline-offset: -8px;
+}
+
+.structure-block.is-focused {
+  outline: 3px solid var(--signal);
+  outline-offset: -3px;
+}
+
+.structure-block:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.structure-block__kind {
+  font: 600 10px / 1 var(--font-mono);
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.structure-block__name {
+  max-width: 100%;
+  overflow: hidden;
+  font: 400 15px / 1.1 var(--font-display);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.structure-block--folder .structure-block__name {
+  font-size: 19px;
+}
+
+.structure-block__meta {
+  font: 500 var(--text-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.structure-block__marks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  margin-top: auto;
+  font: 600 10px / 1 var(--font-mono);
+}
+
+.structure-block__mark {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--line);
+  background: var(--status-color, var(--ink-muted));
+}
+
+.structure-block__plan {
+  position: absolute;
+  top: 78px;
+  right: 14px;
+  bottom: 30px;
+  left: 14px;
+}
+
+.structure-block__plan > span {
+  position: absolute;
+  border: 1px solid var(--line-soft);
+}
+
+.structure-block__plan > .has-notes {
+  border-color: var(--line);
+  background: var(--line-soft);
+}
+
+.structure-block--rest {
+  justify-content: center;
+  align-items: center;
+  border-style: dashed;
+  background: none;
+}
+
+.structure-block.is-small .structure-block__kind,
+.structure-block.is-small .structure-block__meta {
+  display: none;
+}
+
+.structure-block.is-small .structure-block__name {
+  font-size: 12px;
+}
+
+.structure-block.is-tiny {
+  padding: 3px;
+}
+
+.structure-block.is-tiny > :not(.structure-block__marks) {
+  display: none;
+}
+
+.structure-block.is-tiny .structure-block__marks {
+  margin: 0;
+}
+
+.structure-block.is-tiny .structure-block__mark {
+  width: 6px;
+  height: 6px;
+}
+
+/* Side list -------------------------------------------------------------------- */
+
+.structure__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  overflow-y: auto;
+  padding: var(--space-4);
+  border-left: var(--border-heavy) solid var(--line);
+  background: var(--surface);
+}
+
+.structure__section {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.structure__place {
+  overflow-wrap: anywhere;
+  font: 400 17px / 1.15 var(--font-display);
+  text-transform: uppercase;
+}
+
+.structure__warning {
+  padding: var(--space-2) var(--space-3);
+  border: var(--border) solid var(--signal);
+  border-left-width: 6px;
+  font-size: var(--text-sm);
+}
+
+.structure__notes {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.structure-note {
+  display: grid;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border) solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  text-align: left;
+}
+
+.structure-note:hover {
+  box-shadow: 4px 4px 0 var(--signal);
+}
+
+.structure-note__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font: 600 var(--text-xs) / 1 var(--font-mono);
+}
+
+.structure-note__title {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.structure-note__path {
+  overflow-wrap: anywhere;
+  color: var(--ink-muted);
+  font: 500 var(--text-xs) / 1.4 var(--font-mono);
+}
+
+.structure-note--broken {
+  border-color: var(--danger);
+}
+
+@media (max-width: 900px) {
+  .structure__body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 40%);
+  }
+
+  .structure__side {
+    border-top: var(--border-heavy) solid var(--line);
+    border-left: 0;
+  }
+}
