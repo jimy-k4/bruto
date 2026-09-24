@@ -319,7 +319,7 @@ test('structure view: find where notes point, jump to a note, spot broken paths'
     page,
     workspaceWith([
       note('alpha', { x: 80, y: 80, status: 'todo', filePaths: ['src/App.tsx'] }),
-      note('beta', { x: 480, y: 80, filePaths: ['src\\main.ts'] }),
+      note('beta', { x: 480, y: 80, aiFilePaths: ['src\\main.ts'] }),
       note('gamma', { x: 880, y: 80, filePaths: ['src/Old.tsx'] }),
     ]),
   )
@@ -335,6 +335,12 @@ test('structure view: find where notes point, jump to a note, spot broken paths'
   await expect(page.locator('.note')).toHaveCount(3)
 
   await map.getByRole('button', { name: /^src,/ }).click()
+
+  // Files the AI wrote down are placed too, and marked as the AI's.
+  await map.getByRole('button', { name: /^main\.ts/ }).click()
+  const aiPath = page.getByRole('complementary').getByRole('button', { name: /BETA/ })
+  await expect(aiPath.locator('.ai-tag')).toBeVisible()
+
   await map.getByRole('button', { name: /^App\.tsx/ }).click()
 
   const side = page.getByRole('complementary', { name: 'Notas de la estructura' })
@@ -342,7 +348,7 @@ test('structure view: find where notes point, jump to a note, spot broken paths'
   await expect(side.getByRole('button', { name: /ALPHA/ })).toBeVisible()
   await expect(side.getByRole('button', { name: /BETA/ })).toHaveCount(0)
 
-  await expect(side.getByText('Rutas rotas (1)')).toBeVisible()
+  await expect(side.getByText('No encontrados (1)')).toBeVisible()
   await expect(side.getByRole('button', { name: /GAMMA/ })).toContainText('src/Old.tsx')
 
   await side.getByRole('button', { name: /ALPHA/ }).click()

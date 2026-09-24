@@ -79,6 +79,7 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   const status = normalizeStatus(raw.status)
   const aiResponse = asString(raw.aiResponse)
   const feedback = asString(raw.feedback)
+  const aiFilePaths = asStringList(raw.aiFilePaths)
 
   // Unknown fields are kept so other tools never lose data through Bruto.
   const note: Note = {
@@ -99,9 +100,11 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   delete note.status
   delete note.aiResponse
   delete note.feedback
+  delete note.aiFilePaths
 
   if (status) note.status = status
   if (aiResponse.trim()) note.aiResponse = aiResponse
+  if (aiFilePaths.length > 0) note.aiFilePaths = aiFilePaths
   if (feedback.trim()) note.feedback = feedback
 
   return note
@@ -459,6 +462,7 @@ export function updateNotes(workspace: Workspace, ids: string[], patch: NotePatc
       }
 
       if ('status' in patch && !patch.status) delete updated.status
+      if ('aiFilePaths' in patch && !updated.aiFilePaths?.length) delete updated.aiFilePaths
 
       return updated
     }),

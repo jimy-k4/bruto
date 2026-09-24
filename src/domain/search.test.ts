@@ -38,6 +38,7 @@ describe('searchNotes', () => {
       note('c', { aiResponse: 'renovado el token' }),
       note('d', { feedback: 'el token sigue caducando' }),
       note('e', { webUrl: 'https://example.com/token' }),
+      note('g', { aiFilePaths: ['src/token/refresh.ts'] }),
       note('f', { title: 'nada' }),
     ]
 
@@ -47,6 +48,7 @@ describe('searchNotes', () => {
       'c',
       'd',
       'e',
+      'g',
     ])
   })
 

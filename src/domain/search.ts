@@ -27,6 +27,7 @@ const searchableText = (note: Note) =>
       note.aiResponse ?? '',
       note.feedback ?? '',
       ...note.filePaths,
+      ...(note.aiFilePaths ?? []),
     ].join('\n'),
   )
 

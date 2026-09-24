@@ -60,8 +60,8 @@ export function NoteEditor({
     }
   }
 
-  const removeFrom = (key: 'filePaths' | 'images', path: string) =>
-    onChange({ [key]: note[key].filter((item) => item !== path) })
+  const removeFrom = (key: 'filePaths' | 'images' | 'aiFilePaths', path: string) =>
+    onChange({ [key]: (note[key] ?? []).filter((item) => item !== path) })
 
   return (
     <SidePanel
@@ -236,6 +236,21 @@ export function NoteEditor({
             onChange={(event) => onChange({ aiResponse: event.target.value })}
           />
         </div>
+
+        {/* Written by the AI; the user only opens or clears them. */}
+        <fieldset className="field">
+          <legend className="field__label">{t('aiFiles')}</legend>
+
+          {note.aiFilePaths?.length ? (
+            <FileTable
+              paths={note.aiFilePaths}
+              onOpen={onOpenFile}
+              onRemove={(path) => removeFrom('aiFilePaths', path)}
+            />
+          ) : (
+            <p className="field__hint">{t('noAiFiles')}</p>
+          )}
+        </fieldset>
 
         <div className="field">
           <label className="field__label" htmlFor={ids.feedback}>

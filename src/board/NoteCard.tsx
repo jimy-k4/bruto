@@ -143,7 +143,7 @@ export const NoteCard = memo(function NoteCard({
           </div>
         )}
 
-        {note.aiResponse && (
+        {Boolean(note.aiResponse || note.aiFilePaths?.length) && (
           <div className="note__ai">
             <button
               type="button"
@@ -157,10 +157,18 @@ export const NoteCard = memo(function NoteCard({
                 AI
               </span>
               {t('aiResponse')}
+              {note.aiFilePaths?.length ? (
+                <span className="note__ai-count">
+                  {t('filesCount', { count: note.aiFilePaths.length })}
+                </span>
+              ) : null}
               <span aria-hidden="true">{aiOpen ? '▾' : '▸'}</span>
             </button>
 
-            {aiOpen && <p className="note__ai-text">{note.aiResponse}</p>}
+            {aiOpen && note.aiResponse && <p className="note__ai-text">{note.aiResponse}</p>}
+            {aiOpen && note.aiFilePaths?.length ? (
+              <FileTable paths={note.aiFilePaths} limit={4} compact />
+            ) : null}
           </div>
         )}
 

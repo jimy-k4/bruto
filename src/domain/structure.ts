@@ -16,7 +16,15 @@ export interface StructureNode {
 export interface BrokenLink {
   noteId: string
   path: string
+  /** Written by the AI (`aiFilePaths`) rather than linked by the user. */
+  byAi: boolean
 }
+
+/** Every file a note points at: the user's links, then what the AI touched. */
+export const notePaths = (note: Note) => [
+  ...note.filePaths.map((path) => ({ path, byAi: false })),
+  ...(note.aiFilePaths ?? []).map((path) => ({ path, byAi: true })),
+]
 
 export interface ProjectStructure {
   root: StructureNode
@@ -95,12 +103,12 @@ export function buildStructure(
   const broken: BrokenLink[] = []
 
   for (const note of notes) {
-    for (const linked of note.filePaths) {
+    for (const { path: linked, byAi } of notePaths(note)) {
       const path = normalizeLinkedPath(linked)
       const target = path ? nodes.get(path) : undefined
 
       if (!target) {
-        if (path) broken.push({ noteId: note.id, path: linked })
+        if (path) broken.push({ noteId: note.id, path: linked, byAi })
         continue
       }
 

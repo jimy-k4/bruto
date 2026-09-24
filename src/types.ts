@@ -62,6 +62,11 @@ export interface Note {
   status?: NoteStatus
   /** What an AI model answered after working on the note. */
   aiResponse?: string
+  /**
+   * Files the AI created or changed for this note, kept apart from `filePaths`
+   * (what the user pointed it at) so each stays easy to find.
+   */
+  aiFilePaths?: string[]
   /** What the user found wrong when reviewing the AI's work. */
   feedback?: string
 }
