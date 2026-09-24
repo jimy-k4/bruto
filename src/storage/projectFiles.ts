@@ -24,7 +24,7 @@ export const IGNORED_DIRECTORIES = new Set([
 ])
 
 /** Safety net for enormous folders: the index stops growing past this. */
-const MAX_INDEXED_FILES = 25_000
+export const MAX_INDEXED_FILES = 25_000
 
 const byKindThenName = (a: FileTreeNode, b: FileTreeNode) =>
   a.kind !== b.kind

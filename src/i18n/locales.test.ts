@@ -39,6 +39,8 @@ const SHARED_WORDS = new Set([
   'Ochre',
   'Bug',
   '{count} notes',
+  'Structure',
+  'DIR',
 ])
 
 const placeholders = (text: string) =>

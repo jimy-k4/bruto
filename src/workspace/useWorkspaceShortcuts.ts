@@ -8,6 +8,15 @@ import { useStableCallback } from '../ui/useStableCallback'
 import type { WorkspaceActions } from './workspaceActions'
 import type { WorkspaceUi } from './useWorkspaceUi'
 
+const STRUCTURE_ACTIONS = new Set<ShortcutAction>([
+  'structure',
+  'help',
+  'openAiContext',
+  'copyCurrent',
+  'copyConnected',
+  'copyEntire',
+])
+
 /** Keyboard shortcuts and system clipboard (copy/paste) for the open workspace. */
 export function useWorkspaceShortcuts(
   actions: WorkspaceActions,
@@ -32,6 +41,8 @@ export function useWorkspaceShortcuts(
         return actions.center()
       case 'search':
         return ui.setSearch((current) => current ?? EMPTY_SEARCH)
+      case 'structure':
+        return ui.setView(ui.view === 'structure' ? 'board' : 'structure')
       case 'connect':
         if (ids.length === 1) ui.setConnectingFrom(ids[0])
         return
@@ -59,6 +70,7 @@ export function useWorkspaceShortcuts(
       }
       case 'escape':
         if (ui.side) return ui.setSide(null)
+        if (ui.view === 'structure') return ui.setView('board')
         if (ui.connectingFrom) return ui.setConnectingFrom(null)
         if (ui.selectedConnectionId) return ui.setSelectedConnectionId(null)
         if (ui.search) return ui.setSearch(null)
@@ -81,6 +93,14 @@ export function useWorkspaceShortcuts(
 
     // Board shortcuts never fire while typing or while a window is open.
     if (match.scope === 'board' && (typing || inDialog)) return
+    // The structure view hides the board: only shortcuts that don't touch it work there.
+    if (
+      ui.view === 'structure' &&
+      match.scope === 'board' &&
+      !STRUCTURE_ACTIONS.has(match.action)
+    ) {
+      return
+    }
     // Escape while typing in a side panel is handled by the panel itself.
     if (match.action === 'escape' && (typing || inDialog)) return
 
@@ -103,6 +123,9 @@ export function useWorkspaceShortcuts(
   })
 
   const onPaste = useStableCallback((event: ClipboardEvent) => {
+    // Pasted notes would land on a board that isn't on screen.
+    if (ui.view === 'structure' && !ui.editingNote) return
+
     const images = [...(event.clipboardData?.files ?? [])].filter(isImageFile)
     const editingId = ui.editingNote?.id
 
