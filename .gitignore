@@ -25,3 +25,5 @@ dist-ssr
 
 # Local Bruto workspaces (user data never leaves the machine)
 .bruto/
+test-results
+playwright-report
