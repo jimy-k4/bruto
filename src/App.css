@@ -35,13 +35,7 @@ body,
 body {
   min-height: 100vh;
   overflow: hidden;
-  background:
-    linear-gradient(
-      115deg,
-      rgba(255, 255, 255, 0.08),
-      transparent 35%
-    ),
-    var(--paper);
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 35%), var(--paper);
 }
 
 /* =========================================================
@@ -315,8 +309,7 @@ body {
     ),
     #9e9e9b;
   border: 2px solid rgba(23, 23, 23, 0.45);
-  box-shadow:
-    12px 12px 0 rgba(23, 23, 23, 0.08);
+  box-shadow: 12px 12px 0 rgba(23, 23, 23, 0.08);
 }
 
 .block-one {
@@ -738,15 +731,8 @@ body {
   min-height: 0;
   overflow: hidden;
   background:
-    linear-gradient(
-      rgba(23, 23, 23, 0.035) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(23, 23, 23, 0.035) 1px,
-      transparent 1px
-    );
+    linear-gradient(rgba(23, 23, 23, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 23, 23, 0.035) 1px, transparent 1px);
   background-size: 40px 40px;
   isolation: isolate;
 }
@@ -767,11 +753,7 @@ body {
   z-index: 30;
   pointer-events: none;
   border: 2px dashed var(--ink);
-  background: color-mix(
-    in srgb,
-    var(--ink) 8%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
   border-radius: 4px;
 }
 
@@ -1036,11 +1018,7 @@ body {
   0% {
     outline: 3px solid var(--ink);
     outline-offset: 0px;
-    box-shadow: 0 0 0 0 color-mix(
-        in srgb,
-        var(--ink) 45%,
-        transparent
-      );
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 45%, transparent);
   }
 
   60% {
@@ -1049,11 +1027,9 @@ body {
   }
 
   100% {
-    outline: 3px solid
-      transparent;
+    outline: 3px solid transparent;
     outline-offset: 14px;
-    box-shadow: 0 0 0 18px
-      transparent;
+    box-shadow: 0 0 0 18px transparent;
   }
 }
 
@@ -1071,8 +1047,7 @@ body {
 /* Paste feedback: the new card
    drops in with a small pop. */
 .note-card-pasted {
-  animation: paste-pop 0.45s
-    cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: paste-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes paste-pop {
@@ -1144,8 +1119,7 @@ body {
 .note-card-files-head,
 .note-card-files-row {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1fr) 52px 62px;
+  grid-template-columns: minmax(0, 1fr) 52px 62px;
   gap: 8px;
   align-items: baseline;
   font-family: 'IBM Plex Mono', monospace;
@@ -1615,8 +1589,7 @@ body {
 
 .editor-file {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1fr) 52px 74px 30px;
+  grid-template-columns: minmax(0, 1fr) 52px 74px 30px;
   gap: 8px;
   align-items: center;
   min-width: 0;
@@ -1711,8 +1684,7 @@ body {
    SIZE / MODIFIED columns. */
 .editor-files-table-head {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1fr) 52px 74px 30px;
+  grid-template-columns: minmax(0, 1fr) 52px 74px 30px;
   gap: 8px;
   align-items: center;
   padding: 4px 2px 6px;
@@ -1895,14 +1867,13 @@ body {
 }
 
 .note-editor-preview.note-pattern-raw {
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      rgba(23, 23, 23, 0.14) 0,
-      rgba(23, 23, 23, 0.14) 1px,
-      transparent 1px,
-      transparent 4px
-    );
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(23, 23, 23, 0.14) 0,
+    rgba(23, 23, 23, 0.14) 1px,
+    transparent 1px,
+    transparent 4px
+  );
 }
 
 .note-editor-preview.note-pattern-grid {
@@ -1913,9 +1884,41 @@ body {
 }
 
 .note-editor-preview.note-pattern-hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(23, 23, 23, 0.14) 0,
+    rgba(23, 23, 23, 0.14) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+}
+
+.note-editor-preview.note-pattern-bands {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(23, 23, 23, 0.14) 0,
+    rgba(23, 23, 23, 0.14) 4px,
+    transparent 4px,
+    transparent 11px
+  );
+}
+
+.note-editor-preview.note-pattern-dots {
+  background-image: radial-gradient(rgba(23, 23, 23, 0.2) 1px, transparent 1.1px);
+  background-size: 6px 6px;
+}
+
+.note-editor-preview.note-pattern-cross {
   background-image:
     repeating-linear-gradient(
-      135deg,
+      45deg,
+      rgba(23, 23, 23, 0.14) 0,
+      rgba(23, 23, 23, 0.14) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
       rgba(23, 23, 23, 0.14) 0,
       rgba(23, 23, 23, 0.14) 1px,
       transparent 1px,
@@ -1923,59 +1926,85 @@ body {
     );
 }
 
-.note-editor-preview.note-pattern-bands {
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      rgba(23, 23, 23, 0.14) 0,
-      rgba(23, 23, 23, 0.14) 4px,
-      transparent 4px,
-      transparent 11px
-    );
-}
-
-.note-editor-preview.note-pattern-dots {
-  background-image:
-    radial-gradient(rgba(23, 23, 23, 0.2) 1px, transparent 1.1px);
-  background-size: 6px 6px;
-}
-
-.note-editor-preview.note-pattern-cross {
-  background-image:
-    repeating-linear-gradient(45deg, rgba(23, 23, 23, 0.14) 0, rgba(23, 23, 23, 0.14) 1px, transparent 1px, transparent 5px),
-    repeating-linear-gradient(-45deg, rgba(23, 23, 23, 0.14) 0, rgba(23, 23, 23, 0.14) 1px, transparent 1px, transparent 5px);
-}
-
 .note-editor-preview.note-pattern-waves {
-  background-image:
-    radial-gradient(8px 5px at 50% -2px, transparent 4px, rgba(23, 23, 23, 0.16) 5px, transparent 6px);
+  background-image: radial-gradient(
+    8px 5px at 50% -2px,
+    transparent 4px,
+    rgba(23, 23, 23, 0.16) 5px,
+    transparent 6px
+  );
   background-size: 12px 8px;
 }
 
 .note-editor-preview.note-pattern-checker {
   background-image:
-    linear-gradient(45deg, rgba(23, 23, 23, 0.14) 25%, transparent 25%, transparent 75%, rgba(23, 23, 23, 0.14) 75%),
-    linear-gradient(45deg, rgba(23, 23, 23, 0.14) 25%, transparent 25%, transparent 75%, rgba(23, 23, 23, 0.14) 75%);
+    linear-gradient(
+      45deg,
+      rgba(23, 23, 23, 0.14) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgba(23, 23, 23, 0.14) 75%
+    ),
+    linear-gradient(
+      45deg,
+      rgba(23, 23, 23, 0.14) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgba(23, 23, 23, 0.14) 75%
+    );
   background-size: 9px 9px;
-  background-position: 0 0, 4.5px 4.5px;
+  background-position:
+    0 0,
+    4.5px 4.5px;
 }
 
 .note-editor-preview.note-pattern-pinstripe {
-  background-image:
-    repeating-linear-gradient(90deg, rgba(23, 23, 23, 0.14) 0, rgba(23, 23, 23, 0.14) 1px, transparent 1px, transparent 5px);
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(23, 23, 23, 0.14) 0,
+    rgba(23, 23, 23, 0.14) 1px,
+    transparent 1px,
+    transparent 5px
+  );
 }
 
 .note-editor-preview.note-pattern-diag {
   background-image:
-    repeating-linear-gradient(45deg, rgba(23, 23, 23, 0.14) 0, rgba(23, 23, 23, 0.14) 1.5px, transparent 1.5px, transparent 10px),
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0.4) 1.5px, transparent 1.5px, transparent 10px);
-  background-position: 0 0, 5px 0;
+    repeating-linear-gradient(
+      45deg,
+      rgba(23, 23, 23, 0.14) 0,
+      rgba(23, 23, 23, 0.14) 1.5px,
+      transparent 1.5px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.4) 0,
+      rgba(255, 255, 255, 0.4) 1.5px,
+      transparent 1.5px,
+      transparent 10px
+    );
+  background-position:
+    0 0,
+    5px 0;
 }
 
 .note-editor-preview.note-pattern-weave {
   background-image:
-    repeating-linear-gradient(45deg, rgba(23, 23, 23, 0.14) 0, rgba(23, 23, 23, 0.14) 1px, transparent 1px, transparent 4px),
-    repeating-linear-gradient(-45deg, rgba(23, 23, 23, 0.14) 0, rgba(23, 23, 23, 0.14) 1px, transparent 1px, transparent 4px);
+    repeating-linear-gradient(
+      45deg,
+      rgba(23, 23, 23, 0.14) 0,
+      rgba(23, 23, 23, 0.14) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(23, 23, 23, 0.14) 0,
+      rgba(23, 23, 23, 0.14) 1px,
+      transparent 1px,
+      transparent 4px
+    );
 }
 
 .note-editor-preview.note-pattern-triangle {
@@ -2448,7 +2477,9 @@ body {
 .sidebar-ai-copies kbd {
   padding: 2px 6px;
   border: 1px solid currentColor;
-  font: 700 9px/1 'IBM Plex Mono', monospace;
+  font:
+    700 9px/1 'IBM Plex Mono',
+    monospace;
 }
 
 .sidebar-context-button:hover {
@@ -2896,7 +2927,7 @@ body {
 .note-card {
   --note-bg: #c5c5c2;
   --note-ink: #171717;
-  --note-pattern-line: rgba(23, 23, 23, 0.10);
+  --note-pattern-line: rgba(23, 23, 23, 0.1);
   --note-pattern-light: rgba(255, 255, 255, 0.14);
 
   color: var(--note-ink);
@@ -2974,38 +3005,26 @@ body {
       transparent 1px,
       transparent 5px
     ),
-    linear-gradient(
-      135deg,
-      var(--note-pattern-light),
-      transparent 42%
-    );
+    linear-gradient(135deg, var(--note-pattern-light), transparent 42%);
 }
 
 .note-pattern-grid {
   background-image:
-    linear-gradient(
-      var(--note-pattern-line) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      var(--note-pattern-line) 1px,
-      transparent 1px
-    );
+    linear-gradient(var(--note-pattern-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--note-pattern-line) 1px, transparent 1px);
   background-size:
     14px 14px,
     14px 14px;
 }
 
 .note-pattern-hatch {
-  background-image:
-    repeating-linear-gradient(
-      135deg,
-      var(--note-pattern-line) 0,
-      var(--note-pattern-line) 2px,
-      transparent 2px,
-      transparent 11px
-    );
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--note-pattern-line) 0,
+    var(--note-pattern-line) 2px,
+    transparent 2px,
+    transparent 11px
+  );
 }
 
 .note-pattern-bands {
@@ -3017,19 +3036,11 @@ body {
       transparent 8px,
       transparent 22px
     ),
-    linear-gradient(
-      135deg,
-      var(--note-pattern-light),
-      transparent 48%
-    );
+    linear-gradient(135deg, var(--note-pattern-light), transparent 48%);
 }
 
 .note-pattern-dots {
-  background-image:
-    radial-gradient(
-      var(--note-pattern-line) 1.5px,
-      transparent 1.6px
-    );
+  background-image: radial-gradient(var(--note-pattern-line) 1.5px, transparent 1.6px);
   background-size: 12px 12px;
 }
 
@@ -3052,13 +3063,12 @@ body {
 }
 
 .note-pattern-waves {
-  background-image:
-    radial-gradient(
-      16px 10px at 50% -6px,
-      transparent 8px,
-      var(--note-pattern-line) 9px,
-      transparent 10px
-    );
+  background-image: radial-gradient(
+    16px 10px at 50% -6px,
+    transparent 8px,
+    var(--note-pattern-line) 9px,
+    transparent 10px
+  );
   background-size: 24px 16px;
 }
 
@@ -3085,14 +3095,13 @@ body {
 }
 
 .note-pattern-pinstripe {
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      var(--note-pattern-line) 0,
-      var(--note-pattern-line) 1px,
-      transparent 1px,
-      transparent 9px
-    );
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--note-pattern-line) 0,
+    var(--note-pattern-line) 1px,
+    transparent 1px,
+    transparent 9px
+  );
 }
 
 .note-pattern-diag {
@@ -3111,7 +3120,9 @@ body {
       transparent 3px,
       transparent 21px
     );
-  background-position: 0 0, 10px 0;
+  background-position:
+    0 0,
+    10px 0;
 }
 
 .note-pattern-weave {
@@ -3134,16 +3145,8 @@ body {
 
 .note-pattern-triangle {
   background-image:
-    linear-gradient(
-      135deg,
-      var(--note-pattern-line) 25%,
-      transparent 25%
-    ),
-    linear-gradient(
-      225deg,
-      var(--note-pattern-line) 25%,
-      transparent 25%
-    );
+    linear-gradient(135deg, var(--note-pattern-line) 25%, transparent 25%),
+    linear-gradient(225deg, var(--note-pattern-line) 25%, transparent 25%);
   background-size: 16px 16px;
 }
 
@@ -3281,57 +3284,40 @@ body {
       transparent 1px,
       transparent 5px
     ),
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.18),
-      transparent 42%
-    );
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 42%);
 }
 
 .note-style-option.note-pattern-grid > span {
   background-image:
-    linear-gradient(
-      rgba(23, 23, 23, 0.12) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(23, 23, 23, 0.12) 1px,
-      transparent 1px
-    );
+    linear-gradient(rgba(23, 23, 23, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 23, 23, 0.12) 1px, transparent 1px);
   background-size:
     9px 9px,
     9px 9px;
 }
 
 .note-style-option.note-pattern-hatch > span {
-  background-image:
-    repeating-linear-gradient(
-      135deg,
-      rgba(23, 23, 23, 0.15) 0,
-      rgba(23, 23, 23, 0.15) 2px,
-      transparent 2px,
-      transparent 9px
-    );
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(23, 23, 23, 0.15) 0,
+    rgba(23, 23, 23, 0.15) 2px,
+    transparent 2px,
+    transparent 9px
+  );
 }
 
 .note-style-option.note-pattern-bands > span {
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      rgba(23, 23, 23, 0.13) 0,
-      rgba(23, 23, 23, 0.13) 6px,
-      transparent 6px,
-      transparent 17px
-    );
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(23, 23, 23, 0.13) 0,
+    rgba(23, 23, 23, 0.13) 6px,
+    transparent 6px,
+    transparent 17px
+  );
 }
 
 .note-style-option.note-pattern-dots > span {
-  background-image:
-    radial-gradient(
-      rgba(23, 23, 23, 0.18) 1.2px,
-      transparent 1.3px
-    );
+  background-image: radial-gradient(rgba(23, 23, 23, 0.18) 1.2px, transparent 1.3px);
   background-size: 8px 8px;
 }
 
@@ -3354,13 +3340,12 @@ body {
 }
 
 .note-style-option.note-pattern-waves > span {
-  background-image:
-    radial-gradient(
-      10px 6px at 50% -3px,
-      transparent 5px,
-      rgba(23, 23, 23, 0.15) 6px,
-      transparent 7px
-    );
+  background-image: radial-gradient(
+    10px 6px at 50% -3px,
+    transparent 5px,
+    rgba(23, 23, 23, 0.15) 6px,
+    transparent 7px
+  );
   background-size: 15px 10px;
 }
 
@@ -3387,14 +3372,13 @@ body {
 }
 
 .note-style-option.note-pattern-pinstripe > span {
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      rgba(23, 23, 23, 0.15) 0,
-      rgba(23, 23, 23, 0.15) 1px,
-      transparent 1px,
-      transparent 6px
-    );
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(23, 23, 23, 0.15) 0,
+    rgba(23, 23, 23, 0.15) 1px,
+    transparent 1px,
+    transparent 6px
+  );
 }
 
 .note-style-option.note-pattern-diag > span {
@@ -3413,7 +3397,9 @@ body {
       transparent 2px,
       transparent 14px
     );
-  background-position: 0 0, 7px 0;
+  background-position:
+    0 0,
+    7px 0;
 }
 
 .note-style-option.note-pattern-weave > span {
@@ -3436,16 +3422,8 @@ body {
 
 .note-style-option.note-pattern-triangle > span {
   background-image:
-    linear-gradient(
-      135deg,
-      rgba(23, 23, 23, 0.15) 25%,
-      transparent 25%
-    ),
-    linear-gradient(
-      225deg,
-      rgba(23, 23, 23, 0.15) 25%,
-      transparent 25%
-    );
+    linear-gradient(135deg, rgba(23, 23, 23, 0.15) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(23, 23, 23, 0.15) 25%, transparent 25%);
   background-size: 11px 11px;
 }
 
@@ -3464,15 +3442,11 @@ body {
 
 .status-style-panel {
   width: min(920px, 94vw);
-  max-height: calc(
-    100vh - 120px
-  );
+  max-height: calc(100vh - 120px);
   overflow-y: auto;
-  background:
-    var(--panel);
+  background: var(--panel);
   border: 3px solid var(--ink);
-  box-shadow: 12px 12px 0
-    var(--ink);
+  box-shadow: 12px 12px 0 var(--ink);
   padding: 24px;
 
   /* The panel renders outside
@@ -3515,13 +3489,11 @@ body {
 
 .status-style-row {
   display: grid;
-  grid-template-columns:
-    130px 1fr;
+  grid-template-columns: 130px 1fr;
   gap: 10px 18px;
   align-items: start;
   padding: 12px 0;
-  border-top: 1px solid
-    var(--ink);
+  border-top: 1px solid var(--ink);
 }
 
 /* Each status row splits into
@@ -3573,8 +3545,6 @@ body {
   background: var(--ink);
   color: var(--panel);
 }
-
-
 
 /* =========================================================
    CONNECTION HIT AREA
@@ -3756,7 +3726,7 @@ body {
      .note-card; buttons define
      them here so the pattern
      classes render identically. */
-  --note-pattern-line: rgba(23, 23, 23, 0.10);
+  --note-pattern-line: rgba(23, 23, 23, 0.1);
   --note-pattern-light: rgba(255, 255, 255, 0.14);
 }
 
@@ -3909,15 +3879,8 @@ body {
 
 .app[data-theme='dark'] .canvas {
   background:
-    linear-gradient(
-      rgba(236, 235, 228, 0.055) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(236, 235, 228, 0.055) 1px,
-      transparent 1px
-    );
+    linear-gradient(rgba(236, 235, 228, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(236, 235, 228, 0.055) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -3969,7 +3932,7 @@ body {
 }
 
 .app[data-theme='dark'] .ai-context-overlay {
-  background: rgba(0, 0, 0, 0.60);
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .app[data-theme='dark'] .note-card {
@@ -4066,7 +4029,9 @@ body {
   flex: 0 0 auto;
   font-size: 8px;
   opacity: 0.4;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
 }
 
 .project-switcher-trigger:hover .project-switcher-caret,
@@ -4187,8 +4152,7 @@ body {
   }
 
   .ai-context-window-actions {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .ai-context-scope-card,
@@ -4208,8 +4172,7 @@ body {
     border-left: 0;
     border-top: 3px solid var(--ink);
     display: grid;
-    grid-template-columns:
-      repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     flex-shrink: 0;
   }
 

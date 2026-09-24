@@ -1,19 +1,8 @@
 import type { TranslationKey } from './i18n/translations'
 
-export type Language =
-  | 'es'
-  | 'en'
-  | 'ja'
-  | 'ru'
-  | 'zh'
-  | 'ca'
-  | 'fr'
-  | 'de'
-  | 'pt-BR'
+export type Language = 'es' | 'en' | 'ja' | 'ru' | 'zh' | 'ca' | 'fr' | 'de' | 'pt-BR'
 
-export type AppTheme =
-  | 'light'
-  | 'dark'
+export type AppTheme = 'light' | 'dark'
 
 export type NoteColorTheme =
   | 'concrete'
@@ -44,15 +33,7 @@ export type NotePattern =
   | 'triangle'
 
 export type NoteStatus =
-  | 'idea'
-  | 'todo'
-  | 'in-progress'
-  | 'blocked'
-  | 'review'
-  | 'done'
-  | 'bug'
-  | 'issue'
-  | 'wontfix'
+  'idea' | 'todo' | 'in-progress' | 'blocked' | 'review' | 'done' | 'bug' | 'issue' | 'wontfix'
 
 export interface Note {
   id: string
@@ -84,11 +65,7 @@ export interface WorkspaceDocumentation {
   id: string
   name: string
   url: string
-  type:
-    | 'obsidian'
-    | 'notion'
-    | 'web'
-    | 'other'
+  type: 'obsidian' | 'notion' | 'web' | 'other'
 }
 
 export interface Workspace {
@@ -103,9 +80,7 @@ export interface Workspace {
    * Only what the user configured
    * is set; everything else keeps
    * each note's own defaults. */
-  statusStyles?: Partial<
-    Record<NoteStatus, StatusStyleConfig>
-  >
+  statusStyles?: Partial<Record<NoteStatus, StatusStyleConfig>>
 }
 
 /** How notes of one status look
@@ -117,20 +92,13 @@ export interface StatusStyleConfig {
   pattern?: NotePattern
 }
 
-export type ContextScope =
-  | 'current'
-  | 'connected'
-  | 'entire'
+export type ContextScope = 'current' | 'connected' | 'entire'
 
 export interface FileTreeNode {
   name: string
   path: string
-  kind:
-    | 'file'
-    | 'directory'
-  handle:
-    | FileSystemFileHandle
-    | FileSystemDirectoryHandle
+  kind: 'file' | 'directory'
+  handle: FileSystemFileHandle | FileSystemDirectoryHandle
   children?: FileTreeNode[]
   loaded?: boolean
 }

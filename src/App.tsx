@@ -15,10 +15,7 @@ import type {
 } from './types'
 import { translations } from './i18n/translations'
 import type { TranslationKey } from './i18n/translations'
-import {
-  buildAiContext,
-  getConnectedNoteIds,
-} from './lib/aiContext'
+import { buildAiContext, getConnectedNoteIds } from './lib/aiContext'
 import { getNoteStyle } from './lib/statusLabels'
 import { StatusStylePanel } from './components/StatusStylePanel'
 import { saveWorkspace } from './lib/workspaceStorage'
@@ -53,13 +50,10 @@ interface BackgroundProject {
   dirty: boolean
 }
 
-const CLIPBOARD_STORAGE_KEY =
-  'bruto-clipboard-note'
+const CLIPBOARD_STORAGE_KEY = 'bruto-clipboard-note'
 
 function getStoredLanguage(): Language {
-  const stored = localStorage.getItem(
-    'bruto-language',
-  )
+  const stored = localStorage.getItem('bruto-language')
 
   return stored === 'en' ||
     stored === 'ja' ||
@@ -74,36 +68,26 @@ function getStoredLanguage(): Language {
 }
 
 function getStoredTheme(): AppTheme {
-  const stored = localStorage.getItem(
-    'bruto-theme',
-  )
+  const stored = localStorage.getItem('bruto-theme')
 
-  return stored === 'light'
-    ? 'light'
-    : 'dark'
+  return stored === 'light' ? 'light' : 'dark'
 }
 
 function getStoredClipboard(): Note | null {
   try {
-    const raw = localStorage.getItem(
-      CLIPBOARD_STORAGE_KEY,
-    )
+    const raw = localStorage.getItem(CLIPBOARD_STORAGE_KEY)
 
     if (!raw) {
       return null
     }
 
-    const parsed = JSON.parse(
-      raw,
-    ) as Note
+    const parsed = JSON.parse(raw) as Note
 
     if (
       !parsed ||
       typeof parsed.id !== 'string' ||
       typeof parsed.title !== 'string' ||
-      !Array.isArray(
-        parsed.filePaths ?? [],
-      )
+      !Array.isArray(parsed.filePaths ?? [])
     ) {
       return null
     }
@@ -117,206 +101,91 @@ function getStoredClipboard(): Note | null {
 interface AppProps {
   language?: Language
   theme?: AppTheme
-  onLanguageChange?: (
-    language: Language,
-  ) => void
-  onThemeChange?: (
-    theme: AppTheme,
-  ) => void
+  onLanguageChange?: (language: Language) => void
+  onThemeChange?: (theme: AppTheme) => void
 }
 
-function App({
-  language: languageProp,
-  theme: themeProp,
-  onLanguageChange,
-  onThemeChange,
-}: AppProps = {} as AppProps) {
+function App(
+  {
+    language: languageProp,
+    theme: themeProp,
+    onLanguageChange,
+    onThemeChange,
+  }: AppProps = {} as AppProps,
+) {
   // Standalone App owns language
   // and theme internally (with
   // localStorage persistence).
   // The optional props exist so a
   // parent could lift this state,
   // but nothing passes them today.
-  const [
-    languageState,
-    setLanguageState,
-  ] = useState<Language>(
-    languageProp ?? getStoredLanguage,
-  )
+  const [languageState, setLanguageState] = useState<Language>(languageProp ?? getStoredLanguage)
 
-  const [
-    themeState,
-    setThemeState,
-  ] = useState<AppTheme>(
-    themeProp ?? getStoredTheme,
-  )
+  const [themeState, setThemeState] = useState<AppTheme>(themeProp ?? getStoredTheme)
 
-  const language =
-    onLanguageChange ? languageProp! : languageState
+  const language = onLanguageChange ? languageProp! : languageState
 
-  const theme =
-    onThemeChange ? themeProp! : themeState
+  const theme = onThemeChange ? themeProp! : themeState
 
-  const canvasRef =
-    useRef<HTMLDivElement | null>(
-      null,
-    )
+  const canvasRef = useRef<HTMLDivElement | null>(null)
 
-  const setLanguage =
-    onLanguageChange ??
-    setLanguageState
+  const setLanguage = onLanguageChange ?? setLanguageState
 
-  const setTheme =
-    onThemeChange ??
-    setThemeState
+  const setTheme = onThemeChange ?? setThemeState
 
-  const t = (
-    key: TranslationKey,
-  ) =>
-    translations[
-      language
-    ][key] ??
-    translations.es[key] ??
-    key
+  const t = (key: TranslationKey) => translations[language][key] ?? translations.es[key] ?? key
 
-  const [projectName, setProjectName] =
-    useState<string | null>(
-      null,
-    )
+  const [projectName, setProjectName] = useState<string | null>(null)
 
-  const [workspace, setWorkspace] =
-    useState<Workspace | null>(
-      null,
-    )
+  const [workspace, setWorkspace] = useState<Workspace | null>(null)
 
-  const latestWorkspaceRef =
-    useRef<Workspace | null>(
-      null,
-    )
+  const latestWorkspaceRef = useRef<Workspace | null>(null)
 
-  const [workspaceDirty, setWorkspaceDirty] =
-    useState(false)
+  const [workspaceDirty, setWorkspaceDirty] = useState(false)
 
-  const autosaveTimerRef =
-    useRef<number | null>(
-      null,
-    )
+  const autosaveTimerRef = useRef<number | null>(null)
 
-  const historyPastRef =
-    useRef<Workspace[]>([])
+  const historyPastRef = useRef<Workspace[]>([])
 
-  const historyFutureRef =
-    useRef<Workspace[]>([])
+  const historyFutureRef = useRef<Workspace[]>([])
 
-  const noteEditorOriginalRef =
-    useRef<Workspace | null>(
-      null,
-    )
+  const noteEditorOriginalRef = useRef<Workspace | null>(null)
 
-  const noteEditorHistoryRecordedRef =
-    useRef(false)
+  const noteEditorHistoryRecordedRef = useRef(false)
 
-  const dragHistorySnapshotRef =
-    useRef<Workspace | null>(
-      null,
-    )
+  const dragHistorySnapshotRef = useRef<Workspace | null>(null)
 
-  const dragHistoryCommittedRef =
-    useRef(false)
+  const dragHistoryCommittedRef = useRef(false)
 
-  const [
-    projectDirectory,
-    setProjectDirectory,
-  ] =
-    useState<FileSystemDirectoryHandle | null>(
-      null,
-    )
+  const [projectDirectory, setProjectDirectory] = useState<FileSystemDirectoryHandle | null>(null)
 
-  const [directoryTree, setDirectoryTree] =
-    useState<FileTreeNode | null>(
-      null,
-    )
+  const [directoryTree, setDirectoryTree] = useState<FileTreeNode | null>(null)
 
-  const [
-    directorySearchTree,
-    setDirectorySearchTree,
-  ] =
-    useState<FileTreeNode | null>(
-      null,
-    )
+  const [directorySearchTree, setDirectorySearchTree] = useState<FileTreeNode | null>(null)
 
-  const [
-    directorySearch,
-    setDirectorySearch,
-  ] =
-    useState('')
+  const [directorySearch, setDirectorySearch] = useState('')
 
-  const [
-    directoryPanelOpen,
-    setDirectoryPanelOpen,
-  ] =
-    useState(false)
+  const [directoryPanelOpen, setDirectoryPanelOpen] = useState(false)
 
-  const [
-    directoryLoading,
-    setDirectoryLoading,
-  ] =
-    useState(false)
+  const [directoryLoading, setDirectoryLoading] = useState(false)
 
-  const [
-    directorySearching,
-    setDirectorySearching,
-  ] =
-    useState(false)
+  const [directorySearching, setDirectorySearching] = useState(false)
 
-  const [
-    directoryLoadingPath,
-    setDirectoryLoadingPath,
-  ] =
-    useState<string | null>(
-      null,
-    )
+  const [directoryLoadingPath, setDirectoryLoadingPath] = useState<string | null>(null)
 
-  const [
-    expandedDirectories,
-    setExpandedDirectories,
-  ] =
-    useState<Set<string>>(
-      new Set(),
-    )
+  const [expandedDirectories, setExpandedDirectories] = useState<Set<string>>(new Set())
 
-  const [
-    selectedFilePath,
-    setSelectedFilePath,
-  ] =
-    useState<string | null>(
-      null,
-    )
+  const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null)
 
-  const [
-    selectedFileInfo,
-    setSelectedFileInfo,
-  ] =
-    useState<SelectedFileInfo | null>(
-      null,
-    )
+  const [selectedFileInfo, setSelectedFileInfo] = useState<SelectedFileInfo | null>(null)
 
-  const [
-    directoryRefreshKey,
-    setDirectoryRefreshKey,
-  ] =
-    useState(0)
+  const [directoryRefreshKey, setDirectoryRefreshKey] = useState(0)
 
-  const [loading, setLoading] =
-    useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const [creatingNote, setCreatingNote] =
-    useState(false)
+  const [creatingNote, setCreatingNote] = useState(false)
 
-  const [selectedNoteId, setSelectedNoteId] =
-    useState<string | null>(
-      null,
-    )
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
 
   /** Cross-project clipboard:
    * holds the last copied note so
@@ -325,51 +194,30 @@ function App({
    * persisted to localStorage so
    * it survives restarts and page
    * reloads. */
-  const [
-    clipboardNote,
-    setClipboardNoteState,
-  ] = useState<Note | null>(
-    getStoredClipboard,
-  )
+  const [clipboardNote, setClipboardNoteState] = useState<Note | null>(getStoredClipboard)
 
   /** Id of the note currently
    * playing the "copied" flash
    * animation. */
-  const [copiedNoteId, setCopiedNoteId] =
-    useState<string | null>(null)
+  const [copiedNoteId, setCopiedNoteId] = useState<string | null>(null)
 
   /** Id of the note currently
    * playing the "pasted" pop
    * animation. */
-  const [pastedNoteId, setPastedNoteId] =
-    useState<string | null>(null)
+  const [pastedNoteId, setPastedNoteId] = useState<string | null>(null)
 
-  const copiedTimerRef =
-    useRef<ReturnType<
-      typeof setTimeout
-    > | null>(null)
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const pastedTimerRef =
-    useRef<ReturnType<
-      typeof setTimeout
-    > | null>(null)
+  const pastedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const setProjectClipboard = (
-    note: Note | null,
-    flashSourceId?: string,
-  ) => {
+  const setProjectClipboard = (note: Note | null, flashSourceId?: string) => {
     setClipboardNoteState(note)
 
     try {
       if (note === null) {
-        localStorage.removeItem(
-          CLIPBOARD_STORAGE_KEY,
-        )
+        localStorage.removeItem(CLIPBOARD_STORAGE_KEY)
       } else {
-        localStorage.setItem(
-          CLIPBOARD_STORAGE_KEY,
-          JSON.stringify(note),
-        )
+        localStorage.setItem(CLIPBOARD_STORAGE_KEY, JSON.stringify(note))
       }
     } catch {
       // Storage full or unavailable:
@@ -385,58 +233,35 @@ function App({
         clearTimeout(copiedTimerRef.current)
       }
 
-      copiedTimerRef.current =
-        setTimeout(() => {
-          setCopiedNoteId(null)
+      copiedTimerRef.current = setTimeout(() => {
+        setCopiedNoteId(null)
 
-          copiedTimerRef.current = null
-        }, 900)
+        copiedTimerRef.current = null
+      }, 900)
     }
   }
 
-  const [noteDraft, setNoteDraft] =
-    useState<Note | null>(
-      null,
-    )
+  const [noteDraft, setNoteDraft] = useState<Note | null>(null)
 
   /** One-shot flag: the note
    * editor selects the title text
    * on open so a freshly created
    * note can be renamed instantly. */
-  const [
-    noteEditorSelectTitle,
-    setNoteEditorSelectTitle,
-  ] =
-    useState(false)
+  const [noteEditorSelectTitle, setNoteEditorSelectTitle] = useState(false)
 
-  const [savingNote, setSavingNote] =
-    useState(false)
+  const [savingNote, setSavingNote] = useState(false)
 
-  const [addingFiles, setAddingFiles] =
-    useState(false)
+  const [addingFiles, setAddingFiles] = useState(false)
 
-  const [openingFilePath, setOpeningFilePath] =
-    useState<string | null>(
-      null,
-    )
+  const [openingFilePath, setOpeningFilePath] = useState<string | null>(null)
 
-  const [
-    confirmingDelete,
-    setConfirmingDelete,
-  ] =
-    useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   /** Top-bar panel for per-status
    * color/pattern configuration. */
-  const [
-    statusStylePanelOpen,
-    setStatusStylePanelOpen,
-  ] = useState(false)
+  const [statusStylePanelOpen, setStatusStylePanelOpen] = useState(false)
 
-  const [draggingNoteId, setDraggingNoteId] =
-    useState<string | null>(
-      null,
-    )
+  const [draggingNoteId, setDraggingNoteId] = useState<string | null>(null)
 
   /** World-space pointer where
    * the active drag started, so
@@ -450,21 +275,14 @@ function App({
 
   /** Start positions of every note
    * in the dragged group. */
-  const dragStartPositionsRef =
-    useRef<
-      Map<
-        string,
-        { x: number; y: number }
-      >
-    >(new Map())
+  const dragStartPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map())
 
   /** True from the first real move
    * of a note drag until mouse-up:
    * distinguishes a drag from a
    * plain click for the canvas
    * deselect handler. */
-  const [hasDraggedNote, setHasDraggedNote] =
-    useState(false)
+  const [hasDraggedNote, setHasDraggedNote] = useState(false)
 
   /** True once the active drag
    * passes the 4px threshold:
@@ -472,199 +290,90 @@ function App({
    * click, not a drag, so tiny
    * pointer jitter never blocks
    * opening the editor. */
-  const dragThresholdPassedRef =
-    useRef(false)
+  const dragThresholdPassedRef = useRef(false)
 
-  const [connectingNoteId, setConnectingNoteId] =
-    useState<string | null>(
-      null,
-    )
+  const [connectingNoteId, setConnectingNoteId] = useState<string | null>(null)
 
-  const [
-    selectedConnectionId,
-    setSelectedConnectionId,
-  ] =
-    useState<string | null>(
-      null,
-    )
+  const [selectedConnectionId, setSelectedConnectionId] = useState<string | null>(null)
 
-  const [zoom, setZoom] =
-    useState(1)
+  const [zoom, setZoom] = useState(1)
 
-  const [pan, setPan] =
-    useState({
-      x: 0,
-      y: 0,
-    })
+  const [pan, setPan] = useState({
+    x: 0,
+    y: 0,
+  })
 
-  const [panning, setPanning] =
-    useState(false)
+  const [panning, setPanning] = useState(false)
 
-  const [panStart, setPanStart] =
-    useState({
-      x: 0,
-      y: 0,
-    })
+  const [panStart, setPanStart] = useState({
+    x: 0,
+    y: 0,
+  })
 
-  const [
-    aiContextPanelOpen,
-    setAiContextPanelOpen,
-  ] =
-    useState(false)
+  const [aiContextPanelOpen, setAiContextPanelOpen] = useState(false)
 
-  const [aiContextDraft, setAiContextDraft] =
-    useState('')
+  const [aiContextDraft, setAiContextDraft] = useState('')
 
-  const [savingAiContext, setSavingAiContext] =
-    useState(false)
+  const [savingAiContext, setSavingAiContext] = useState(false)
 
-  const [
-    workspaceEditorOpen,
-    setWorkspaceEditorOpen,
-  ] =
-    useState(false)
+  const [workspaceEditorOpen, setWorkspaceEditorOpen] = useState(false)
 
-  const [
-    workspaceTitleDraft,
-    setWorkspaceTitleDraft,
-  ] =
-    useState('')
+  const [workspaceTitleDraft, setWorkspaceTitleDraft] = useState('')
 
-  const [
-    workspaceDescriptionDraft,
-    setWorkspaceDescriptionDraft,
-  ] =
-    useState('')
+  const [workspaceDescriptionDraft, setWorkspaceDescriptionDraft] = useState('')
 
-  const [
-    savingWorkspaceInfo,
-    setSavingWorkspaceInfo,
-  ] =
-    useState(false)
+  const [savingWorkspaceInfo, setSavingWorkspaceInfo] = useState(false)
 
-  const [
-    documentationEditorOpen,
-    setDocumentationEditorOpen,
-  ] =
-    useState(false)
+  const [documentationEditorOpen, setDocumentationEditorOpen] = useState(false)
 
-  const [
-    documentationDraft,
-    setDocumentationDraft,
-  ] =
-    useState<WorkspaceDocumentation | null>(
-      null,
-    )
+  const [documentationDraft, setDocumentationDraft] = useState<WorkspaceDocumentation | null>(null)
 
-  const [
-    savingDocumentation,
-    setSavingDocumentation,
-  ] =
-    useState(false)
+  const [savingDocumentation, setSavingDocumentation] = useState(false)
 
-  const [
-    copiedContext,
-    setCopiedContext,
-  ] =
-    useState<ContextScope | null>(
-      null,
-    )
+  const [copiedContext, setCopiedContext] = useState<ContextScope | null>(null)
 
-  const [
-    editorWidth,
-    setEditorWidth,
-  ] =
-    useState(380)
+  const [editorWidth, setEditorWidth] = useState(380)
 
-  const [
-    sidebarVisible,
-    setSidebarVisible,
-  ] =
-    useState<boolean>(
-      getStoredSidebarVisible,
-    )
+  const [sidebarVisible, setSidebarVisible] = useState<boolean>(getStoredSidebarVisible)
 
-  const [
-    sidebarWidth,
-    setSidebarWidth,
-  ] =
-    useState<number>(
-      getStoredSidebarWidth,
-    )
+  const [sidebarWidth, setSidebarWidth] = useState<number>(getStoredSidebarWidth)
 
-  const [
-    resizingSidebar,
-    setResizingSidebar,
-  ] =
-    useState(false)
+  const [resizingSidebar, setResizingSidebar] = useState(false)
 
-  const [
-    sidebarResizeStart,
-    setSidebarResizeStart,
-  ] =
-    useState({
-      x: 0,
-      width: 250,
-    })
+  const [sidebarResizeStart, setSidebarResizeStart] = useState({
+    x: 0,
+    width: 250,
+  })
 
-  const [
-    resizingEditor,
-    setResizingEditor,
-  ] =
-    useState(false)
+  const [resizingEditor, setResizingEditor] = useState(false)
 
-  const [
-    resizeStart,
-    setResizeStart,
-  ] =
-    useState({
-      x: 0,
-      width: 380,
-    })
+  const [resizeStart, setResizeStart] = useState({
+    x: 0,
+    width: 380,
+  })
 
-  const [
-    helpOpen,
-    setHelpOpen,
-  ] =
-    useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
 
-  const [
-    helpSearch,
-    setHelpSearch,
-  ] =
-    useState('')
+  const [helpSearch, setHelpSearch] = useState('')
 
-  const selectedNote =
-    workspace?.notes.find(
-      (note) =>
-        note.id ===
-        selectedNoteId,
-    ) ?? null
-
+  const selectedNote = workspace?.notes.find((note) => note.id === selectedNoteId) ?? null
 
   /** Ids of every note in the
    * multi-selection (area select
    * or shift+click). */
-  const [selectedNoteIds, setSelectedNoteIds] =
-    useState<string[]>([])
+  const [selectedNoteIds, setSelectedNoteIds] = useState<string[]>([])
 
   /** All currently selected notes:
    * the multi-selection when set,
    * otherwise the single selected
    * note. */
-  const effectiveSelectedNotes =
-    workspace
-      ? selectedNoteIds.length > 0
-        ? workspace.notes.filter(
-            (note) =>
-              selectedNoteIds.includes(
-                note.id,
-              ),
-          )
-        : selectedNote
-          ? [selectedNote]
-          : []
-      : []
+  const effectiveSelectedNotes = workspace
+    ? selectedNoteIds.length > 0
+      ? workspace.notes.filter((note) => selectedNoteIds.includes(note.id))
+      : selectedNote
+        ? [selectedNote]
+        : []
+    : []
 
   /** Paint recipes for the AI
    * CONTEXT copy buttons, from the
@@ -682,13 +391,8 @@ function App({
       }
     }
 
-    const toRecipe = (
-      note: Note,
-    ) => {
-      const style = getNoteStyle(
-        note,
-        workspace,
-      )
+    const toRecipe = (note: Note) => {
+      const style = getNoteStyle(note, workspace)
 
       return {
         color: style.color,
@@ -696,31 +400,12 @@ function App({
       }
     }
 
-    const connectedIds =
-      getConnectedNoteIds(
-        workspace,
-        selectedNote.id,
-      )
+    const connectedIds = getConnectedNoteIds(workspace, selectedNote.id)
 
-    const connectedNotes = [
-      ...connectedIds,
-    ]
-      .filter(
-        (id) => id !== selectedNote.id,
-      )
-      .map(
-        (id) =>
-          workspace.notes.find(
-            (note) =>
-              note.id === id,
-          ),
-      )
-      .filter(
-        (
-          note,
-        ): note is Note =>
-          Boolean(note),
-      )
+    const connectedNotes = [...connectedIds]
+      .filter((id) => id !== selectedNote.id)
+      .map((id) => workspace.notes.find((note) => note.id === id))
+      .filter((note): note is Note => Boolean(note))
       .slice(0, 5)
 
     return {
@@ -730,12 +415,7 @@ function App({
       // button keeps its default look
       // instead of borrowing the
       // current note's colors.
-      connected:
-        connectedNotes.length > 0
-          ? connectedNotes.map(
-              toRecipe,
-            )
-          : [],
+      connected: connectedNotes.length > 0 ? connectedNotes.map(toRecipe) : [],
     }
   })()
 
@@ -755,9 +435,7 @@ function App({
 
   /** Toggles one note inside the
    * multi-selection (shift+click). */
-  const toggleMultiSelectNote = (
-    noteId: string,
-  ) => {
+  const toggleMultiSelectNote = (noteId: string) => {
     setSelectedConnectionId(null)
 
     // Absorb any stale single
@@ -766,38 +444,24 @@ function App({
     // from the visible selection
     // instead of appearing to be
     // ignored.
-    setSelectedNoteIds(
-      (current) => {
-        const base =
-          current.length === 0 &&
-          selectedNoteId &&
-          selectedNoteId !== noteId
-            ? [selectedNoteId]
-            : current
+    setSelectedNoteIds((current) => {
+      const base =
+        current.length === 0 && selectedNoteId && selectedNoteId !== noteId
+          ? [selectedNoteId]
+          : current
 
-        return base.includes(
-          noteId,
-        )
-          ? base.filter(
-              (id) =>
-                id !== noteId,
-            )
-          : [...base, noteId]
-      },
-    )
+      return base.includes(noteId) ? base.filter((id) => id !== noteId) : [...base, noteId]
+    })
   }
 
   /** Live rubber band while area
    * selecting on empty canvas. */
-  const [marquee, setMarquee] = useState<
-    | {
-        x0: number
-        y0: number
-        x1: number
-        y1: number
-      }
-    | null
-  >(null)
+  const [marquee, setMarquee] = useState<{
+    x0: number
+    y0: number
+    x1: number
+    y1: number
+  } | null>(null)
 
   const marqueeActiveRef = useRef(false)
 
@@ -818,24 +482,19 @@ function App({
   /** Latest marquee rect, read on
    * mouse-up outside React's state
    * batching. */
-  const marqueeRef = useRef<
-    | {
-        x0: number
-        y0: number
-        x1: number
-        y1: number
-      }
-    | null
-  >(null)
+  const marqueeRef = useRef<{
+    x0: number
+    y0: number
+    x1: number
+    y1: number
+  } | null>(null)
 
   useEffect(() => {
     if (!marquee) {
       return
     }
 
-    const handleMouseMove = (
-      event: MouseEvent,
-    ) => {
+    const handleMouseMove = (event: MouseEvent) => {
       if (!marqueeActiveRef.current) {
         return
       }
@@ -908,55 +567,36 @@ function App({
       // and area-selecting felt broken.
       const selectedIds: string[] = []
 
-      const cards =
-        document.querySelectorAll<HTMLElement>(
-          '.note-card[data-note-id]',
-        )
+      const cards = document.querySelectorAll<HTMLElement>('.note-card[data-note-id]')
 
-      cards.forEach(
-        (card) => {
-          const noteX = card.offsetLeft
+      cards.forEach((card) => {
+        const noteX = card.offsetLeft
 
-          const noteY = card.offsetTop
+        const noteY = card.offsetTop
 
-          const noteW = card.offsetWidth
+        const noteW = card.offsetWidth
 
-          const noteH = card.offsetHeight
+        const noteH = card.offsetHeight
 
-          const overlaps =
-            noteX + noteW > worldLeft &&
-            noteX < worldRight &&
-            noteY + noteH > worldTop &&
-            noteY < worldBottom
+        const overlaps =
+          noteX + noteW > worldLeft &&
+          noteX < worldRight &&
+          noteY + noteH > worldTop &&
+          noteY < worldBottom
 
-          if (
-            overlaps &&
-            card.dataset.noteId
-          ) {
-            selectedIds.push(
-              card.dataset.noteId,
-            )
-          }
-        },
-      )
+        if (overlaps && card.dataset.noteId) {
+          selectedIds.push(card.dataset.noteId)
+        }
+      })
 
       // Preserve the workspace order so
       // group z-raising keeps its relative
       // stacking stable across selections.
-      const workspaceOrder =
-        workspace
-          ? workspace.notes
-              .filter((note) =>
-                selectedIds.includes(
-                  note.id,
-                ),
-              )
-              .map((note) => note.id)
-          : selectedIds
+      const workspaceOrder = workspace
+        ? workspace.notes.filter((note) => selectedIds.includes(note.id)).map((note) => note.id)
+        : selectedIds
 
-      setSelectedNoteIds(
-        workspaceOrder,
-      )
+      setSelectedNoteIds(workspaceOrder)
 
       marqueeEndedAtRef.current = Date.now()
     }
@@ -972,18 +612,12 @@ function App({
     }
   }, [marquee, workspace])
 
-  const startMarquee = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
-    if (
-      event.button !== 0 ||
-      event.shiftKey
-    ) {
+  const startMarquee = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || event.shiftKey) {
       return
     }
 
-    const rect =
-      event.currentTarget.getBoundingClientRect()
+    const rect = event.currentTarget.getBoundingClientRect()
 
     marqueeActiveRef.current = true
 
@@ -1008,42 +642,22 @@ function App({
   }
 
   const selectedConnection =
-    workspace?.connections.find(
-      (connection) =>
-        connection.id ===
-        selectedConnectionId,
-    ) ?? null
+    workspace?.connections.find((connection) => connection.id === selectedConnectionId) ?? null
 
   useEffect(() => {
-    localStorage.setItem(
-      'bruto-language',
-      language,
-    )
+    localStorage.setItem('bruto-language', language)
   }, [language])
 
   useEffect(() => {
-    localStorage.setItem(
-      'bruto-theme',
-      theme,
-    )
+    localStorage.setItem('bruto-theme', theme)
   }, [theme])
 
   useEffect(() => {
-    localStorage.setItem(
-      'bruto-sidebar-visible',
-      sidebarVisible
-        ? 'true'
-        : 'false',
-    )
+    localStorage.setItem('bruto-sidebar-visible', sidebarVisible ? 'true' : 'false')
   }, [sidebarVisible])
 
   useEffect(() => {
-    localStorage.setItem(
-      'bruto-sidebar-width',
-      String(
-        sidebarWidth,
-      ),
-    )
+    localStorage.setItem('bruto-sidebar-width', String(sidebarWidth))
   }, [sidebarWidth])
 
   useEffect(() => {
@@ -1051,276 +665,139 @@ function App({
       return
     }
 
-    const handleMouseMove = (
-      event: MouseEvent,
-    ) => {
-      const nextWidth =
-        resizeStart.width +
-        (resizeStart.x -
-          event.clientX)
+    const handleMouseMove = (event: MouseEvent) => {
+      const nextWidth = resizeStart.width + (resizeStart.x - event.clientX)
 
-      setEditorWidth(
-        Math.min(
-          760,
-          Math.max(
-            320,
-            nextWidth,
-          ),
-        ),
-      )
+      setEditorWidth(Math.min(760, Math.max(320, nextWidth)))
     }
 
     const handleMouseUp = () => {
-      setResizingEditor(
-        false,
-      )
+      setResizingEditor(false)
     }
 
-    window.addEventListener(
-      'mousemove',
-      handleMouseMove,
-    )
+    window.addEventListener('mousemove', handleMouseMove)
 
-    window.addEventListener(
-      'mouseup',
-      handleMouseUp,
-    )
+    window.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      window.removeEventListener(
-        'mousemove',
-        handleMouseMove,
-      )
+      window.removeEventListener('mousemove', handleMouseMove)
 
-      window.removeEventListener(
-        'mouseup',
-        handleMouseUp,
-      )
+      window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [
-    resizingEditor,
-    resizeStart,
-  ])
+  }, [resizingEditor, resizeStart])
 
-  const cloneWorkspace = (
-    data: Workspace,
-  ): Workspace =>
-    structuredClone(data)
+  const cloneWorkspace = (data: Workspace): Workspace => structuredClone(data)
 
-  const pushHistorySnapshot = (
-    snapshot: Workspace,
-  ) => {
-    historyPastRef.current = [
-      ...historyPastRef.current.slice(
-        -79,
-      ),
-      cloneWorkspace(
-        snapshot,
-      ),
-    ]
+  const pushHistorySnapshot = (snapshot: Workspace) => {
+    historyPastRef.current = [...historyPastRef.current.slice(-79), cloneWorkspace(snapshot)]
 
     historyFutureRef.current = []
   }
 
-  const setWorkspaceState = (
-    updatedWorkspace: Workspace,
-    recordHistory = true,
-  ) => {
-    if (
-      recordHistory &&
-      workspace
-    ) {
-      pushHistorySnapshot(
-        workspace,
-      )
+  const setWorkspaceState = (updatedWorkspace: Workspace, recordHistory = true) => {
+    if (recordHistory && workspace) {
+      pushHistorySnapshot(workspace)
     }
 
-    setWorkspace(
-      updatedWorkspace,
-    )
+    setWorkspace(updatedWorkspace)
 
-    latestWorkspaceRef.current =
-      updatedWorkspace
+    latestWorkspaceRef.current = updatedWorkspace
 
-    setWorkspaceDirty(
-      true,
-    )
+    setWorkspaceDirty(true)
   }
 
-  const replaceWorkspaceState = (
-    updatedWorkspace: Workspace,
-  ) => {
-    setWorkspace(
-      updatedWorkspace,
-    )
+  const replaceWorkspaceState = (updatedWorkspace: Workspace) => {
+    setWorkspace(updatedWorkspace)
 
-    latestWorkspaceRef.current =
-      updatedWorkspace
+    latestWorkspaceRef.current = updatedWorkspace
 
-    setWorkspaceDirty(
-      true,
-    )
+    setWorkspaceDirty(true)
   }
 
-  const saveCurrentWorkspaceNow =
-    async () => {
-      if (
-        !projectDirectory
-      ) {
-        return
-      }
-
-      const dataToSave =
-        latestWorkspaceRef.current
-
-      if (!dataToSave) {
-        return
-      }
-
-      if (
-        autosaveTimerRef.current !==
-        null
-      ) {
-        window.clearTimeout(
-          autosaveTimerRef.current,
-        )
-
-        autosaveTimerRef.current =
-          null
-      }
-
-      try {
-        await saveWorkspace(
-          projectDirectory,
-          dataToSave,
-        )
-
-        if (
-          latestWorkspaceRef.current ===
-          dataToSave
-        ) {
-          setWorkspaceDirty(
-            false,
-          )
-        }
-      } catch (error) {
-        console.error(
-          'Error guardando workspace:',
-          error,
-        )
-
-        window.alert(
-          t(
-            'saveFailed',
-          ),
-        )
-      }
-    }
-
-  useEffect(() => {
-    if (
-      !workspace ||
-      !projectDirectory ||
-      !workspaceDirty
-    ) {
+  const saveCurrentWorkspaceNow = async () => {
+    if (!projectDirectory) {
       return
     }
 
-    if (
-      autosaveTimerRef.current !==
-      null
-    ) {
-      window.clearTimeout(
-        autosaveTimerRef.current,
-      )
+    const dataToSave = latestWorkspaceRef.current
+
+    if (!dataToSave) {
+      return
     }
 
-    autosaveTimerRef.current =
-      window.setTimeout(
-        async () => {
-          const dataToSave =
-            latestWorkspaceRef.current
+    if (autosaveTimerRef.current !== null) {
+      window.clearTimeout(autosaveTimerRef.current)
 
-          if (
-            !dataToSave ||
-            !projectDirectory
-          ) {
-            return
-          }
+      autosaveTimerRef.current = null
+    }
 
-          try {
-            await saveWorkspace(
-              projectDirectory,
-              dataToSave,
-            )
+    try {
+      await saveWorkspace(projectDirectory, dataToSave)
 
-            if (
-              latestWorkspaceRef.current ===
-              dataToSave
-            ) {
-              setWorkspaceDirty(
-                false,
-              )
-            }
-          } catch (error) {
-            console.error(
-              'Error en autosave:',
-              error,
-            )
-          } finally {
-            autosaveTimerRef.current =
-              null
-          }
-        },
-        450,
-      )
+      if (latestWorkspaceRef.current === dataToSave) {
+        setWorkspaceDirty(false)
+      }
+    } catch (error) {
+      console.error('Error guardando workspace:', error)
+
+      window.alert(t('saveFailed'))
+    }
+  }
+
+  useEffect(() => {
+    if (!workspace || !projectDirectory || !workspaceDirty) {
+      return
+    }
+
+    if (autosaveTimerRef.current !== null) {
+      window.clearTimeout(autosaveTimerRef.current)
+    }
+
+    autosaveTimerRef.current = window.setTimeout(async () => {
+      const dataToSave = latestWorkspaceRef.current
+
+      if (!dataToSave || !projectDirectory) {
+        return
+      }
+
+      try {
+        await saveWorkspace(projectDirectory, dataToSave)
+
+        if (latestWorkspaceRef.current === dataToSave) {
+          setWorkspaceDirty(false)
+        }
+      } catch (error) {
+        console.error('Error en autosave:', error)
+      } finally {
+        autosaveTimerRef.current = null
+      }
+    }, 450)
 
     return () => {
-      if (
-        autosaveTimerRef.current !==
-        null
-      ) {
-        window.clearTimeout(
-          autosaveTimerRef.current,
-        )
+      if (autosaveTimerRef.current !== null) {
+        window.clearTimeout(autosaveTimerRef.current)
 
-        autosaveTimerRef.current =
-          null
+        autosaveTimerRef.current = null
       }
     }
-  }, [
-    workspace,
-    projectDirectory,
-    workspaceDirty,
-  ])
+  }, [workspace, projectDirectory, workspaceDirty])
 
-  const closeAllEditors =
-    () => {
-      setNoteDraft(
-        null,
-      )
+  const closeAllEditors = () => {
+    setNoteDraft(null)
 
-      // The note selection survives
-      // closing editors: it is what
-      // Ctrl+C copies and what the
-      // board highlight shows. Click
-      // the empty board to deselect.
-      setConfirmingDelete(
-        false,
-      )
+    // The note selection survives
+    // closing editors: it is what
+    // Ctrl+C copies and what the
+    // board highlight shows. Click
+    // the empty board to deselect.
+    setConfirmingDelete(false)
 
-      setWorkspaceEditorOpen(
-        false,
-      )
+    setWorkspaceEditorOpen(false)
 
-      setDocumentationEditorOpen(
-        false,
-      )
+    setDocumentationEditorOpen(false)
 
-      setAiContextPanelOpen(
-        false,
-      )
-    }
+    setAiContextPanelOpen(false)
+  }
 
   // Multi-project: one project on
   // screen at a time. The current
@@ -1330,126 +807,67 @@ function App({
   // restored instantly from the
   // header switcher without a
   // disk round-trip.
-  const [
-    backgroundProjects,
-    setBackgroundProjects,
-  ] = useState<
-    BackgroundProject[]
-  >([])
+  const [backgroundProjects, setBackgroundProjects] = useState<BackgroundProject[]>([])
 
-  const stashCurrentProject =
-    (): boolean => {
-      if (
-        !workspace ||
-        !projectDirectory
-      ) {
-        return false
-      }
-
-      const data =
-        latestWorkspaceRef.current ??
-        workspace
-
-      void saveWorkspace(
-        projectDirectory,
-        data,
-      )
-
-      setBackgroundProjects(
-        (current) => [
-          ...current,
-          {
-            directoryHandle:
-              projectDirectory,
-            name:
-              projectDirectory.name.toUpperCase(),
-            workspace:
-              structuredClone(
-                data,
-              ),
-            dirty: false,
-          },
-        ],
-      )
-
-      return true
+  const stashCurrentProject = (): boolean => {
+    if (!workspace || !projectDirectory) {
+      return false
     }
 
+    const data = latestWorkspaceRef.current ?? workspace
+
+    void saveWorkspace(projectDirectory, data)
+
+    setBackgroundProjects((current) => [
+      ...current,
+      {
+        directoryHandle: projectDirectory,
+        name: projectDirectory.name.toUpperCase(),
+        workspace: structuredClone(data),
+        dirty: false,
+      },
+    ])
+
+    return true
+  }
+
   const openProject = async () => {
-    setLoading(
-      true,
-    )
+    setLoading(true)
 
     try {
-      const directoryHandle =
-        await window.showDirectoryPicker()
+      const directoryHandle = await window.showDirectoryPicker()
 
-      if (
-        !directoryHandle
-      ) {
+      if (!directoryHandle) {
         return
       }
 
       // Drop any stale stash of this
       // directory so the same project
       // can never appear twice.
-      setBackgroundProjects(
-        (current) =>
-          current.filter(
-            (item) =>
-              item.directoryHandle
-                .name !==
-              directoryHandle.name,
-          ),
+      setBackgroundProjects((current) =>
+        current.filter((item) => item.directoryHandle.name !== directoryHandle.name),
       )
 
       stashCurrentProject()
 
-      await loadProject(
-        directoryHandle,
-      )
+      await loadProject(directoryHandle)
     } finally {
-      setLoading(
-        false,
-      )
+      setLoading(false)
     }
   }
 
-  const switchToProject = async (
-    project: BackgroundProject,
-  ) => {
-    if (
-      !stashCurrentProject()
-    ) {
+  const switchToProject = async (project: BackgroundProject) => {
+    if (!stashCurrentProject()) {
       return
     }
 
-    setBackgroundProjects(
-      (current) =>
-        current.filter(
-          (item) =>
-            item !==
-            project,
-        ),
-    )
+    setBackgroundProjects((current) => current.filter((item) => item !== project))
 
-    await loadProject(
-      project.directoryHandle,
-      project.workspace,
-    )
+    await loadProject(project.directoryHandle, project.workspace)
   }
 
-  const removeBackgroundProject = (
-    project: BackgroundProject,
-  ) => {
-    setBackgroundProjects(
-      (current) =>
-        current.filter(
-          (item) =>
-            item !==
-            project,
-        ),
-    )
+  const removeBackgroundProject = (project: BackgroundProject) => {
+    setBackgroundProjects((current) => current.filter((item) => item !== project))
   }
 
   /** Ctrl+Tab: cycle to the next
@@ -1457,9 +875,7 @@ function App({
    * backwards), stashing the
    * current one like the header
    * switcher does. */
-  const cycleProject = (
-    offset: number,
-  ) => {
+  const cycleProject = (offset: number) => {
     if (!projectDirectory || !workspace) {
       return
     }
@@ -1467,30 +883,17 @@ function App({
     const entries = [
       {
         handle: projectDirectory,
-        workspace:
-          latestWorkspaceRef.current ??
-          workspace,
+        workspace: latestWorkspaceRef.current ?? workspace,
       },
-      ...backgroundProjects.map(
-        (project) => ({
-          handle: project.directoryHandle,
-          workspace: project.workspace,
-        }),
-      ),
+      ...backgroundProjects.map((project) => ({
+        handle: project.directoryHandle,
+        workspace: project.workspace,
+      })),
     ]
 
-    const currentIndex =
-      entries.findIndex(
-        (entry) =>
-          entry.handle.name ===
-          projectDirectory.name,
-      )
+    const currentIndex = entries.findIndex((entry) => entry.handle.name === projectDirectory.name)
 
-    const nextIndex =
-      (currentIndex +
-        offset +
-        entries.length) %
-      entries.length
+    const nextIndex = (currentIndex + offset + entries.length) % entries.length
 
     if (nextIndex === currentIndex) {
       return
@@ -1500,29 +903,18 @@ function App({
 
     stashCurrentProject()
 
-    setBackgroundProjects(
-      (current) =>
-        current.filter(
-          (item) =>
-            item.directoryHandle
-              .name !== next.handle.name,
-        ),
+    setBackgroundProjects((current) =>
+      current.filter((item) => item.directoryHandle.name !== next.handle.name),
     )
 
-    void loadProject(
-      next.handle,
-      next.workspace,
-    )
+    void loadProject(next.handle, next.workspace)
   }
 
   /** Sets or clears the automatic
    * look of one status in the
    * workspace's status style
    * configuration. */
-  const configureStatusStyle = (
-    status: NoteStatus,
-    config: StatusStyleConfig | undefined,
-  ) => {
+  const configureStatusStyle = (status: NoteStatus, config: StatusStyleConfig | undefined) => {
     if (!workspace) {
       return
     }
@@ -1531,10 +923,7 @@ function App({
       ...workspace.statusStyles,
     }
 
-    if (
-      !config?.color &&
-      !config?.pattern
-    ) {
+    if (!config?.color && !config?.pattern) {
       delete nextStyles[status]
     } else {
       nextStyles[status] = config
@@ -1560,13 +949,9 @@ function App({
 
     const updatedWorkspace: Workspace = {
       ...workspace,
-      notes: workspace.notes.filter(
-        (note) => !ids.includes(note.id),
-      ),
+      notes: workspace.notes.filter((note) => !ids.includes(note.id)),
       connections: workspace.connections.filter(
-        (connection) =>
-          !ids.includes(connection.from) &&
-          !ids.includes(connection.to),
+        (connection) => !ids.includes(connection.from) && !ids.includes(connection.to),
       ),
     }
 
@@ -1589,35 +974,23 @@ function App({
       return
     }
 
-    const highestZIndex =
-      Math.max(
-        ...workspace.notes.map(
-          (note) => note.zIndex ?? 0,
-        ),
-        0,
-      )
+    const highestZIndex = Math.max(...workspace.notes.map((note) => note.zIndex ?? 0), 0)
 
-    const duplicates: Note[] = targets.map(
-      (note) => ({
-        ...note,
-        id: crypto.randomUUID(),
-        title: `${
-          note.title.trim() || t('untitled')
-        } (${t('copySuffix')})`,
-        x: note.x + 36,
-        y: note.y + 36,
-        zIndex: highestZIndex + 1,
-      }),
-    )
+    const duplicates: Note[] = targets.map((note) => ({
+      ...note,
+      id: crypto.randomUUID(),
+      title: `${note.title.trim() || t('untitled')} (${t('copySuffix')})`,
+      x: note.x + 36,
+      y: note.y + 36,
+      zIndex: highestZIndex + 1,
+    }))
 
     setWorkspaceState({
       ...workspace,
       notes: [...workspace.notes, ...duplicates],
     })
 
-    setSelectedNoteIds(
-      duplicates.map((note) => note.id),
-    )
+    setSelectedNoteIds(duplicates.map((note) => note.id))
   }
 
   /** Copies every selected note
@@ -1634,21 +1007,16 @@ function App({
 
     const ids = targets.map((note) => note.id)
 
-    const relatedConnections =
-      workspace.connections.filter(
-        (connection) =>
-          ids.includes(connection.from) &&
-          ids.includes(connection.to),
-      )
+    const relatedConnections = workspace.connections.filter(
+      (connection) => ids.includes(connection.from) && ids.includes(connection.to),
+    )
 
     setProjectClipboard(
       {
         ...targets[0],
-        title: `${
-          targets[0].title.trim() || t('untitled')
-        } (${t('copySuffix')})`,
-        filePaths: [...targets[0].filePaths ?? []],
-        images: [...targets[0].images ?? []],
+        title: `${targets[0].title.trim() || t('untitled')} (${t('copySuffix')})`,
+        filePaths: [...(targets[0].filePaths ?? [])],
+        images: [...(targets[0].images ?? [])],
         notes: structuredClone(targets),
         connections: structuredClone(relatedConnections),
       } as Note,
@@ -1657,53 +1025,29 @@ function App({
   }
 
   const closeProject = async () => {
-    if (
-      workspace &&
-      projectDirectory
-    ) {
-      await saveWorkspace(
-        projectDirectory,
-        latestWorkspaceRef.current ??
-          workspace,
-      )
+    if (workspace && projectDirectory) {
+      await saveWorkspace(projectDirectory, latestWorkspaceRef.current ?? workspace)
     }
 
-    if (
-      backgroundProjects.length >
-      0
-    ) {
+    if (backgroundProjects.length > 0) {
       // Close the current project
       // and show the first stashed
       // one — without re-stashing
       // the project being closed.
-      const next =
-        backgroundProjects[0]
+      const next = backgroundProjects[0]
 
-      setBackgroundProjects(
-        (current) =>
-          current.filter(
-            (item) =>
-              item !==
-              next,
-          ),
-      )
+      setBackgroundProjects((current) => current.filter((item) => item !== next))
 
-      await loadProject(
-        next.directoryHandle,
-        next.workspace,
-      )
+      await loadProject(next.directoryHandle, next.workspace)
 
       return
     }
 
-    setBackgroundProjects(
-      [],
-    )
+    setBackgroundProjects([])
 
     setWorkspace(null)
 
-    latestWorkspaceRef.current =
-      null
+    latestWorkspaceRef.current = null
 
     setProjectDirectory(null)
 
@@ -1721,11 +1065,9 @@ function App({
 
     historyFutureRef.current = []
 
-    noteEditorOriginalRef.current =
-      null
+    noteEditorOriginalRef.current = null
 
-    noteEditorHistoryRecordedRef.current =
-      false
+    noteEditorHistoryRecordedRef.current = false
   }
 
   const loadProject = async (
@@ -1733,1228 +1075,658 @@ function App({
     stashOverride?: Workspace,
   ) => {
     try {
-      setLoading(
-        true,
-      )
+      setLoading(true)
 
-      const directoryHandle =
-        handleOverride
+      const directoryHandle = handleOverride
 
-      if (
-        !directoryHandle
-      ) {
+      if (!directoryHandle) {
         return
       }
 
-      setProjectDirectory(
-        directoryHandle,
-      )
+      setProjectDirectory(directoryHandle)
 
-      setDirectoryTree(
-        null,
-      )
+      setDirectoryTree(null)
 
-      setDirectorySearchTree(
-        null,
-      )
+      setDirectorySearchTree(null)
 
-      setDirectorySearch(
-        '',
-      )
+      setDirectorySearch('')
 
-      setSelectedFilePath(
-        null,
-      )
+      setSelectedFilePath(null)
 
-      setSelectedFileInfo(
-        null,
-      )
+      setSelectedFileInfo(null)
 
-      setExpandedDirectories(
-        new Set(),
-      )
+      setExpandedDirectories(new Set())
 
-      const brutoDirectory =
-        await directoryHandle.getDirectoryHandle(
-          '.bruto',
-          {
-            create: true,
-          },
-        )
+      const brutoDirectory = await directoryHandle.getDirectoryHandle('.bruto', {
+        create: true,
+      })
 
       let workspaceData: Workspace
 
       if (stashOverride) {
-        workspaceData =
-          structuredClone(
-            stashOverride,
-          )
+        workspaceData = structuredClone(stashOverride)
       } else {
         try {
-        const workspaceFile =
-          await brutoDirectory.getFileHandle(
-            'workspace.json',
-          )
+          const workspaceFile = await brutoDirectory.getFileHandle('workspace.json')
 
-        const file =
-          await workspaceFile.getFile()
+          const file = await workspaceFile.getFile()
 
-        const text =
-          await file.text()
+          const text = await file.text()
 
-        const parsedWorkspace: Workspace =
-          JSON.parse(text)
+          const parsedWorkspace: Workspace = JSON.parse(text)
 
-        const notesWithDefaults =
-          parsedWorkspace.notes.map(
-            (
-              note,
-              index,
-            ) =>            ({
-              ...note,
-              zIndex:
-                note.zIndex ??
-                index + 1,
-              filePaths:
-                note.filePaths ??
-                [],
-              images:
-                note.images ??
-                [],
-              aiResponse:
-                note.aiResponse ??
-                undefined,
-              colorTheme:
-                note.colorTheme ??
-                'concrete',
-              pattern:
-                note.pattern ??
-                'raw',
-              status:
-                note.status ??
-                undefined,
-            }),
-          )
+          const notesWithDefaults = parsedWorkspace.notes.map((note, index) => ({
+            ...note,
+            zIndex: note.zIndex ?? index + 1,
+            filePaths: note.filePaths ?? [],
+            images: note.images ?? [],
+            aiResponse: note.aiResponse ?? undefined,
+            colorTheme: note.colorTheme ?? 'concrete',
+            pattern: note.pattern ?? 'raw',
+            status: note.status ?? undefined,
+          }))
 
-        workspaceData = {
-          ...parsedWorkspace,
-          version:
-            parsedWorkspace.version ??
-            2,
-          aiContext:
-            parsedWorkspace.aiContext ??
-            '',
-          documentation:
-            parsedWorkspace.documentation ??
-            [],
-          connections:
-            parsedWorkspace.connections ??
-            [],
-          notes:
-            notesWithDefaults,
+          workspaceData = {
+            ...parsedWorkspace,
+            version: parsedWorkspace.version ?? 2,
+            aiContext: parsedWorkspace.aiContext ?? '',
+            documentation: parsedWorkspace.documentation ?? [],
+            connections: parsedWorkspace.connections ?? [],
+            notes: notesWithDefaults,
+          }
+        } catch {
+          workspaceData = {
+            version: 2,
+            title: directoryHandle.name.toUpperCase(),
+            description: '',
+            aiContext: '',
+            documentation: [],
+            notes: [],
+            connections: [],
+          }
+
+          await saveWorkspace(directoryHandle, workspaceData)
         }
-      } catch {
-        workspaceData = {
-          version: 2,
-          title:
-            directoryHandle.name.toUpperCase(),
-          description: '',
-          aiContext: '',
-          documentation: [],
-          notes: [],
-          connections: [],
-        }
-
-        await saveWorkspace(
-          directoryHandle,
-          workspaceData,
-        )
-      }
       }
 
-      setProjectName(
-        directoryHandle.name.toUpperCase(),
-      )
+      setProjectName(directoryHandle.name.toUpperCase())
 
-      setWorkspace(
-        workspaceData,
-      )
+      setWorkspace(workspaceData)
 
-      latestWorkspaceRef.current =
-        workspaceData
+      latestWorkspaceRef.current = workspaceData
 
-      setWorkspaceDirty(
-        false,
-      )
+      setWorkspaceDirty(false)
 
       historyPastRef.current = []
       historyFutureRef.current = []
-      noteEditorOriginalRef.current =
-        null
-      noteEditorHistoryRecordedRef.current =
-        false
+      noteEditorOriginalRef.current = null
+      noteEditorHistoryRecordedRef.current = false
 
-      setSelectedNoteId(
-        null,
-      )
+      setSelectedNoteId(null)
 
-      setSelectedConnectionId(
-        null,
-      )
+      setSelectedConnectionId(null)
 
-      setConnectingNoteId(
-        null,
-      )
+      setConnectingNoteId(null)
     } catch (error) {
-      console.error(
-        'Error:',
-        error,
-      )
+      console.error('Error:', error)
     } finally {
-      setLoading(
-        false,
-      )
+      setLoading(false)
     }
   }
 
   const createNote = async () => {
-    if (
-      !workspace ||
-      !projectDirectory
-    ) {
+    if (!workspace || !projectDirectory) {
       return
     }
 
     try {
-      setCreatingNote(
-        true,
-      )
+      setCreatingNote(true)
 
-      const highestZIndex =
-        Math.max(
-          ...workspace.notes.map(
-            (note) =>
-              note.zIndex ??
-              0,
-          ),
-          0,
-        )
+      const highestZIndex = Math.max(...workspace.notes.map((note) => note.zIndex ?? 0), 0)
 
       const note: Note = {
         id: crypto.randomUUID(),
-        title:
-          t(
-            'newNoteTitle',
-          ),
+        title: t('newNoteTitle'),
         description: '',
         filePaths: [],
         webUrl: '',
         images: [],
-        x:
-          200 +
-          workspace.notes
-            .length *
-            25,
-        y:
-          150 +
-          workspace.notes
-            .length *
-            25,
-        zIndex:
-          highestZIndex +
-          1,
-        colorTheme:
-          'concrete',
-        pattern:
-          'raw',
+        x: 200 + workspace.notes.length * 25,
+        y: 150 + workspace.notes.length * 25,
+        zIndex: highestZIndex + 1,
+        colorTheme: 'concrete',
+        pattern: 'raw',
         status: 'idea',
       }
 
-      const updatedWorkspace: Workspace =
-        {
-          ...workspace,
-          notes: [
-            ...workspace.notes,
-            note,
-          ],
-        }
+      const updatedWorkspace: Workspace = {
+        ...workspace,
+        notes: [...workspace.notes, note],
+      }
 
-      setWorkspaceState(
-        updatedWorkspace,
-      )
+      setWorkspaceState(updatedWorkspace)
 
-      openNote(
-        note,
-        true,
-      )
+      openNote(note, true)
     } catch (error) {
-      console.error(
-        'Error creando nota:',
-        error,
-      )
+      console.error('Error creando nota:', error)
     } finally {
-      setCreatingNote(
-        false,
-      )
+      setCreatingNote(false)
     }
   }
 
-  const handleNoteMiddleClick = (
-    event: React.MouseEvent<HTMLElement>,
-    note: Note,
-  ) => {
+  const handleNoteMiddleClick = (event: React.MouseEvent<HTMLElement>, note: Note) => {
     event.preventDefault()
     event.stopPropagation()
 
-    setSelectedConnectionId(
-      null,
+    setSelectedConnectionId(null)
+
+    if (!connectingNoteId) {
+      setConnectingNoteId(note.id)
+
+      return
+    }
+
+    if (connectingNoteId === note.id) {
+      setConnectingNoteId(null)
+
+      return
+    }
+
+    if (!workspace) {
+      return
+    }
+
+    const existingConnection = workspace.connections.find(
+      (connection) => connection.from === connectingNoteId && connection.to === note.id,
     )
 
-    if (
-      !connectingNoteId
-    ) {
-      setConnectingNoteId(
-        note.id,
-      )
+    if (existingConnection) {
+      setConnectingNoteId(null)
 
       return
     }
 
-    if (
-      connectingNoteId ===
-      note.id
-    ) {
-      setConnectingNoteId(
-        null,
-      )
-
-      return
+    const newConnection: Connection = {
+      id: crypto.randomUUID(),
+      from: connectingNoteId,
+      to: note.id,
     }
 
-    if (
-      !workspace
-    ) {
-      return
+    const updatedWorkspace: Workspace = {
+      ...workspace,
+      connections: [...workspace.connections, newConnection],
     }
 
-    const existingConnection =
-      workspace.connections.find(
-        (connection) =>
-          connection.from ===
-            connectingNoteId &&
-          connection.to ===
-            note.id,
-      )
+    setWorkspaceState(updatedWorkspace)
 
-    if (
-      existingConnection
-    ) {
-      setConnectingNoteId(
-        null,
-      )
-
-      return
-    }
-
-    const newConnection: Connection =
-      {
-        id: crypto.randomUUID(),
-        from:
-          connectingNoteId,
-        to: note.id,
-      }
-
-    const updatedWorkspace: Workspace =
-      {
-        ...workspace,
-        connections: [
-          ...workspace.connections,
-          newConnection,
-        ],
-      }
-
-    setWorkspaceState(
-      updatedWorkspace,
-    )
-
-    setConnectingNoteId(
-      null,
-    )
+    setConnectingNoteId(null)
   }
 
-  const createDirectoryRootNode =
-    (
-      directoryHandle: FileSystemDirectoryHandle,
-      children: FileTreeNode[],
-    ): FileTreeNode => ({
-      name:
-        projectName?.toUpperCase() ||
-        directoryHandle.name.toUpperCase() ||
-        t(
-          'directoryRoot',
-        ),
-      path: '',
-      kind: 'directory',
-      handle:
-        directoryHandle,
-      children,
-      loaded: true,
-    })
+  const createDirectoryRootNode = (
+    directoryHandle: FileSystemDirectoryHandle,
+    children: FileTreeNode[],
+  ): FileTreeNode => ({
+    name: projectName?.toUpperCase() || directoryHandle.name.toUpperCase() || t('directoryRoot'),
+    path: '',
+    kind: 'directory',
+    handle: directoryHandle,
+    children,
+    loaded: true,
+  })
 
-  const loadRootDirectory =
-    async (
-      directoryHandle: FileSystemDirectoryHandle,
-    ) => {
-      try {
-        setDirectoryLoading(
-          true,
-        )
+  const loadRootDirectory = async (directoryHandle: FileSystemDirectoryHandle) => {
+    try {
+      setDirectoryLoading(true)
 
-        const children =
-          await readDirectoryChildren(
-            directoryHandle,
-          )
+      const children = await readDirectoryChildren(directoryHandle)
 
-        const root =
-          createDirectoryRootNode(
-            directoryHandle,
-            children,
-          )
+      const root = createDirectoryRootNode(directoryHandle, children)
 
-        setDirectoryTree(
-          root,
-        )
+      setDirectoryTree(root)
 
-        setExpandedDirectories(
-          new Set(['']),
-        )
-      } catch (error) {
-        console.error(
-          'Error leyendo el directorio:',
-          error,
-        )
-      } finally {
-        setDirectoryLoading(
-          false,
-        )
-      }
+      setExpandedDirectories(new Set(['']))
+    } catch (error) {
+      console.error('Error leyendo el directorio:', error)
+    } finally {
+      setDirectoryLoading(false)
+    }
+  }
+
+  const loadDirectoryNode = async (node: FileTreeNode) => {
+    if (node.kind !== 'directory' || !node.handle) {
+      return
     }
 
-  const loadDirectoryNode =
-    async (
-      node: FileTreeNode,
-    ) => {
-      if (
-        node.kind !==
-          'directory' ||
-        !node.handle
-      ) {
-        return
-      }
+    if (node.loaded) {
+      setExpandedDirectories((previous) => {
+        const next = new Set(previous)
 
-      if (
-        node.loaded
-      ) {
-        setExpandedDirectories(
-          (
-            previous,
-          ) => {
-            const next =
-              new Set(
-                previous,
-              )
+        if (next.has(node.path)) {
+          next.delete(node.path)
+        } else {
+          next.add(node.path)
+        }
 
-            if (
-              next.has(
-                node.path,
-              )
-            ) {
-              next.delete(
-                node.path,
-              )
-            } else {
-              next.add(
-                node.path,
-              )
-            }
-
-            return next
-          },
-        )
-
-        return
-      }
-
-      try {
-        setDirectoryLoadingPath(
-          node.path,
-        )
-
-        const children =
-          await readDirectoryChildren(
-            node.handle as FileSystemDirectoryHandle,
-            node.path,
-          )
-
-        setDirectoryTree(
-          (
-            previous,
-          ) =>
-            previous
-              ? updateDirectoryTreeNode(
-                  previous,
-                  node.path,
-                  children,
-                )
-              : previous,
-        )
-
-        setExpandedDirectories(
-          (
-            previous,
-          ) => {
-            const next =
-              new Set(
-                previous,
-              )
-
-            next.add(
-              node.path,
-            )
-
-            return next
-          },
-        )
-      } catch (error) {
-        console.error(
-          'Error leyendo directorio:',
-          error,
-        )
-      } finally {
-        setDirectoryLoadingPath(
-          null,
-        )
-      }
-    }
-
-  useEffect(() => {
-    if (
-      !directoryPanelOpen ||
-      !projectDirectory ||
-      !directorySearch.trim()
-    ) {
-      setDirectorySearchTree(
-        null,
-      )
-
-      setDirectorySearching(
-        false,
-      )
+        return next
+      })
 
       return
     }
 
-    let cancelled =
-      false
+    try {
+      setDirectoryLoadingPath(node.path)
 
-    const timeout =
-      window.setTimeout(
-        async () => {
-          try {
-            setDirectorySearching(
-              true,
-            )
-
-            const query =
-              directorySearch
-                .trim()
-                .toLowerCase()
-
-            const children =
-              await searchDirectoryRecursively(
-                projectDirectory,
-                '',
-                query,
-              )
-
-            if (
-              cancelled
-            ) {
-              return
-            }
-
-            setDirectorySearchTree(
-              createDirectoryRootNode(
-                projectDirectory,
-                children,
-              ),
-            )
-          } catch (error) {
-            console.error(
-              'Error buscando archivos:',
-              error,
-            )
-
-            if (
-              !cancelled
-            ) {
-              setDirectorySearchTree(
-                createDirectoryRootNode(
-                  projectDirectory,
-                  [],
-                ),
-              )
-            }
-          } finally {
-            if (
-              !cancelled
-            ) {
-              setDirectorySearching(
-                false,
-              )
-            }
-          }
-        },
-        180,
+      const children = await readDirectoryChildren(
+        node.handle as FileSystemDirectoryHandle,
+        node.path,
       )
+
+      setDirectoryTree((previous) =>
+        previous ? updateDirectoryTreeNode(previous, node.path, children) : previous,
+      )
+
+      setExpandedDirectories((previous) => {
+        const next = new Set(previous)
+
+        next.add(node.path)
+
+        return next
+      })
+    } catch (error) {
+      console.error('Error leyendo directorio:', error)
+    } finally {
+      setDirectoryLoadingPath(null)
+    }
+  }
+
+  useEffect(() => {
+    if (!directoryPanelOpen || !projectDirectory || !directorySearch.trim()) {
+      setDirectorySearchTree(null)
+
+      setDirectorySearching(false)
+
+      return
+    }
+
+    let cancelled = false
+
+    const timeout = window.setTimeout(async () => {
+      try {
+        setDirectorySearching(true)
+
+        const query = directorySearch.trim().toLowerCase()
+
+        const children = await searchDirectoryRecursively(projectDirectory, '', query)
+
+        if (cancelled) {
+          return
+        }
+
+        setDirectorySearchTree(createDirectoryRootNode(projectDirectory, children))
+      } catch (error) {
+        console.error('Error buscando archivos:', error)
+
+        if (!cancelled) {
+          setDirectorySearchTree(createDirectoryRootNode(projectDirectory, []))
+        }
+      } finally {
+        if (!cancelled) {
+          setDirectorySearching(false)
+        }
+      }
+    }, 180)
 
     return () => {
       cancelled = true
 
-      window.clearTimeout(
-        timeout,
-      )
+      window.clearTimeout(timeout)
     }
-  }, [
-    directoryPanelOpen,
-    projectDirectory,
-    directorySearch,
-    directoryRefreshKey,
-  ])
+  }, [directoryPanelOpen, projectDirectory, directorySearch, directoryRefreshKey])
 
-  const refreshDirectory =
-    async () => {
-      if (
-        !projectDirectory
-      ) {
-        return
-      }
-
-      setSelectedFilePath(
-        null,
-      )
-
-      setSelectedFileInfo(
-        null,
-      )
-
-      setDirectorySearchTree(
-        null,
-      )
-
-      setDirectoryRefreshKey(
-        (
-          value,
-        ) => value + 1,
-      )
-
-      await loadRootDirectory(
-        projectDirectory,
-      )
+  const refreshDirectory = async () => {
+    if (!projectDirectory) {
+      return
     }
 
-  const openStatusStylePanel =
-    () => {
-      setHelpOpen(false)
+    setSelectedFilePath(null)
 
-      closeNoteEditor()
+    setSelectedFileInfo(null)
 
-      setWorkspaceEditorOpen(
-        false,
-      )
+    setDirectorySearchTree(null)
 
-      setDocumentationEditorOpen(
-        false,
-      )
+    setDirectoryRefreshKey((value) => value + 1)
 
-      setAiContextPanelOpen(
-        false,
-      )
+    await loadRootDirectory(projectDirectory)
+  }
 
-      setDirectoryPanelOpen(
-        false,
-      )
+  const openStatusStylePanel = () => {
+    setHelpOpen(false)
 
-      setStatusStylePanelOpen(
-        true,
-      )
+    closeNoteEditor()
+
+    setWorkspaceEditorOpen(false)
+
+    setDocumentationEditorOpen(false)
+
+    setAiContextPanelOpen(false)
+
+    setDirectoryPanelOpen(false)
+
+    setStatusStylePanelOpen(true)
+  }
+
+  const openDirectoryPanel = async () => {
+    if (!projectDirectory) {
+      return
     }
 
-  const openDirectoryPanel =
-    async () => {
-      if (
-        !projectDirectory
-      ) {
-        return
-      }
+    setHelpOpen(false)
 
-      setHelpOpen(
-        false,
-      )
+    closeNoteEditor()
 
-      closeNoteEditor()
+    setWorkspaceEditorOpen(false)
 
-      setWorkspaceEditorOpen(
-        false,
-      )
+    setDocumentationEditorOpen(false)
 
-      setDocumentationEditorOpen(
-        false,
-      )
+    setAiContextPanelOpen(false)
 
-      setAiContextPanelOpen(
-        false,
-      )
+    setSelectedConnectionId(null)
 
-      setSelectedConnectionId(
-        null,
-      )
+    setConnectingNoteId(null)
 
-      setConnectingNoteId(
-        null,
-      )
+    setDirectoryPanelOpen(true)
 
-      setDirectoryPanelOpen(
-        true,
-      )
+    if (!directoryTree) {
+      await loadRootDirectory(projectDirectory)
+    }
+  }
 
-      if (
-        !directoryTree
-      ) {
-        await loadRootDirectory(
-          projectDirectory,
-        )
-      }
+  const closeDirectoryPanel = () => {
+    setDirectoryPanelOpen(false)
+
+    setDirectorySearch('')
+
+    setDirectorySearchTree(null)
+  }
+
+  const selectFileFromTree = async (node: FileTreeNode) => {
+    if (node.kind !== 'file') {
+      return
     }
 
-  const closeDirectoryPanel =
-    () => {
-      setDirectoryPanelOpen(
-        false,
-      )
+    setSelectedFilePath(node.path)
 
-      setDirectorySearch(
-        '',
-      )
+    setSelectedFileInfo(null)
 
-      setDirectorySearchTree(
-        null,
-      )
+    try {
+      const file = await (node.handle as FileSystemFileHandle).getFile()
+
+      setSelectedFileInfo({
+        name: file.name,
+        path: node.path,
+        size: file.size,
+        lastModified: file.lastModified,
+        type: file.type || 'application/octet-stream',
+      })
+    } catch (error) {
+      console.error('Error leyendo información del archivo:', error)
     }
+  }
 
-  const selectFileFromTree =
-    async (
-      node: FileTreeNode,
-    ) => {
-      if (
-        node.kind !==
-        'file'
-      ) {
-        return
-      }
-
-      setSelectedFilePath(
-        node.path,
-      )
-
-      setSelectedFileInfo(
-        null,
-      )
-
-      try {
-        const file =
-          await (
-            node.handle as FileSystemFileHandle
-          ).getFile()
-
-        setSelectedFileInfo({
-          name:
-            file.name,
-          path:
-            node.path,
-          size:
-            file.size,
-          lastModified:
-            file.lastModified,
-          type:
-            file.type ||
-            'application/octet-stream',
-        })
-      } catch (error) {
-        console.error(
-          'Error leyendo información del archivo:',
-          error,
-        )
-      }
-    }
-
-  const startDraggingNote = (
-    event: React.MouseEvent<HTMLElement>,
-    note: Note,
-  ) => {
+  const startDraggingNote = (event: React.MouseEvent<HTMLElement>, note: Note) => {
     event.stopPropagation()
 
-    if (
-      event.button === 1
-    ) {
+    if (event.button === 1) {
       event.preventDefault()
 
-      handleNoteMiddleClick(
-        event,
-        note,
-      )
+      handleNoteMiddleClick(event, note)
 
       return
     }
 
-    if (
-      event.button !== 0
-    ) {
+    if (event.button !== 0) {
       return
     }
 
-    setSelectedConnectionId(
-      null,
-    )
+    setSelectedConnectionId(null)
 
-    const canvas =
-      canvasRef.current
+    const canvas = canvasRef.current
 
-    if (
-      !canvas ||
-      !workspace
-    ) {
+    if (!canvas || !workspace) {
       return
     }
 
-    const canvasRect =
-      canvas.getBoundingClientRect()
+    const canvasRect = canvas.getBoundingClientRect()
 
-    const pointerX =
-      (event.clientX -
-        canvasRect.left -
-        pan.x) /
-      zoom
+    const pointerX = (event.clientX - canvasRect.left - pan.x) / zoom
 
-    const pointerY =
-      (event.clientY -
-        canvasRect.top -
-        pan.y) /
-      zoom
+    const pointerY = (event.clientY - canvasRect.top - pan.y) / zoom
 
-    const highestZIndex =
-      Math.max(
-        ...workspace.notes.map(
-          (item) =>
-            item.zIndex ??
-            0,
-        ),
-        0,
-      )
+    const highestZIndex = Math.max(...workspace.notes.map((item) => item.zIndex ?? 0), 0)
 
-    dragHistorySnapshotRef.current =
-      cloneWorkspace(
-        workspace,
-      )
+    dragHistorySnapshotRef.current = cloneWorkspace(workspace)
 
-    dragHistoryCommittedRef.current =
-      false
+    dragHistoryCommittedRef.current = false
 
     // A group drag: when the grabbed
     // note belongs to the active
     // multi-selection, every selected
     // note moves together; otherwise
     // only the grabbed note moves.
-    const draggingIds =
-      selectedNoteIds.includes(note.id)
-        ? selectedNoteIds
-        : [note.id]
+    const draggingIds = selectedNoteIds.includes(note.id) ? selectedNoteIds : [note.id]
 
     dragStartPointerRef.current = {
       x: pointerX,
       y: pointerY,
     }
 
-    dragStartPositionsRef.current =
-      new Map(
-        workspace.notes
-          .filter((item) =>
-            draggingIds.includes(
-              item.id,
-            ),
-          )
-          .map((item) => [
-            item.id,
-            {
-              x: item.x,
-              y: item.y,
-            },
-          ]),
-      )
-
+    dragStartPositionsRef.current = new Map(
+      workspace.notes
+        .filter((item) => draggingIds.includes(item.id))
+        .map((item) => [
+          item.id,
+          {
+            x: item.x,
+            y: item.y,
+          },
+        ]),
+    )
 
     // Raise the whole group above
     // everything else, keeping their
     // relative stacking order.
-    const updatedWorkspace: Workspace =
-      {
-        ...workspace,
-        notes:
-          workspace.notes.map(
-            (item) => {
-              const groupIndex =
-                draggingIds.indexOf(
-                  item.id,
-                )
+    const updatedWorkspace: Workspace = {
+      ...workspace,
+      notes: workspace.notes.map((item) => {
+        const groupIndex = draggingIds.indexOf(item.id)
 
-              if (
-                groupIndex ===
-                -1
-              ) {
-                return item
-              }
+        if (groupIndex === -1) {
+          return item
+        }
 
-              return {
-                ...item,
-                zIndex:
-                  highestZIndex +
-                  1 +
-                  groupIndex,
-              }
-            },
-          ),
-      }
+        return {
+          ...item,
+          zIndex: highestZIndex + 1 + groupIndex,
+        }
+      }),
+    }
 
-    replaceWorkspaceState(
-      updatedWorkspace,
-    )
+    replaceWorkspaceState(updatedWorkspace)
 
-    setDraggingNoteId(
-      note.id,
-    )
+    setDraggingNoteId(note.id)
 
-    setHasDraggedNote(
-      false,
-    )
+    setHasDraggedNote(false)
 
-    dragThresholdPassedRef.current =
-      false
+    dragThresholdPassedRef.current = false
   }
 
-  const handleCanvasMouseMove = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
+  const handleCanvasMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (panning) {
       setPan({
-        x:
-          event.clientX -
-          panStart.x,
-        y:
-          event.clientY -
-          panStart.y,
+        x: event.clientX - panStart.x,
+        y: event.clientY - panStart.y,
       })
 
       return
     }
 
-    if (
-      !draggingNoteId ||
-      !workspace
-    ) {
+    if (!draggingNoteId || !workspace) {
       return
     }
 
-    const canvasRect =
-      event.currentTarget.getBoundingClientRect()
+    const canvasRect = event.currentTarget.getBoundingClientRect()
 
-    const pointerX =
-      (event.clientX -
-        canvasRect.left -
-        pan.x) /
-      zoom
+    const pointerX = (event.clientX - canvasRect.left - pan.x) / zoom
 
-    const pointerY =
-      (event.clientY -
-        canvasRect.top -
-        pan.y) /
-      zoom
+    const pointerY = (event.clientY - canvasRect.top - pan.y) / zoom
 
-    const deltaX =
-      pointerX -
-      dragStartPointerRef.current.x
+    const deltaX = pointerX - dragStartPointerRef.current.x
 
-    const deltaY =
-      pointerY -
-      dragStartPointerRef.current.y
+    const deltaY = pointerY - dragStartPointerRef.current.y
 
     // Below the threshold this is
     // still the click part of the
     // gesture: nothing moves and
     // the following click opens
     // the editor as expected.
-    if (
-      !dragThresholdPassedRef.current
-    ) {
-      if (
-        Math.hypot(
-          deltaX,
-          deltaY,
-        ) < 4
-      ) {
+    if (!dragThresholdPassedRef.current) {
+      if (Math.hypot(deltaX, deltaY) < 4) {
         return
       }
 
-      dragThresholdPassedRef.current =
-        true
+      dragThresholdPassedRef.current = true
     }
 
-    if (
-      !dragHistoryCommittedRef.current &&
-      dragHistorySnapshotRef.current
-    ) {
-      pushHistorySnapshot(
-        dragHistorySnapshotRef.current,
-      )
+    if (!dragHistoryCommittedRef.current && dragHistorySnapshotRef.current) {
+      pushHistorySnapshot(dragHistorySnapshotRef.current)
 
-      dragHistoryCommittedRef.current =
-        true
+      dragHistoryCommittedRef.current = true
     }
 
-    setHasDraggedNote(
-      true,
-    )
+    setHasDraggedNote(true)
 
+    const updatedWorkspace: Workspace = {
+      ...workspace,
+      notes: workspace.notes.map((note) => {
+        const start = dragStartPositionsRef.current.get(note.id)
 
-    const updatedWorkspace: Workspace =
-      {
-        ...workspace,
-        notes:
-          workspace.notes.map(
-            (
-              note,
-            ) => {
-              const start =
-                dragStartPositionsRef.current.get(
-                  note.id,
-                )
+        if (!start) {
+          return note
+        }
 
-              if (!start) {
-                return note
-              }
+        return {
+          ...note,
+          x: start.x + deltaX,
+          y: start.y + deltaY,
+        }
+      }),
+    }
 
-              return {
-                ...note,
-                x:
-                  start.x +
-                  deltaX,
-                y:
-                  start.y +
-                  deltaY,
-              }
-            },
-          ),
-      }
-
-    replaceWorkspaceState(
-      updatedWorkspace,
-    )
+    replaceWorkspaceState(updatedWorkspace)
   }
 
-  const stopDraggingNote =
-    async () => {
-      if (panning) {
-        setPanning(
-          false,
-        )
+  const stopDraggingNote = async () => {
+    if (panning) {
+      setPanning(false)
 
-        return
-      }
-
-      if (
-        !draggingNoteId
-      ) {
-        return
-      }
-
-      setDraggingNoteId(
-        null,
-      )
-
-      dragHistorySnapshotRef.current =
-        null
-
-      dragHistoryCommittedRef.current =
-        false
+      return
     }
 
-  const handleCanvasMouseDown = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
-    if (
-      event.button !== 1
-    ) {
+    if (!draggingNoteId) {
+      return
+    }
+
+    setDraggingNoteId(null)
+
+    dragHistorySnapshotRef.current = null
+
+    dragHistoryCommittedRef.current = false
+  }
+
+  const handleCanvasMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.button !== 1) {
       return
     }
 
     event.preventDefault()
 
-    setPanning(
-      true,
-    )
+    setPanning(true)
 
     setPanStart({
-      x:
-        event.clientX -
-        pan.x,
-      y:
-        event.clientY -
-        pan.y,
+      x: event.clientX - pan.x,
+      y: event.clientY - pan.y,
     })
   }
 
-  const handleCanvasWheel = (
-    event: React.WheelEvent<HTMLDivElement>,
-  ) => {
+  const handleCanvasWheel = (event: React.WheelEvent<HTMLDivElement>) => {
     event.preventDefault()
 
-    const canvasRect =
-      event.currentTarget.getBoundingClientRect()
+    const canvasRect = event.currentTarget.getBoundingClientRect()
 
-    const mouseX =
-      event.clientX -
-      canvasRect.left
+    const mouseX = event.clientX - canvasRect.left
 
-    const mouseY =
-      event.clientY -
-      canvasRect.top
+    const mouseY = event.clientY - canvasRect.top
 
-    const zoomFactor =
-      event.deltaY < 0
-        ? 1.1
-        : 0.9
+    const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9
 
-    const newZoom =
-      Math.min(
-        2,
-        Math.max(
-          0.25,
-          zoom *
-            zoomFactor,
-        ),
-      )
+    const newZoom = Math.min(2, Math.max(0.25, zoom * zoomFactor))
 
-    if (
-      newZoom ===
-      zoom
-    ) {
+    if (newZoom === zoom) {
       return
     }
 
-    const worldX =
-      (mouseX -
-        pan.x) /
-      zoom
+    const worldX = (mouseX - pan.x) / zoom
 
-    const worldY =
-      (mouseY -
-        pan.y) /
-      zoom
+    const worldY = (mouseY - pan.y) / zoom
 
     setPan({
-      x:
-        mouseX -
-        worldX *
-          newZoom,
-      y:
-        mouseY -
-        worldY *
-          newZoom,
+      x: mouseX - worldX * newZoom,
+      y: mouseY - worldY * newZoom,
     })
 
-    setZoom(
-      newZoom,
-    )
+    setZoom(newZoom)
   }
 
   const zoomIn = () => {
-    setZoom(
-      Math.min(
-        2,
-        zoom * 1.15,
-      ),
-    )
+    setZoom(Math.min(2, zoom * 1.15))
   }
 
   const zoomOut = () => {
-    setZoom(
-      Math.max(
-        0.25,
-        zoom / 1.15,
-      ),
-    )
+    setZoom(Math.max(0.25, zoom / 1.15))
   }
 
-  const resetCanvasView =
-    () => {
-      setZoom(
-        1,
-      )
+  const resetCanvasView = () => {
+    setZoom(1)
 
-      setPan({
-        x: 0,
-        y: 0,
-      })
-    }
+    setPan({
+      x: 0,
+      y: 0,
+    })
+  }
 
-  const centerOnNote = (
-    note: Note,
-  ) => {
-    const canvas =
-      canvasRef.current
+  const centerOnNote = (note: Note) => {
+    const canvas = canvasRef.current
 
     if (!canvas) {
       return
     }
 
-    const rect =
-      canvas.getBoundingClientRect()
+    const rect = canvas.getBoundingClientRect()
 
-    const noteCenterX =
-      note.x +
-      140
+    const noteCenterX = note.x + 140
 
-    const noteCenterY =
-      note.y +
-      80
+    const noteCenterY = note.y + 80
 
     setPan({
-      x:
-        rect.width / 2 -
-        noteCenterX *
-          zoom,
-      y:
-        rect.height / 2 -
-        noteCenterY *
-          zoom,
+      x: rect.width / 2 - noteCenterX * zoom,
+      y: rect.height / 2 - noteCenterY * zoom,
     })
   }
 
   /** F on a multi-selection:
    * centers the view on the middle
    * of the group's bounding box. */
-  const centerOnNotes = (
-    notes: Note[],
-  ) => {
+  const centerOnNotes = (notes: Note[]) => {
     if (notes.length === 0) {
       return
     }
@@ -2971,189 +1743,108 @@ function App({
       return
     }
 
-    const rect =
-      canvas.getBoundingClientRect()
+    const rect = canvas.getBoundingClientRect()
 
-    const minX = Math.min(
-      ...notes.map((note) => note.x),
-    )
+    const minX = Math.min(...notes.map((note) => note.x))
 
-    const maxX =
-      Math.max(
-        ...notes.map((note) => note.x),
-      ) + 280
+    const maxX = Math.max(...notes.map((note) => note.x)) + 280
 
-    const minY = Math.min(
-      ...notes.map((note) => note.y),
-    )
+    const minY = Math.min(...notes.map((note) => note.y))
 
-    const maxY =
-      Math.max(
-        ...notes.map((note) => note.y),
-      ) + 160
+    const maxY = Math.max(...notes.map((note) => note.y)) + 160
 
     setPan({
-      x:
-        rect.width / 2 -
-        ((minX + maxX) / 2) * zoom,
-      y:
-        rect.height / 2 -
-        ((minY + maxY) / 2) * zoom,
+      x: rect.width / 2 - ((minX + maxX) / 2) * zoom,
+      y: rect.height / 2 - ((minY + maxY) / 2) * zoom,
     })
   }
 
-  const openNote = (
-    note: Note,
-    selectTitle = false,
-  ) => {
-    setHelpOpen(
-      false,
-    )
+  const openNote = (note: Note, selectTitle = false) => {
+    setHelpOpen(false)
 
     closeDirectoryPanel()
 
-    setAiContextPanelOpen(
-      false,
-    )
+    setAiContextPanelOpen(false)
 
-    setWorkspaceEditorOpen(
-      false,
-    )
+    setWorkspaceEditorOpen(false)
 
-    setDocumentationEditorOpen(
-      false,
-    )
+    setDocumentationEditorOpen(false)
 
-    setSelectedNoteId(
-      note.id,
-    )
+    setSelectedNoteId(note.id)
 
-    setNoteEditorSelectTitle(
-      selectTitle,
-    )
+    setNoteEditorSelectTitle(selectTitle)
 
     setNoteDraft({
       ...note,
-      filePaths: [
-        ...(note.filePaths ??
-          []),
-      ],
-      images: [
-        ...(note.images ??
-          []),
-      ],
-      colorTheme:
-        note.colorTheme ??
-        'concrete',
-      pattern:
-        note.pattern ??
-        'raw',
+      filePaths: [...(note.filePaths ?? [])],
+      images: [...(note.images ?? [])],
+      colorTheme: note.colorTheme ?? 'concrete',
+      pattern: note.pattern ?? 'raw',
     })
 
-    noteEditorOriginalRef.current =
-      cloneWorkspace(
-        latestWorkspaceRef.current ??
-          workspace!,
-      )
+    noteEditorOriginalRef.current = cloneWorkspace(latestWorkspaceRef.current ?? workspace!)
 
-    noteEditorHistoryRecordedRef.current =
-      false
+    noteEditorHistoryRecordedRef.current = false
 
-    setConfirmingDelete(
-      false,
-    )
+    setConfirmingDelete(false)
 
-    setSelectedConnectionId(
-      null,
-    )
+    setSelectedConnectionId(null)
   }
 
-  const closeNoteEditor =
-    () => {
-      setNoteDraft(
-        null,
-      )
+  const closeNoteEditor = () => {
+    setNoteDraft(null)
 
-      setConfirmingDelete(
-        false,
-      )
+    setConfirmingDelete(false)
 
-      noteEditorOriginalRef.current =
-        null
+    noteEditorOriginalRef.current = null
 
-      noteEditorHistoryRecordedRef.current =
-        false
-    }
+    noteEditorHistoryRecordedRef.current = false
+  }
 
-  const applyNoteDraftChange = (
-    nextDraft: Note,
-  ) => {
-    setNoteDraft(
-      nextDraft,
-    )
+  const applyNoteDraftChange = (nextDraft: Note) => {
+    setNoteDraft(nextDraft)
 
     if (!workspace) {
       return
     }
 
-    if (
-      !noteEditorHistoryRecordedRef.current &&
-      noteEditorOriginalRef.current
-    ) {
-      pushHistorySnapshot(
-        noteEditorOriginalRef.current,
-      )
+    if (!noteEditorHistoryRecordedRef.current && noteEditorOriginalRef.current) {
+      pushHistorySnapshot(noteEditorOriginalRef.current)
 
-      noteEditorHistoryRecordedRef.current =
-        true
+      noteEditorHistoryRecordedRef.current = true
     }
 
-    const updatedWorkspace: Workspace =
-      {
-        ...workspace,
-        notes:
-          workspace.notes.map(
-            (
-              note,
-            ) =>
-              note.id ===
-              nextDraft.id
-                ? {
-                    // Position and z-order
-                    // always come from the
-                    // live workspace: the
-                    // draft is a snapshot
-                    // from when the editor
-                    // opened, and the note
-                    // may have been dragged
-                    // since (dragging does
-                    // not touch the draft),
-                    // so trusting the draft
-                    // here would teleport
-                    // the note back.
-                    ...nextDraft,
-                    x: note.x,
-                    y: note.y,
-                    zIndex:
-                      note.zIndex ??
-                      nextDraft.zIndex,
-                  }
-                : note,
-          ),
-      }
+    const updatedWorkspace: Workspace = {
+      ...workspace,
+      notes: workspace.notes.map((note) =>
+        note.id === nextDraft.id
+          ? {
+              // Position and z-order
+              // always come from the
+              // live workspace: the
+              // draft is a snapshot
+              // from when the editor
+              // opened, and the note
+              // may have been dragged
+              // since (dragging does
+              // not touch the draft),
+              // so trusting the draft
+              // here would teleport
+              // the note back.
+              ...nextDraft,
+              x: note.x,
+              y: note.y,
+              zIndex: note.zIndex ?? nextDraft.zIndex,
+            }
+          : note,
+      ),
+    }
 
-    replaceWorkspaceState(
-      updatedWorkspace,
-    )
+    replaceWorkspaceState(updatedWorkspace)
   }
 
   const updateNoteDraft = (
-    field:
-      | 'title'
-      | 'description'
-      | 'webUrl'
-      | 'status'
-      | 'aiResponse',
+    field: 'title' | 'description' | 'webUrl' | 'status' | 'aiResponse',
     value: string,
   ) => {
     if (!noteDraft) {
@@ -3167,10 +1858,7 @@ function App({
       // the current status.
       applyNoteDraftChange({
         ...noteDraft,
-        status:
-          value === ''
-            ? undefined
-            : (value as NoteStatus),
+        status: value === '' ? undefined : (value as NoteStatus),
       })
 
       return
@@ -3182,10 +1870,7 @@ function App({
       // section hides again.
       applyNoteDraftChange({
         ...noteDraft,
-        aiResponse:
-          value.trim()
-            ? value
-            : undefined,
+        aiResponse: value.trim() ? value : undefined,
       })
 
       return
@@ -3202,493 +1887,285 @@ function App({
       return
     }
 
-    const handleMouseMove = (
-      event: MouseEvent,
-    ) => {
-      const nextWidth =
-        sidebarResizeStart.width +
-        (event.clientX -
-          sidebarResizeStart.x)
+    const handleMouseMove = (event: MouseEvent) => {
+      const nextWidth = sidebarResizeStart.width + (event.clientX - sidebarResizeStart.x)
 
-      setSidebarWidth(
-        Math.min(
-          560,
-          Math.max(
-            190,
-            nextWidth,
-          ),
-        ),
-      )
+      setSidebarWidth(Math.min(560, Math.max(190, nextWidth)))
     }
 
     const handleMouseUp = () => {
-      setResizingSidebar(
-        false,
-      )
+      setResizingSidebar(false)
     }
 
-    window.addEventListener(
-      'mousemove',
-      handleMouseMove,
-    )
+    window.addEventListener('mousemove', handleMouseMove)
 
-    window.addEventListener(
-      'mouseup',
-      handleMouseUp,
-    )
+    window.addEventListener('mouseup', handleMouseUp)
 
     return () => {
-      window.removeEventListener(
-        'mousemove',
-        handleMouseMove,
-      )
+      window.removeEventListener('mousemove', handleMouseMove)
 
-      window.removeEventListener(
-        'mouseup',
-        handleMouseUp,
-      )
+      window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [
-    resizingSidebar,
-    sidebarResizeStart,
-  ])
+  }, [resizingSidebar, sidebarResizeStart])
 
-  const startSidebarResize = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
+  const startSidebarResize = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
 
-    setResizingSidebar(
-      true,
-    )
+    setResizingSidebar(true)
 
     setSidebarResizeStart({
-      x:
-        event.clientX,
-      width:
-        sidebarWidth,
+      x: event.clientX,
+      width: sidebarWidth,
     })
   }
 
-  const toggleSidebar =
-    () => {
-      setSidebarVisible(
-        (
-          previous,
-        ) => !previous,
-      )
-    }
+  const toggleSidebar = () => {
+    setSidebarVisible((previous) => !previous)
+  }
 
-  const startEditorResize = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
+  const startEditorResize = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
 
-    setResizingEditor(
-      true,
-    )
+    setResizingEditor(true)
 
     setResizeStart({
-      x:
-        event.clientX,
-      width:
-        editorWidth,
+      x: event.clientX,
+      width: editorWidth,
     })
   }
 
-  const openWorkspaceEditor =
-    () => {
-      if (!workspace) {
-        return
-      }
-
-      closeNoteEditor()
-      closeDirectoryPanel()
-
-      setAiContextPanelOpen(
-        false,
-      )
-
-      setDocumentationEditorOpen(
-        false,
-      )
-
-      setSelectedConnectionId(
-        null,
-      )
-
-      setConnectingNoteId(
-        null,
-      )
-
-      setWorkspaceTitleDraft(
-        workspace.title,
-      )
-
-      setWorkspaceDescriptionDraft(
-        workspace.description,
-      )
-
-      setWorkspaceEditorOpen(
-        true,
-      )
+  const openWorkspaceEditor = () => {
+    if (!workspace) {
+      return
     }
 
-  const closeWorkspaceEditor =
-    () => {
-      setWorkspaceEditorOpen(
-        false,
-      )
+    closeNoteEditor()
+    closeDirectoryPanel()
+
+    setAiContextPanelOpen(false)
+
+    setDocumentationEditorOpen(false)
+
+    setSelectedConnectionId(null)
+
+    setConnectingNoteId(null)
+
+    setWorkspaceTitleDraft(workspace.title)
+
+    setWorkspaceDescriptionDraft(workspace.description)
+
+    setWorkspaceEditorOpen(true)
+  }
+
+  const closeWorkspaceEditor = () => {
+    setWorkspaceEditorOpen(false)
+  }
+
+  const saveWorkspaceInfo = async () => {
+    if (!workspace) {
+      return
     }
 
-  const saveWorkspaceInfo =
-    async () => {
-      if (
-        !workspace
-      ) {
-        return
+    try {
+      setSavingWorkspaceInfo(true)
+
+      const title =
+        workspaceTitleDraft.trim() || workspace.title || projectName?.toUpperCase() || 'Workspace'
+
+      const updatedWorkspace: Workspace = {
+        ...workspace,
+        title,
+        description: workspaceDescriptionDraft,
       }
 
-      try {
-        setSavingWorkspaceInfo(
-          true,
-        )
+      setWorkspaceState(updatedWorkspace)
 
-        const title =
-          workspaceTitleDraft.trim() ||
-          workspace.title ||
-          projectName?.toUpperCase() ||
-          'Workspace'
+      setWorkspaceEditorOpen(false)
+    } catch (error) {
+      console.error('Error guardando workspace:', error)
+    } finally {
+      setSavingWorkspaceInfo(false)
+    }
+  }
 
-        const updatedWorkspace: Workspace =
-          {
-            ...workspace,
-            title,
-            description:
-              workspaceDescriptionDraft,
-          }
-
-        setWorkspaceState(
-          updatedWorkspace,
-        )
-
-        setWorkspaceEditorOpen(
-          false,
-        )
-      } catch (error) {
-        console.error(
-          'Error guardando workspace:',
-          error,
-        )
-      } finally {
-        setSavingWorkspaceInfo(
-          false,
-        )
-      }
+  const openAiContextPanel = () => {
+    if (!workspace) {
+      return
     }
 
-  const openAiContextPanel =
-    () => {
-      if (!workspace) {
-        return
-      }
+    closeNoteEditor()
+    closeDirectoryPanel()
 
-      closeNoteEditor()
-      closeDirectoryPanel()
+    setWorkspaceEditorOpen(false)
 
-      setWorkspaceEditorOpen(
-        false,
-      )
+    setDocumentationEditorOpen(false)
 
-      setDocumentationEditorOpen(
-        false,
-      )
+    setSelectedConnectionId(null)
 
-      setSelectedConnectionId(
-        null,
-      )
+    setConnectingNoteId(null)
 
-      setConnectingNoteId(
-        null,
-      )
+    setAiContextDraft(workspace.aiContext ?? '')
 
-      setAiContextDraft(
-        workspace.aiContext ?? '',
-      )
+    setAiContextPanelOpen(true)
+  }
 
-      setAiContextPanelOpen(
-        true,
-      )
+  const closeAiContextPanel = () => {
+    setAiContextPanelOpen(false)
+  }
+
+  const saveAiContext = async () => {
+    if (!workspace) {
+      return
     }
 
-  const closeAiContextPanel =
-    () => {
-      setAiContextPanelOpen(
-        false,
-      )
+    try {
+      setSavingAiContext(true)
+
+      const updatedWorkspace: Workspace = {
+        ...workspace,
+        aiContext: aiContextDraft,
+      }
+
+      setWorkspaceState(updatedWorkspace)
+
+      setAiContextPanelOpen(false)
+    } catch (error) {
+      console.error('Error guardando contexto:', error)
+    } finally {
+      setSavingAiContext(false)
+    }
+  }
+
+  const openDocumentationEditor = (documentation?: WorkspaceDocumentation) => {
+    closeNoteEditor()
+    closeDirectoryPanel()
+
+    setWorkspaceEditorOpen(false)
+
+    setAiContextPanelOpen(false)
+
+    setSelectedConnectionId(null)
+
+    setConnectingNoteId(null)
+
+    if (documentation) {
+      setDocumentationDraft({
+        ...documentation,
+      })
+    } else {
+      setDocumentationDraft({
+        id: crypto.randomUUID(),
+        name: '',
+        url: '',
+        type: 'web',
+      })
     }
 
-  const saveAiContext =
-    async () => {
-      if (
-        !workspace
-      ) {
-        return
-      }
+    setDocumentationEditorOpen(true)
+  }
 
-      try {
-        setSavingAiContext(
-          true,
-        )
+  const closeDocumentationEditor = () => {
+    setDocumentationEditorOpen(false)
 
-        const updatedWorkspace: Workspace =
-          {
-            ...workspace,
-            aiContext:
-              aiContextDraft,
-          }
+    setDocumentationDraft(null)
+  }
 
-        setWorkspaceState(
-          updatedWorkspace,
-        )
-
-        setAiContextPanelOpen(
-          false,
-        )
-      } catch (error) {
-        console.error(
-          'Error guardando contexto:',
-          error,
-        )
-      } finally {
-        setSavingAiContext(
-          false,
-        )
-      }
+  const saveDocumentation = async () => {
+    if (!workspace || !documentationDraft) {
+      return
     }
 
-  const openDocumentationEditor =
-    (
-      documentation?: WorkspaceDocumentation,
-    ) => {
-      closeNoteEditor()
-      closeDirectoryPanel()
+    const name = documentationDraft.name.trim()
 
-      setWorkspaceEditorOpen(
-        false,
-      )
+    const url = documentationDraft.url.trim()
 
-      setAiContextPanelOpen(
-        false,
-      )
+    if (!name) {
+      window.alert(t('documentationNeedsName'))
 
-      setSelectedConnectionId(
-        null,
-      )
-
-      setConnectingNoteId(
-        null,
-      )
-
-      if (
-        documentation
-      ) {
-        setDocumentationDraft(
-          {
-            ...documentation,
-          },
-        )
-      } else {
-        setDocumentationDraft({
-          id: crypto.randomUUID(),
-          name: '',
-          url: '',
-          type: 'web',
-        })
-      }
-
-      setDocumentationEditorOpen(
-        true,
-      )
+      return
     }
 
-  const closeDocumentationEditor =
-    () => {
-      setDocumentationEditorOpen(
-        false,
-      )
+    if (!url) {
+      window.alert(t('documentationNeedsLink'))
 
-      setDocumentationDraft(
-        null,
-      )
+      return
     }
 
-  const saveDocumentation =
-    async () => {
-      if (
-        !workspace ||
-        !documentationDraft
-      ) {
-        return
-      }
+    try {
+      setSavingDocumentation(true)
 
-      const name =
-        documentationDraft.name.trim()
+      const exists = workspace.documentation.some((item) => item.id === documentationDraft.id)
 
-      const url =
-        documentationDraft.url.trim()
-
-      if (!name) {
-        window.alert(
-          t(
-            'documentationNeedsName',
-          ),
-        )
-
-        return
-      }
-
-      if (!url) {
-        window.alert(
-          t(
-            'documentationNeedsLink',
-          ),
-        )
-
-        return
-      }
-
-      try {
-        setSavingDocumentation(
-          true,
-        )
-
-        const exists =
-          workspace.documentation.some(
-            (item) =>
-              item.id ===
-              documentationDraft.id,
-          )
-
-        const documentation =
-          exists
-            ? workspace.documentation.map(
-                (item) =>
-                  item.id ===
-                    documentationDraft.id
-                    ? {
-                        ...documentationDraft,
-                        name,
-                        url,
-                      }
-                    : item,
-              )
-            : [
-                ...workspace.documentation,
-                {
+      const documentation = exists
+        ? workspace.documentation.map((item) =>
+            item.id === documentationDraft.id
+              ? {
                   ...documentationDraft,
                   name,
                   url,
-                },
-              ]
+                }
+              : item,
+          )
+        : [
+            ...workspace.documentation,
+            {
+              ...documentationDraft,
+              name,
+              url,
+            },
+          ]
 
-        const updatedWorkspace: Workspace =
-          {
-            ...workspace,
-            documentation,
-          }
-
-        setWorkspaceState(
-          updatedWorkspace,
-        )
-
-        closeDocumentationEditor()
-      } catch (error) {
-        console.error(
-          'Error guardando documentación:',
-          error,
-        )
-      } finally {
-        setSavingDocumentation(
-          false,
-        )
-      }
-    }
-
-  const deleteDocumentation =
-    async (
-      documentationId: string,
-    ) => {
-      if (
-        !workspace
-      ) {
-        return
+      const updatedWorkspace: Workspace = {
+        ...workspace,
+        documentation,
       }
 
-      const documentation =
-        workspace.documentation.find(
-          (item) =>
-            item.id ===
-            documentationId,
-        )
-
-      if (!documentation) {
-        return
-      }
-
-      if (
-        !window.confirm(
-          t(
-            'removeDocumentation',
-          ),
-        )
-      ) {
-        return
-      }
-
-      const updatedWorkspace: Workspace =
-        {
-          ...workspace,
-          documentation:
-            workspace.documentation.filter(
-              (item) =>
-                item.id !==
-                documentationId,
-            ),
-        }
-
-      setWorkspaceState(
-        updatedWorkspace,
-      )
+      setWorkspaceState(updatedWorkspace)
 
       closeDocumentationEditor()
+    } catch (error) {
+      console.error('Error guardando documentación:', error)
+    } finally {
+      setSavingDocumentation(false)
+    }
+  }
+
+  const deleteDocumentation = async (documentationId: string) => {
+    if (!workspace) {
+      return
     }
 
-  const openDocumentation =
-    (
-      documentation: WorkspaceDocumentation,
-    ) => {
-      const newWindow =
-        window.open(
-          documentation.url,
-          '_blank',
-          'noopener,noreferrer',
-        )
+    const documentation = workspace.documentation.find((item) => item.id === documentationId)
 
-      if (!newWindow) {
-        window.alert(
-          t(
-            'documentationOpenBlocked',
-          ),
-        )
-      }
+    if (!documentation) {
+      return
     }
 
-  const copyContext = async (
-    scope: ContextScope,
-  ) => {
+    if (!window.confirm(t('removeDocumentation'))) {
+      return
+    }
+
+    const updatedWorkspace: Workspace = {
+      ...workspace,
+      documentation: workspace.documentation.filter((item) => item.id !== documentationId),
+    }
+
+    setWorkspaceState(updatedWorkspace)
+
+    closeDocumentationEditor()
+  }
+
+  const openDocumentation = (documentation: WorkspaceDocumentation) => {
+    const newWindow = window.open(documentation.url, '_blank', 'noopener,noreferrer')
+
+    if (!newWindow) {
+      window.alert(t('documentationOpenBlocked'))
+    }
+  }
+
+  const copyContext = async (scope: ContextScope) => {
     if (!workspace) {
       return
     }
@@ -3698,536 +2175,277 @@ function App({
     // selection copies the single
     // selected note.
     const contextNoteIds =
-      selectedNoteIds.length > 0
-        ? selectedNoteIds
-        : selectedNoteId
-          ? [selectedNoteId]
-          : []
+      selectedNoteIds.length > 0 ? selectedNoteIds : selectedNoteId ? [selectedNoteId] : []
 
-    if (
-      scope !== 'entire' &&
-      contextNoteIds.length === 0
-    ) {
+    if (scope !== 'entire' && contextNoteIds.length === 0) {
       return
     }
 
     try {
-      const context =
-        buildAiContext(
-          workspace,
-          scope,
-          contextNoteIds,
-        )
+      const context = buildAiContext(workspace, scope, contextNoteIds)
 
-      await navigator.clipboard.writeText(
-        context,
-      )
+      await navigator.clipboard.writeText(context)
 
-      setCopiedContext(
-        scope,
-      )
+      setCopiedContext(scope)
 
-      window.setTimeout(
-        () => {
-          setCopiedContext(
-            null,
-          )
-        },
-        1800,
-      )
+      window.setTimeout(() => {
+        setCopiedContext(null)
+      }, 1800)
     } catch (error) {
-      console.error(
-        'Error copiando contexto:',
-        error,
-      )
+      console.error('Error copiando contexto:', error)
 
-      window.alert(
-        t(
-          'contextCopyFailed',
-        ),
-      )
+      window.alert(t('contextCopyFailed'))
     }
   }
 
   const addFilesToNote = async () => {
-  if (
-    !projectDirectory ||
-    !noteDraft
-  ) {
+    if (!projectDirectory || !noteDraft) {
       return
     }
 
     try {
-      setAddingFiles(
-        true,
-      )
+      setAddingFiles(true)
 
-      const fileHandles =
-        await window.showOpenFilePicker(
-          {
-            multiple:
-              true,
-            startIn:
-              projectDirectory,
-          },
-        )
+      const fileHandles = await window.showOpenFilePicker({
+        multiple: true,
+        startIn: projectDirectory,
+      })
 
-      const newPaths: string[] =
-        []
+      const newPaths: string[] = []
 
       for (const fileHandle of fileHandles) {
-        const relativePath =
-          await findRelativeFilePath(
-            projectDirectory,
-            fileHandle,
-          )
+        const relativePath = await findRelativeFilePath(projectDirectory, fileHandle)
 
-        if (
-          relativePath &&
-          !noteDraft.filePaths.includes(
-            relativePath,
-          )
-        ) {
-          newPaths.push(
-            relativePath,
-          )
+        if (relativePath && !noteDraft.filePaths.includes(relativePath)) {
+          newPaths.push(relativePath)
         }
       }
 
-      if (
-        newPaths.length >
-        0
-      ) {
+      if (newPaths.length > 0) {
         applyNoteDraftChange({
           ...noteDraft,
-          filePaths: [
-            ...noteDraft.filePaths,
-            ...newPaths,
-          ],
+          filePaths: [...noteDraft.filePaths, ...newPaths],
         })
       }
     } catch (error) {
-      if (
-        error instanceof
-          DOMException &&
-        error.name ===
-          'AbortError'
-      ) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
         return
       }
 
-      console.error(
-        'Error añadiendo archivos:',
-        error,
-      )
+      console.error('Error añadiendo archivos:', error)
     } finally {
-      setAddingFiles(
-        false,
-      )
+      setAddingFiles(false)
     }
   }
 
-  const removeFileFromNote = (
-    filePath: string,
-  ) => {
+  const removeFileFromNote = (filePath: string) => {
     if (!noteDraft) {
       return
     }
 
     applyNoteDraftChange({
       ...noteDraft,
-      filePaths:
-        noteDraft.filePaths.filter(
-          (
-            path,
-          ) =>
-            path !==
-            filePath,
-        ),
+      filePaths: noteDraft.filePaths.filter((path) => path !== filePath),
     })
   }
 
-  const openProjectFile =
-    async (
-      filePath: string,
-    ) => {
-      if (
-        !projectDirectory
-      ) {
-        return
-      }
-
-      try {
-        setOpeningFilePath(
-          filePath,
-        )
-
-        const fileHandle =
-          await getFileHandleFromPath(
-            projectDirectory,
-            filePath,
-            t(
-              'emptyFilePath',
-            ),
-          )
-
-        const file =
-          await fileHandle.getFile()
-
-        const url =
-          URL.createObjectURL(
-            file,
-          )
-
-        const newWindow =
-          window.open(
-            url,
-            '_blank',
-          )
-
-        if (!newWindow) {
-          URL.revokeObjectURL(
-            url,
-          )
-
-          throw new Error(
-            t(
-              'fileOpenBlocked',
-            ),
-          )
-        }
-
-        setTimeout(
-          () => {
-            URL.revokeObjectURL(
-              url,
-            )
-          },
-          60000,
-        )
-      } catch (error) {
-        console.error(
-          'Error abriendo archivo:',
-          error,
-        )
-
-        window.alert(
-          `${t(
-            'fileOpenFailed',
-          )}\n\n${filePath}`,
-        )
-      } finally {
-        setOpeningFilePath(
-          null,
-        )
-      }
+  const openProjectFile = async (filePath: string) => {
+    if (!projectDirectory) {
+      return
     }
 
-  const saveNote =
-    async () => {
-      if (!noteDraft) {
-        return
+    try {
+      setOpeningFilePath(filePath)
+
+      const fileHandle = await getFileHandleFromPath(projectDirectory, filePath, t('emptyFilePath'))
+
+      const file = await fileHandle.getFile()
+
+      const url = URL.createObjectURL(file)
+
+      const newWindow = window.open(url, '_blank')
+
+      if (!newWindow) {
+        URL.revokeObjectURL(url)
+
+        throw new Error(t('fileOpenBlocked'))
       }
 
-      setSavingNote(
-        true,
-      )
+      setTimeout(() => {
+        URL.revokeObjectURL(url)
+      }, 60000)
+    } catch (error) {
+      console.error('Error abriendo archivo:', error)
 
-      await saveCurrentWorkspaceNow()
+      window.alert(`${t('fileOpenFailed')}\n\n${filePath}`)
+    } finally {
+      setOpeningFilePath(null)
+    }
+  }
 
-      setSavingNote(
-        false,
-      )
-
-      closeNoteEditor()
+  const saveNote = async () => {
+    if (!noteDraft) {
+      return
     }
 
-  const deleteNote =
-    async () => {
-      if (
-        !workspace ||
-        !selectedNoteId
-      ) {
-        return
-      }
+    setSavingNote(true)
 
-      const updatedWorkspace: Workspace =
-        {
-          ...workspace,
-          notes:
-            workspace.notes.filter(
-              (
-                note,
-              ) =>
-                note.id !==
-                selectedNoteId,
-            ),
-          connections:
-            workspace.connections.filter(
-              (
-                connection,
-              ) =>
-                connection.from !==
-                  selectedNoteId &&
-                connection.to !==
-                  selectedNoteId,
-            ),
-        }
+    await saveCurrentWorkspaceNow()
 
-      setWorkspaceState(
-        updatedWorkspace,
-      )
+    setSavingNote(false)
 
-      setSelectedNoteId(
-        null,
-      )
+    closeNoteEditor()
+  }
 
-      closeNoteEditor()
+  const deleteNote = async () => {
+    if (!workspace || !selectedNoteId) {
+      return
     }
 
-  const deleteConnection =
-    async (
-      connectionId: string,
-    ) => {
-      if (!workspace) {
-        return
-      }
-
-      const updatedWorkspace: Workspace =
-        {
-          ...workspace,
-          connections:
-            workspace.connections.filter(
-              (
-                item,
-              ) =>
-                item.id !==
-                connectionId,
-            ),
-        }
-
-      setWorkspaceState(
-        updatedWorkspace,
-      )
-
-      if (
-        selectedConnectionId ===
-        connectionId
-      ) {
-        setSelectedConnectionId(
-          null,
-        )
-      }
+    const updatedWorkspace: Workspace = {
+      ...workspace,
+      notes: workspace.notes.filter((note) => note.id !== selectedNoteId),
+      connections: workspace.connections.filter(
+        (connection) => connection.from !== selectedNoteId && connection.to !== selectedNoteId,
+      ),
     }
 
-  const deleteSelectedConnection =
-    async () => {
-      if (
-        !selectedConnectionId
-      ) {
-        return
-      }
+    setWorkspaceState(updatedWorkspace)
 
-      await deleteConnection(
-        selectedConnectionId,
-      )
+    setSelectedNoteId(null)
+
+    closeNoteEditor()
+  }
+
+  const deleteConnection = async (connectionId: string) => {
+    if (!workspace) {
+      return
     }
 
-  const duplicateSelectedNote =
-    () => {
-      if (
-        !workspace ||
-        !selectedNote
-      ) {
-        return
-      }
-
-      const highestZIndex =
-        Math.max(
-          ...workspace.notes.map(
-            (note) =>
-              note.zIndex ??
-              0,
-          ),
-          0,
-        )
-
-      const sourceTitle =
-        selectedNote.title.trim() ||
-        t(
-          'untitled',
-        )
-
-      const duplicate: Note =
-        {
-          ...selectedNote,
-          id: crypto.randomUUID(),
-          title: `${sourceTitle} (${t(
-            'copySuffix',
-          )})`,
-          x:
-            selectedNote.x +
-            36,
-          y:
-            selectedNote.y +
-            36,
-          zIndex:
-            highestZIndex +
-            1,
-        }
-
-      const updatedWorkspace: Workspace =
-        {
-          ...workspace,
-          notes: [
-            ...workspace.notes,
-            duplicate,
-          ],
-        }
-
-      setWorkspaceState(
-        updatedWorkspace,
-      )
-
-      openNote(
-        duplicate,
-      )
+    const updatedWorkspace: Workspace = {
+      ...workspace,
+      connections: workspace.connections.filter((item) => item.id !== connectionId),
     }
 
-  const undoWorkspace =
-    () => {
-      if (
-        !workspace ||
-        historyPastRef.current.length ===
-          0
-      ) {
-        return
-      }
+    setWorkspaceState(updatedWorkspace)
 
-      const previous =
-        historyPastRef.current.pop()
+    if (selectedConnectionId === connectionId) {
+      setSelectedConnectionId(null)
+    }
+  }
 
-      if (!previous) {
-        return
-      }
-
-      historyFutureRef.current.push(
-        cloneWorkspace(
-          workspace,
-        ),
-      )
-
-      setWorkspace(
-        previous,
-      )
-
-      latestWorkspaceRef.current =
-        previous
-
-      setWorkspaceDirty(
-        true,
-      )
-
-      closeAllEditors()
-
-      setDirectoryPanelOpen(
-        false,
-      )
-
-      setConnectingNoteId(
-        null,
-      )
-
-      setSelectedConnectionId(
-        null,
-      )
+  const deleteSelectedConnection = async () => {
+    if (!selectedConnectionId) {
+      return
     }
 
-  const redoWorkspace =
-    () => {
-      if (
-        !workspace ||
-        historyFutureRef.current.length ===
-          0
-      ) {
-        return
-      }
+    await deleteConnection(selectedConnectionId)
+  }
 
-      const next =
-        historyFutureRef.current.pop()
-
-      if (!next) {
-        return
-      }
-
-      historyPastRef.current.push(
-        cloneWorkspace(
-          workspace,
-        ),
-      )
-
-      setWorkspace(
-        next,
-      )
-
-      latestWorkspaceRef.current =
-        next
-
-      setWorkspaceDirty(
-        true,
-      )
-
-      closeAllEditors()
-
-      setDirectoryPanelOpen(
-        false,
-      )
-
-      setConnectingNoteId(
-        null,
-      )
-
-      setSelectedConnectionId(
-        null,
-      )
+  const duplicateSelectedNote = () => {
+    if (!workspace || !selectedNote) {
+      return
     }
 
-  const openHelp =
-    () => {
-      setHelpSearch(
-        '',
-      )
+    const highestZIndex = Math.max(...workspace.notes.map((note) => note.zIndex ?? 0), 0)
 
-      setHelpOpen(
-        true,
-      )
+    const sourceTitle = selectedNote.title.trim() || t('untitled')
 
-      closeDirectoryPanel()
-
-      setAiContextPanelOpen(
-        false,
-      )
-
-      setWorkspaceEditorOpen(
-        false,
-      )
-
-      setDocumentationEditorOpen(
-        false,
-      )
+    const duplicate: Note = {
+      ...selectedNote,
+      id: crypto.randomUUID(),
+      title: `${sourceTitle} (${t('copySuffix')})`,
+      x: selectedNote.x + 36,
+      y: selectedNote.y + 36,
+      zIndex: highestZIndex + 1,
     }
 
-  const isEditableElement = (
-    target: EventTarget | null,
-  ) => {
-    if (
-      !(target instanceof HTMLElement)
-    ) {
+    const updatedWorkspace: Workspace = {
+      ...workspace,
+      notes: [...workspace.notes, duplicate],
+    }
+
+    setWorkspaceState(updatedWorkspace)
+
+    openNote(duplicate)
+  }
+
+  const undoWorkspace = () => {
+    if (!workspace || historyPastRef.current.length === 0) {
+      return
+    }
+
+    const previous = historyPastRef.current.pop()
+
+    if (!previous) {
+      return
+    }
+
+    historyFutureRef.current.push(cloneWorkspace(workspace))
+
+    setWorkspace(previous)
+
+    latestWorkspaceRef.current = previous
+
+    setWorkspaceDirty(true)
+
+    closeAllEditors()
+
+    setDirectoryPanelOpen(false)
+
+    setConnectingNoteId(null)
+
+    setSelectedConnectionId(null)
+  }
+
+  const redoWorkspace = () => {
+    if (!workspace || historyFutureRef.current.length === 0) {
+      return
+    }
+
+    const next = historyFutureRef.current.pop()
+
+    if (!next) {
+      return
+    }
+
+    historyPastRef.current.push(cloneWorkspace(workspace))
+
+    setWorkspace(next)
+
+    latestWorkspaceRef.current = next
+
+    setWorkspaceDirty(true)
+
+    closeAllEditors()
+
+    setDirectoryPanelOpen(false)
+
+    setConnectingNoteId(null)
+
+    setSelectedConnectionId(null)
+  }
+
+  const openHelp = () => {
+    setHelpSearch('')
+
+    setHelpOpen(true)
+
+    closeDirectoryPanel()
+
+    setAiContextPanelOpen(false)
+
+    setWorkspaceEditorOpen(false)
+
+    setDocumentationEditorOpen(false)
+  }
+
+  const isEditableElement = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) {
       return false
     }
 
-    const tagName =
-      target.tagName
+    const tagName = target.tagName
 
     return (
       tagName === 'INPUT' ||
@@ -4242,29 +2460,21 @@ function App({
    * selected note in the
    * persistent clipboard and
    * flashes the copy animation. */
-  const copySelectedNoteToClipboard =
-    () => {
-      if (
-        !selectedNote ||
-        !workspace
-      ) {
-        return
-      }
-
-      const sourceTitle =
-        selectedNote.title.trim() ||
-        t('untitled')
-
-      setProjectClipboard(
-        {
-          ...selectedNote,
-          title: `${sourceTitle} (${t(
-            'copySuffix',
-          )})`,
-        },
-        selectedNote.id,
-      )
+  const copySelectedNoteToClipboard = () => {
+    if (!selectedNote || !workspace) {
+      return
     }
+
+    const sourceTitle = selectedNote.title.trim() || t('untitled')
+
+    setProjectClipboard(
+      {
+        ...selectedNote,
+        title: `${sourceTitle} (${t('copySuffix')})`,
+      },
+      selectedNote.id,
+    )
+  }
 
   /** Shared by Ctrl+V and the
    * PEGAR button: drops the
@@ -4274,23 +2484,11 @@ function App({
    * editor is open too, so it can
    * never fail silently. */
   const pasteClipboardNote = () => {
-    if (
-      !clipboardNote ||
-      !workspace ||
-      !projectDirectory
-    ) {
+    if (!clipboardNote || !workspace || !projectDirectory) {
       return
     }
 
-    const highestZIndex =
-      Math.max(
-        ...workspace.notes.map(
-          (note) =>
-            note.zIndex ??
-            0,
-        ),
-        0,
-      )
+    const highestZIndex = Math.max(...workspace.notes.map((note) => note.zIndex ?? 0), 0)
 
     // Drop the copy in the middle
     // of what the user is looking
@@ -4298,55 +2496,35 @@ function App({
     // view. With an empty board,
     // fall back to a spot near
     // the origin.
-    const canvasRect =
-      canvasRef.current?.getBoundingClientRect()
+    const canvasRect = canvasRef.current?.getBoundingClientRect()
 
-    const viewportWidth =
-      canvasRect?.width ??
-      window.innerWidth
+    const viewportWidth = canvasRect?.width ?? window.innerWidth
 
-    const viewportHeight =
-      canvasRect?.height ??
-      window.innerHeight
+    const viewportHeight = canvasRect?.height ?? window.innerHeight
 
-    const worldX =
-      (viewportWidth / 2 - pan.x) /
-      zoom
+    const worldX = (viewportWidth / 2 - pan.x) / zoom
 
-    const worldY =
-      (viewportHeight / 2 - pan.y) /
-      zoom
+    const worldY = (viewportHeight / 2 - pan.y) / zoom
 
-    const baseX =
-      workspace.notes.length > 0
-        ? worldX
-        : 200
+    const baseX = workspace.notes.length > 0 ? worldX : 200
 
-    const baseY =
-      workspace.notes.length > 0
-        ? worldY
-        : 150
+    const baseY = workspace.notes.length > 0 ? worldY : 150
 
     // A group clipboard carries the
     // whole selection inside it.
-    const groupNotes =
-      (
-        clipboardNote as Note & {
-          notes?: Note[]
-          connections?: Workspace['connections']
-        }
-      ).notes
+    const groupNotes = (
+      clipboardNote as Note & {
+        notes?: Note[]
+        connections?: Workspace['connections']
+      }
+    ).notes
 
     const pastedNotes: Note[] = groupNotes
       ? groupNotes.map((note, index) => ({
           ...note,
           id: crypto.randomUUID(),
-          x:
-            Math.round(baseX - 140) +
-            (note.x - groupNotes[0].x),
-          y:
-            Math.round(baseY - 80) +
-            (note.y - groupNotes[0].y),
+          x: Math.round(baseX - 140) + (note.x - groupNotes[0].x),
+          y: Math.round(baseY - 80) + (note.y - groupNotes[0].y),
           zIndex: highestZIndex + 1 + index,
         }))
       : [
@@ -4365,10 +2543,7 @@ function App({
 
     if (groupNotes) {
       groupNotes.forEach((note, index) => {
-        idRemap.set(
-          note.id,
-          pastedNotes[index].id,
-        )
+        idRemap.set(note.id, pastedNotes[index].id)
       })
     }
 
@@ -4380,28 +2555,21 @@ function App({
       ).connections?.map((connection) => ({
         ...connection,
         id: crypto.randomUUID(),
-        from:
-          idRemap.get(connection.from) ??
-          connection.from,
+        from: idRemap.get(connection.from) ?? connection.from,
         to: idRemap.get(connection.to) ?? connection.to,
       })) ?? []
 
     const updatedWorkspace: Workspace = {
       ...workspace,
       notes: [...workspace.notes, ...pastedNotes],
-      connections: [
-        ...workspace.connections,
-        ...groupConnections,
-      ],
+      connections: [...workspace.connections, ...groupConnections],
     }
 
     setWorkspaceState(updatedWorkspace)
 
     setSelectedNoteId(pastedNotes[0].id)
 
-    setSelectedNoteIds(
-      pastedNotes.map((note) => note.id),
-    )
+    setSelectedNoteIds(pastedNotes.map((note) => note.id))
 
     // Pop animation on the fresh
     // cards so the paste is clearly
@@ -4409,38 +2577,25 @@ function App({
     setPastedNoteId(pastedNotes[0].id)
 
     if (pastedTimerRef.current) {
-      clearTimeout(
-        pastedTimerRef.current,
-      )
+      clearTimeout(pastedTimerRef.current)
     }
 
-    pastedTimerRef.current =
-      setTimeout(() => {
-        setPastedNoteId(null)
+    pastedTimerRef.current = setTimeout(() => {
+      setPastedNoteId(null)
 
-        pastedTimerRef.current = null
-      }, 500)
+      pastedTimerRef.current = null
+    }, 500)
   }
 
   useEffect(() => {
-    const handleKeyDown = (
-      event: KeyboardEvent,
-    ) => {
-      const key =
-        event.key.toLowerCase()
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase()
 
-      const isMeta =
-        event.ctrlKey ||
-        event.metaKey
+      const isMeta = event.ctrlKey || event.metaKey
 
-      if (
-        event.key ===
-        'Escape'
-      ) {
+      if (event.key === 'Escape') {
         if (helpOpen) {
-          setHelpOpen(
-            false,
-          )
+          setHelpOpen(false)
 
           return
         }
@@ -4457,16 +2612,9 @@ function App({
           return
         }
 
-        if (
-          noteDraft ||
-          workspaceEditorOpen ||
-          documentationEditorOpen ||
-          statusStylePanelOpen
-        ) {
+        if (noteDraft || workspaceEditorOpen || documentationEditorOpen || statusStylePanelOpen) {
           if (statusStylePanelOpen) {
-            setStatusStylePanelOpen(
-              false,
-            )
+            setStatusStylePanelOpen(false)
           }
 
           closeAllEditors()
@@ -4474,31 +2622,20 @@ function App({
           return
         }
 
-        setConnectingNoteId(
-          null,
-        )
+        setConnectingNoteId(null)
 
-        setSelectedConnectionId(
-          null,
-        )
+        setSelectedConnectionId(null)
 
         setSelectedNoteIds([])
 
-        setPanning(
-          false,
-        )
+        setPanning(false)
 
-        setDraggingNoteId(
-          null,
-        )
+        setDraggingNoteId(null)
 
         return
       }
 
-      if (
-        key === 's' &&
-        isMeta
-      ) {
+      if (key === 's' && isMeta) {
         event.preventDefault()
         saveCurrentWorkspaceNow()
 
@@ -4510,25 +2647,15 @@ function App({
       // Browser-tab switching needs
       // Alt on most browsers, so this
       // is safe to intercept.
-      if (
-        key === 'tab' &&
-        isMeta &&
-        !event.altKey
-      ) {
+      if (key === 'tab' && isMeta && !event.altKey) {
         event.preventDefault()
 
-        cycleProject(
-          event.shiftKey ? -1 : 1,
-        )
+        cycleProject(event.shiftKey ? -1 : 1)
 
         return
       }
 
-      if (
-        isEditableElement(
-          event.target,
-        )
-      ) {
+      if (isEditableElement(event.target)) {
         return
       }
 
@@ -4536,8 +2663,7 @@ function App({
       // notes (single or multi): delete
       // immediately, no confirmation.
       if (
-        (event.key === 'Delete' ||
-          event.key === 'Backspace') &&
+        (event.key === 'Delete' || event.key === 'Backspace') &&
         effectiveSelectedNotes.length > 0 &&
         !selectedConnectionId
       ) {
@@ -4551,31 +2677,20 @@ function App({
       // Delete / Backspace on a
       // selected connection: delete
       // it too.
-      if (
-        (event.key === 'Delete' ||
-          event.key === 'Backspace') &&
-        selectedConnectionId
-      ) {
+      if ((event.key === 'Delete' || event.key === 'Backspace') && selectedConnectionId) {
         event.preventDefault()
 
         deleteSelectedConnection()
       }
 
-      if (
-        event.key ===
-        '?'
-      ) {
+      if (event.key === '?') {
         event.preventDefault()
         openHelp()
 
         return
       }
 
-      if (
-        isMeta &&
-        key === 'd' &&
-        !event.altKey
-      ) {
+      if (isMeta && key === 'd' && !event.altKey) {
         event.preventDefault()
 
         if (selectedNoteIds.length > 1) {
@@ -4587,25 +2702,16 @@ function App({
         return
       }
 
-      if (
-        key === 'c' &&
-        isMeta
-      ) {
+      if (key === 'c' && isMeta) {
         // Copying works even while the
         // note editor is open, as long
         // as no text inside it is
         // selected (that still copies
         // the text itself, like
         // anywhere else).
-        const hasTextSelection =
-          window.getSelection()?.toString()
+        const hasTextSelection = window.getSelection()?.toString()
 
-        if (
-          hasTextSelection &&
-          isEditableElement(
-            event.target,
-          )
-        ) {
+        if (hasTextSelection && isEditableElement(event.target)) {
           return
         }
 
@@ -4620,10 +2726,7 @@ function App({
         return
       }
 
-      if (
-        key === 'v' &&
-        isMeta
-      ) {
+      if (key === 'v' && isMeta) {
         event.preventDefault()
 
         pasteClipboardNote()
@@ -4631,36 +2734,21 @@ function App({
         return
       }
 
-      if (
-        isMeta &&
-        key === 'z' &&
-        !event.shiftKey
-      ) {
+      if (isMeta && key === 'z' && !event.shiftKey) {
         event.preventDefault()
         undoWorkspace()
 
         return
       }
 
-      if (
-        (isMeta &&
-          key === 'y') ||
-        (isMeta &&
-          event.shiftKey &&
-          key === 'z')
-      ) {
+      if ((isMeta && key === 'y') || (isMeta && event.shiftKey && key === 'z')) {
         event.preventDefault()
         redoWorkspace()
 
         return
       }
 
-      if (
-        !isMeta &&
-        !event.altKey &&
-        !event.shiftKey &&
-        key === 'n'
-      ) {
+      if (!isMeta && !event.altKey && !event.shiftKey && key === 'n') {
         event.preventDefault()
         createNote()
 
@@ -4679,16 +2767,9 @@ function App({
         !isMeta &&
         !event.altKey &&
         !event.shiftKey &&
-        (key === 'a' ||
-          key === 'q' ||
-          key === 'w' ||
-          key === 'e')
+        (key === 'a' || key === 'q' || key === 'w' || key === 'e')
       ) {
-        if (
-          isEditableElement(
-            event.target,
-          )
-        ) {
+        if (isEditableElement(event.target)) {
           return
         }
 
@@ -4700,12 +2781,7 @@ function App({
           return
         }
 
-        const scope: ContextScope =
-          key === 'q'
-            ? 'current'
-            : key === 'w'
-              ? 'connected'
-              : 'entire'
+        const scope: ContextScope = key === 'q' ? 'current' : key === 'w' ? 'connected' : 'entire'
 
         event.preventDefault()
 
@@ -4714,12 +2790,7 @@ function App({
         return
       }
 
-      if (
-        !isMeta &&
-        !event.altKey &&
-        !event.shiftKey &&
-        key === 'f'
-      ) {
+      if (!isMeta && !event.altKey && !event.shiftKey && key === 'f') {
         if (effectiveSelectedNotes.length > 1) {
           event.preventDefault()
 
@@ -4733,52 +2804,30 @@ function App({
         return
       }
 
-      if (
-        !isMeta &&
-        !event.altKey &&
-        !event.shiftKey &&
-        key === 'c'
-      ) {
+      if (!isMeta && !event.altKey && !event.shiftKey && key === 'c') {
         if (selectedNote) {
           event.preventDefault()
 
-          setConnectingNoteId(
-            selectedNote.id,
-          )
+          setConnectingNoteId(selectedNote.id)
 
-          setSelectedConnectionId(
-            null,
-          )
+          setSelectedConnectionId(null)
         }
 
         return
       }
 
-      if (
-        !isMeta &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.shiftKey &&
-        event.key === '0'
-      ) {
+      if (!isMeta && !event.ctrlKey && !event.altKey && !event.shiftKey && event.key === '0') {
         event.preventDefault()
         resetCanvasView()
 
         return
       }
-
     }
 
-    window.addEventListener(
-      'keydown',
-      handleKeyDown,
-    )
+    window.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      window.removeEventListener(
-        'keydown',
-        handleKeyDown,
-      )
+      window.removeEventListener('keydown', handleKeyDown)
     }
   }, [
     helpOpen,
@@ -4813,45 +2862,21 @@ function App({
 
   const editorStyle = {
     width: `${editorWidth}px`,
-    maxWidth:
-      'calc(100vw - 24px)',
+    maxWidth: 'calc(100vw - 24px)',
   }
 
-  const renderFileTreeNode = (
-    node: FileTreeNode,
-    depth = 0,
-    forceExpanded = false,
-  ) => {
-    if (
-      node.kind ===
-      'directory'
-    ) {
-      const isRoot =
-        node.path ===
-        ''
+  const renderFileTreeNode = (node: FileTreeNode, depth = 0, forceExpanded = false) => {
+    if (node.kind === 'directory') {
+      const isRoot = node.path === ''
 
-      const isExpanded =
-        isRoot ||
-        forceExpanded ||
-        expandedDirectories.has(
-          node.path,
-        )
+      const isExpanded = isRoot || forceExpanded || expandedDirectories.has(node.path)
 
-      const isLoading =
-        directoryLoadingPath ===
-        node.path
+      const isLoading = directoryLoadingPath === node.path
 
       return (
         <div
-          key={
-            node.path ||
-            'root'
-          }
-          className={
-            isRoot
-              ? 'file-tree-root'
-              : 'file-tree-directory'
-          }
+          key={node.path || 'root'}
+          className={isRoot ? 'file-tree-root' : 'file-tree-directory'}
         >
           {!isRoot && (
             <button
@@ -4860,125 +2885,69 @@ function App({
               style={{
                 paddingLeft: `${12 + depth * 18}px`,
               }}
-              onClick={() =>
-                loadDirectoryNode(
-                  node,
-                )
-              }
+              onClick={() => loadDirectoryNode(node)}
             >
-              <span className="file-tree-expander">
-                {isLoading
-                  ? '…'
-                  : isExpanded
-                    ? '▾'
-                    : '▸'}
-              </span>
+              <span className="file-tree-expander">{isLoading ? '…' : isExpanded ? '▾' : '▸'}</span>
 
-              <span className="file-tree-icon">
-                DIR
-              </span>
+              <span className="file-tree-icon">DIR</span>
 
-              <span className="file-tree-name">
-                {node.name}
-              </span>
+              <span className="file-tree-name">{node.name}</span>
             </button>
           )}
 
           {isRoot && (
             <div className="file-tree-root-label">
-              <span className="file-tree-icon">
-                DIR
-              </span>
+              <span className="file-tree-icon">DIR</span>
 
-              <strong>
-                {node.name}
-              </strong>
+              <strong>{node.name}</strong>
             </div>
           )}
 
-          {isExpanded &&
-            node.children &&
-            node.children.length >
-              0 && (
-              <div className="file-tree-children">
-                {node.children.map(
-                  (
-                    child,
-                  ) =>
-                    renderFileTreeNode(
-                      child,
-                      isRoot
-                        ? depth
-                        : depth +
-                          1,
-                      forceExpanded,
-                    ),
-                )}
-              </div>
-            )}
+          {isExpanded && node.children && node.children.length > 0 && (
+            <div className="file-tree-children">
+              {node.children.map((child) =>
+                renderFileTreeNode(child, isRoot ? depth : depth + 1, forceExpanded),
+              )}
+            </div>
+          )}
 
-          {isExpanded &&
-            node.children?.length ===
-              0 &&
-            !isRoot && (
-              <div
-                className="file-tree-empty"
-                style={{
-                  paddingLeft: `${30 + depth * 18}px`,
-                }}
-              >
-                —
-              </div>
-            )}
+          {isExpanded && node.children?.length === 0 && !isRoot && (
+            <div
+              className="file-tree-empty"
+              style={{
+                paddingLeft: `${30 + depth * 18}px`,
+              }}
+            >
+              —
+            </div>
+          )}
         </div>
       )
     }
 
     return (
       <button
-        key={
-          node.path
-        }
+        key={node.path}
         type="button"
         className={`file-tree-row file-tree-file-row ${
-          selectedFilePath ===
-          node.path
-            ? 'file-tree-file-selected'
-            : ''
+          selectedFilePath === node.path ? 'file-tree-file-selected' : ''
         }`}
         style={{
           paddingLeft: `${30 + depth * 18}px`,
         }}
-        onClick={() =>
-          selectFileFromTree(
-            node,
-          )
-        }
-        onDoubleClick={() =>
-          openProjectFile(
-            node.path,
-          )
-        }
+        onClick={() => selectFileFromTree(node)}
+        onDoubleClick={() => openProjectFile(node.path)}
       >
-        <span className="file-tree-expander">
-          ·
-        </span>
+        <span className="file-tree-expander">·</span>
 
-        <span className="file-tree-icon">
-          FILE
-        </span>
+        <span className="file-tree-icon">FILE</span>
 
-        <span className="file-tree-name">
-          {node.name}
-        </span>
+        <span className="file-tree-name">{node.name}</span>
       </button>
     )
   }
 
-  const activeDirectoryTree =
-    directorySearch.trim()
-      ? directorySearchTree
-      : directoryTree
+  const activeDirectoryTree = directorySearch.trim() ? directorySearchTree : directoryTree
 
   if (!workspace) {
     return (
@@ -4989,197 +2958,83 @@ function App({
         loading={loading}
         helpOpen={helpOpen}
         helpSearch={helpSearch}
-        onLanguageChange={
-          setLanguage
-        }
-        onToggleTheme={() =>
-          setTheme(
-            theme ===
-              'dark'
-              ? 'light'
-              : 'dark',
-          )
-        }
-        onOpenHelp={
-          openHelp
-        }
-        onHelpSearchChange={
-          setHelpSearch
-        }
-        onCloseHelp={() =>
-          setHelpOpen(
-            false,
-          )
-        }
-        onOpenProject={
-          openProject
-        }
+        onLanguageChange={setLanguage}
+        onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        onOpenHelp={openHelp}
+        onHelpSearchChange={setHelpSearch}
+        onCloseHelp={() => setHelpOpen(false)}
+        onOpenProject={openProject}
       />
     )
   }
 
   return (
-    <main
-      className="app"
-      data-theme={
-        theme
-      }
-    >
+    <main className="app" data-theme={theme}>
       <WorkspaceTopBar
-        theme={
-          theme
-        }
-        language={
-          language
-        }
+        theme={theme}
+        language={language}
         t={t}
-        onLanguageChange={
-          setLanguage
-        }
-        onToggleTheme={() =>
-          setTheme(
-            theme ===
-              'dark'
-              ? 'light'
-              : 'dark',
-          )
-        }
-        onOpenHelp={
-          openHelp
-        }
-        projectName={
-          projectName
-        }
-        onOpenDirectory={
-          openDirectoryPanel
-        }
-        onOpenStatusStyles={
-          openStatusStylePanel
-        }
+        onLanguageChange={setLanguage}
+        onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        onOpenHelp={openHelp}
+        projectName={projectName}
+        onOpenDirectory={openDirectoryPanel}
+        onOpenStatusStyles={openStatusStylePanel}
         projectSwitcher={
-          workspace &&
-          projectDirectory ? (
+          workspace && projectDirectory ? (
             <ProjectSwitcher
-              currentName={
-                projectName ??
-                ''
-              }
-              backgroundProjects={
-                backgroundProjects
-              }
+              currentName={projectName ?? ''}
+              backgroundProjects={backgroundProjects}
               t={t}
-              onSwitchProject={
-                switchToProject
-              }
-              onCloseBackgroundProject={
-                removeBackgroundProject
-              }
-              onAddProject={
-                openProject
-              }
-              onCloseCurrentProject={
-                closeProject
-              }
+              onSwitchProject={switchToProject}
+              onCloseBackgroundProject={removeBackgroundProject}
+              onAddProject={openProject}
+              onCloseCurrentProject={closeProject}
             />
           ) : undefined
-        } />
+        }
+      />
 
-      <div
-        className={`workspace ${
-          resizingSidebar
-            ? 'sidebar-resizing'
-            : ''
-        }`}
-      >
+      <div className={`workspace ${resizingSidebar ? 'sidebar-resizing' : ''}`}>
         <Sidebar
           t={t}
-          workspace={
-            workspace
-          }
-          creatingNote={
-            creatingNote
-          }
-          sidebarVisible={
-            sidebarVisible
-          }
-          sidebarWidth={
-            sidebarWidth
-          }
-          selectedNote={
-            selectedNote
-          }
-          aiContextStyles={
-            aiContextStyles
-          }
-          onOpenAiContext={
-            openAiContextPanel
-          }
-          onCopyAiContext={
-            copyContext
-          }
-          onToggle={
-            toggleSidebar
-          }
-          onStartResize={
-            startSidebarResize
-          }
-          onCreateNote={
-            createNote
-          }
-          onEditWorkspace={
-            openWorkspaceEditor
-          }
-          onOpenDocumentation={
-            openDocumentation
-          }
-          onEditDocumentation={
-            openDocumentationEditor
-          }
-          onDeleteDocumentation={
-            deleteDocumentation
-          }
-          onAddDocumentation={() =>
-            openDocumentationEditor()
-          }
+          workspace={workspace}
+          creatingNote={creatingNote}
+          sidebarVisible={sidebarVisible}
+          sidebarWidth={sidebarWidth}
+          selectedNote={selectedNote}
+          aiContextStyles={aiContextStyles}
+          onOpenAiContext={openAiContextPanel}
+          onCopyAiContext={copyContext}
+          onToggle={toggleSidebar}
+          onStartResize={startSidebarResize}
+          onCreateNote={createNote}
+          onEditWorkspace={openWorkspaceEditor}
+          onOpenDocumentation={openDocumentation}
+          onEditDocumentation={openDocumentationEditor}
+          onDeleteDocumentation={deleteDocumentation}
+          onAddDocumentation={() => openDocumentationEditor()}
         />
 
         <div
           ref={canvasRef}
-          className={`canvas ${
-            panning
-              ? 'canvas-panning'
-              : ''
-          }`}
-          onMouseDown={
-            (event) => {
-              handleCanvasMouseDown(event)
+          className={`canvas ${panning ? 'canvas-panning' : ''}`}
+          onMouseDown={(event) => {
+            handleCanvasMouseDown(event)
 
-              startMarquee(event)
-            }
-          }
-          onMouseMove={
-            handleCanvasMouseMove
-          }
-          onMouseUp={
-            stopDraggingNote
-          }
-          onMouseLeave={
-            stopDraggingNote
-          }
-          onWheel={
-            handleCanvasWheel
-          }
+            startMarquee(event)
+          }}
+          onMouseMove={handleCanvasMouseMove}
+          onMouseUp={stopDraggingNote}
+          onMouseLeave={stopDraggingNote}
+          onWheel={handleCanvasWheel}
           onClick={() => {
             // A click right after a
             // marquee selection is the
             // browser-generated tail of
             // that same drag gesture, not
             // a fresh deselect click.
-            if (
-              Date.now() -
-                marqueeEndedAtRef.current <
-              250
-            ) {
+            if (Date.now() - marqueeEndedAtRef.current < 250) {
               return
             }
 
@@ -5199,95 +3054,46 @@ function App({
             }}
           >
             <div className="notes-layer">
-              {workspace.notes.map(
-                (
-                  note,
-                ) => (
-                  <NoteCard
-                    key={
-                      note.id
-                    }
-                    note={
-                      note
-                    }
-                    t={t}
-                    language={
-                      language
-                    }
-                    isSelected={
-                      selectedNoteId ===
-                        note.id ||
-                      selectedNoteIds.includes(
-                        note.id,
-                      )
-                    }
-                    isDragging={
-                      draggingNoteId ===
-                      note.id
-                    }
-                    isConnecting={
-                      connectingNoteId ===
-                      note.id
-                    }
-                    justCopied={
-                      copiedNoteId ===
-                      note.id
-                    }
-                    justPasted={
-                      pastedNoteId ===
-                      note.id
-                    }
-                    workspace={
-                      workspace
-                    }
-                    projectDirectory={
-                      projectDirectory ??
-                      undefined
-                    }
-                    onNoteMouseDown={
-                      startDraggingNote
-                    }
-                    onNoteClick={(
-                      event,
-                      noteItem,
-                    ) => {
-                      event.stopPropagation()
+              {workspace.notes.map((note) => (
+                <NoteCard
+                  key={note.id}
+                  note={note}
+                  t={t}
+                  language={language}
+                  isSelected={selectedNoteId === note.id || selectedNoteIds.includes(note.id)}
+                  isDragging={draggingNoteId === note.id}
+                  isConnecting={connectingNoteId === note.id}
+                  justCopied={copiedNoteId === note.id}
+                  justPasted={pastedNoteId === note.id}
+                  workspace={workspace}
+                  projectDirectory={projectDirectory ?? undefined}
+                  onNoteMouseDown={startDraggingNote}
+                  onNoteClick={(event, noteItem) => {
+                    event.stopPropagation()
 
-                      if (
-                        event.shiftKey ||
-                        event.ctrlKey ||
-                        event.metaKey
-                      ) {
-                        // Shift, Ctrl and Cmd
-                        // (macOS) all add/remove
-                        // notes from the group.
-                        toggleMultiSelectNote(
-                          noteItem.id,
-                        )
+                    if (event.shiftKey || event.ctrlKey || event.metaKey) {
+                      // Shift, Ctrl and Cmd
+                      // (macOS) all add/remove
+                      // notes from the group.
+                      toggleMultiSelectNote(noteItem.id)
 
-                        return
-                      }
+                      return
+                    }
 
-                      if (
-                        selectedNoteIds.length > 0 &&
-                        selectedNoteIds.includes(
-                          noteItem.id,
-                        )
-                      ) {
-                        // Clicking one note of the
-                        // group keeps the group;
-                        // double-click opens it.
-                        return
-                      }
-                      if (!hasDraggedNote) {
-                        setSelectedNoteIds([])
+                    if (selectedNoteIds.length > 0 && selectedNoteIds.includes(noteItem.id)) {
+                      // Clicking one note of the
+                      // group keeps the group;
+                      // double-click opens it.
+                      return
+                    }
+                    if (!hasDraggedNote) {
+                      setSelectedNoteIds([])
 
-                        openNote(noteItem)
-                      }
-                    }}
-                  />
-                ),
-              )}
+                      openNote(noteItem)
+                    }
+                  }}
+                />
+              ))}
             </div>
           </div>
 
@@ -5295,511 +3101,237 @@ function App({
             <div
               className="marquee-rect"
               style={{
-                left: `${Math.min(
-                  marquee.x0,
-                  marquee.x1,
-                )}px`,
-                top: `${Math.min(
-                  marquee.y0,
-                  marquee.y1,
-                )}px`,
-                width: `${Math.abs(
-                  marquee.x1 - marquee.x0,
-                )}px`,
-                height: `${Math.abs(
-                  marquee.y1 - marquee.y0,
-                )}px`,
+                left: `${Math.min(marquee.x0, marquee.x1)}px`,
+                top: `${Math.min(marquee.y0, marquee.y1)}px`,
+                width: `${Math.abs(marquee.x1 - marquee.x0)}px`,
+                height: `${Math.abs(marquee.y1 - marquee.y0)}px`,
               }}
             />
           )}
 
           <ConnectionLayer
-            notes={
-              workspace.notes
-            }
-            connections={
-              workspace.connections
-            }
-            selectedConnectionId={
-              selectedConnectionId
-            }
-            onSelectConnection={(
-              connectionId,
-            ) => {
-              setSelectedConnectionId(
-                connectionId,
-              )
+            notes={workspace.notes}
+            connections={workspace.connections}
+            selectedConnectionId={selectedConnectionId}
+            onSelectConnection={(connectionId) => {
+              setSelectedConnectionId(connectionId)
 
-              setConnectingNoteId(
-                null,
-              )
+              setConnectingNoteId(null)
             }}
-            onDeleteConnection={
-              deleteConnection
-            }
-            zoom={
-              zoom
-            }
-            pan={
-              pan
-            }
+            onDeleteConnection={deleteConnection}
+            zoom={zoom}
+            pan={pan}
           />
 
-          {workspace.notes.length ===
-            0 && (
-            <CanvasEmptyState
-              t={t}
-              creatingNote={
-                creatingNote
-              }
-              onCreateNote={
-                createNote
-              }
-            />
+          {workspace.notes.length === 0 && (
+            <CanvasEmptyState t={t} creatingNote={creatingNote} onCreateNote={createNote} />
           )}
 
           {connectingNoteId && (
             <div className="connection-status">
-              <span>
-                {t(
-                  'connect',
-                )}
-              </span>
+              <span>{t('connect')}</span>
 
-              <strong>
-                {
-                  connectingNoteId.slice(
-                    0,
-                    6,
-                  )
-                }
-              </strong>
+              <strong>{connectingNoteId.slice(0, 6)}</strong>
 
               <button
-                onClick={(
-                  event,
-                ) => {
+                onClick={(event) => {
                   event.stopPropagation()
 
-                  setConnectingNoteId(
-                    null,
-                  )
+                  setConnectingNoteId(null)
                 }}
               >
-                {t(
-                  'cancel',
-                )}
+                {t('cancel')}
               </button>
             </div>
           )}
 
-          {selectedConnectionId &&
-            selectedConnection && (
-              <div className="connection-status">
-                <span>
-                  {t(
-                    'connection',
-                  )}
-                </span>
+          {selectedConnectionId && selectedConnection && (
+            <div className="connection-status">
+              <span>{t('connection')}</span>
 
-                <strong>
-                  {
-                    selectedConnectionId.slice(
-                      0,
-                      6,
-                    )
-                  }
-                </strong>
+              <strong>{selectedConnectionId.slice(0, 6)}</strong>
 
-                <button
-                  onClick={(
-                    event,
-                  ) => {
-                    event.stopPropagation()
+              <button
+                onClick={(event) => {
+                  event.stopPropagation()
 
-                    deleteSelectedConnection()
-                  }}
-                >
-                  {t(
-                    'delete',
-                  )}
-                </button>
+                  deleteSelectedConnection()
+                }}
+              >
+                {t('delete')}
+              </button>
 
-                <button
-                  onClick={(
-                    event,
-                  ) => {
-                    event.stopPropagation()
+              <button
+                onClick={(event) => {
+                  event.stopPropagation()
 
-                    setSelectedConnectionId(
-                      null,
-                    )
-                  }}
-                >
-                  {t(
-                    'cancel',
-                  )}
-                </button>
-              </div>
-            )}
+                  setSelectedConnectionId(null)
+                }}
+              >
+                {t('cancel')}
+              </button>
+            </div>
+          )}
 
           <CanvasControls
             t={t}
-            zoom={
-              zoom
-            }
-            onZoomIn={
-              zoomIn
-            }
-            onZoomOut={
-              zoomOut
-            }
-            onReset={
-              resetCanvasView
-            }
+            zoom={zoom}
+            onZoomIn={zoomIn}
+            onZoomOut={zoomOut}
+            onReset={resetCanvasView}
           />
 
           <button
             className="floating-create"
-            onClick={
-              createNote
-            }
-            disabled={
-              creatingNote
-            }
-            aria-label={t(
-              'createNoteAria',
-            )}
+            onClick={createNote}
+            disabled={creatingNote}
+            aria-label={t('createNoteAria')}
           >
             +
           </button>
         </div>
 
-        {selectedNote &&
-          noteDraft && (
-            <NoteEditor
-              t={t}
-              language={
-                language
-              }
-              noteDraft={
-                noteDraft
-              }
-              selectTitleOnOpen={
-                noteEditorSelectTitle
-              }
-              editorStyle={
-                editorStyle
-              }
-              confirmingDelete={
-                confirmingDelete
-              }
-              savingNote={
-                savingNote
-              }
-              addingFiles={
-                addingFiles
-              }
-              openingFilePath={
-                openingFilePath
-              }
-              onStartResize={
-                startEditorResize
-              }
-              onClose={
-                closeNoteEditor
-              }
-              onOpenStatusStyles={() =>
-                setStatusStylePanelOpen(
-                  true,
-                )
-              }
-              projectDirectory={
-                projectDirectory ??
-                undefined
-              }
-              workspace={
-                workspace
-              }
-              onUpdateNoteDraft={
-                updateNoteDraft
-              }
-              onApplyNoteDraftChange={
-                applyNoteDraftChange
-              }
-              onAddFiles={
-                addFilesToNote
-              }
-              onOpenProjectFile={
-                openProjectFile
-              }
-              onRemoveFile={
-                removeFileFromNote
-              }
-              onSave={
-                saveNote
-              }
-              onSetConfirmingDelete={
-                setConfirmingDelete
-              }
-              onDeleteNote={
-                deleteNote
-              }
-            />
-          )}
+        {selectedNote && noteDraft && (
+          <NoteEditor
+            t={t}
+            language={language}
+            noteDraft={noteDraft}
+            selectTitleOnOpen={noteEditorSelectTitle}
+            editorStyle={editorStyle}
+            confirmingDelete={confirmingDelete}
+            savingNote={savingNote}
+            addingFiles={addingFiles}
+            openingFilePath={openingFilePath}
+            onStartResize={startEditorResize}
+            onClose={closeNoteEditor}
+            onOpenStatusStyles={() => setStatusStylePanelOpen(true)}
+            projectDirectory={projectDirectory ?? undefined}
+            workspace={workspace}
+            onUpdateNoteDraft={updateNoteDraft}
+            onApplyNoteDraftChange={applyNoteDraftChange}
+            onAddFiles={addFilesToNote}
+            onOpenProjectFile={openProjectFile}
+            onRemoveFile={removeFileFromNote}
+            onSave={saveNote}
+            onSetConfirmingDelete={setConfirmingDelete}
+            onDeleteNote={deleteNote}
+          />
+        )}
 
         {workspaceEditorOpen && (
           <WorkspaceEditor
             t={t}
-            editorStyle={
-              editorStyle
-            }
-            projectName={
-              projectName
-            }
-            workspaceTitleDraft={
-              workspaceTitleDraft
-            }
-            workspaceDescriptionDraft={
-              workspaceDescriptionDraft
-            }
-            savingWorkspaceInfo={
-              savingWorkspaceInfo
-            }
-            onTitleDraftChange={
-              setWorkspaceTitleDraft
-            }
-            onDescriptionDraftChange={
-              setWorkspaceDescriptionDraft
-            }
-            onClose={
-              closeWorkspaceEditor
-            }
-            onSave={
-              saveWorkspaceInfo
-            }
-            onStartResize={
-              startEditorResize
-            }
+            editorStyle={editorStyle}
+            projectName={projectName}
+            workspaceTitleDraft={workspaceTitleDraft}
+            workspaceDescriptionDraft={workspaceDescriptionDraft}
+            savingWorkspaceInfo={savingWorkspaceInfo}
+            onTitleDraftChange={setWorkspaceTitleDraft}
+            onDescriptionDraftChange={setWorkspaceDescriptionDraft}
+            onClose={closeWorkspaceEditor}
+            onSave={saveWorkspaceInfo}
+            onStartResize={startEditorResize}
           />
         )}
 
-        {documentationEditorOpen &&
-          documentationDraft && (
-            <DocumentationEditor
-              t={t}
-              editorStyle={
-                editorStyle
-              }
-              documentationDraft={
-                documentationDraft
-              }
-              documentationExists={workspace.documentation.some(
-                (item) =>
-                  item.id ===
-                  documentationDraft.id,
-              )}
-              savingDocumentation={
-                savingDocumentation
-              }
-              onDraftChange={
-                setDocumentationDraft
-              }
-              onClose={
-                closeDocumentationEditor
-              }
-              onSave={
-                saveDocumentation
-              }
-              onDelete={() =>
-                deleteDocumentation(
-                  documentationDraft.id,
-                )
-              }
-              onStartResize={
-                startEditorResize
-              }
-            />
-          )}
+        {documentationEditorOpen && documentationDraft && (
+          <DocumentationEditor
+            t={t}
+            editorStyle={editorStyle}
+            documentationDraft={documentationDraft}
+            documentationExists={workspace.documentation.some(
+              (item) => item.id === documentationDraft.id,
+            )}
+            savingDocumentation={savingDocumentation}
+            onDraftChange={setDocumentationDraft}
+            onClose={closeDocumentationEditor}
+            onSave={saveDocumentation}
+            onDelete={() => deleteDocumentation(documentationDraft.id)}
+            onStartResize={startEditorResize}
+          />
+        )}
 
         {aiContextPanelOpen && (
           <AiContextPanel
             t={t}
-            workspace={
-              workspace
-            }
-            selectedNote={
-              selectedNote
-            }
-            selectedNoteId={
-              selectedNoteId
-            }
-            selectedNoteCount={
-              selectedNoteIds.length
-            }
-            aiContextStyles={
-              aiContextStyles
-            }
-            copiedContext={
-              copiedContext
-            }
-            aiContextDraft={
-              aiContextDraft
-            }
-            savingAiContext={
-              savingAiContext
-            }
-            onAiContextDraftChange={
-              setAiContextDraft
-            }
-            onCopyContext={
-              copyContext
-            }
-            onClose={
-              closeAiContextPanel
-            }
-            onSave={
-              saveAiContext
-            }
+            workspace={workspace}
+            selectedNote={selectedNote}
+            selectedNoteId={selectedNoteId}
+            selectedNoteCount={selectedNoteIds.length}
+            aiContextStyles={aiContextStyles}
+            copiedContext={copiedContext}
+            aiContextDraft={aiContextDraft}
+            savingAiContext={savingAiContext}
+            onAiContextDraftChange={setAiContextDraft}
+            onCopyContext={copyContext}
+            onClose={closeAiContextPanel}
+            onSave={saveAiContext}
           />
         )}
 
         {directoryPanelOpen && (
           <DirectoryPanel
             t={t}
-            language={
-              language
-            }
-            directorySearch={
-              directorySearch
-            }
-            directorySearching={
-              directorySearching
-            }
-            directoryLoading={
-              directoryLoading
-            }
-            activeDirectoryTree={
-              activeDirectoryTree
-            }
-            forceExpanded={Boolean(
-              directorySearch.trim(),
-            )}
-            selectedFileInfo={
-              selectedFileInfo
-            }
-            openingFilePath={
-              openingFilePath
-            }
-            onDirectorySearchChange={
-              setDirectorySearch
-            }
-            onRefresh={
-              refreshDirectory
-            }
-            onRenderFileTreeNode={
-              renderFileTreeNode
-            }
-            onOpenProjectFile={
-              openProjectFile
-            }
-            onClose={
-              closeDirectoryPanel
-            }
+            language={language}
+            directorySearch={directorySearch}
+            directorySearching={directorySearching}
+            directoryLoading={directoryLoading}
+            activeDirectoryTree={activeDirectoryTree}
+            forceExpanded={Boolean(directorySearch.trim())}
+            selectedFileInfo={selectedFileInfo}
+            openingFilePath={openingFilePath}
+            onDirectorySearchChange={setDirectorySearch}
+            onRefresh={refreshDirectory}
+            onRenderFileTreeNode={renderFileTreeNode}
+            onOpenProjectFile={openProjectFile}
+            onClose={closeDirectoryPanel}
           />
         )}
 
         {statusStylePanelOpen && (
           <StatusStylePanel
             t={t}
-            workspace={
-              workspace
-            }
-            onConfigureStatus={
-              configureStatusStyle
-            }
-            onClose={() =>
-              setStatusStylePanelOpen(
-                false,
-              )
-            }
+            workspace={workspace}
+            onConfigureStatus={configureStatusStyle}
+            onClose={() => setStatusStylePanelOpen(false)}
           />
         )}
 
         {helpOpen && (
           <HelpOverlay
             t={t}
-            helpSearch={
-              helpSearch
-            }
-            onHelpSearchChange={
-              setHelpSearch
-            }
-            onClose={() =>
-              setHelpOpen(
-                false,
-              )
-            }
+            helpSearch={helpSearch}
+            onHelpSearchChange={setHelpSearch}
+            onClose={() => setHelpOpen(false)}
           />
         )}
       </div>
 
       <footer className="footer">
-        <span>
-          BRUTO / {projectName?.toUpperCase()}
-        </span>
+        <span>BRUTO / {projectName?.toUpperCase()}</span>
 
         <span>
-          {workspace.notes.length}{' '}
-          {t(
-            'notes',
-          )}
+          {workspace.notes.length} {t('notes')}
         </span>
       </footer>
     </main>
   )
 }
 
-function getStoredSidebarVisible(
-): boolean {
-  return (
-    localStorage.getItem(
-      'bruto-sidebar-visible',
-    ) !==
-    'false'
-  )
+function getStoredSidebarVisible(): boolean {
+  return localStorage.getItem('bruto-sidebar-visible') !== 'false'
 }
 
-function getStoredSidebarWidth(
-): number {
-  const stored =
-    localStorage.getItem(
-      'bruto-sidebar-width',
-    )
+function getStoredSidebarWidth(): number {
+  const stored = localStorage.getItem('bruto-sidebar-width')
 
-  const parsed =
-    stored
-      ? Number.parseInt(
-          stored,
-          10,
-        )
-      : Number.NaN
+  const parsed = stored ? Number.parseInt(stored, 10) : Number.NaN
 
-  if (
-    Number.isNaN(
-      parsed,
-    )
-  ) {
+  if (Number.isNaN(parsed)) {
     return 250
   }
 
-  return Math.min(
-    560,
-    Math.max(
-      190,
-      parsed,
-    ),
-  )
+  return Math.min(560, Math.max(190, parsed))
 }
 
 interface ProjectSwitcherProps {
@@ -5810,12 +3342,8 @@ interface ProjectSwitcherProps {
    * from the header menu. */
   backgroundProjects: BackgroundProject[]
   t: (key: TranslationKey) => string
-  onSwitchProject: (
-    project: BackgroundProject,
-  ) => void
-  onCloseBackgroundProject: (
-    project: BackgroundProject,
-  ) => void
+  onSwitchProject: (project: BackgroundProject) => void
+  onCloseBackgroundProject: (project: BackgroundProject) => void
   onAddProject: () => void
   onCloseCurrentProject: () => void
 }
@@ -5829,163 +3357,88 @@ function ProjectSwitcher({
   onAddProject,
   onCloseCurrentProject,
 }: ProjectSwitcherProps) {
-  const [open, setOpen] =
-    useState(false)
+  const [open, setOpen] = useState(false)
 
-  const rootRef =
-    useRef<HTMLDivElement | null>(
-      null,
-    )
+  const rootRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (!open) {
       return
     }
 
-    const handlePointerDown = (
-      event: PointerEvent,
-    ) => {
-      if (
-        rootRef.current &&
-        !rootRef.current.contains(
-          event.target as Node,
-        )
-      ) {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
         setOpen(false)
       }
     }
 
-    const handleKeyDown = (
-      event: KeyboardEvent,
-    ) => {
-      if (
-        event.key === 'Escape'
-      ) {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         setOpen(false)
       }
     }
 
-    document.addEventListener(
-      'pointerdown',
-      handlePointerDown,
-    )
+    document.addEventListener('pointerdown', handlePointerDown)
 
-    document.addEventListener(
-      'keydown',
-      handleKeyDown,
-    )
+    document.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      document.removeEventListener(
-        'pointerdown',
-        handlePointerDown,
-      )
+      document.removeEventListener('pointerdown', handlePointerDown)
 
-      document.removeEventListener(
-        'keydown',
-        handleKeyDown,
-      )
+      document.removeEventListener('keydown', handleKeyDown)
     }
   }, [open])
 
   return (
-    <div
-      className="project-switcher"
-      ref={rootRef}
-    >
+    <div className="project-switcher" ref={rootRef}>
       <button
         type="button"
-        className={`project-switcher-trigger ${
-          open
-            ? 'project-switcher-trigger-open'
-            : ''
-        }`}
+        className={`project-switcher-trigger ${open ? 'project-switcher-trigger-open' : ''}`}
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={() =>
-          setOpen(
-            (current) =>
-              !current,
-          )
-        }
+        onClick={() => setOpen((current) => !current)}
       >
-        <span>
-          /{' '}
-          {currentName}
-        </span>
+        <span>/ {currentName}</span>
 
-        <span className="project-switcher-caret">
-          ▾
-        </span>
+        <span className="project-switcher-caret">▾</span>
       </button>
 
       {open && (
-        <div
-          className="project-switcher-menu"
-          role="menu"
-        >
-          {backgroundProjects.map(
-            (project) => (
-              <div
-                key={
-                  project.name
-                }
-                className="project-switcher-row-group"
+        <div className="project-switcher-menu" role="menu">
+          {backgroundProjects.map((project) => (
+            <div key={project.name} className="project-switcher-row-group">
+              <button
+                type="button"
+                role="menuitem"
+                className="project-switcher-row"
+                onClick={() => {
+                  onSwitchProject(project)
+
+                  setOpen(false)
+                }}
               >
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="project-switcher-row"
-                  onClick={() => {
-                    onSwitchProject(
-                      project,
-                    )
+                <span className="project-switcher-name">{project.name}</span>
+              </button>
 
-                    setOpen(
-                      false,
-                    )
-                  }}
-                >
-                  <span className="project-switcher-name">
-                    {
-                      project.name
-                    }
-                  </span>
-                </button>
+              <button
+                type="button"
+                className="project-switcher-close"
+                aria-label={t('closeProject')}
+                title={t('closeProject')}
+                onClick={(event) => {
+                  event.stopPropagation()
 
-                <button
-                  type="button"
-                  className="project-switcher-close"
-                  aria-label={t(
-                    'closeProject',
-                  )}
-                  title={t(
-                    'closeProject',
-                  )}
-                  onClick={(
-                    event,
-                  ) => {
-                    event.stopPropagation()
+                  onCloseBackgroundProject(project)
 
-                    onCloseBackgroundProject(
-                      project,
-                    )
+                  setOpen(false)
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
 
-                    setOpen(
-                      false,
-                    )
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            ),
-          )}
-
-          {backgroundProjects.length >
-            0 && (
-            <div className="project-switcher-separator" />
-          )}
+          {backgroundProjects.length > 0 && <div className="project-switcher-separator" />}
 
           <button
             type="button"
@@ -5997,8 +3450,7 @@ function ProjectSwitcher({
               setOpen(false)
             }}
           >
-            +{' '}
-            {t('addProject')}
+            + {t('addProject')}
           </button>
 
           <div className="project-switcher-separator" />
@@ -6013,8 +3465,7 @@ function ProjectSwitcher({
               setOpen(false)
             }}
           >
-            ✕{' '}
-            {t('closeProject')}
+            ✕ {t('closeProject')}
           </button>
         </div>
       )}

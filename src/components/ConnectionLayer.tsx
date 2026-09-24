@@ -1,8 +1,5 @@
 import type { Connection, Note } from '../types'
-import {
-  getConnectionPath,
-  getNoteRenderedSize,
-} from '../lib/connectionGeometry'
+import { getConnectionPath, getNoteRenderedSize } from '../lib/connectionGeometry'
 
 export function ConnectionLayer({
   notes,
@@ -16,12 +13,8 @@ export function ConnectionLayer({
   notes: Note[]
   connections: Connection[]
   selectedConnectionId: string | null
-  onSelectConnection: (
-    connectionId: string,
-  ) => void
-  onDeleteConnection: (
-    connectionId: string,
-  ) => void
+  onSelectConnection: (connectionId: string) => void
+  onDeleteConnection: (connectionId: string) => void
   zoom: number
   pan: {
     x: number
@@ -37,10 +30,7 @@ export function ConnectionLayer({
         transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
       }}
     >
-      <svg
-        className="connection-layer"
-        aria-hidden="false"
-      >
+      <svg className="connection-layer" aria-hidden="false">
         <defs>
           <marker
             id="connection-arrow"
@@ -55,113 +45,63 @@ export function ConnectionLayer({
           </marker>
         </defs>
 
-        {connections.map(
-          (
+        {connections.map((connection) => {
+          const fromNote = notes.find((note) => note.id === connection.from)
+
+          const toNote = notes.find((note) => note.id === connection.to)
+
+          if (!fromNote || !toNote) {
+            return null
+          }
+
+          const sizes = {
+            from: getNoteRenderedSize(fromNote),
+            to: getNoteRenderedSize(toNote),
+          }
+
+          const path = getConnectionPath(
             connection,
-          ) => {
-            const fromNote =
-              notes.find(
-                (
-                  note,
-                ) =>
-                  note.id ===
-                  connection.from,
-              )
+            fromNote,
+            toNote,
+            sizes,
+            curveOffset,
+            connections,
+          )
 
-            const toNote =
-              notes.find(
-                (
-                  note,
-                ) =>
-                  note.id ===
-                  connection.to,
-              )
+          const isSelected = selectedConnectionId === connection.id
 
-            if (
-              !fromNote ||
-              !toNote
-            ) {
-              return null
-            }
+          return (
+            <g
+              key={connection.id}
+              className={isSelected ? 'connection-group connection-selected' : 'connection-group'}
+            >
+              <path
+                d={path}
+                className="connection-hitbox"
+                onMouseDown={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
 
-            const sizes = {
-              from: getNoteRenderedSize(
-                fromNote,
-              ),
-              to: getNoteRenderedSize(
-                toNote,
-              ),
-            }
+                  if (event.button === 1) {
+                    onDeleteConnection(connection.id)
 
-            const path =
-              getConnectionPath(
-                connection,
-                fromNote,
-                toNote,
-                sizes,
-                curveOffset,
-                connections,
-              )
+                    return
+                  }
 
-            const isSelected =
-              selectedConnectionId ===
-              connection.id
+                  if (event.button === 0) {
+                    onSelectConnection(connection.id)
+                  }
+                }}
+                onClick={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                }}
+              />
 
-            return (
-              <g
-                key={connection.id}
-                className={
-                  isSelected
-                    ? 'connection-group connection-selected'
-                    : 'connection-group'
-                }
-              >
-                <path
-                  d={path}
-                  className="connection-hitbox"
-                  onMouseDown={(
-                    event,
-                  ) => {
-                    event.preventDefault()
-                    event.stopPropagation()
-
-                    if (
-                      event.button ===
-                      1
-                    ) {
-                      onDeleteConnection(
-                        connection.id,
-                      )
-
-                      return
-                    }
-
-                    if (
-                      event.button ===
-                      0
-                    ) {
-                      onSelectConnection(
-                        connection.id,
-                      )
-                    }
-                  }}
-                  onClick={(
-                    event,
-                  ) => {
-                    event.preventDefault()
-                    event.stopPropagation()
-                  }}
-                />
-
-                <path
-                  d={path}
-                  className="connection-line"
-                  markerEnd="url(#connection-arrow)"
-                />
-              </g>
-            )
-          },
-        )}
+              <path d={path} className="connection-line" markerEnd="url(#connection-arrow)" />
+            </g>
+          )
+        })}
       </svg>
     </div>
   )

@@ -22,12 +22,8 @@ interface AiContextPanelProps {
   copiedContext: ContextScope | null
   aiContextDraft: string
   savingAiContext: boolean
-  onAiContextDraftChange: (
-    value: string,
-  ) => void
-  onCopyContext: (
-    scope: ContextScope,
-  ) => void
+  onAiContextDraftChange: (value: string) => void
+  onCopyContext: (scope: ContextScope) => void
   onClose: () => void
   onSave: () => void
 }
@@ -50,13 +46,8 @@ export function AiContextPanel({
   return (
     <div
       className="ai-context-overlay"
-      onMouseDown={(
-        event,
-      ) => {
-        if (
-          event.target ===
-          event.currentTarget
-        ) {
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
           onClose()
         }
       }}
@@ -64,145 +55,70 @@ export function AiContextPanel({
       <section className="ai-context-window">
         <header className="ai-context-window-header">
           <div>
-            <p className="sidebar-label">
-              {t(
-                'aiContextWindow',
-              )}
-            </p>
+            <p className="sidebar-label">{t('aiContextWindow')}</p>
 
-            <h2 className="ai-context-window-title">
-              {workspace.title.toUpperCase()}
-            </h2>
+            <h2 className="ai-context-window-title">{workspace.title.toUpperCase()}</h2>
 
-            <p>
-              {t(
-                'aiContextWindowDescription',
-              )}
-            </p>
+            <p>{t('aiContextWindowDescription')}</p>
           </div>
 
-          <button
-            className="note-editor-close"
-            onClick={
-              onClose
-            }
-          >
+          <button className="note-editor-close" onClick={onClose}>
             ×
           </button>
         </header>
 
         <div className="ai-context-window-actions">
           <div className="ai-context-scope-card">
-            <span>
-              {t(
-                'selectedNote',
-              )}
-            </span>
+            <span>{t('selectedNote')}</span>
 
             <strong>
               {selectedNoteCount > 1
-                ? `${selectedNoteCount} × ${t(
-                    'notes',
-                  )}`
+                ? `${selectedNoteCount} × ${t('notes')}`
                 : selectedNote
-                  ? selectedNote.title.trim() ||
-                    t(
-                      'untitled',
-                    )
-                  : t(
-                      'notSelected',
-                    )}
+                  ? selectedNote.title.trim() || t('untitled')
+                  : t('notSelected')}
             </strong>
           </div>
 
           <button
             type="button"
             className="ai-context-action"
-            onClick={() =>
-              onCopyContext(
-                'entire',
-              )
-            }
+            onClick={() => onCopyContext('entire')}
           >
-            <span>
-              {t(
-                'entireContextLabel',
-              )}
-            </span>
+            <span>{t('entireContextLabel')}</span>
 
             <strong>
-              {copiedContext ===
-              'entire'
-                ? t(
-                    'copiedContext',
-                  )
-                : t(
-                    'copyEntireContext',
-                  )}
+              {copiedContext === 'entire' ? t('copiedContext') : t('copyEntireContext')}
             </strong>
           </button>
 
           <button
             type="button"
             className="ai-context-action context-painted"
-            disabled={
-              !selectedNoteId
-            }
-            onClick={() =>
-              onCopyContext(
-                'current',
-              )
-            }
+            disabled={!selectedNoteId}
+            onClick={() => onCopyContext('current')}
           >
             <ContextStrips strips={aiContextStyles.current} />
 
-            <span>
-              {t(
-                'currentContext',
-              )}
-            </span>
+            <span>{t('currentContext')}</span>
 
             <strong>
-              {copiedContext ===
-              'current'
-                ? t(
-                    'copiedContext',
-                  )
-                : t(
-                    'copyCurrentNote',
-                  )}
+              {copiedContext === 'current' ? t('copiedContext') : t('copyCurrentNote')}
             </strong>
           </button>
 
           <button
             type="button"
             className="ai-context-action context-painted"
-            disabled={
-              !selectedNoteId
-            }
-            onClick={() =>
-              onCopyContext(
-                'connected',
-              )
-            }
+            disabled={!selectedNoteId}
+            onClick={() => onCopyContext('connected')}
           >
             <ContextStrips strips={aiContextStyles.connected} />
 
-            <span>
-              {t(
-                'connectedContextLabel',
-              )}
-            </span>
+            <span>{t('connectedContextLabel')}</span>
 
             <strong>
-              {copiedContext ===
-              'connected'
-                ? t(
-                    'copiedContext',
-                  )
-                : t(
-                    'copyConnectedContext',
-                  )}
+              {copiedContext === 'connected' ? t('copiedContext') : t('copyConnectedContext')}
             </strong>
           </button>
         </div>
@@ -210,114 +126,46 @@ export function AiContextPanel({
         <div className="ai-context-window-content">
           <div className="ai-context-window-editor">
             <label>
-              <span>
-                {t(
-                  'globalProjectContext',
-                )}
-              </span>
+              <span>{t('globalProjectContext')}</span>
 
               <textarea
                 className="ai-context-window-textarea"
-                value={
-                  aiContextDraft
-                }
-                onChange={(
-                  event,
-                ) =>
-                  onAiContextDraftChange(
-                    event.target.value,
-                  )
-                }
+                value={aiContextDraft}
+                onChange={(event) => onAiContextDraftChange(event.target.value)}
                 spellCheck={false}
-                placeholder={t(
-                  'aiContextPlaceholder',
-                )}
+                placeholder={t('aiContextPlaceholder')}
               />
             </label>
           </div>
 
           <div className="ai-context-window-info">
             <div>
-              <span>
-                {t(
-                  'documentation',
-                )}
-              </span>
+              <span>{t('documentation')}</span>
 
-              <strong>
-                {
-                  workspace
-                    .documentation
-                    .length
-                }
-              </strong>
+              <strong>{workspace.documentation.length}</strong>
             </div>
 
             <div>
-              <span>
-                {t(
-                  'notes',
-                )}
-              </span>
+              <span>{t('notes')}</span>
 
-              <strong>
-                {
-                  workspace
-                    .notes
-                    .length
-                }
-              </strong>
+              <strong>{workspace.notes.length}</strong>
             </div>
 
             <div>
-              <span>
-                {t(
-                  'connections',
-                )}
-              </span>
+              <span>{t('connections')}</span>
 
-              <strong>
-                {
-                  workspace
-                    .connections
-                    .length
-                }
-              </strong>
+              <strong>{workspace.connections.length}</strong>
             </div>
           </div>
         </div>
 
         <footer className="ai-context-window-footer">
-          <button
-            className="secondary-button"
-            onClick={
-              onClose
-            }
-            disabled={
-              savingAiContext
-            }
-          >
-            {t(
-              'close',
-            )}
+          <button className="secondary-button" onClick={onClose} disabled={savingAiContext}>
+            {t('close')}
           </button>
 
-          <button
-            className="primary-button"
-            onClick={
-              onSave
-            }
-            disabled={
-              savingAiContext
-            }
-          >
-            {savingAiContext
-              ? t(
-                  'saving',
-                )
-              : t(
-                  'saveGlobalContext',
-                )}
+          <button className="primary-button" onClick={onSave} disabled={savingAiContext}>
+            {savingAiContext ? t('saving') : t('saveGlobalContext')}
           </button>
         </footer>
       </section>

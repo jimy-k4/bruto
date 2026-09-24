@@ -24,28 +24,16 @@ const maxStrips = 5
  * keeps its default look. The
  * button needs the
  * `context-painted` class. */
-export function ContextStrips({
-  strips,
-}: {
-  strips: ContextStrip[]
-}) {
+export function ContextStrips({ strips }: { strips: ContextStrip[] }) {
   if (strips.length === 0) {
     return null
   }
 
   return (
-    <span
-      className="context-strips"
-      aria-hidden="true"
-    >
-      {strips
-        .slice(0, maxStrips)
-        .map((strip, index) => (
-          <span
-            key={index}
-            className={`note-color-${strip.color} note-pattern-${strip.pattern}`}
-          />
-        ))}
+    <span className="context-strips" aria-hidden="true">
+      {strips.slice(0, maxStrips).map((strip, index) => (
+        <span key={index} className={`note-color-${strip.color} note-pattern-${strip.pattern}`} />
+      ))}
     </span>
   )
 }

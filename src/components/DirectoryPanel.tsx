@@ -13,18 +13,10 @@ interface DirectoryPanelProps {
   forceExpanded: boolean
   selectedFileInfo: SelectedFileInfo | null
   openingFilePath: string | null
-  onDirectorySearchChange: (
-    value: string,
-  ) => void
+  onDirectorySearchChange: (value: string) => void
   onRefresh: () => void
-  onRenderFileTreeNode: (
-    node: FileTreeNode,
-    depth: number,
-    forceExpanded: boolean,
-  ) => ReactNode
-  onOpenProjectFile: (
-    filePath: string,
-  ) => void
+  onRenderFileTreeNode: (node: FileTreeNode, depth: number, forceExpanded: boolean) => ReactNode
+  onOpenProjectFile: (filePath: string) => void
   onClose: () => void
 }
 
@@ -47,13 +39,8 @@ export function DirectoryPanel({
   return (
     <div
       className="ai-context-overlay"
-      onMouseDown={(
-        event,
-      ) => {
-        if (
-          event.target ===
-          event.currentTarget
-        ) {
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
           onClose()
         }
       }}
@@ -61,31 +48,14 @@ export function DirectoryPanel({
       <section className="ai-context-window directory-window">
         <header className="ai-context-window-header">
           <div>
-            <p className="sidebar-label">
-              {t(
-                'directory',
-              )}
-            </p>
+            <p className="sidebar-label">{t('directory')}</p>
 
-            <h2>
-              {t(
-                'directoryTitle',
-              )}
-            </h2>
+            <h2>{t('directoryTitle')}</h2>
 
-            <p>
-              {t(
-                'directoryDescription',
-              )}
-            </p>
+            <p>{t('directoryDescription')}</p>
           </div>
 
-          <button
-            className="note-editor-close"
-            onClick={
-              onClose
-            }
-          >
+          <button className="note-editor-close" onClick={onClose}>
             ×
           </button>
         </header>
@@ -95,191 +65,90 @@ export function DirectoryPanel({
             <input
               type="search"
               className="directory-search"
-              value={
-                directorySearch
-              }
-              onChange={(
-                event,
-              ) =>
-                onDirectorySearchChange(
-                  event.target.value,
-                )
-              }
-              placeholder={t(
-                'directorySearch',
-              )}
+              value={directorySearch}
+              onChange={(event) => onDirectorySearchChange(event.target.value)}
+              placeholder={t('directorySearch')}
               autoFocus
             />
 
             {directorySearching && (
-              <span className="directory-search-status">
-                {t(
-                  'directorySearching',
-                )}
-              </span>
+              <span className="directory-search-status">{t('directorySearching')}</span>
             )}
           </div>
 
           <button
             type="button"
             className="secondary-button"
-            onClick={
-              onRefresh
-            }
-            disabled={
-              directoryLoading
-            }
+            onClick={onRefresh}
+            disabled={directoryLoading}
           >
-            {directoryLoading
-              ? t(
-                  'directoryLoading',
-                )
-              : t(
-                  'directoryRefresh',
-                )}
+            {directoryLoading ? t('directoryLoading') : t('directoryRefresh')}
           </button>
         </div>
 
         <div className="directory-window-content">
           <div className="directory-tree-panel">
-            {directoryLoading &&
-            !activeDirectoryTree ? (
-              <div className="directory-state">
-                {t(
-                  'directoryLoading',
-                )}
-              </div>
+            {directoryLoading && !activeDirectoryTree ? (
+              <div className="directory-state">{t('directoryLoading')}</div>
             ) : activeDirectoryTree ? (
-              activeDirectoryTree.children &&
-              activeDirectoryTree.children
-                .length >
-                0 ? (
+              activeDirectoryTree.children && activeDirectoryTree.children.length > 0 ? (
                 <div className="file-tree">
-                  {onRenderFileTreeNode(
-                    activeDirectoryTree,
-                    0,
-                    forceExpanded,
-                  )}
+                  {onRenderFileTreeNode(activeDirectoryTree, 0, forceExpanded)}
                 </div>
               ) : (
-                <div className="directory-state">
-                  {t(
-                    'directoryEmpty',
-                  )}
-                </div>
+                <div className="directory-state">{t('directoryEmpty')}</div>
               )
             ) : (
-              <div className="directory-state">
-                {t(
-                  'directoryEmpty',
-                )}
-              </div>
+              <div className="directory-state">{t('directoryEmpty')}</div>
             )}
           </div>
 
           <aside className="directory-file-info">
             {!selectedFileInfo ? (
-              <div className="directory-file-info-empty">
-                {t(
-                  'directorySelectFile',
-                )}
-              </div>
+              <div className="directory-file-info-empty">{t('directorySelectFile')}</div>
             ) : (
               <>
                 <div className="directory-file-info-header">
-                  <span className="directory-file-info-type">
-                    {t(
-                      'file',
-                    )}
-                  </span>
+                  <span className="directory-file-info-type">{t('file')}</span>
 
-                  <h3>
-                    {
-                      selectedFileInfo.name
-                    }
-                  </h3>
+                  <h3>{selectedFileInfo.name}</h3>
                 </div>
 
                 <div className="directory-file-info-list">
                   <div>
-                    <span>
-                      {t(
-                        'directoryPath',
-                      )}
-                    </span>
+                    <span>{t('directoryPath')}</span>
 
-                    <strong>
-                      {
-                        selectedFileInfo.path
-                      }
-                    </strong>
+                    <strong>{selectedFileInfo.path}</strong>
                   </div>
 
                   <div>
-                    <span>
-                      {t(
-                        'directorySize',
-                      )}
-                    </span>
+                    <span>{t('directorySize')}</span>
 
-                    <strong>
-                      {formatFileSize(
-                        selectedFileInfo.size,
-                      )}
-                    </strong>
+                    <strong>{formatFileSize(selectedFileInfo.size)}</strong>
                   </div>
 
                   <div>
-                    <span>
-                      {t(
-                        'directoryModified',
-                      )}
-                    </span>
+                    <span>{t('directoryModified')}</span>
 
-                    <strong>
-                      {formatFileDate(
-                        language,
-                        selectedFileInfo.lastModified,
-                      )}
-                    </strong>
+                    <strong>{formatFileDate(language, selectedFileInfo.lastModified)}</strong>
                   </div>
 
                   <div>
-                    <span>
-                      {t(
-                        'directoryMime',
-                      )}
-                    </span>
+                    <span>{t('directoryMime')}</span>
 
-                    <strong>
-                      {
-                        selectedFileInfo.type
-                      }
-                    </strong>
+                    <strong>{selectedFileInfo.type}</strong>
                   </div>
                 </div>
 
                 <button
                   type="button"
                   className="primary-button directory-open-button"
-                  onClick={() =>
-                    onOpenProjectFile(
-                      selectedFileInfo.path,
-                    )
-                  }
-                  disabled={
-                    openingFilePath ===
-                    selectedFileInfo.path
-                  }
+                  onClick={() => onOpenProjectFile(selectedFileInfo.path)}
+                  disabled={openingFilePath === selectedFileInfo.path}
                 >
-                  {openingFilePath ===
-                  selectedFileInfo.path
-                    ? t(
-                        'opening',
-                      )
-                    : t(
-                        'directoryOpenFile',
-                      )}
+                  {openingFilePath === selectedFileInfo.path
+                    ? t('opening')
+                    : t('directoryOpenFile')}
                 </button>
               </>
             )}
@@ -287,15 +156,8 @@ export function DirectoryPanel({
         </div>
 
         <footer className="ai-context-window-footer">
-          <button
-            className="secondary-button"
-            onClick={
-              onClose
-            }
-          >
-            {t(
-              'close',
-            )}
+          <button className="secondary-button" onClick={onClose}>
+            {t('close')}
           </button>
         </footer>
       </section>

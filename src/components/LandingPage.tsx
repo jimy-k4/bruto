@@ -10,14 +10,10 @@ interface LandingPageProps {
   loading: boolean
   helpOpen: boolean
   helpSearch: string
-  onLanguageChange: (
-    language: Language,
-  ) => void
+  onLanguageChange: (language: Language) => void
   onToggleTheme: () => void
   onOpenHelp: () => void
-  onHelpSearchChange: (
-    value: string,
-  ) => void
+  onHelpSearchChange: (value: string) => void
   onCloseHelp: () => void
   onOpenProject: () => void
 }
@@ -38,71 +34,29 @@ export function LandingPage({
 }: LandingPageProps) {
   return (
     <>
-      <main
-        className="app"
-        data-theme={
-          theme
-        }
-      >
+      <main className="app" data-theme={theme}>
         <LandingTopBar
-          theme={
-            theme
-          }
-          language={
-            language
-          }
+          theme={theme}
+          language={language}
           t={t}
-          onLanguageChange={
-            onLanguageChange
-          }
-          onToggleTheme={
-            onToggleTheme
-          }
-          onOpenHelp={
-            onOpenHelp
-          }
+          onLanguageChange={onLanguageChange}
+          onToggleTheme={onToggleTheme}
+          onOpenHelp={onOpenHelp}
         />
 
         <section className="hero">
           <div className="hero-content">
-            <p className="eyebrow">
-              {t(
-                'landingEyebrow',
-              )}
-            </p>
+            <p className="eyebrow">{t('landingEyebrow')}</p>
 
             <h1>
               BRUTO
-
-              <span>
-                {t(
-                  'landingSubtitle',
-                )}
-              </span>
+              <span>{t('landingSubtitle')}</span>
             </h1>
 
-            <p className="hero-description">
-              {t(
-                'landingDescription',
-              )}
-            </p>
+            <p className="hero-description">{t('landingDescription')}</p>
 
-            <button
-              className="primary-button"
-              onClick={
-                onOpenProject
-              }
-              disabled={
-                loading
-              }
-            >
-              {loading
-                ? t(
-                    'opening',
-                  )
-                : t(
-                    'openProject',
-                  )}
+            <button className="primary-button" onClick={onOpenProject} disabled={loading}>
+              {loading ? t('opening') : t('openProject')}
             </button>
           </div>
 
@@ -114,33 +68,18 @@ export function LandingPage({
         </section>
 
         <footer className="footer">
-          <span>
-            BRUTO /{' '}
-            {t(
-              'localFirst',
-            )}
-          </span>
+          <span>BRUTO / {t('localFirst')}</span>
 
-          <span>
-            {t(
-              'noCloudRequired',
-            )}
-          </span>
+          <span>{t('noCloudRequired')}</span>
         </footer>
       </main>
 
       {helpOpen && (
         <HelpOverlay
           t={t}
-          helpSearch={
-            helpSearch
-          }
-          onHelpSearchChange={
-            onHelpSearchChange
-          }
-          onClose={
-            onCloseHelp
-          }
+          helpSearch={helpSearch}
+          onHelpSearchChange={onHelpSearchChange}
+          onClose={onCloseHelp}
         />
       )}
     </>

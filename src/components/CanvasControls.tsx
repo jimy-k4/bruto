@@ -9,75 +9,28 @@ interface CanvasControlsProps {
   onReset: () => void
 }
 
-export function CanvasControls({
-  t,
-  zoom,
-  onZoomIn,
-  onZoomOut,
-  onReset,
-}: CanvasControlsProps) {
+export function CanvasControls({ t, zoom, onZoomIn, onZoomOut, onReset }: CanvasControlsProps) {
   return (
     <div
       className="canvas-controls"
-      onMouseDown={(
-        event: MouseEvent<HTMLDivElement>,
-      ) => {
+      onMouseDown={(event: MouseEvent<HTMLDivElement>) => {
         event.stopPropagation()
       }}
     >
-      <button
-        type="button"
-        onClick={
-          onZoomOut
-        }
-        disabled={
-          zoom <= 0.25
-        }
-        aria-label={t(
-          'zoomOut',
-        )}
-      >
+      <button type="button" onClick={onZoomOut} disabled={zoom <= 0.25} aria-label={t('zoomOut')}>
         −
       </button>
 
-      <button
-        type="button"
-        className="canvas-zoom-value"
-        onClick={
-          onReset
-        }
-      >
-        {Math.round(
-          zoom * 100,
-        )}
-        %
+      <button type="button" className="canvas-zoom-value" onClick={onReset}>
+        {Math.round(zoom * 100)}%
       </button>
 
-      <button
-        type="button"
-        onClick={
-          onZoomIn
-        }
-        disabled={
-          zoom >= 2
-        }
-        aria-label={t(
-          'zoomIn',
-        )}
-      >
+      <button type="button" onClick={onZoomIn} disabled={zoom >= 2} aria-label={t('zoomIn')}>
         +
       </button>
 
-      <button
-        type="button"
-        className="canvas-reset"
-        onClick={
-          onReset
-        }
-      >
-        {t(
-          'reset',
-        )}
+      <button type="button" className="canvas-reset" onClick={onReset}>
+        {t('reset')}
       </button>
     </div>
   )

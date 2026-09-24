@@ -1,19 +1,9 @@
 import type { CSSProperties, MouseEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import type {
-  Language,
-  Note,
-  Workspace,
-} from '../types'
+import type { Language, Note, Workspace } from '../types'
 import type { Translator } from '../i18n/translations'
-import {
-  NOTE_BASE_HEIGHT,
-  NOTE_BASE_WIDTH,
-} from '../lib/connectionGeometry'
-import {
-  getNoteStyle,
-  getNoteStatusLabel,
-} from '../lib/statusLabels'
+import { NOTE_BASE_HEIGHT, NOTE_BASE_WIDTH } from '../lib/connectionGeometry'
+import { getNoteStyle, getNoteStatusLabel } from '../lib/statusLabels'
 import { formatFileSize } from '../lib/format'
 
 interface NoteCardProps {
@@ -40,14 +30,8 @@ interface NoteCardProps {
    * files table can read real
    * size / modified metadata. */
   projectDirectory?: FileSystemDirectoryHandle
-  onNoteMouseDown: (
-    event: MouseEvent<HTMLElement>,
-    note: Note,
-  ) => void
-  onNoteClick: (
-    event: MouseEvent<HTMLElement>,
-    note: Note,
-  ) => void
+  onNoteMouseDown: (event: MouseEvent<HTMLElement>, note: Note) => void
+  onNoteClick: (event: MouseEvent<HTMLElement>, note: Note) => void
 }
 
 export function NoteCard({
@@ -66,10 +50,7 @@ export function NoteCard({
 }: NoteCardProps) {
   // Collapsed by default; each
   // card remembers its own toggle.
-  const [
-    aiResponseOpen,
-    setAiResponseOpen,
-  ] = useState(false)
+  const [aiResponseOpen, setAiResponseOpen] = useState(false)
 
   const cardStyle: CSSProperties = {
     left: `${note.x}px`,
@@ -81,51 +62,19 @@ export function NoteCard({
 
   return (
     <article
-      key={
-        note.id
-      }
-      data-note-id={
-        note.id
-      }
+      key={note.id}
+      data-note-id={note.id}
       className={`note-card note-color-${getNoteStyle(note, workspace).color} note-pattern-${getNoteStyle(note, workspace).pattern} ${
-        isSelected
-          ? 'note-card-selected'
-          : ''
-      } ${
-        isDragging
-          ? 'note-card-dragging'
-          : ''
-      } ${
-        isConnecting
-          ? 'note-card-connecting'
-          : ''
-      } ${
-        justCopied
-          ? 'note-card-copied'
-          : ''
-      } ${
-        justPasted
-          ? 'note-card-pasted'
-          : ''
-      }`}
-      style={
-        cardStyle
-      }
-      onMouseDown={(
-        event,
-      ) => {
-        onNoteMouseDown(
-          event,
-          note,
-        )
+        isSelected ? 'note-card-selected' : ''
+      } ${isDragging ? 'note-card-dragging' : ''} ${isConnecting ? 'note-card-connecting' : ''} ${
+        justCopied ? 'note-card-copied' : ''
+      } ${justPasted ? 'note-card-pasted' : ''}`}
+      style={cardStyle}
+      onMouseDown={(event) => {
+        onNoteMouseDown(event, note)
       }}
-      onClick={(
-        event,
-      ) => {
-        onNoteClick(
-          event,
-          note,
-        )
+      onClick={(event) => {
+        onNoteClick(event, note)
       }}
     >
       {isConnecting && (
@@ -137,70 +86,36 @@ export function NoteCard({
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <rect
-            x="2"
-            y="2"
-            width="276"
-            height="156"
-          />
+          <rect x="2" y="2" width="276" height="156" />
         </svg>
       )}
 
       <div className="note-card-header">
-        <span>
-          {t(
-            'noteLabel',
-          )}
-        </span>
+        <span>{t('noteLabel')}</span>
 
         {note.status && (
-          <div
-            className={`note-card-status note-status-${note.status}`}
-          >
-            <span
-              className="note-card-status-dot"
-            />
+          <div className={`note-card-status note-status-${note.status}`}>
+            <span className="note-card-status-dot" />
 
-            {getNoteStatusLabel(
-              note.status,
-              t,
-            )}
+            {getNoteStatusLabel(note.status, t)}
           </div>
         )}
 
-        <span>
-          {note.id.slice(
-            0,
-            6,
-          )}
-        </span>
+        <span>{note.id.slice(0, 6)}</span>
       </div>
 
-      <h3>
-        {note.title ||
-          t(
-            'untitled',
-          )}
-      </h3>
+      <h3>{note.title || t('untitled')}</h3>
 
-      <p>
-        {note.description ||
-          t(
-            'noDescription',
-          )}
-      </p>
+      <p>{note.description || t('noDescription')}</p>
 
       <div
         className={`note-card-meta ${
-          (note.filePaths ?? []).length ===
-            0 &&
-          !(note.webUrl ?? '').trim()
+          (note.filePaths ?? []).length === 0 && !(note.webUrl ?? '').trim()
             ? 'note-card-meta-empty'
             : ''
         }`}
       >
-        {(note.filePaths ?? []).length >
-          0 && (
+        {(note.filePaths ?? []).length > 0 && (
           <div className="note-card-files-table">
             <div className="note-card-files-head">
               <span>{t('file')}</span>
@@ -208,40 +123,17 @@ export function NoteCard({
               <span>{t('modified')}</span>
             </div>
 
-            {(note.filePaths ?? [])
-              .slice(0, 4)
-              .map(
-                (
-                  filePath,
-                ) => (
-                  <NoteFileRow
-                    key={
-                      filePath
-                    }
-                    filePath={
-                      filePath
-                    }
-                    language={
-                      language
-                    }
-                    projectDirectory={
-                      projectDirectory
-                    }
-                  />
-                ),
-              )}
+            {(note.filePaths ?? []).slice(0, 4).map((filePath) => (
+              <NoteFileRow
+                key={filePath}
+                filePath={filePath}
+                language={language}
+                projectDirectory={projectDirectory}
+              />
+            ))}
 
-            {(note.filePaths ?? [])
-              .length > 4 && (
-              <div className="note-card-files-more">
-                +
-                {
-                  (note
-                    .filePaths ??
-                    [])
-                    .length - 4
-                }
-              </div>
+            {(note.filePaths ?? []).length > 4 && (
+              <div className="note-card-files-more">+{(note.filePaths ?? []).length - 4}</div>
             )}
           </div>
         )}
@@ -249,32 +141,15 @@ export function NoteCard({
         {note.webUrl.trim() && (
           <a
             className="note-card-link"
-            href={
-              note.webUrl
-            }
+            href={note.webUrl}
             target="_blank"
             rel="noopener noreferrer"
-            onMouseDown={(
-              event,
-            ) =>
-              event.stopPropagation()
-            }
-            onClick={(
-              event,
-            ) =>
-              event.stopPropagation()
-            }
+            onMouseDown={(event) => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
           >
-            <span>
-              ↗
-            </span>
+            <span>↗</span>
 
-            <span className="note-card-link-text">
-              {
-                note
-                  .webUrl
-              }
-            </span>
+            <span className="note-card-link-text">{note.webUrl}</span>
           </a>
         )}
       </div>
@@ -283,14 +158,9 @@ export function NoteCard({
           rendered when a model has
           actually written something,
           collapsed by default. */}
-      {(note.aiResponse ?? '')
-        .trim() && (
+      {(note.aiResponse ?? '').trim() && (
         <div
-          className={`note-card-ai-response ${
-            aiResponseOpen
-              ? 'note-card-ai-response-open'
-              : ''
-          }`}
+          className={`note-card-ai-response ${aiResponseOpen ? 'note-card-ai-response-open' : ''}`}
         >
           <button
             type="button"
@@ -298,42 +168,18 @@ export function NoteCard({
             onClick={(event) => {
               event.stopPropagation()
 
-              setAiResponseOpen(
-                !aiResponseOpen,
-              )
+              setAiResponseOpen(!aiResponseOpen)
             }}
-            onMouseDown={(
-              event,
-            ) =>
-              event.stopPropagation()
-            }
+            onMouseDown={(event) => event.stopPropagation()}
           >
-            <span className="note-card-ai-toggle-mark">
-              AI
-            </span>
+            <span className="note-card-ai-toggle-mark">AI</span>
 
-            <span className="note-card-ai-toggle-label">
-              {t(
-                'aiResponse',
-              )}
-            </span>
+            <span className="note-card-ai-toggle-label">{t('aiResponse')}</span>
 
-            <span className="note-card-ai-toggle-arrow">
-              {
-                aiResponseOpen
-                  ? '▾'
-                  : '▸'
-              }
-            </span>
+            <span className="note-card-ai-toggle-arrow">{aiResponseOpen ? '▾' : '▸'}</span>
           </button>
 
-          {aiResponseOpen && (
-            <pre className="note-card-ai-text">
-              {
-                note.aiResponse
-              }
-            </pre>
-          )}
+          {aiResponseOpen && <pre className="note-card-ai-text">{note.aiResponse}</pre>}
         </div>
       )}
     </article>
@@ -344,36 +190,22 @@ export function NoteCard({
  * middle (…/src/deep/file.tsx) so
  * long project paths still fit a
  * narrow column. */
-function shortenFilePath(
-  filePath: string,
-): string {
-  if (
-    filePath.length <=
-    26
-  ) {
+function shortenFilePath(filePath: string): string {
+  if (filePath.length <= 26) {
     return filePath
   }
 
-  const fileName =
-    filePath.split(
-      '/',
-    ).pop() ?? filePath
+  const fileName = filePath.split('/').pop() ?? filePath
 
   if (fileName.length >= 26) {
-    return `…${filePath.slice(
-      -(25),
-    )}`
+    return `…${filePath.slice(-25)}`
   }
 
-  const remaining =
-    26 - fileName.length
+  const remaining = 26 - fileName.length
 
   return `…${filePath.slice(
-    filePath.length -
-      fileName.length -
-      remaining,
-    filePath.length -
-      fileName.length,
+    filePath.length - fileName.length - remaining,
+    filePath.length - fileName.length,
   )}${fileName}`
 }
 
@@ -391,16 +223,12 @@ function NoteFileRow({
   language: Language
   projectDirectory?: FileSystemDirectoryHandle
 }) {
-  const [
-    fileInfo,
-    setFileInfo,
-  ] = useState<{
+  const [fileInfo, setFileInfo] = useState<{
     size: number
     lastModified: number
   } | null>(null)
 
-  const resolvingRef =
-    useRef(false)
+  const resolvingRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -413,47 +241,32 @@ function NoteFileRow({
       resolvingRef.current = true
 
       try {
-        const parts =
-          filePath.split('/')
+        const parts = filePath.split('/')
 
-        const fileName =
-          parts.pop()
+        const fileName = parts.pop()
 
         if (!fileName) {
           return
         }
 
-        let directory:
-          | FileSystemDirectoryHandle
-          | undefined =
-          projectDirectory
+        let directory: FileSystemDirectoryHandle | undefined = projectDirectory
 
         if (!directory) {
           return
         }
 
         for (const part of parts) {
-          directory =
-            await directory.getDirectoryHandle(
-              part,
-            )
+          directory = await directory.getDirectoryHandle(part)
         }
 
-        const fileHandle =
-          await directory.getFileHandle(
-            fileName,
-          )
+        const fileHandle = await directory.getFileHandle(fileName)
 
-        const file =
-          await fileHandle.getFile()
+        const file = await fileHandle.getFile()
 
-        if (
-          !cancelled
-        ) {
+        if (!cancelled) {
           setFileInfo({
             size: file.size,
-            lastModified:
-              file.lastModified,
+            lastModified: file.lastModified,
           })
         }
       } catch {
@@ -461,8 +274,7 @@ function NoteFileRow({
         // file: keep showing just
         // the path.
       } finally {
-        resolvingRef.current =
-          false
+        resolvingRef.current = false
       }
     }
 
@@ -475,35 +287,17 @@ function NoteFileRow({
 
   return (
     <div className="note-card-files-row">
-      <span
-        className="note-card-files-name"
-        title={filePath}
-      >
-        {shortenFilePath(
-          filePath,
-        )}
+      <span className="note-card-files-name" title={filePath}>
+        {shortenFilePath(filePath)}
       </span>
+
+      <span>{fileInfo ? formatFileSize(fileInfo.size) : '—'}</span>
 
       <span>
         {fileInfo
-          ? formatFileSize(
-              fileInfo.size,
-            )
-          : '—'}
-      </span>
-
-      <span>
-        {fileInfo
-          ? new Intl.DateTimeFormat(
-              language,
-              {
-                dateStyle: 'short',
-              },
-            ).format(
-              new Date(
-                fileInfo.lastModified,
-              ),
-            )
+          ? new Intl.DateTimeFormat(language, {
+              dateStyle: 'short',
+            }).format(new Date(fileInfo.lastModified))
           : '—'}
       </span>
     </div>

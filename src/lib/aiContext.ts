@@ -1,26 +1,10 @@
-import type {
-  Connection,
-  ContextScope,
-  Note,
-  Workspace,
-} from '../types'
+import type { Connection, ContextScope, Note, Workspace } from '../types'
 
-export function getNoteDisplayTitle(
-  note: Note,
-) {
-  return (
-    note.title.trim() ||
-    'Untitled'
-  )
+export function getNoteDisplayTitle(note: Note) {
+  return note.title.trim() || 'Untitled'
 }
 
-export function getDocumentationTypeLabel(
-  type:
-    | 'obsidian'
-    | 'notion'
-    | 'web'
-    | 'other',
-) {
+export function getDocumentationTypeLabel(type: 'obsidian' | 'notion' | 'web' | 'other') {
   switch (type) {
     case 'obsidian':
       return 'OBSIDIAN'
@@ -36,102 +20,58 @@ export function getDocumentationTypeLabel(
   }
 }
 
-export function getConnectedNoteIds(
-  workspace: Workspace,
-  startNoteId: string,
-) {
-  const visited =
-    new Set<string>()
+export function getConnectedNoteIds(workspace: Workspace, startNoteId: string) {
+  const visited = new Set<string>()
 
-  const queue = [
-    startNoteId,
-  ]
+  const queue = [startNoteId]
 
   visited.add(startNoteId)
 
   while (queue.length > 0) {
-    const currentId =
-      queue.shift()
+    const currentId = queue.shift()
 
     if (!currentId) {
       continue
     }
 
-    const outgoingConnections =
-      workspace.connections.filter(
-        (connection) =>
-          connection.from ===
-          currentId,
-      )
+    const outgoingConnections = workspace.connections.filter(
+      (connection) => connection.from === currentId,
+    )
 
     for (const connection of outgoingConnections) {
-      if (
-        visited.has(
-          connection.to,
-        )
-      ) {
+      if (visited.has(connection.to)) {
         continue
       }
 
-      visited.add(
-        connection.to,
-      )
+      visited.add(connection.to)
 
-      queue.push(
-        connection.to,
-      )
+      queue.push(connection.to)
     }
   }
 
   return visited
 }
 
-export function areConnectionsBidirectional(
-  connections: Connection[],
-  first: Connection,
-) {
+export function areConnectionsBidirectional(connections: Connection[], first: Connection) {
   return connections.some(
-    (connection) =>
-      connection.from ===
-        first.to &&
-      connection.to ===
-        first.from,
+    (connection) => connection.from === first.to && connection.to === first.from,
   )
 }
 
-export function getUniqueRelationshipConnections(
-  connections: Connection[],
-) {
-  const relationships =
-    new Map<
-      string,
-      Connection
-    >()
+export function getUniqueRelationshipConnections(connections: Connection[]) {
+  const relationships = new Map<string, Connection>()
 
   for (const connection of connections) {
-    const ids = [
-      connection.from,
-      connection.to,
-    ].sort()
+    const ids = [connection.from, connection.to].sort()
 
-    const key =
-      ids.join('::')
+    const key = ids.join('::')
 
-    if (
-      !relationships.has(
-        key,
-      )
-    ) {
-      relationships.set(
-        key,
-        connection,
-      )
+    if (!relationships.has(key)) {
+      relationships.set(key, connection)
     }
   }
 
-  return Array.from(
-    relationships.values(),
-  )
+  return Array.from(relationships.values())
 }
 
 /**
@@ -164,22 +104,13 @@ export function buildAiContext(
   let includedNoteIds = new Set<string>()
 
   if (scope === 'entire') {
-    includedNoteIds = new Set(
-      workspace.notes.map(
-        (note) => note.id,
-      ),
-    )
+    includedNoteIds = new Set(workspace.notes.map((note) => note.id))
   }
 
-  if (
-    scope !== 'entire' &&
-    selectedNoteIds.length > 0
-  ) {
+  if (scope !== 'entire' && selectedNoteIds.length > 0) {
     if (scope === 'current') {
       for (const noteId of selectedNoteIds) {
-        includedNoteIds.add(
-          noteId,
-        )
+        includedNoteIds.add(noteId)
       }
     }
 
@@ -189,36 +120,18 @@ export function buildAiContext(
       // selected note; overlapping
       // graphs merge naturally.
       for (const noteId of selectedNoteIds) {
-        for (const connectedId of getConnectedNoteIds(
-          workspace,
-          noteId,
-        )) {
-          includedNoteIds.add(
-            connectedId,
-          )
+        for (const connectedId of getConnectedNoteIds(workspace, noteId)) {
+          includedNoteIds.add(connectedId)
         }
       }
     }
   }
 
-  const includedNotes =
-    workspace.notes.filter(
-      (note) =>
-        includedNoteIds.has(
-          note.id,
-        ),
-    )
+  const includedNotes = workspace.notes.filter((note) => includedNoteIds.has(note.id))
 
-  const includedConnections =
-    workspace.connections.filter(
-      (connection) =>
-        includedNoteIds.has(
-          connection.from,
-        ) &&
-        includedNoteIds.has(
-          connection.to,
-        ),
-    )
+  const includedConnections = workspace.connections.filter(
+    (connection) => includedNoteIds.has(connection.from) && includedNoteIds.has(connection.to),
+  )
 
   const lines: string[] = []
 
@@ -229,20 +142,13 @@ export function buildAiContext(
 
   lines.push(titleLine)
 
-  if (
-    workspace.description.trim()
-  ) {
-    lines.push(
-      workspace.description.trim(),
-    )
+  if (workspace.description.trim()) {
+    lines.push(workspace.description.trim())
   }
 
   lines.push('')
 
-  if (
-    workspace.documentation.length >
-    0
-  ) {
+  if (workspace.documentation.length > 0) {
     lines.push('## DOCUMENTATION')
     lines.push('')
 
@@ -257,15 +163,11 @@ export function buildAiContext(
     lines.push('')
   }
 
-  if (
-    workspace.aiContext.trim()
-  ) {
+  if (workspace.aiContext.trim()) {
     lines.push('## GLOBAL AI CONTEXT')
     lines.push('')
 
-    lines.push(
-      workspace.aiContext.trim(),
-    )
+    lines.push(workspace.aiContext.trim())
 
     lines.push('')
   }
@@ -277,67 +179,25 @@ export function buildAiContext(
   // root notes. Single-note and
   // entire scopes are
   // self-explanatory.
-  if (
-    scope === 'current' &&
-    selectedNoteIds.length > 1
-  ) {
-    lines.push(
-      `Scope: ${selectedNoteIds.length} selected notes.`,
-    )
+  if (scope === 'current' && selectedNoteIds.length > 1) {
+    lines.push(`Scope: ${selectedNoteIds.length} selected notes.`)
 
     lines.push('')
   }
 
-  if (
-    scope === 'connected' &&
-    selectedNoteIds.length > 0
-  ) {
-    const rootTitles =
-      selectedNoteIds
-        .map(
-          (
-            noteId,
-          ) =>
-            workspace.notes.find(
-              (note) =>
-                note.id ===
-                noteId,
-            ),
-        )
-        .filter(
-          (
-            note,
-          ): note is Note =>
-            Boolean(note),
-        )
-        .map(
-          (note) =>
-            `"${getNoteDisplayTitle(
-              note,
-            )}"`,
-        )
+  if (scope === 'connected' && selectedNoteIds.length > 0) {
+    const rootTitles = selectedNoteIds
+      .map((noteId) => workspace.notes.find((note) => note.id === noteId))
+      .filter((note): note is Note => Boolean(note))
+      .map((note) => `"${getNoteDisplayTitle(note)}"`)
 
-    if (
-      rootTitles.length ===
-      1
-    ) {
+    if (rootTitles.length === 1) {
+      lines.push(`Scope: connected graph rooted at ${rootTitles[0]}.`)
+    } else if (rootTitles.length > 1) {
       lines.push(
-        `Scope: connected graph rooted at ${rootTitles[0]}.`,
-      )
-    } else if (
-      rootTitles.length >
-      1
-    ) {
-      lines.push(
-        `Scope: connected graphs rooted at ${rootTitles
-          .slice(
-            0,
-            -1,
-          )
-          .join(', ')} and ${rootTitles[
-          rootTitles.length -
-            1
-        ]}.`,
+        `Scope: connected graphs rooted at ${rootTitles.slice(0, -1).join(', ')} and ${
+          rootTitles[rootTitles.length - 1]
+        }.`,
       )
     }
 
@@ -347,137 +207,76 @@ export function buildAiContext(
   lines.push('## NOTES')
   lines.push('')
 
-  if (
-    includedNotes.length ===
-    0
-  ) {
-    lines.push(
-      '_No notes included in this context._',
-    )
+  if (includedNotes.length === 0) {
+    lines.push('_No notes included in this context._')
 
     lines.push('')
   }
 
   for (const note of includedNotes) {
-    lines.push(
-      `### ${getNoteDisplayTitle(
-        note,
-      )}`,
-    )
+    lines.push(`### ${getNoteDisplayTitle(note)}`)
 
     if (note.status) {
       lines.push('')
 
-      lines.push(
-        `Status: ${note.status}`,
-      )
+      lines.push(`Status: ${note.status}`)
     }
 
-    if (
-      note.description.trim()
-    ) {
+    if (note.description.trim()) {
       lines.push('')
 
-      lines.push(
-        note.description.trim(),
-      )
+      lines.push(note.description.trim())
     }
 
-    if (
-      note.filePaths.length >
-      0
-    ) {
+    if (note.filePaths.length > 0) {
       lines.push('')
 
       lines.push('Files:')
 
       for (const filePath of note.filePaths) {
-        lines.push(
-          `- ${filePath}`,
-        )
+        lines.push(`- ${filePath}`)
       }
     }
 
-    if (
-      note.webUrl.trim()
-    ) {
+    if (note.webUrl.trim()) {
       lines.push('')
 
-      lines.push(
-        `Web: ${note.webUrl.trim()}`,
-      )
+      lines.push(`Web: ${note.webUrl.trim()}`)
     }
 
-    if (
-      note.images.length >
-      0
-    ) {
+    if (note.images.length > 0) {
       lines.push('')
 
       lines.push('Images:')
 
       for (const image of note.images) {
-        lines.push(
-          `- ${image}`,
-        )
+        lines.push(`- ${image}`)
       }
     }
 
     lines.push('')
   }
 
-  if (
-    includedConnections.length >
-    0
-  ) {
+  if (includedConnections.length > 0) {
     lines.push('## RELATIONSHIPS')
     lines.push('')
 
-    const uniqueRelationships =
-      getUniqueRelationshipConnections(
-        includedConnections,
-      )
+    const uniqueRelationships = getUniqueRelationshipConnections(includedConnections)
 
     for (const relationship of uniqueRelationships) {
-      const fromNote =
-        workspace.notes.find(
-          (note) =>
-            note.id ===
-            relationship.from,
-        )
+      const fromNote = workspace.notes.find((note) => note.id === relationship.from)
 
-      const toNote =
-        workspace.notes.find(
-          (note) =>
-            note.id ===
-            relationship.to,
-        )
+      const toNote = workspace.notes.find((note) => note.id === relationship.to)
 
-      if (
-        !fromNote ||
-        !toNote
-      ) {
+      if (!fromNote || !toNote) {
         continue
       }
 
-      const bidirectional =
-        areConnectionsBidirectional(
-          workspace.connections,
-          relationship,
-        )
+      const bidirectional = areConnectionsBidirectional(workspace.connections, relationship)
 
-      const symbol =
-        bidirectional
-          ? '<->'
-          : '->'
+      const symbol = bidirectional ? '<->' : '->'
 
-      lines.push(
-        `- ${getNoteDisplayTitle(
-          fromNote,
-        )} ${symbol} ${getNoteDisplayTitle(
-          toNote,
-        )}`,
-      )
+      lines.push(`- ${getNoteDisplayTitle(fromNote)} ${symbol} ${getNoteDisplayTitle(toNote)}`)
     }
 
     lines.push('')
@@ -485,14 +284,9 @@ export function buildAiContext(
 
   // Drop the trailing blank line
   // so the copy ends on content.
-  while (
-    lines.length > 0 &&
-    lines[lines.length - 1] === ''
-  ) {
+  while (lines.length > 0 && lines[lines.length - 1] === '') {
     lines.pop()
   }
 
-  return lines.join(
-    '\n',
-  )
+  return lines.join('\n')
 }

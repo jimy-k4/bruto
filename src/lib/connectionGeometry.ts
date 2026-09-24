@@ -10,23 +10,17 @@ export const NOTE_BASE_HEIGHT = 160
  * offsetWidth/offsetHeight are unaffected by ancestor transforms, so the
  * result is already in canvas-world coordinates.
  */
-export function getNoteRenderedSize(
-  note: Note,
-): { width: number; height: number } {
-  if (
-    typeof document ===
-    'undefined'
-  ) {
+export function getNoteRenderedSize(note: Note): { width: number; height: number } {
+  if (typeof document === 'undefined') {
     return {
       width: NOTE_BASE_WIDTH,
       height: NOTE_BASE_HEIGHT,
     }
   }
 
-  const element =
-    document.querySelector<HTMLElement>(
-      `.note-card[data-note-id="${cssEscape(note.id)}"]`,
-    )
+  const element = document.querySelector<HTMLElement>(
+    `.note-card[data-note-id="${cssEscape(note.id)}"]`,
+  )
 
   if (!element) {
     return {
@@ -36,31 +30,17 @@ export function getNoteRenderedSize(
   }
 
   return {
-    width:
-      element.offsetWidth ||
-      NOTE_BASE_WIDTH,
-    height:
-      element.offsetHeight ||
-      NOTE_BASE_HEIGHT,
+    width: element.offsetWidth || NOTE_BASE_WIDTH,
+    height: element.offsetHeight || NOTE_BASE_HEIGHT,
   }
 }
 
-function cssEscape(
-  value: string,
-): string {
-  if (
-    typeof CSS !==
-      'undefined' &&
-    CSS.escape
-  ) {
+function cssEscape(value: string): string {
+  if (typeof CSS !== 'undefined' && CSS.escape) {
     return CSS.escape(value)
   }
 
-  return value.replace(
-    /[^a-zA-Z0-9_-]/g,
-    (character) =>
-      `\\${character}`,
-  )
+  return value.replace(/[^a-zA-Z0-9_-]/g, (character) => `\\${character}`)
 }
 
 /**
@@ -84,16 +64,10 @@ export function getConnectionPoints(
     }
   },
 ) {
-  const fromCenterX =
-    fromNote.x +
-    sizes.from.width / 2
-  const fromCenterY =
-    fromNote.y +
-    sizes.from.height / 2
-  const toCenterX =
-    toNote.x + sizes.to.width / 2
-  const toCenterY =
-    toNote.y + sizes.to.height / 2
+  const fromCenterX = fromNote.x + sizes.from.width / 2
+  const fromCenterY = fromNote.y + sizes.from.height / 2
+  const toCenterX = toNote.x + sizes.to.width / 2
+  const toCenterY = toNote.y + sizes.to.height / 2
 
   const dx = toCenterX - fromCenterX
   const dy = toCenterY - fromCenterY
@@ -108,39 +82,21 @@ export function getConnectionPoints(
   let toY: number
 
   if (absDx > absDy) {
-    const direction =
-      dx > 0 ? 1 : -1
+    const direction = dx > 0 ? 1 : -1
 
-    fromX =
-      fromCenterX +
-      direction *
-        (sizes.from.width / 2 +
-          gap)
+    fromX = fromCenterX + direction * (sizes.from.width / 2 + gap)
     fromY = fromCenterY
 
-    toX =
-      toCenterX -
-      direction *
-        (sizes.to.width / 2 +
-          gap)
+    toX = toCenterX - direction * (sizes.to.width / 2 + gap)
     toY = toCenterY
   } else {
-    const direction =
-      dy > 0 ? 1 : -1
+    const direction = dy > 0 ? 1 : -1
 
     fromX = fromCenterX
-    fromY =
-      fromCenterY +
-      direction *
-        (sizes.from.height / 2 +
-          gap)
+    fromY = fromCenterY + direction * (sizes.from.height / 2 + gap)
 
     toX = toCenterX
-    toY =
-      toCenterY -
-      direction *
-        (sizes.to.height / 2 +
-          gap)
+    toY = toCenterY - direction * (sizes.to.height / 2 + gap)
   }
 
   return {
@@ -168,25 +124,12 @@ export function getConnectionPath(
   curveOffset: number,
   allConnections: Connection[],
 ) {
-  const {
-    fromX,
-    fromY,
-    toX,
-    toY,
-  } = getConnectionPoints(
-    fromNote,
-    toNote,
-    sizes,
-  )
+  const { fromX, fromY, toX, toY } = getConnectionPoints(fromNote, toNote, sizes)
 
-  const reverseExists =
-    allConnections.some(
-      (otherConnection) =>
-        otherConnection.from ===
-          connection.to &&
-        otherConnection.to ===
-          connection.from,
-    )
+  const reverseExists = allConnections.some(
+    (otherConnection) =>
+      otherConnection.from === connection.to && otherConnection.to === connection.from,
+  )
 
   if (!reverseExists) {
     return `M ${fromX} ${fromY} L ${toX} ${toY}`
@@ -195,33 +138,23 @@ export function getConnectionPath(
   const dx = toX - fromX
   const dy = toY - fromY
 
-  const length = Math.sqrt(
-    dx * dx + dy * dy,
-  )
+  const length = Math.sqrt(dx * dx + dy * dy)
 
   if (length === 0) {
     return `M ${fromX} ${fromY} L ${toX} ${toY}`
   }
 
-  const perpendicularX =
-    -dy / length
+  const perpendicularX = -dy / length
 
-  const perpendicularY =
-    dx / length
+  const perpendicularY = dx / length
 
-  const offsetX =
-    perpendicularX * curveOffset
+  const offsetX = perpendicularX * curveOffset
 
-  const offsetY =
-    perpendicularY * curveOffset
+  const offsetY = perpendicularY * curveOffset
 
-  const controlX =
-    (fromX + toX) / 2 +
-    offsetX
+  const controlX = (fromX + toX) / 2 + offsetX
 
-  const controlY =
-    (fromY + toY) / 2 +
-    offsetY
+  const controlY = (fromY + toY) / 2 + offsetY
 
   return `M ${fromX} ${fromY}\n      Q ${controlX} ${controlY}\n        ${toX} ${toY}`
 }

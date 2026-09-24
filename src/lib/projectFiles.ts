@@ -1,15 +1,14 @@
 import type { FileTreeNode } from '../types'
 
-export const IGNORED_DIRECTORY_NAMES =
-  new Set([
-    '.bruto',
-    'node_modules',
-    '.git',
-    'dist',
-    'build',
-    '.next',
-    'coverage',
-  ])
+export const IGNORED_DIRECTORY_NAMES = new Set([
+  '.bruto',
+  'node_modules',
+  '.git',
+  'dist',
+  'build',
+  '.next',
+  'coverage',
+])
 
 export async function readDirectoryChildren(
   directoryHandle: FileSystemDirectoryHandle,
@@ -17,72 +16,36 @@ export async function readDirectoryChildren(
 ): Promise<FileTreeNode[]> {
   const children: FileTreeNode[] = []
 
-  for await (const [
-    name,
-    handle,
-  ] of directoryHandle.entries()) {
-    if (
-      handle.kind ===
-        'directory' &&
-      IGNORED_DIRECTORY_NAMES.has(
-        name,
-      )
-    ) {
+  for await (const [name, handle] of directoryHandle.entries()) {
+    if (handle.kind === 'directory' && IGNORED_DIRECTORY_NAMES.has(name)) {
       continue
     }
 
-    const path =
-      currentPath
-        ? `${currentPath}/${name}`
-        : name
+    const path = currentPath ? `${currentPath}/${name}` : name
 
     children.push({
       name,
       path,
-      kind:
-        handle.kind ===
-        'directory'
-          ? 'directory'
-          : 'file',
+      kind: handle.kind === 'directory' ? 'directory' : 'file',
       handle,
-      loaded:
-        handle.kind ===
-        'file'
-          ? true
-          : false,
+      loaded: handle.kind === 'file' ? true : false,
     })
   }
 
-  return sortFileTreeNodes(
-    children,
-  )
+  return sortFileTreeNodes(children)
 }
 
-export function sortFileTreeNodes(
-  nodes: FileTreeNode[],
-) {
-  return [...nodes].sort(
-    (first, second) => {
-      if (
-        first.kind !==
-        second.kind
-      ) {
-        return first.kind ===
-          'directory'
-          ? -1
-          : 1
-      }
+export function sortFileTreeNodes(nodes: FileTreeNode[]) {
+  return [...nodes].sort((first, second) => {
+    if (first.kind !== second.kind) {
+      return first.kind === 'directory' ? -1 : 1
+    }
 
-      return first.name.localeCompare(
-        second.name,
-        undefined,
-        {
-          numeric: true,
-          sensitivity: 'base',
-        },
-      )
-    },
-  )
+    return first.name.localeCompare(second.name, undefined, {
+      numeric: true,
+      sensitivity: 'base',
+    })
+  })
 }
 
 export function updateDirectoryTreeNode(
@@ -90,10 +53,7 @@ export function updateDirectoryTreeNode(
   targetPath: string,
   children: FileTreeNode[],
 ): FileTreeNode {
-  if (
-    node.path ===
-    targetPath
-  ) {
+  if (node.path === targetPath) {
     return {
       ...node,
       children,
@@ -101,28 +61,15 @@ export function updateDirectoryTreeNode(
     }
   }
 
-  if (
-    node.kind !==
-      'directory' ||
-    !node.children
-  ) {
+  if (node.kind !== 'directory' || !node.children) {
     return node
   }
 
   return {
     ...node,
-    children:
-      node.children.map(
-        (child) =>
-          child.kind ===
-            'directory'
-            ? updateDirectoryTreeNode(
-                child,
-                targetPath,
-                children,
-              )
-            : child,
-      ),
+    children: node.children.map((child) =>
+      child.kind === 'directory' ? updateDirectoryTreeNode(child, targetPath, children) : child,
+    ),
   }
 }
 
@@ -133,36 +80,16 @@ export async function searchDirectoryRecursively(
 ): Promise<FileTreeNode[]> {
   const results: FileTreeNode[] = []
 
-  for await (const [
-    name,
-    handle,
-  ] of directoryHandle.entries()) {
-    if (
-      handle.kind ===
-        'directory' &&
-      IGNORED_DIRECTORY_NAMES.has(
-        name,
-      )
-    ) {
+  for await (const [name, handle] of directoryHandle.entries()) {
+    if (handle.kind === 'directory' && IGNORED_DIRECTORY_NAMES.has(name)) {
       continue
     }
 
-    const path =
-      currentPath
-        ? `${currentPath}/${name}`
-        : name
+    const path = currentPath ? `${currentPath}/${name}` : name
 
-    const matches =
-      `${name} ${path}`
-        .toLowerCase()
-        .includes(
-          query,
-        )
+    const matches = `${name} ${path}`.toLowerCase().includes(query)
 
-    if (
-      handle.kind ===
-      'file'
-    ) {
+    if (handle.kind === 'file') {
       if (matches) {
         results.push({
           name,
@@ -176,33 +103,25 @@ export async function searchDirectoryRecursively(
       continue
     }
 
-    const nestedResults =
-      await searchDirectoryRecursively(
-        handle as FileSystemDirectoryHandle,
-        path,
-        query,
-      )
+    const nestedResults = await searchDirectoryRecursively(
+      handle as FileSystemDirectoryHandle,
+      path,
+      query,
+    )
 
-    if (
-      matches ||
-      nestedResults.length >
-        0
-    ) {
+    if (matches || nestedResults.length > 0) {
       results.push({
         name,
         path,
         kind: 'directory',
         handle,
-        children:
-          nestedResults,
+        children: nestedResults,
         loaded: true,
       })
     }
   }
 
-  return sortFileTreeNodes(
-    results,
-  )
+  return sortFileTreeNodes(results)
 }
 
 export async function findRelativeFilePath(
@@ -210,50 +129,23 @@ export async function findRelativeFilePath(
   targetFile: FileSystemFileHandle,
   currentPath = '',
 ): Promise<string | null> {
-  for await (const [
-    name,
-    handle,
-  ] of rootDirectory.entries()) {
-    if (
-      name === '.bruto' &&
-      currentPath === ''
-    ) {
+  for await (const [name, handle] of rootDirectory.entries()) {
+    if (name === '.bruto' && currentPath === '') {
       continue
     }
 
-    if (
-      handle.kind ===
-      'file'
-    ) {
-      if (
-        await handle.isSameEntry(
-          targetFile,
-        )
-      ) {
-        return currentPath
-          ? `${currentPath}/${name}`
-          : name
+    if (handle.kind === 'file') {
+      if (await handle.isSameEntry(targetFile)) {
+        return currentPath ? `${currentPath}/${name}` : name
       }
     }
 
-    if (
-      handle.kind ===
-      'directory'
-    ) {
-      const directoryHandle =
-        handle as FileSystemDirectoryHandle
+    if (handle.kind === 'directory') {
+      const directoryHandle = handle as FileSystemDirectoryHandle
 
-      const nestedPath =
-        currentPath
-          ? `${currentPath}/${name}`
-          : name
+      const nestedPath = currentPath ? `${currentPath}/${name}` : name
 
-      const result =
-        await findRelativeFilePath(
-          directoryHandle,
-          targetFile,
-          nestedPath,
-        )
+      const result = await findRelativeFilePath(directoryHandle, targetFile, nestedPath)
 
       if (result) {
         return result
@@ -269,40 +161,17 @@ export async function getFileHandleFromPath(
   filePath: string,
   emptyPathMessage: string,
 ): Promise<FileSystemFileHandle> {
-  const pathParts =
-    filePath
-      .split('/')
-      .filter(Boolean)
+  const pathParts = filePath.split('/').filter(Boolean)
 
-  if (
-    pathParts.length ===
-    0
-  ) {
-    throw new Error(
-      emptyPathMessage,
-    )
+  if (pathParts.length === 0) {
+    throw new Error(emptyPathMessage)
   }
 
-  let currentDirectory =
-    rootDirectory
+  let currentDirectory = rootDirectory
 
-  for (
-    let index = 0;
-    index <
-    pathParts.length -
-      1;
-    index += 1
-  ) {
-    currentDirectory =
-      await currentDirectory.getDirectoryHandle(
-        pathParts[index],
-      )
+  for (let index = 0; index < pathParts.length - 1; index += 1) {
+    currentDirectory = await currentDirectory.getDirectoryHandle(pathParts[index])
   }
 
-  return currentDirectory.getFileHandle(
-    pathParts[
-      pathParts.length -
-        1
-    ],
-  )
+  return currentDirectory.getFileHandle(pathParts[pathParts.length - 1])
 }

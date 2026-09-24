@@ -6,9 +6,7 @@ interface TopBarSharedProps {
   theme: AppTheme
   language: Language
   t: Translator
-  onLanguageChange: (
-    language: Language,
-  ) => void
+  onLanguageChange: (language: Language) => void
   onToggleTheme: () => void
   onOpenHelp: () => void
 }
@@ -66,104 +64,44 @@ export function LandingTopBar({
   return (
     <header className="topbar">
       <div className="brand">
-        <div className="brand-mark">
-          B
-        </div>
+        <div className="brand-mark">B</div>
 
-        <div className="brand-name">
-          BRUTO
-        </div>
+        <div className="brand-name">BRUTO</div>
       </div>
 
       <div className="topbar-actions">
-        <button
-          type="button"
-          className="theme-toggle"
-          onClick={
-            onOpenHelp
-          }
-        >
-          {t(
-            'help',
-          )}
+        <button type="button" className="theme-toggle" onClick={onOpenHelp}>
+          {t('help')}
         </button>
 
         <select
           className="language-select"
-          value={
-            language
-          }
-          onChange={(
-            event,
-          ) =>
-            onLanguageChange(
-              event.target
-                .value as Language,
-            )
-          }
-          aria-label={
-            t(
-              'language',
-            )
-          }
+          value={language}
+          onChange={(event) => onLanguageChange(event.target.value as Language)}
+          aria-label={t('language')}
         >
-          {languageOptions.map(
-            (
-              option,
-            ) => (
-              <option
-                key={
-                  option.value
-                }
-                value={
-                  option.value
-                }
-              >
-                {
-                  option.label
-                }
-              </option>
-            ),
-          )}
+          {languageOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
 
-        <button
-          type="button"
-          className="theme-toggle"
-          onClick={
-            onToggleTheme
-          }
-        >
-          {theme ===
-          'dark'
-            ? t(
-                'lightMode',
-              )
-            : t(
-                'darkMode',
-              )}
+        <button type="button" className="theme-toggle" onClick={onToggleTheme}>
+          {theme === 'dark' ? t('lightMode') : t('darkMode')}
         </button>
 
         <div className="topbar-status">
-          <span>
-            {t(
-              'local',
-            )}
-          </span>
+          <span>{t('local')}</span>
 
-          <span>
-            {t(
-              'offline',
-            )}
-          </span>
+          <span>{t('offline')}</span>
         </div>
       </div>
     </header>
   )
 }
 
-interface WorkspaceTopBarProps
-  extends TopBarSharedProps {
+interface WorkspaceTopBarProps extends TopBarSharedProps {
   projectName: string | null
   /** Header project switcher
    * (replaces the plain project
@@ -188,131 +126,49 @@ export function WorkspaceTopBar({
   return (
     <header className="topbar workspace-topbar">
       <div className="brand">
-        <div className="brand-mark">
-          B
-        </div>
+        <div className="brand-mark">B</div>
 
-        <div className="brand-name">
-          BRUTO
-        </div>
+        <div className="brand-name">BRUTO</div>
 
-        {projectSwitcher ? (
-          projectSwitcher
-        ) : (
-          projectName && (
-            <div className="project-name">
-              /{' '}
-              {projectName.toUpperCase()}
-            </div>
-          )
-        )}
+        {projectSwitcher
+          ? projectSwitcher
+          : projectName && <div className="project-name">/ {projectName.toUpperCase()}</div>}
       </div>
 
       <div className="topbar-actions">
-        <button
-          type="button"
-          className="theme-toggle"
-          onClick={
-            onOpenStatusStyles
-          }
-        >
-          {t(
-            'statusStyles',
-          )}
+        <button type="button" className="theme-toggle" onClick={onOpenStatusStyles}>
+          {t('statusStyles')}
         </button>
 
-        <button
-          type="button"
-          className="theme-toggle"
-          onClick={
-            onOpenDirectory
-          }
-        >
-          {t(
-            'directory',
-          )}
+        <button type="button" className="theme-toggle" onClick={onOpenDirectory}>
+          {t('directory')}
         </button>
 
-        <button
-          type="button"
-          className="theme-toggle"
-          onClick={
-            onOpenHelp
-          }
-        >
-          {t(
-            'help',
-          )}
+        <button type="button" className="theme-toggle" onClick={onOpenHelp}>
+          {t('help')}
         </button>
 
         <select
           className="language-select"
-          value={
-            language
-          }
-          onChange={(
-            event,
-          ) =>
-            onLanguageChange(
-              event.target
-                .value as Language,
-            )
-          }
-          aria-label={
-            t(
-              'language',
-            )
-          }
+          value={language}
+          onChange={(event) => onLanguageChange(event.target.value as Language)}
+          aria-label={t('language')}
         >
-          {languageOptions.map(
-            (
-              option,
-            ) => (
-              <option
-                key={
-                  option.value
-                }
-                value={
-                  option.value
-                }
-              >
-                {
-                  option.label
-                }
-              </option>
-            ),
-          )}
+          {languageOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
 
-        <button
-          type="button"
-          className="theme-toggle"
-          onClick={
-            onToggleTheme
-          }
-        >
-          {theme ===
-          'dark'
-            ? t(
-                'lightMode',
-              )
-            : t(
-                'darkMode',
-              )}
+        <button type="button" className="theme-toggle" onClick={onToggleTheme}>
+          {theme === 'dark' ? t('lightMode') : t('darkMode')}
         </button>
 
         <div className="topbar-status">
-          <span>
-            {t(
-              'local',
-            )}
-          </span>
+          <span>{t('local')}</span>
 
-          <span>
-            {t(
-              'offline',
-            )}
-          </span>
+          <span>{t('offline')}</span>
         </div>
       </div>
     </header>
