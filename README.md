@@ -69,7 +69,8 @@ these, so the model knows how to answer:
   to "review". Never delete notes or change `x`, `y` or `zIndex`.
 - Without file access: answer note by note, starting each answer with its id.
 - Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong
-  in "Feedback": fix that first, then set the status back to "review".
+  in "Feedback": fix that first, say what you fixed in `aiResponse`, empty `feedback` and set the
+  status back to "review".
 ```
 
 Coding agents that work in your repository can also be pointed at the file directly, for example with

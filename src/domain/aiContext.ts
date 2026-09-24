@@ -12,7 +12,7 @@ const INSTRUCTIONS = [
   '- Notes are tasks. Refer to a note by its short id, e.g. [a1b2c3].',
   '- With file access: notes live in `.bruto/workspace.json` (keep it valid JSON). Find a note by the start of its `id`. When you finish one, write what you did in its `aiResponse` and set `status` to "review". Never delete notes or change `x`, `y` or `zIndex`.',
   '- Without file access: answer note by note, starting each answer with its id.',
-  '- Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong in "Feedback": fix that first, then set the status back to "review".',
+  '- Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong in "Feedback": fix that first, say what you fixed in `aiResponse`, empty `feedback` and set the status back to "review".',
 ]
 
 const DOCUMENTATION_LABELS = {
