@@ -22,6 +22,14 @@ describe('matchShortcut', () => {
     ).toBe('redo')
     expect(matchShortcut(key({ key: 'a', code: 'KeyA', ctrlKey: true }))?.action).toBe('selectAll')
     expect(matchShortcut(key({ key: 'a', code: 'KeyA' }))?.action).toBe('openAiContext')
+    expect(matchShortcut(key({ key: 'f', code: 'KeyF', ctrlKey: true }))?.action).toBe('search')
+    expect(matchShortcut(key({ key: 'f', code: 'KeyF' }))?.action).toBe('center')
+  })
+
+  it('opens the search with / on any layout', () => {
+    expect(matchShortcut(key({ key: '/', code: 'Slash' }))?.action).toBe('search')
+    // Spanish layout: Shift+7.
+    expect(matchShortcut(key({ key: '/', code: 'Digit7', shiftKey: true }))?.action).toBe('search')
   })
 
   it('accepts ? however the layout produces it', () => {

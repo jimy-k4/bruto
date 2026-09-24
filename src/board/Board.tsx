@@ -32,6 +32,8 @@ interface BoardProps extends BoardCallbacks {
   connectingFrom: string | null
   selectedConnectionId: string | null
   flash: { ids: string[]; kind: Exclude<NoteFlash, null> } | null
+  /** Notes found by the board search; `null` when nothing is being searched. */
+  matchIds: Set<string> | null
 }
 
 /** A drag becomes a move only after this many screen pixels; below it, it's a click. */
@@ -56,6 +58,7 @@ export function Board(props: BoardProps) {
     connectingFrom,
     selectedConnectionId,
     flash,
+    matchIds,
   } = props
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [marquee, setMarquee] = useState<Marquee | null>(null)
@@ -389,6 +392,7 @@ export function Board(props: BoardProps) {
             connecting={connectingFrom === note.id}
             dragging={draggingId !== null && selected.has(note.id) ? true : draggingId === note.id}
             flash={flashed.has(note.id) ? flash!.kind : null}
+            searchMark={matchIds ? (matchIds.has(note.id) ? 'match' : 'dimmed') : null}
             handlers={handlers}
           />
         ))}

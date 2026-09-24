@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { EMPTY_SEARCH } from '../domain/search'
 import { matchShortcut, type ShortcutAction } from '../shortcuts/keymap'
 import type { Projects } from '../state/useProjects'
 import { isImageFile } from '../storage/projectFiles'
@@ -29,6 +30,8 @@ export function useWorkspaceShortcuts(
         return actions.copyContext('entire')
       case 'center':
         return actions.center()
+      case 'search':
+        return ui.setSearch((current) => current ?? EMPTY_SEARCH)
       case 'connect':
         if (ids.length === 1) ui.setConnectingFrom(ids[0])
         return
@@ -58,6 +61,7 @@ export function useWorkspaceShortcuts(
         if (ui.side) return ui.setSide(null)
         if (ui.connectingFrom) return ui.setConnectingFrom(null)
         if (ui.selectedConnectionId) return ui.setSelectedConnectionId(null)
+        if (ui.search) return ui.setSearch(null)
         return ui.clearSelection()
     }
   }

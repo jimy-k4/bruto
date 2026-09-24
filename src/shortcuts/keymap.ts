@@ -7,6 +7,7 @@ export type ShortcutAction =
   | 'copyConnected'
   | 'copyEntire'
   | 'center'
+  | 'search'
   | 'connect'
   | 'resetView'
   | 'selectAll'
@@ -140,6 +141,13 @@ export const SHORTCUTS: ShortcutDefinition[] = [
     title: 'shortcutCenter',
     description: 'shortcutCenterDescription',
     patterns: [letter('f')],
+  },
+  {
+    action: 'search',
+    keys: [{ label: 'keyCtrl' }, 'F'],
+    title: 'shortcutSearch',
+    description: 'shortcutSearchDescription',
+    patterns: [letter('f', { ctrl: true }), { key: '/' }],
   },
   {
     action: 'resetView',
