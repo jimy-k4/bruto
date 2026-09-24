@@ -610,3 +610,21 @@
     opacity: 0;
   }
 }
+
+/* Support: a quiet square with a heart, lit only on hover. */
+.topbar__support {
+  width: 36px;
+  padding: 0;
+  text-decoration: none;
+}
+
+.topbar__support:hover .pixel-heart {
+  fill: var(--signal);
+}
+
+.pixel-heart {
+  width: 14px;
+  height: 12px;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}

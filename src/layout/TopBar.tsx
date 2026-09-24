@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { AppTheme, Language } from '../types'
+import { SUPPORT_URL } from '../config'
 import { LANGUAGES } from '../domain/constants'
 import { useI18n } from '../i18n'
 import { useInstallPrompt } from '../ui/installPrompt'
@@ -64,7 +65,35 @@ export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: T
         >
           {theme === 'dark' ? t('lightMode') : t('darkMode')}
         </button>
+
+        {SUPPORT_URL && (
+          <a
+            className="button topbar__support"
+            href={SUPPORT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t('supportProject')}
+            title={`${t('supportProject')} (Ko-fi)`}
+          >
+            <PixelHeart />
+          </a>
+        )}
       </nav>
     </header>
+  )
+}
+
+/** A heart built from square pixels, drawn row by row. */
+const HEART = ['.XX.XX.', 'XXXXXXX', 'XXXXXXX', '.XXXXX.', '..XXX..', '...X...']
+
+function PixelHeart() {
+  const pixels = HEART.flatMap((row, y) =>
+    [...row].flatMap((cell, x) => (cell === 'X' ? [`M${x} ${y}h1v1h-1z`] : [])),
+  )
+
+  return (
+    <svg className="pixel-heart" viewBox="0 0 7 6" aria-hidden="true">
+      <path d={pixels.join('')} />
+    </svg>
   )
 }

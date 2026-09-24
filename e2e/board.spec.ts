@@ -396,3 +396,12 @@ test('structure view: Esc goes back to the board', async ({ page }) => {
   await page.keyboard.press('Escape')
   await expect(page.getByRole('region', { name: 'Estructura' })).toHaveCount(0)
 })
+
+test('the support link is always one click away from the board', async ({ page }) => {
+  await openProject(page, workspaceWith([]))
+
+  const support = page.getByRole('banner').getByRole('link', { name: 'Apoya el proyecto' })
+
+  await expect(support).toHaveAttribute('href', 'https://ko-fi.com/jimy_k4')
+  await expect(support).toHaveAttribute('target', '_blank')
+})
