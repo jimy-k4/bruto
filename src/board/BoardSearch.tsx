@@ -1,6 +1,12 @@
 import type { Note, NoteStatus } from '../types'
-import { isSearchActive, type NoteSearch } from '../domain/search'
-import { statusLabel, useI18n } from '../i18n'
+import {
+  NOTE_TRAITS,
+  isSearchActive,
+  nextTraitFilter,
+  type NoteSearch,
+  type NoteTrait,
+} from '../domain/search'
+import { statusLabel, useI18n, type TranslationKey } from '../i18n'
 
 interface BoardSearchProps {
   search: NoteSearch
@@ -15,6 +21,14 @@ interface BoardSearchProps {
 }
 
 const stop = (event: React.PointerEvent) => event.stopPropagation()
+
+/** What a trait button says when it lets any note through, only notes with it, or only without. */
+const TRAIT_LABELS: Record<NoteTrait, [TranslationKey, TranslationKey, TranslationKey]> = {
+  files: ['filterFiles', 'filterWithFiles', 'filterWithoutFiles'],
+  aiResponse: ['filterAiResponse', 'filterWithAiResponse', 'filterWithoutAiResponse'],
+  images: ['filterImages', 'filterWithImages', 'filterWithoutImages'],
+  webUrl: ['filterWeb', 'filterWithWeb', 'filterWithoutWeb'],
+}
 
 /** Search bar over the board: matches stand out, Enter walks through them. */
 export function BoardSearch({
@@ -125,6 +139,32 @@ export function BoardSearch({
         >
           ×
         </button>
+      </div>
+
+      <div className="board-search__traits" role="group" aria-label={t('filterByContent')}>
+        {NOTE_TRAITS.map((trait) => {
+          const wanted = search.traits?.[trait]
+          const [any, withIt, withoutIt] = TRAIT_LABELS[trait]
+
+          return (
+            <button
+              key={trait}
+              type="button"
+              className="board-search__trait"
+              data-wanted={wanted === undefined ? undefined : String(wanted)}
+              aria-pressed={wanted !== undefined}
+              title={t('filterCycleHint')}
+              onClick={() =>
+                onChange({
+                  ...search,
+                  traits: { ...search.traits, [trait]: nextTraitFilter(wanted) },
+                })
+              }
+            >
+              {t(wanted === undefined ? any : wanted ? withIt : withoutIt)}
+            </button>
+          )
+        })}
       </div>
 
       {statuses.length > 1 && (

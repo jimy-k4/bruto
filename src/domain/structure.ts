@@ -142,6 +142,17 @@ export function buildStructure(
   return { root, broken }
 }
 
+/** The tree cut down to what notes point at: files with notes and the folders holding them. */
+export function keepNoted(node: StructureNode): StructureNode {
+  const children = node.children.filter((child) => child.noteIds.size > 0).map(keepNoted)
+
+  return {
+    ...node,
+    children,
+    fileCount: node.kind === 'file' ? 1 : children.reduce((sum, child) => sum + child.fileCount, 0),
+  }
+}
+
 /** The node at `path`, or the closest folder that still exists above it. */
 export function findNode(root: StructureNode, path: string): StructureNode {
   let node = root

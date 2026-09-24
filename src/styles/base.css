@@ -203,6 +203,24 @@ kbd {
   color: var(--danger-ink);
 }
 
+/* A button that stays on or off: a square that fills in. */
+.button--toggle {
+  flex: none;
+  white-space: nowrap;
+}
+
+.button--toggle::before {
+  content: '';
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border: var(--border) solid currentColor;
+}
+
+.button--toggle[aria-pressed='true']::before {
+  background: currentColor;
+}
+
 .button--small {
   min-height: 28px;
   padding: 0 var(--space-3);

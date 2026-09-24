@@ -88,6 +88,20 @@
   font-weight: 600;
 }
 
+/* How many notes point at a file: a small block of concrete at the end of the row. */
+.file-tree__notes {
+  margin-left: auto;
+  padding: 1px 6px;
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+  font: 700 var(--text-xs) / 1.2 var(--font-mono);
+}
+
+.file-tree__row.is-selected .file-tree__notes {
+  background: var(--signal);
+  color: var(--signal-ink);
+}
+
 .file-tree__icon {
   width: 12px;
   color: var(--ink-muted);

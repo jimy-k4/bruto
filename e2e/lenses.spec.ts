@@ -52,6 +52,48 @@ test('lenses draw the web app, the API and the database, with their notes', asyn
   await expect(side.getByRole('button', { name: /ESQUEMA/ })).toBeVisible()
 })
 
+test('"only with notes" keeps what notes point at, on the map, the lenses and the files', async ({
+  page,
+}) => {
+  await openProject(
+    page,
+    workspaceWith([note('cart', { title: 'CARRITO', filePaths: ['web/app/cart/page.tsx'] })]),
+  )
+  await page.evaluate(writeProjectFiles, LENS_PROJECT)
+  await page.keyboard.press('m')
+
+  const map = page.locator('.structure-map')
+  await expect(map.getByRole('button', { name: /^api,/ })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Solo con notas' }).click()
+  await expect(map.getByRole('button', { name: /^web, 1 fichero, 1 nota/ })).toBeVisible()
+  await expect(map.getByRole('button', { name: /^api,/ })).toHaveCount(0)
+
+  await page
+    .getByRole('group', { name: 'Vistas del proyecto' })
+    .getByRole('button', { name: /Web/ })
+    .click()
+  await expect(page.locator('.lens-screen')).toHaveText([/\/cart/])
+
+  await page
+    .getByRole('group', { name: 'Vistas del proyecto' })
+    .getByRole('button', { name: /API/ })
+    .click()
+  await expect(page.getByText('Ninguna nota apunta a nada de lo que se ve aquí.')).toBeVisible()
+
+  // The files window remembers the same choice.
+  await page.keyboard.press('Escape')
+  await page.getByRole('button', { name: 'Ficheros', exact: true }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('button', { name: 'Solo con notas' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(dialog.locator('.file-tree__row:not(.file-tree__row--directory)')).toHaveText([
+    /page\.tsx\s*1/,
+  ])
+})
+
 test('only the lenses a project fits are offered', async ({ page }) => {
   await openProject(page, workspaceWith([]))
   await page.evaluate(writeProjectFiles, { 'db/schema.sql': 'CREATE TABLE t (id NUMBER);' })

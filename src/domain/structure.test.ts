@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Note } from '../types'
-import { ancestry, buildStructure, findNode, normalizeLinkedPath } from './structure'
+import { ancestry, buildStructure, findNode, keepNoted, normalizeLinkedPath } from './structure'
 
 const note = (id: string, filePaths: string[]): Note => ({
   id,
@@ -104,6 +104,18 @@ describe('navigation helpers', () => {
 })
 
 describe('normalizeLinkedPath', () => {
+  it('keeps only what notes point at, recounting files', () => {
+    const { root } = buildStructure('demo', FILES, [note('a', ['src/board/Board.tsx'])])
+    const noted = keepNoted(root)
+
+    expect(noted.fileCount).toBe(1)
+    expect(noted.children.map((node) => node.name)).toEqual(['src'])
+    expect(findNode(noted, 'src').children.map((node) => node.name)).toEqual(['board'])
+    expect(findNode(noted, 'src/board').children.map((node) => node.name)).toEqual(['Board.tsx'])
+    // The full tree is left as it was.
+    expect(root.fileCount).toBe(7)
+  })
+
   it('cleans separators and leading or trailing slashes', () => {
     expect(normalizeLinkedPath(' .\\src\\app.ts ')).toBe('src/app.ts')
     expect(normalizeLinkedPath('/src/board/')).toBe('src/board')

@@ -5,6 +5,7 @@ import {
   ancestry,
   buildStructure,
   findNode,
+  keepNoted,
   linkCovers,
   normalizeLinkedPath,
   notePaths,
@@ -13,6 +14,7 @@ import {
 } from '../domain/structure'
 import { noteTitle, shortId } from '../domain/workspace'
 import { statusLabel, useI18n } from '../i18n'
+import { isBoolean, usePreference } from '../preferences'
 import { useProjectRoot } from '../state/projectRoot'
 import {
   IGNORED_DIRECTORIES,
@@ -25,6 +27,7 @@ import { ApiLens } from '../lenses/ApiLens'
 import { DbLens } from '../lenses/DbLens'
 import { WEB_CODE, detectLenses, type DetectedLens, type LensKind } from '../lenses/detect'
 import { buildApiModel, isDotnetFile, type ApiModel } from '../lenses/dotnet'
+import { keepNotedModel } from '../lenses/keepNoted'
 import { LensIcon } from '../lenses/LensIcon'
 import type { LensContext, LensFocus } from '../lenses/lensContext'
 import { buildDbModel, isPlsqlFile, type DbModel } from '../lenses/plsql'
@@ -77,6 +80,13 @@ const EMPTY_MODELS: Record<LensKind, LensModels> = {
 const LENS_ICONS = { web: 'page', api: 'controller', db: 'table' } as const
 const LENS_TITLES = { web: 'lensWeb', api: 'lensApi', db: 'lensDb' } as const
 
+const isEmptyModel = (model: WebModel | ApiModel | DbModel) =>
+  'elements' in model
+    ? model.elements.length === 0
+    : 'resources' in model
+      ? model.resources.length === 0 && model.parts.length === 0
+      : model.tables.length === 0 && model.programs.length === 0
+
 /** Paths inside folders Bruto never indexes can't be checked, so they aren't "broken". */
 const isIndexable = (path: string) =>
   normalizeLinkedPath(path)
@@ -111,6 +121,8 @@ export function StructureView({
   const [lens, setLens] = useState<Lens>('files')
   const [models, setModels] = useState<LensModels>({})
   const [lensFocus, setLensFocus] = useState<LensFocus | null>(null)
+  // Shared with the files window: both answer "where are my notes?".
+  const [onlyNoted, setOnlyNoted] = usePreference('bruto-only-noted-files', false, isBoolean)
 
   useEffect(() => {
     let cancelled = false
@@ -144,6 +156,12 @@ export function StructureView({
   const structure = useMemo(
     () => (index && 'paths' in index ? buildStructure(projectName, index.paths, notes) : null),
     [index, projectName, notes],
+  )
+
+  // The map drawn: everything, or only what notes point at.
+  const mapRoot = useMemo(
+    () => structure && (onlyNoted ? keepNoted(structure.root) : structure.root),
+    [structure, onlyNoted],
   )
 
   const notesById = useMemo(() => new Map(notes.map((note) => [note.id, note])), [notes])
@@ -181,7 +199,7 @@ export function StructureView({
     [notes, selectedIds],
   )
 
-  if (!index || !structure) {
+  if (!index || !structure || !mapRoot) {
     return (
       <section className="structure" aria-label={t('structure')} aria-busy={!index}>
         <p className="structure__message">
@@ -192,8 +210,8 @@ export function StructureView({
   }
 
   const truncated = 'truncated' in index && index.truncated
-  const folder = findNode(structure.root, folderPath)
-  const focus = focusPath === null ? folder : findNode(structure.root, focusPath)
+  const folder = findNode(mapRoot, folderPath)
+  const focus = focusPath === null ? folder : findNode(mapRoot, focusPath)
   const broken = truncated ? [] : structure.broken.filter((link) => isIndexable(link.path))
   const anyLinks = notes.some((note) => notePaths(note).length > 0)
 
@@ -249,7 +267,14 @@ export function StructureView({
     onFocus: (next) => setLensFocus((current) => (current?.key === next.key ? null : next)),
   }
 
-  const model = lens === 'files' ? null : models[lens]
+  const loaded = lens === 'files' ? null : models[lens]
+  const model =
+    loaded && onlyNoted
+      ? keepNotedModel(loaded, (paths) => notesForPaths(notes, paths).length > 0)
+      : loaded
+  // With the filter on and no note pointing anywhere in this view, say so rather than draw nothing.
+  const nothingNoted =
+    onlyNoted && (lens === 'files' ? mapRoot.children.length === 0 : !!model && isEmptyModel(model))
 
   return (
     <section className="structure" aria-label={t('structure')}>
@@ -296,7 +321,7 @@ export function StructureView({
               </button>
 
               <ol>
-                {ancestry(structure.root, folder.path).map((node, position, chain) => (
+                {ancestry(mapRoot, folder.path).map((node, position, chain) => (
                   <li key={node.path}>
                     <button
                       type="button"
@@ -318,6 +343,14 @@ export function StructureView({
         <div className="structure__actions">
           <button
             type="button"
+            className="button button--small button--toggle"
+            aria-pressed={onlyNoted}
+            onClick={() => setOnlyNoted(!onlyNoted)}
+          >
+            {t('onlyWithNotes')}
+          </button>
+          <button
+            type="button"
             className="button button--small"
             onClick={() => setReloads((count) => count + 1)}
           >
@@ -330,7 +363,9 @@ export function StructureView({
       </header>
 
       <div className="structure__body">
-        {lens === 'files' ? (
+        {nothingNoted ? (
+          <p className="structure__message">{t('onlyWithNotesEmpty')}</p>
+        ) : lens === 'files' ? (
           <StructureMap
             folder={folder}
             focusPath={focus === folder ? null : focus.path}

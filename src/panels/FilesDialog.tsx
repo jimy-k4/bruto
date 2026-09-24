@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FileTreeNode, Note, SelectedFileInfo } from '../types'
+import { linkCovers, normalizeLinkedPath, notePaths } from '../domain/structure'
 import { noteTitle } from '../domain/workspace'
 import { useI18n } from '../i18n'
+import { isBoolean, usePreference } from '../preferences'
 import { useProjectRoot } from '../state/projectRoot'
 import {
   buildSearchTree,
@@ -16,6 +18,7 @@ import { formatDate, formatFileSize } from '../ui/format'
 
 interface FilesDialogProps {
   projectName: string
+  notes: Note[]
   /** The note files can be linked to, when exactly one is selected. */
   targetNote: Note | null
   onOpenFile: (path: string) => void
@@ -26,6 +29,7 @@ interface FilesDialogProps {
 
 export function FilesDialog({
   projectName,
+  notes,
   targetNote,
   onOpenFile,
   onLinkFile,
@@ -40,6 +44,20 @@ export function FilesDialog({
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<SelectedFileInfo | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  // Shared with the structure view: both answer "where are my notes?".
+  const [onlyNoted, setOnlyNoted] = usePreference('bruto-only-noted-files', false, isBoolean)
+
+  // Every path a note points at, as the index writes paths.
+  const linked = useMemo(
+    () =>
+      notes.flatMap((note) =>
+        notePaths(note).map(({ path }) => ({ noteId: note.id, path: normalizeLinkedPath(path) })),
+      ),
+    [notes],
+  )
+
+  const notesOn = (path: string) =>
+    new Set(linked.filter((link) => linkCovers(link.path, path)).map((link) => link.noteId)).size
 
   useEffect(() => {
     let cancelled = false
@@ -64,10 +82,17 @@ export function FilesDialog({
     }
   }, [root, projectName, refreshKey])
 
-  const searchTree = useMemo(
-    () => (query.trim() && index ? buildSearchTree(root, projectName, index, query) : null),
-    [query, index, root, projectName],
-  )
+  const filtering = Boolean(query.trim()) || onlyNoted
+
+  const searchTree = useMemo(() => {
+    if (!filtering || !index) return null
+
+    const files = onlyNoted
+      ? index.filter((file) => linked.some((link) => linkCovers(link.path, file.path)))
+      : index
+
+    return buildSearchTree(root, projectName, files, query)
+  }, [filtering, onlyNoted, index, linked, root, projectName, query])
 
   const toggle = useCallback(
     async (node: FileTreeNode) => {
@@ -99,11 +124,12 @@ export function FilesDialog({
   }
 
   const shown = searchTree ?? tree
-  const searching = Boolean(query.trim())
   const alreadyLinked = Boolean(selected && targetNote?.filePaths.includes(selected.path))
 
   const renderNode = (node: FileTreeNode, depth: number) => {
     if (node.kind === 'file') {
+      const count = notesOn(node.path)
+
       return (
         <li key={node.path}>
           <button
@@ -117,12 +143,18 @@ export function FilesDialog({
               ·
             </span>
             {node.name}
+            {count > 0 && (
+              <span className="file-tree__notes" title={t('notesCount', { count })}>
+                <span aria-hidden="true">{count}</span>
+                <span className="visually-hidden">{t('notesCount', { count })}</span>
+              </span>
+            )}
           </button>
         </li>
       )
     }
 
-    const open = searching || expanded.has(node.path)
+    const open = filtering || expanded.has(node.path)
 
     return (
       <li key={node.path}>
@@ -131,7 +163,7 @@ export function FilesDialog({
           className="file-tree__row file-tree__row--directory"
           style={{ paddingLeft: 12 + depth * 16 }}
           aria-expanded={open}
-          onClick={() => !searching && toggle(node)}
+          onClick={() => !filtering && toggle(node)}
         >
           <span className="file-tree__icon" aria-hidden="true">
             {open ? '▾' : '▸'}
@@ -168,6 +200,14 @@ export function FilesDialog({
             onChange={(event) => setQuery(event.target.value)}
             data-autofocus
           />
+          <button
+            type="button"
+            className="button button--toggle"
+            aria-pressed={onlyNoted}
+            onClick={() => setOnlyNoted(!onlyNoted)}
+          >
+            {t('onlyWithNotes')}
+          </button>
           <button type="button" className="button" onClick={() => setRefreshKey((key) => key + 1)}>
             {t('refresh')}
           </button>
@@ -175,12 +215,14 @@ export function FilesDialog({
 
         <div className="files-dialog__columns">
           <div className="file-tree" aria-busy={!shown}>
-            {!shown || (searching && !index) ? (
-              <p className="empty-text">{searching ? t('indexingFiles') : t('loading')}</p>
+            {!shown || (filtering && !index) ? (
+              <p className="empty-text">{filtering ? t('indexingFiles') : t('loading')}</p>
             ) : shown.children?.length ? (
               <ul>{shown.children.map((child) => renderNode(child, 0))}</ul>
             ) : (
-              <p className="empty-text">{t('noFilesFound')}</p>
+              <p className="empty-text">
+                {onlyNoted && !query.trim() ? t('onlyWithNotesEmpty') : t('noFilesFound')}
+              </p>
             )}
           </div>
 

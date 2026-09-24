@@ -299,6 +299,24 @@ test('search: highlight matches, walk them with Enter, keep the last one selecte
   await page.getByRole('group', { name: 'Filtrar por estado' }).getByText('Por revisar').click()
   await expect(page.locator('.board-search__count')).toContainText('2/2')
 
+  // Content filters cycle with → without → any.
+  const content = page.getByRole('group', { name: 'Filtrar por contenido' })
+  await content.getByRole('button', { name: 'Ficheros' }).click()
+  await expect(content.getByRole('button', { name: 'Con ficheros' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(noteCard(page, 'GAMMA')).toHaveClass(/is-match/)
+  await expect(noteCard(page, 'BETA')).toHaveClass(/is-dimmed/)
+  await content.getByRole('button', { name: 'Con ficheros' }).click()
+  await expect(noteCard(page, 'BETA')).toHaveClass(/is-match/)
+  await expect(noteCard(page, 'GAMMA')).toHaveClass(/is-dimmed/)
+  await content.getByRole('button', { name: 'Sin ficheros' }).click()
+  await expect(content.getByRole('button', { name: 'Ficheros' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+
   await page.getByRole('searchbox').focus()
   await page.keyboard.press('Escape')
   await expect(page.getByRole('search')).toHaveCount(0)

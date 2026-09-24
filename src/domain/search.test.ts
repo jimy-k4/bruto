@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Note } from '../types'
-import { EMPTY_SEARCH, searchNotes } from './search'
+import { EMPTY_SEARCH, isSearchActive, nextTraitFilter, searchNotes } from './search'
 
 const note = (id: string, patch: Partial<Note> = {}): Note => ({
   id,
@@ -78,6 +78,36 @@ describe('searchNotes', () => {
       'a',
       'b',
     ])
+  })
+
+  it('filters by what notes have or lack, alone or with the rest', () => {
+    const notes = [
+      note('files', { filePaths: ['src/a.ts'], status: 'todo' }),
+      note('answered', { aiResponse: 'Done', webUrl: 'https://x.dev' }),
+      note('blank', { aiResponse: '   ', status: 'todo' }),
+      note('image', { images: ['.bruto/images/a.png'], x: 10 }),
+    ]
+
+    expect(ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { files: true } }))).toEqual(['files'])
+    expect(ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { aiResponse: false } }))).toEqual([
+      'files',
+      'blank',
+      'image',
+    ])
+    expect(
+      ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { webUrl: true, images: false } })),
+    ).toEqual(['answered'])
+    expect(
+      ids(searchNotes(notes, { query: '', statuses: ['todo'], traits: { files: false } })),
+    ).toEqual(['blank'])
+  })
+
+  it('cycles a trait filter through with, without and either', () => {
+    expect(nextTraitFilter(undefined)).toBe(true)
+    expect(nextTraitFilter(true)).toBe(false)
+    expect(nextTraitFilter(false)).toBeUndefined()
+    expect(isSearchActive({ ...EMPTY_SEARCH, traits: { images: undefined } })).toBe(false)
+    expect(isSearchActive({ ...EMPTY_SEARCH, traits: { images: false } })).toBe(true)
   })
 
   it('returns notes in reading order', () => {

@@ -315,6 +315,7 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
         {modal === 'files' && (
           <FilesDialog
             projectName={project.name}
+            notes={workspace.notes}
             targetNote={singleSelected}
             onOpenFile={(path) => void actions.openFile(path)}
             onLinkFile={(path) => singleSelected && actions.linkFiles(singleSelected.id, [path])}

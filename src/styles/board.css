@@ -434,6 +434,40 @@
   opacity: 0.4;
 }
 
+.board-search__traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.board-search__trait {
+  padding: 3px 7px;
+  border: var(--border) solid var(--line-soft);
+  background: none;
+  color: var(--ink-muted);
+  font: 600 var(--text-xs) / 1.2 var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.board-search__trait:hover {
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.board-search__trait[data-wanted='true'] {
+  border-color: var(--line);
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+/* "Without": just as active, but hollow, so it never reads as "with". */
+.board-search__trait[data-wanted='false'] {
+  border-color: var(--line);
+  border-style: dashed;
+  color: var(--ink);
+}
+
 .board-search__statuses {
   display: flex;
   flex-wrap: wrap;
