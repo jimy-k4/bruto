@@ -1,5 +1,3 @@
-import type { TranslationKey } from './i18n/translations'
-
 export type Language = 'es' | 'en' | 'ja' | 'ru' | 'zh' | 'ca' | 'fr' | 'de' | 'pt-BR'
 
 export type AppTheme = 'light' | 'dark'
@@ -39,8 +37,10 @@ export interface Note {
   id: string
   title: string
   description: string
+  /** Paths relative to the project root. */
   filePaths: string[]
   webUrl: string
+  /** Image paths relative to the project root (usually `.bruto/images/…`). */
   images: string[]
   x: number
   y: number
@@ -48,11 +48,10 @@ export interface Note {
   colorTheme: NoteColorTheme
   pattern: NotePattern
   status?: NoteStatus
-  /** Response an AI model left
-   * after processing this note.
-   * Empty/undefined keeps the
-   * section hidden everywhere. */
+  /** What an AI model answered after working on the note. */
   aiResponse?: string
+  /** What the user found wrong when reviewing the AI's work. */
+  feedback?: string
 }
 
 export interface Connection {
@@ -61,12 +60,22 @@ export interface Connection {
   to: string
 }
 
+export type DocumentationType = 'obsidian' | 'notion' | 'web' | 'other'
+
 export interface WorkspaceDocumentation {
   id: string
   name: string
   url: string
-  type: 'obsidian' | 'notion' | 'web' | 'other'
+  type: DocumentationType
 }
+
+/** Look applied to a note when it changes to a status. Unset fields keep the note's own value. */
+export interface StatusStyleConfig {
+  color?: NoteColorTheme
+  pattern?: NotePattern
+}
+
+export type StatusStyles = Partial<Record<NoteStatus, StatusStyleConfig>>
 
 export interface Workspace {
   version: number
@@ -76,20 +85,7 @@ export interface Workspace {
   documentation: WorkspaceDocumentation[]
   notes: Note[]
   connections: Connection[]
-  /** Per-status automatic look.
-   * Only what the user configured
-   * is set; everything else keeps
-   * each note's own defaults. */
-  statusStyles?: Partial<Record<NoteStatus, StatusStyleConfig>>
-}
-
-/** How notes of one status look
- * when the status changes. Both
- * fields optional: unset means
- * "keep the note's own value". */
-export interface StatusStyleConfig {
-  color?: NoteColorTheme
-  pattern?: NotePattern
+  statusStyles?: StatusStyles
 }
 
 export type ContextScope = 'current' | 'connected' | 'entire'
@@ -111,8 +107,12 @@ export interface SelectedFileInfo {
   type: string
 }
 
-export interface ShortcutDefinition {
-  keys: string
-  title: TranslationKey
-  description: TranslationKey
+export interface Point {
+  x: number
+  y: number
+}
+
+export interface Size {
+  width: number
+  height: number
 }
