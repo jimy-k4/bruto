@@ -31,6 +31,7 @@ export const zh: Locale = {
   language: '语言',
   lightMode: '浅色模式',
   darkMode: '深色模式',
+  installApp: '安装应用',
   styles: '样式',
   files: '文件',
   openProject: '打开项目',
@@ -136,7 +137,7 @@ export const zh: Locale = {
   statusReview: '待审核',
   statusDone: '已完成',
   statusBug: '缺陷',
-  statusIssue: '问题',
+  statusChangesRequested: '需修改',
   statusWontfix: '不处理',
 
   // Note editor
@@ -162,6 +163,8 @@ export const zh: Locale = {
   aiResponsePlaceholder: 'AI 针对这条笔记做了什么。',
   feedback: '存在的问题',
   feedbackPlaceholder: '审核回复后:仍然不对或缺少的地方。',
+  feedbackStatusHint: '需要 AI 修改什么吗?把笔记改为「{status}」,它就会知道。',
+  markAsStatus: '标记为「{status}」',
   color: '颜色',
   pattern: '纹理',
   deleteNote: '删除笔记',

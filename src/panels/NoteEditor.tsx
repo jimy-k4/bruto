@@ -248,6 +248,20 @@ export function NoteEditor({
             value={note.feedback ?? ''}
             onChange={(event) => onChange({ feedback: event.target.value })}
           />
+
+          {/* Written feedback only reaches the AI if the note goes back to it. */}
+          {note.feedback?.trim() && note.status !== 'changes-requested' && (
+            <div className="suggestion">
+              <p>{t('feedbackStatusHint', { status: statusLabel(t, 'changes-requested') })}</p>
+              <button
+                type="button"
+                className="button button--small"
+                onClick={() => onChange({ status: 'changes-requested' })}
+              >
+                {t('markAsStatus', { status: statusLabel(t, 'changes-requested') })}
+              </button>
+            </div>
+          )}
         </div>
 
         <ColorPicker

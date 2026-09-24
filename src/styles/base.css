@@ -467,8 +467,8 @@ kbd {
 .status-badge--bug {
   --status-color: var(--status-bug);
 }
-.status-badge--issue {
-  --status-color: var(--status-issue);
+.status-badge--changes-requested {
+  --status-color: var(--status-changes-requested);
 }
 .status-badge--wontfix {
   --status-color: var(--status-wontfix);
@@ -609,4 +609,15 @@ kbd {
     transition-duration: 0ms !important;
     animation-duration: 0ms !important;
   }
+}
+
+/* A gentle nudge under a field, e.g. to change the status after writing feedback. */
+.suggestion {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border) solid var(--signal);
+  border-left-width: 6px;
+  font-size: var(--text-sm);
 }

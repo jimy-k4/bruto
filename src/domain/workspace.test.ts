@@ -101,6 +101,19 @@ describe('parseWorkspace', () => {
     expect(workspace.notes[0]).toMatchObject({ colorTheme: 'moss', pattern: 'bands' })
   })
 
+  it('turns the old "issue" status into "changes-requested", style included', () => {
+    const workspace = parseWorkspace(
+      JSON.stringify({
+        version: 3,
+        notes: [{ id: 'a', status: 'issue' }],
+        statusStyles: { issue: { color: 'oxide' } },
+      }),
+    )
+
+    expect(workspace.notes[0].status).toBe('changes-requested')
+    expect(workspace.statusStyles).toEqual({ 'changes-requested': { color: 'oxide' } })
+  })
+
   it('does not re-apply status styles to v3 notes', () => {
     const workspace = parseWorkspace(
       JSON.stringify({

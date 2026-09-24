@@ -31,6 +31,7 @@ export const fr: Locale = {
   language: 'Langue',
   lightMode: 'Mode clair',
   darkMode: 'Mode sombre',
+  installApp: 'Installer l’app',
   styles: 'Styles',
   files: 'Fichiers',
   openProject: 'Ouvrir un projet',
@@ -144,7 +145,7 @@ export const fr: Locale = {
   statusReview: 'À relire',
   statusDone: 'Terminée',
   statusBug: 'Bogue',
-  statusIssue: 'Problème',
+  statusChangesRequested: 'À corriger',
   statusWontfix: 'Abandonnée',
 
   // Note editor
@@ -172,6 +173,9 @@ export const fr: Locale = {
   feedback: 'Ce qui ne va pas',
   feedbackPlaceholder:
     'Après relecture de la réponse : ce qui ne va toujours pas ou ce qui manque.',
+  feedbackStatusHint:
+    'L’IA doit-elle corriger quelque chose ? Passez la note à « {status} » pour qu’elle le sache.',
+  markAsStatus: 'Passer à « {status} »',
   color: 'Couleur',
   pattern: 'Motif',
   deleteNote: 'Supprimer la note',

@@ -24,6 +24,14 @@ that forgets. Bruto keeps the tasks of a project as notes in a file inside the p
 3. **The AI** answers inside the note and marks it for review, if it can edit files. Bruto picks up
    the change live, without overwriting anything you were typing.
 
+## Install
+
+Nothing to download. Open **[jimy-k4.github.io/bruto](https://jimy-k4.github.io/bruto/)** in Chrome, Edge,
+Brave or Opera and press **Install app** in the top bar (or the install icon in the address bar).
+Bruto then opens in its own window, from the Start menu or the Dock, and works offline.
+
+Prefer to run it yourself? See [Development](#development).
+
 ## Features
 
 - **Board.** Notes with a status, description, files, a link and screenshots. Drag them, connect them
@@ -60,7 +68,8 @@ these, so the model knows how to answer:
   start of its `id`. When you finish one, write what you did in its `aiResponse` and set `status`
   to "review". Never delete notes or change `x`, `y` or `zIndex`.
 - Without file access: answer note by note, starting each answer with its id.
-- "Feedback" is what the user found wrong after reviewing a previous answer: address it first.
+- Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong
+  in "Feedback": fix that first, then set the status back to "review".
 ```
 
 Coding agents that work in your repository can also be pointed at the file directly, for example with
@@ -87,7 +96,7 @@ fields it does not know about, and accepts common status words such as `"pending
       "id": "b72f10aa-…",
       "title": "Cancel a booking",
       "description": "Users can cancel up to 2 hours before the session.",
-      "status": "review", // idea · todo · in-progress · blocked · review · done · bug · issue · wontfix
+      "status": "review", // idea · todo · in-progress · review · changes-requested · done · blocked · bug · wontfix
       "filePaths": ["app/bookings/actions.ts"], // relative to the project
       "webUrl": "",
       "images": [".bruto/images/b72f10-20260924-ab12.png"],

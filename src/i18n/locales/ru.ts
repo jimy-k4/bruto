@@ -31,6 +31,7 @@ export const ru: Locale = {
   language: 'Язык',
   lightMode: 'Светлая тема',
   darkMode: 'Тёмная тема',
+  installApp: 'Установить приложение',
   styles: 'Стили',
   files: 'Файлы',
   openProject: 'Открыть проект',
@@ -148,7 +149,7 @@ export const ru: Locale = {
   statusReview: 'На проверке',
   statusDone: 'Готово',
   statusBug: 'Ошибка',
-  statusIssue: 'Проблема',
+  statusChangesRequested: 'На доработку',
   statusWontfix: 'Отклонена',
 
   // Note editor
@@ -175,6 +176,9 @@ export const ru: Locale = {
   aiResponsePlaceholder: 'Что ИИ сделал с этой заметкой.',
   feedback: 'Что не так',
   feedbackPlaceholder: 'После проверки ответа: что всё ещё не так или чего не хватает.',
+  feedbackStatusHint:
+    'ИИ нужно что-то исправить? Переведите заметку в статус «{status}», чтобы он это увидел.',
+  markAsStatus: 'Перевести в «{status}»',
   color: 'Цвет',
   pattern: 'Узор',
   deleteNote: 'Удалить заметку',

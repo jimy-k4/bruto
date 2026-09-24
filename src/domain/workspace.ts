@@ -53,7 +53,13 @@ const STATUS_ALIASES: Record<string, NoteStatus> = {
   finished: 'done',
   revision: 'review',
   revisión: 'review',
+  'por revisar': 'review',
   bloqueado: 'blocked',
+  // Until v3 "issue" meant "reviewed, with problems".
+  issue: 'changes-requested',
+  'changes requested': 'changes-requested',
+  rework: 'changes-requested',
+  'a corregir': 'changes-requested',
 }
 
 function normalizeStatus(value: unknown): NoteStatus | undefined {
@@ -104,7 +110,8 @@ function normalizeStatusStyles(value: unknown): StatusStyles | undefined {
   const styles: StatusStyles = {}
 
   for (const status of NOTE_STATUSES) {
-    const config = value[status]
+    // The old "issue" status became "changes-requested": keep its look.
+    const config = value[status] ?? (status === 'changes-requested' ? value.issue : undefined)
 
     if (!isRecord(config)) continue
 

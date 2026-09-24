@@ -31,7 +31,17 @@ export type NotePattern =
   | 'triangle'
 
 export type NoteStatus =
-  'idea' | 'todo' | 'in-progress' | 'blocked' | 'review' | 'done' | 'bug' | 'issue' | 'wontfix'
+  | 'idea'
+  | 'todo'
+  | 'in-progress'
+  | 'blocked'
+  /** The AI finished: waiting for the user to check it. */
+  | 'review'
+  /** The user checked it and found problems (see `feedback`): back to the AI. */
+  | 'changes-requested'
+  | 'done'
+  | 'bug'
+  | 'wontfix'
 
 export interface Note {
   id: string

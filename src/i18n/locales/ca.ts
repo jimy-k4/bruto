@@ -31,6 +31,7 @@ export const ca: Locale = {
   language: 'Idioma',
   lightMode: 'Mode clar',
   darkMode: 'Mode fosc',
+  installApp: "Instal·lar l'app",
   styles: 'Estils',
   files: 'Fitxers',
   openProject: 'Obrir projecte',
@@ -141,10 +142,10 @@ export const ca: Locale = {
   statusTodo: 'Per fer',
   statusInProgress: 'En curs',
   statusBlocked: 'Bloquejada',
-  statusReview: 'Revisió',
+  statusReview: 'Per revisar',
   statusDone: 'Feta',
   statusBug: 'Error',
-  statusIssue: 'Problema',
+  statusChangesRequested: 'A corregir',
   statusWontfix: 'Descartada',
 
   // Note editor
@@ -171,6 +172,9 @@ export const ca: Locale = {
   aiResponsePlaceholder: 'El que la IA ha fet amb aquesta nota.',
   feedback: 'Què falla',
   feedbackPlaceholder: 'Després de revisar la resposta: què continua malament o què falta.',
+  feedbackStatusHint:
+    'La IA ha de corregir alguna cosa? Passa la nota a «{status}» perquè ho sàpiga.',
+  markAsStatus: 'Marcar com a «{status}»',
   color: 'Color',
   pattern: 'Patró',
   deleteNote: 'Eliminar nota',

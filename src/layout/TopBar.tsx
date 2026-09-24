@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { AppTheme, Language } from '../types'
 import { LANGUAGES } from '../domain/constants'
 import { useI18n } from '../i18n'
+import { useInstallPrompt } from '../ui/installPrompt'
 
 interface TopBarProps {
   theme: AppTheme
@@ -15,6 +16,7 @@ interface TopBarProps {
 
 export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: TopBarProps) {
   const { t, language, setLanguage } = useI18n()
+  const install = useInstallPrompt()
 
   return (
     <header className="topbar">
@@ -27,6 +29,12 @@ export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: T
       </div>
 
       <nav className="topbar__actions" aria-label={t('mainActions')}>
+        {install && (
+          <button type="button" className="button button--primary" onClick={() => void install()}>
+            {t('installApp')}
+          </button>
+        )}
+
         {actions}
 
         <button type="button" className="button" onClick={onOpenHelp}>

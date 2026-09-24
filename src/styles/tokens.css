@@ -70,7 +70,7 @@
   --status-review: #b3a4ff;
   --status-done: #7fc98a;
   --status-bug: #ff7a66;
-  --status-issue: #f0a64a;
+  --status-changes-requested: #f27ab6;
   --status-wontfix: #8d8c86;
 }
 
@@ -106,6 +106,6 @@
   --status-review: #5a45c2;
   --status-done: #2b6e37;
   --status-bug: #a3261a;
-  --status-issue: #a35a00;
+  --status-changes-requested: #b0266f;
   --status-wontfix: #5b5b57;
 }

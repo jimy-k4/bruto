@@ -31,6 +31,7 @@ export const ja: Locale = {
   language: '言語',
   lightMode: 'ライトモード',
   darkMode: 'ダークモード',
+  installApp: 'アプリをインストール',
   styles: 'スタイル',
   files: 'ファイル',
   openProject: 'プロジェクトを開く',
@@ -137,10 +138,10 @@ export const ja: Locale = {
   statusTodo: '未着手',
   statusInProgress: '進行中',
   statusBlocked: 'ブロック',
-  statusReview: 'レビュー',
+  statusReview: 'レビュー待ち',
   statusDone: '完了',
   statusBug: 'バグ',
-  statusIssue: '課題',
+  statusChangesRequested: '要修正',
   statusWontfix: '対応しない',
 
   // Note editor
@@ -166,6 +167,9 @@ export const ja: Locale = {
   aiResponsePlaceholder: 'AI がこのノートで行ったこと。',
   feedback: 'うまくいかない点',
   feedbackPlaceholder: '返答を確認したうえで、まだ直っていない点や足りない点。',
+  feedbackStatusHint:
+    'AI に直してほしい点がありますか?ノートを「{status}」にすると AI に伝わります。',
+  markAsStatus: '「{status}」にする',
   color: '色',
   pattern: '模様',
   deleteNote: 'ノートを削除',

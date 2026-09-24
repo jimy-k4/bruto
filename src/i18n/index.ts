@@ -78,7 +78,7 @@ const STATUS_KEYS: Record<NoteStatus, TranslationKey> = {
   review: 'statusReview',
   done: 'statusDone',
   bug: 'statusBug',
-  issue: 'statusIssue',
+  'changes-requested': 'statusChangesRequested',
   wontfix: 'statusWontfix',
 }
 

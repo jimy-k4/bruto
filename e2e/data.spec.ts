@@ -39,7 +39,7 @@ test('merges what an AI writes into the file while the app is open', async ({ pa
   await writeDisk(page, JSON.stringify(disk, null, 2))
 
   await expect(page.getByText(/cambios hechos fuera de bruto/i)).toBeVisible()
-  await expect(noteCard(page, 'A').getByText('Revisión')).toBeVisible()
+  await expect(noteCard(page, 'A').getByText('Por revisar')).toBeVisible()
 
   // A local edit afterwards keeps the AI's work.
   await noteCard(page, 'B').click()

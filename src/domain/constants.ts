@@ -36,11 +36,11 @@ export const NOTE_STATUSES: readonly NoteStatus[] = [
   'idea',
   'todo',
   'in-progress',
-  'blocked',
   'review',
+  'changes-requested',
   'done',
+  'blocked',
   'bug',
-  'issue',
   'wontfix',
 ]
 

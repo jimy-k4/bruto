@@ -237,3 +237,18 @@ test('the files window links a file to the selected note', async ({ page }) => {
 
   expect((await readDisk(page)).notes[0].filePaths).toEqual(['src/App.tsx'])
 })
+
+test('writing feedback suggests sending the note back to the AI', async ({ page }) => {
+  await openProject(page, workspaceWith([note('a', { status: 'review' })]))
+  await noteCard(page, 'A').click()
+
+  await page.getByLabel('Qué falla').fill('Sigue fallando en móvil')
+  await page.getByRole('button', { name: 'Marcar como «A corregir»' }).click()
+  await waitForSaved(page)
+
+  expect((await readDisk(page)).notes[0]).toMatchObject({
+    status: 'changes-requested',
+    feedback: 'Sigue fallando en móvil',
+  })
+  await expect(page.getByRole('button', { name: /marcar como/i })).toHaveCount(0)
+})

@@ -31,6 +31,7 @@ export const de: Locale = {
   language: 'Sprache',
   lightMode: 'Heller Modus',
   darkMode: 'Dunkler Modus',
+  installApp: 'App installieren',
   styles: 'Stile',
   files: 'Dateien',
   openProject: 'Projekt öffnen',
@@ -141,10 +142,10 @@ export const de: Locale = {
   statusTodo: 'Offen',
   statusInProgress: 'In Arbeit',
   statusBlocked: 'Blockiert',
-  statusReview: 'Prüfen',
+  statusReview: 'Zu prüfen',
   statusDone: 'Erledigt',
   statusBug: 'Fehler',
-  statusIssue: 'Problem',
+  statusChangesRequested: 'Nachbessern',
   statusWontfix: 'Verworfen',
 
   // Note editor
@@ -171,6 +172,9 @@ export const de: Locale = {
   aiResponsePlaceholder: 'Was die KI mit dieser Notiz gemacht hat.',
   feedback: 'Was nicht stimmt',
   feedbackPlaceholder: 'Nach dem Prüfen der Antwort: was noch falsch ist oder fehlt.',
+  feedbackStatusHint:
+    'Muss die KI etwas korrigieren? Setze die Notiz auf „{status}“, damit sie es weiß.',
+  markAsStatus: 'Auf „{status}“ setzen',
   color: 'Farbe',
   pattern: 'Muster',
   deleteNote: 'Notiz löschen',
