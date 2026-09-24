@@ -55,20 +55,25 @@ Prefer to run it yourself? See [Development](#development).
 - **AI context.** Copy the selection, the selection plus everything it points to, or the whole
   project, as clean Markdown with short instructions for the model. A preview shows exactly what gets
   copied and roughly how many tokens it is.
-- **Answers in the note.** Each note has an _AI response_ and a _What's wrong_ field, so review
-  loops stay attached to the task.
+- **Answers in the note.** Each note has an _AI response_, the files the AI touched and a _What's
+  wrong_ field, so review loops stay attached to the task.
 - **Safe with other tools.** Every save reads the file first and merges changes made elsewhere, note by
   note and field by field. A broken file is never overwritten: Bruto shows what is wrong and offers the
   latest backup (one is kept each time a project is opened).
 - **Keyboard first and accessible.** Every action has a shortcut, notes are reachable with Tab, dialogs
   trap focus and everything has a readable name for screen readers.
-- **Nine languages**, light and dark themes, installable, works offline.
+- **Nine languages**, light and dark themes, a colour and pattern per status, installable, works
+  offline, and tells an open window when a new version is out.
 - **Local only.** The app is a static page: it has no server, no analytics and no storage of its own.
   Your notes never leave your folders.
 
 <p>
+  <img src="docs/structure-dark.png" alt="The structure view: the project's folders as blocks, marked with the notes that point at them" width="49%" />
+  <img src="docs/lens-web-light.png" alt="The web lens: pages drawn as browser windows with their components, and the notes on the one picked" width="49%" />
+</p>
+<p>
   <img src="docs/ai-context-light.png" alt="The AI context window with the global context and a preview of the copy" width="49%" />
-  <img src="docs/status-styles-light.png" alt="Status styles: the color and pattern each status gives a note" width="49%" />
+  <img src="docs/search-dark.png" alt="Search over the board with the content and status filters, matches standing out" width="49%" />
 </p>
 
 ## Working with an AI
@@ -157,6 +162,7 @@ Add `.bruto/` to your `.gitignore` if the notes should stay on your machine.
 | `F`                 | Centre the view                       | `Alt 1…9`           | Switch open project                            |
 | `M`                 | Structure view                        | `Backspace`         | Up one folder in the structure view            |
 | `Ctrl F` / `/`      | Search notes (text, path or id)       | `Enter`             | Next result (`Shift` for the previous one)     |
+| `0`                 | Reset zoom and position               | `Esc`               | Close or cancel                                |
 
 Press `?` in the app for the full list.
 
@@ -177,13 +183,18 @@ npm run build
 
 ```text
 src/
-  domain/     pure logic: workspace format, merge, AI context, clipboard (unit tested)
+  domain/     pure logic: workspace format, merge, AI context, search, structure (unit tested)
   storage/    the project folder: workspace file, backups, images, recent projects
   state/      in-memory workspace with undo, and the engine that keeps it in sync with disk
-  board/      the canvas: notes, connections, pan, zoom, selection
+  board/      the canvas: notes, connections, pan, zoom, selection, search
+  structure/  the structure view and its file map
+  lenses/     reading web, .NET and PL/SQL code, and drawing each kind of project
+  workspace/  the project screen: actions, shortcuts, UI state
   panels/     editors and dialogs
   layout/     top bar, sidebar, status bar, landing
+  shortcuts/  one keymap for the keyboard handler and the help window
   i18n/       one dictionary per language, checked by tests
+  ui/         shared pieces: dialogs, toasts, pickers
   styles/     design tokens and styles
 e2e/          browser tests against a real (private) file system
 ```
@@ -191,7 +202,7 @@ e2e/          browser tests against a real (private) file system
 ## Support
 
 Bruto is free and has no ads, accounts or tracking. If it saves you time, you can
-[buy me a coffee on Ko-fi](https://ko-fi.com/jimy_k4).
+[buy me a coffee on Ko-fi](https://ko-fi.com/jimy_k4): it's also the heart in the top bar.
 
 ## License
 
