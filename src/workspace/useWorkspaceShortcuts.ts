@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { EMPTY_SEARCH } from '../domain/search'
 import { matchShortcut, type ShortcutAction } from '../shortcuts/keymap'
 import type { Projects } from '../state/useProjects'
@@ -152,7 +152,9 @@ export function useWorkspaceShortcuts(
     actions.pasteNotes()
   })
 
-  useEffect(() => {
+  // Before paint, not after: a project that just opened must answer keys the
+  // moment it is on screen (Alt+1 right after switching was being lost).
+  useLayoutEffect(() => {
     window.addEventListener('keydown', onKeyDown)
     document.addEventListener('copy', onCopy)
     document.addEventListener('paste', onPaste)
