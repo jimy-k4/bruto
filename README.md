@@ -188,6 +188,11 @@ src/
 e2e/          browser tests against a real (private) file system
 ```
 
+## Support
+
+Bruto is free and has no ads, accounts or tracking. If it saves you time, you can
+[buy me a coffee on Ko-fi](https://ko-fi.com/jimy_k4).
+
 ## License
 
 [MIT](LICENSE)
