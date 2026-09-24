@@ -221,13 +221,19 @@ export const ru: Locale = {
   selectionActions: 'Действия с выбранным',
   clearSelection: 'Снять выбор',
   notesDeleted: 'Удалено заметок: {count}',
-  notesDeleted_one: 'Заметка удалена',
+  notesDeleted_one: 'Удалена {count} заметка',
   notesCopied: 'Скопировано заметок: {count}. Вставьте их через Ctrl+V в любой проект.',
-  notesCopied_one: 'Заметка скопирована. Вставьте её через Ctrl+V в любой проект.',
+  notesCopied_one: 'Скопирована {count} заметка. Вставьте через Ctrl+V в любой проект.',
   nothingToPaste: 'Нет скопированных заметок.',
   copySuffix: 'копия',
   selectNoteFirst: 'Сначала выберите заметку.',
-  contextCopied: 'Контекст скопирован. Вставьте его в свой ИИ.',
+  contextCopiedNote: 'Заметка «{title}» скопирована для ИИ · ≈ {tokens} токенов',
+  contextCopiedSelection: 'Скопировано выбранных заметок для ИИ: {count} · ≈ {tokens} токенов',
+  contextCopiedConnected:
+    'Скопировано заметок для ИИ: {count} — выбранные и те, на которые они указывают · ≈ {tokens} токенов',
+  contextCopiedNoConnections:
+    'Выбранное не указывает на другие заметки: скопировано только оно · ≈ {tokens} токенов',
+  contextCopiedEntire: 'Весь проект скопирован для ИИ, заметок: {count} · ≈ {tokens} токенов',
 
   // Statuses
   status: 'Статус',
@@ -260,7 +266,7 @@ export const ru: Locale = {
   addImages: 'Добавить изображения',
   openImage: 'Открыть {name}',
   imagesAdded: 'Добавлено изображений: {count}',
-  imagesAdded_one: 'Изображение добавлено',
+  imagesAdded_one: 'Добавлено {count} изображение',
   notAnImage: 'Можно добавлять только изображения (PNG, JPG, GIF, WebP или SVG).',
   imageSaveFailed: 'Не удалось сохранить изображение.',
   aiResponse: 'Ответ ИИ',

@@ -213,7 +213,15 @@ export const ja: Locale = {
   nothingToPaste: 'コピーしたノートはありません。',
   copySuffix: 'コピー',
   selectNoteFirst: '先にノートを選択してください。',
-  contextCopied: 'コンテキストをコピーしました。AI に貼り付けてください。',
+  contextCopiedNote: 'ノート「{title}」を AI 用にコピーしました · 約 {tokens} トークン',
+  contextCopiedSelection:
+    '選択した {count} 件のノートを AI 用にコピーしました · 約 {tokens} トークン',
+  contextCopiedConnected:
+    '{count} 件のノートを AI 用にコピーしました（選択とその接続先） · 約 {tokens} トークン',
+  contextCopiedNoConnections:
+    '選択は他のノートにつながっていないため、選択だけをコピーしました · 約 {tokens} トークン',
+  contextCopiedEntire:
+    'プロジェクト全体（ノート {count} 件）を AI 用にコピーしました · 約 {tokens} トークン',
 
   // Statuses
   status: 'ステータス',

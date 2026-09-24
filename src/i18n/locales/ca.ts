@@ -221,7 +221,16 @@ export const ca: Locale = {
   nothingToPaste: 'No hi ha notes copiades.',
   copySuffix: 'còpia',
   selectNoteFirst: 'Primer selecciona una nota.',
-  contextCopied: 'Context copiat. Enganxa-ho a la teva IA.',
+  contextCopiedNote: 'Copiada per a la teva IA la nota «{title}» · ≈ {tokens} tokens',
+  contextCopiedSelection:
+    'Copiades per a la teva IA les {count} notes seleccionades · ≈ {tokens} tokens',
+  contextCopiedConnected:
+    'Copiades per a la teva IA {count} notes: la selecció i les notes a què apunta · ≈ {tokens} tokens',
+  contextCopiedNoConnections:
+    'La selecció no apunta a cap nota: copiada només ella per a la teva IA · ≈ {tokens} tokens',
+  contextCopiedEntire: 'Copiat per a la teva IA tot el projecte: {count} notes · ≈ {tokens} tokens',
+  contextCopiedEntire_one:
+    'Copiat per a la teva IA tot el projecte: {count} nota · ≈ {tokens} tokens',
 
   // Statuses
   status: 'Estat',

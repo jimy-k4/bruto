@@ -6,7 +6,7 @@ import type {
   Workspace,
   WorkspaceDocumentation,
 } from '../types'
-import { buildAiContext } from '../domain/aiContext'
+import { buildAiContext, estimateTokens, getContextNoteIds } from '../domain/aiContext'
 import { copyNotes, pasteNotes } from '../domain/clipboard'
 import { NOTE_MIN_SIZE } from '../domain/constants'
 import {
@@ -16,6 +16,7 @@ import {
   duplicateNotes,
   findNote,
   moveNotes,
+  noteTitle,
   raiseNotes,
   removeConnection,
   removeDocumentation,
@@ -75,6 +76,32 @@ export function createWorkspaceActions({
       fail(error, t('clipboardFailed'))
       return false
     }
+  }
+
+  /** Says what a copy for the AI holds, so Q, W and E can be told apart. */
+  const describeContextCopy = (scope: ContextScope, ids: string[], text: string) => {
+    const workspace = current()
+    const count = getContextNoteIds(workspace, scope, ids).size
+    const tokens = estimateTokens(text).toLocaleString()
+
+    if (scope === 'entire') return t('contextCopiedEntire', { count, tokens })
+
+    if (scope === 'connected') {
+      return count > ids.length
+        ? t('contextCopiedConnected', { count, tokens })
+        : t('contextCopiedNoConnections', { tokens })
+    }
+
+    const note = ids.length === 1 ? findNote(workspace, ids[0]) : undefined
+
+    if (!note) return t('contextCopiedSelection', { count, tokens })
+
+    const title = noteTitle(note, t('untitled'))
+
+    return t('contextCopiedNote', {
+      title: title.length > 40 ? `${title.slice(0, 39)}…` : title,
+      tokens,
+    })
   }
 
   /** A free spot in the middle of the screen, so new notes never land off-screen. */
@@ -209,10 +236,8 @@ export function createWorkspaceActions({
         return
       }
 
-      const copied = await writeClipboardText(
-        text ?? buildAiContext(current(), scope, ids),
-        t('contextCopied'),
-      )
+      const content = text ?? buildAiContext(current(), scope, ids)
+      const copied = await writeClipboardText(content, describeContextCopy(scope, ids, content))
 
       if (copied) ui.markCopied(scope)
     },

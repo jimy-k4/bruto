@@ -61,6 +61,9 @@ function describeNote(note: Note): string[] {
   return lines
 }
 
+/** Rough token count, to know if a copy will fit in a chat. */
+export const estimateTokens = (text: string) => Math.ceil(text.length / 4)
+
 /** Which notes a copy includes: the selection, its connected graph, or everything. */
 export function getContextNoteIds(
   workspace: Workspace,

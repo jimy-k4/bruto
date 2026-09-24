@@ -220,7 +220,14 @@ export const en: Locale = {
   nothingToPaste: 'There are no copied notes.',
   copySuffix: 'copy',
   selectNoteFirst: 'Select a note first.',
-  contextCopied: 'Context copied. Paste it into your AI.',
+  contextCopiedNote: 'Copied note “{title}” for your AI · ≈ {tokens} tokens',
+  contextCopiedSelection: 'Copied the {count} selected notes for your AI · ≈ {tokens} tokens',
+  contextCopiedConnected:
+    'Copied {count} notes for your AI: the selection and the notes it points to · ≈ {tokens} tokens',
+  contextCopiedNoConnections:
+    'The selection points to no other note: copied it alone for your AI · ≈ {tokens} tokens',
+  contextCopiedEntire: 'Copied the whole project for your AI: {count} notes · ≈ {tokens} tokens',
+  contextCopiedEntire_one: 'Copied the whole project for your AI: {count} note · ≈ {tokens} tokens',
 
   // Statuses
   status: 'Status',

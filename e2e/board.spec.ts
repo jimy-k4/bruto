@@ -162,22 +162,35 @@ test('copy and paste notes with their connection', async ({ page }) => {
   expect(disk.notes.slice(2).map((item) => item.title)).toEqual(['A (copia)', 'B (copia)'])
 })
 
-test('Q copies the selected note for the AI', async ({ page }) => {
+test('Q, W and E copy for the AI and say what they copied', async ({ page }) => {
   await openProject(
     page,
-    workspaceWith([note('a1b2c3-x', { title: 'Login roto', status: 'todo' })]),
+    workspaceWith(
+      [
+        note('a1b2c3-x', { title: 'Login roto', status: 'todo' }),
+        note('b', { title: 'Sesión', x: 480 }),
+        note('c', { title: 'Suelta', x: 880 }),
+      ],
+      { connections: [{ id: 'c1', from: 'a1b2c3-x', to: 'b' }] },
+    ),
   )
 
   await noteCard(page, 'Login roto').click()
   await page.locator('.board').click({ position: { x: 300, y: 650 } })
   await noteCard(page, 'Login roto').focus()
   await page.keyboard.press('q')
-  await expect(page.getByText(/contexto copiado/i)).toBeVisible()
+  await expect(page.getByText(/copiada para tu IA la nota «Login roto»/i)).toBeVisible()
 
   const text = await page.evaluate(() => navigator.clipboard.readText())
 
   expect(text).toContain('### [a1b2c3] Login roto')
   expect(text).toContain('## HOW TO USE THIS CONTEXT')
+
+  await page.keyboard.press('w')
+  await expect(page.getByText(/copiadas para tu IA 2 notas: la selección y/i)).toBeVisible()
+
+  await page.keyboard.press('e')
+  await expect(page.getByText(/todo el proyecto: 3 notas/i)).toBeVisible()
 })
 
 test('pasting a screenshot while editing adds it to the note', async ({ page }) => {

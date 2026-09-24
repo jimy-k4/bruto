@@ -220,7 +220,16 @@ export const ptBR: Locale = {
   nothingToPaste: 'Não há notas copiadas.',
   copySuffix: 'cópia',
   selectNoteFirst: 'Selecione uma nota primeiro.',
-  contextCopied: 'Contexto copiado. Cole na sua IA.',
+  contextCopiedNote: 'Nota “{title}” copiada para a sua IA · ≈ {tokens} tokens',
+  contextCopiedSelection:
+    'As {count} notas selecionadas copiadas para a sua IA · ≈ {tokens} tokens',
+  contextCopiedConnected:
+    '{count} notas copiadas para a sua IA: a seleção e as notas para as quais ela aponta · ≈ {tokens} tokens',
+  contextCopiedNoConnections:
+    'A seleção não aponta para nenhuma nota: só ela foi copiada para a sua IA · ≈ {tokens} tokens',
+  contextCopiedEntire: 'Projeto inteiro copiado para a sua IA: {count} notas · ≈ {tokens} tokens',
+  contextCopiedEntire_one:
+    'Projeto inteiro copiado para a sua IA: {count} nota · ≈ {tokens} tokens',
 
   // Statuses
   status: 'Status',

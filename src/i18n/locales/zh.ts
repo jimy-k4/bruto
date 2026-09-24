@@ -207,7 +207,12 @@ export const zh: Locale = {
   nothingToPaste: '没有已复制的笔记。',
   copySuffix: '副本',
   selectNoteFirst: '请先选择一条笔记。',
-  contextCopied: '上下文已复制,粘贴到你的 AI 中吧。',
+  contextCopiedNote: '已为 AI 复制笔记“{title}” · 约 {tokens} 个 token',
+  contextCopiedSelection: '已为 AI 复制所选的 {count} 条笔记 · 约 {tokens} 个 token',
+  contextCopiedConnected:
+    '已为 AI 复制 {count} 条笔记：所选笔记及其指向的笔记 · 约 {tokens} 个 token',
+  contextCopiedNoConnections: '所选笔记没有指向其他笔记：只复制了所选内容 · 约 {tokens} 个 token',
+  contextCopiedEntire: '已为 AI 复制整个项目：{count} 条笔记 · 约 {tokens} 个 token',
 
   // Statuses
   status: '状态',

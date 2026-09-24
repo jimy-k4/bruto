@@ -221,7 +221,15 @@ export const de: Locale = {
   nothingToPaste: 'Keine kopierten Notizen.',
   copySuffix: 'Kopie',
   selectNoteFirst: 'Wähle zuerst eine Notiz aus.',
-  contextCopied: 'Kontext kopiert. Füge ihn in deine KI ein.',
+  contextCopiedNote: 'Notiz „{title}“ für deine KI kopiert · ≈ {tokens} Tokens',
+  contextCopiedSelection:
+    'Die {count} ausgewählten Notizen für deine KI kopiert · ≈ {tokens} Tokens',
+  contextCopiedConnected:
+    '{count} Notizen für deine KI kopiert: die Auswahl und die Notizen, auf die sie zeigt · ≈ {tokens} Tokens',
+  contextCopiedNoConnections:
+    'Die Auswahl zeigt auf keine andere Notiz: nur sie für deine KI kopiert · ≈ {tokens} Tokens',
+  contextCopiedEntire: 'Ganzes Projekt für deine KI kopiert: {count} Notizen · ≈ {tokens} Tokens',
+  contextCopiedEntire_one: 'Ganzes Projekt für deine KI kopiert: {count} Notiz · ≈ {tokens} Tokens',
 
   // Statuses
   status: 'Status',

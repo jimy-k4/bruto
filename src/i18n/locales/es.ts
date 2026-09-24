@@ -220,7 +220,14 @@ export const es = {
   nothingToPaste: 'No hay notas copiadas.',
   copySuffix: 'copia',
   selectNoteFirst: 'Selecciona antes una nota.',
-  contextCopied: 'Contexto copiado. Pégalo en tu IA.',
+  contextCopiedNote: 'Copiada para tu IA la nota «{title}» · ≈ {tokens} tokens',
+  contextCopiedSelection: 'Copiadas para tu IA las {count} notas seleccionadas · ≈ {tokens} tokens',
+  contextCopiedConnected:
+    'Copiadas para tu IA {count} notas: la selección y las notas a las que apunta · ≈ {tokens} tokens',
+  contextCopiedNoConnections:
+    'La selección no apunta a ninguna nota: copiada solo ella para tu IA · ≈ {tokens} tokens',
+  contextCopiedEntire: 'Copiado para tu IA todo el proyecto: {count} notas · ≈ {tokens} tokens',
+  contextCopiedEntire_one: 'Copiado para tu IA todo el proyecto: {count} nota · ≈ {tokens} tokens',
 
   // Statuses
   status: 'Estado',

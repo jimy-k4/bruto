@@ -1,6 +1,6 @@
 import { useId, useMemo, useState } from 'react'
 import type { ContextScope, Note, Workspace } from '../types'
-import { buildAiContext } from '../domain/aiContext'
+import { buildAiContext, estimateTokens } from '../domain/aiContext'
 import { getConnectedNoteIds } from '../domain/workspace'
 import { useI18n, type TranslationKey } from '../i18n'
 import { ContextStrips } from '../ui/ContextStrips'
@@ -21,9 +21,6 @@ const SCOPES: { scope: ContextScope; label: TranslationKey; key: string }[] = [
   { scope: 'connected', label: 'copyConnected', key: 'W' },
   { scope: 'entire', label: 'copyEntire', key: 'E' },
 ]
-
-/** Rough token count, to know if a copy will fit in a chat. */
-const estimateTokens = (text: string) => Math.ceil(text.length / 4)
 
 export function AiContextDialog({
   workspace,

@@ -221,7 +221,15 @@ export const fr: Locale = {
   nothingToPaste: 'Aucune note copiée.',
   copySuffix: 'copie',
   selectNoteFirst: 'Sélectionnez d’abord une note.',
-  contextCopied: 'Contexte copié. Collez-le dans votre IA.',
+  contextCopiedNote: 'Note « {title} » copiée pour votre IA · ≈ {tokens} tokens',
+  contextCopiedSelection:
+    'Les {count} notes sélectionnées copiées pour votre IA · ≈ {tokens} tokens',
+  contextCopiedConnected:
+    '{count} notes copiées pour votre IA : la sélection et les notes vers lesquelles elle pointe · ≈ {tokens} tokens',
+  contextCopiedNoConnections:
+    'La sélection ne pointe vers aucune note : copiée seule pour votre IA · ≈ {tokens} tokens',
+  contextCopiedEntire: 'Projet entier copié pour votre IA : {count} notes · ≈ {tokens} tokens',
+  contextCopiedEntire_one: 'Projet entier copié pour votre IA : {count} note · ≈ {tokens} tokens',
 
   // Statuses
   status: 'Statut',
