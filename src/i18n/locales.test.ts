@@ -41,6 +41,20 @@ const SHARED_WORDS = new Set([
   '{count} notes',
   'Structure',
   'DIR',
+  'API',
+  'Services',
+  'Assets',
+  'Components',
+  'Configuration',
+  'Hooks',
+  'Layouts',
+  'Middleware',
+  'Repositories',
+  'Tests',
+  'Triggers',
+  'Views',
+  'Tables',
+  'Types',
 ])
 
 const placeholders = (text: string) =>

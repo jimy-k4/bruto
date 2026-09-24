@@ -39,6 +39,16 @@ Prefer to run it yourself? See [Development](#development).
 - **Structure view.** The project's folders and files as blocks sized by how many files they hold,
   marked with the notes that point at them. It shows where the work is, and lists links to files
   that no longer exist.
+- **Lenses.** When Bruto recognises the project, the structure view offers it drawn by what its files
+  are, still with the notes on each element:
+  - **Web** (React, Vue, Next.js, Nuxt): pages as browser windows with their route and the components on
+    them, a wall of components sized by use, then layouts, server routes, hooks, state and services.
+  - **API** (.NET): controllers and minimal APIs as resources listing their endpoints, verb, route and
+    authorization, with the services they depend on; then services, repositories, data, models and
+    middleware.
+  - **Database** (Oracle PL/SQL): tables with their columns and keys as an entity-relationship diagram,
+    packages split into specification and body, then views, triggers, procedures, functions and
+    sequences.
 - **AI context.** Copy the selection, the selection plus everything it points to, or the whole
   project, as clean Markdown with short instructions for the model. A preview shows exactly what gets
   copied and roughly how many tokens it is.
