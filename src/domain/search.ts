@@ -16,7 +16,8 @@ export interface NoteSearch {
 }
 
 export const hasTrait: Record<NoteTrait, (note: Note) => boolean> = {
-  files: (note) => note.filePaths.length > 0,
+  // Linked by the user or touched by the AI: either way the note is about files.
+  files: (note) => note.filePaths.length > 0 || (note.aiFilePaths?.length ?? 0) > 0,
   aiResponse: (note) => Boolean(note.aiResponse?.trim()),
   images: (note) => note.images.length > 0,
   webUrl: (note) => Boolean(note.webUrl.trim()),

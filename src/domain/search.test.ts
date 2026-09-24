@@ -86,9 +86,17 @@ describe('searchNotes', () => {
       note('answered', { aiResponse: 'Done', webUrl: 'https://x.dev' }),
       note('blank', { aiResponse: '   ', status: 'todo' }),
       note('image', { images: ['.bruto/images/a.png'], x: 10 }),
+      note('aiFiles', { aiResponse: 'Done', aiFilePaths: ['src/b.ts'], y: 10 }),
     ]
 
-    expect(ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { files: true } }))).toEqual(['files'])
+    expect(ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { files: true } }))).toEqual([
+      'files',
+      'aiFiles',
+    ])
+    // Files linked by the user or by the AI both count.
+    expect(
+      ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { files: true, aiResponse: true } })),
+    ).toEqual(['aiFiles'])
     expect(ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { aiResponse: false } }))).toEqual([
       'files',
       'blank',
