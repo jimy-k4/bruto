@@ -1,0 +1,213 @@
+.landing,
+.recovery {
+  overflow-y: auto;
+}
+
+.landing {
+  display: grid;
+  align-content: start;
+  gap: 72px;
+  padding: 64px clamp(24px, 6vw, 96px) 96px;
+}
+
+.landing__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-6);
+  min-height: 52vh;
+}
+
+.landing__intro {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-5);
+}
+
+.landing__title {
+  margin-left: -0.05em;
+  font: 400 clamp(80px, 11vw, 190px) / 0.82 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.landing__lead {
+  max-width: 52ch;
+  font-size: var(--text-lg);
+  line-height: 1.5;
+}
+
+/* Heavy concrete slabs, cantilevered like brutalist volumes. */
+.landing__slabs {
+  position: relative;
+  height: 420px;
+}
+
+.slab {
+  position: absolute;
+  border: var(--border-heavy) solid var(--line);
+  box-shadow: 14px 14px 0 var(--line);
+}
+
+.slab--tall {
+  top: 0;
+  right: 18%;
+  width: 46%;
+  height: 86%;
+}
+
+.slab--wide {
+  right: 0;
+  bottom: 12%;
+  width: 72%;
+  height: 34%;
+}
+
+.slab--small {
+  bottom: 0;
+  left: 22%;
+  width: 22%;
+  height: 22%;
+}
+
+.landing__section {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.recent-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-3);
+}
+
+.recent-list__item {
+  display: flex;
+  border: var(--border-heavy) solid var(--line);
+  background: var(--surface);
+  box-shadow: 4px 4px 0 var(--line);
+}
+
+.recent-list__open {
+  display: grid;
+  flex: 1;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.recent-list__open strong {
+  font: 400 20px / 1.1 var(--font-display);
+  overflow-wrap: anywhere;
+}
+
+.recent-list__open span {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.recent-list__open:hover:not(:disabled) {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.recent-list__open:hover:not(:disabled) span {
+  color: inherit;
+}
+
+.recent-list__item .icon-button {
+  align-self: start;
+  margin: var(--space-2);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  border: var(--border-heavy) solid var(--line);
+}
+
+.steps__item {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-right: var(--border-heavy) solid var(--line);
+  background: var(--surface);
+}
+
+.steps__item:last-child {
+  border-right: 0;
+}
+
+.steps__number {
+  font: 400 56px / 1 var(--font-display);
+  color: var(--signal);
+}
+
+.steps__item h3 {
+  font: 400 20px / 1.1 var(--font-display);
+  text-transform: uppercase;
+}
+
+.steps__item p {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* Recovery ---------------------------------------------------------------------- */
+
+.recovery {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: var(--space-4);
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: var(--space-6);
+  grid-row: 1 / -1;
+}
+
+.recovery__title {
+  font: 400 44px / 1 var(--font-display);
+  text-transform: uppercase;
+}
+
+.recovery__error {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-4);
+  overflow-x: auto;
+  border: var(--border-heavy) solid var(--danger);
+  background: var(--input);
+  font-size: var(--text-sm);
+  white-space: pre-wrap;
+}
+
+.recovery__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (max-width: 900px) {
+  .landing__hero,
+  .ai-dialog__layout,
+  .files-dialog__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .landing__slabs {
+    display: none;
+  }
+
+  .steps__item {
+    border-right: 0;
+    border-bottom: var(--border-heavy) solid var(--line);
+  }
+
+  .file-tree {
+    border-right: 0;
+    border-bottom: var(--border) solid var(--line);
+  }
+}

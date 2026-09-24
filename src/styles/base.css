@@ -1,0 +1,608 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background-color: var(--bg);
+  color: var(--ink);
+  font: 400 var(--text-md) / 1.5 var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+  scrollbar-color: var(--ink-muted) var(--surface);
+}
+
+/* Concrete grain over the whole app, never in the way of the pointer. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: var(--noise);
+  opacity: var(--noise-opacity);
+}
+
+[data-theme='dark'] body::after {
+  filter: invert(1);
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure,
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+fieldset {
+  border: 0;
+  min-width: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form controls don't inherit fonts by default: this was why some texts looked unstyled. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--signal-ink);
+}
+
+kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border: 1px solid currentColor;
+  font: 600 var(--text-xs) / 1.4 var(--font-mono);
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.eyebrow {
+  color: var(--ink-muted);
+  font: 600 var(--text-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font: 400 28px / 1 var(--font-display);
+  text-transform: uppercase;
+}
+
+.empty-text {
+  padding: var(--space-5);
+  color: var(--ink-muted);
+}
+
+.notice {
+  padding: var(--space-3) var(--space-4);
+  border: var(--border) solid var(--danger);
+  color: var(--ink);
+  background: var(--surface);
+}
+
+/* Buttons ------------------------------------------------------------------ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  border: var(--border) solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 var(--text-sm) / 1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  transition:
+    background var(--speed),
+    color var(--speed),
+    transform var(--speed);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.button:active:not(:disabled) {
+  transform: translate(2px, 2px);
+}
+
+.button:disabled {
+  opacity: 0.45;
+}
+
+.button--primary {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--signal-ink);
+}
+
+.button--danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.button--danger:hover:not(:disabled) {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--danger-ink);
+}
+
+.button--small {
+  min-height: 28px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.button--large {
+  min-height: 56px;
+  padding: 0 var(--space-6);
+  border-width: var(--border-heavy);
+  font-size: var(--text-md);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--line);
+}
+
+.button--block {
+  width: 100%;
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: var(--border) solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: 400 20px / 1 var(--font-mono);
+}
+
+.icon-button:hover {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.icon-button--small {
+  width: 26px;
+  height: 26px;
+  font-size: 16px;
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-button:hover {
+  color: var(--signal);
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.button-row--spread {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.button-stack {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Form fields ---------------------------------------------------------------- */
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.field__label {
+  color: var(--ink-muted);
+  font: 600 var(--text-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.field__hint {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.field__error {
+  color: var(--danger);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.field__value {
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.field__row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--input);
+  color: var(--ink);
+  font-size: var(--text-md);
+}
+
+.textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.textarea--mono {
+  font-size: var(--text-sm);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--ink-muted);
+  opacity: 0.8;
+}
+
+.input[aria-invalid='true'],
+.textarea[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+/* Native select with a square arrow drawn in CSS: same look in both themes. */
+.select {
+  width: auto;
+  padding-right: 34px;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--ink) 50%),
+    linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position:
+    calc(100% - 17px) 50%,
+    calc(100% - 12px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.select--full {
+  width: 100%;
+}
+
+.select option {
+  background: var(--input);
+  color: var(--ink);
+}
+
+.select-wrap {
+  display: inline-flex;
+}
+
+/* Swatches (color and pattern pickers) ---------------------------------------- */
+
+.swatch-picker {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.swatch-picker__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+  gap: 6px;
+}
+
+.swatch-picker__option {
+  position: relative;
+  cursor: pointer;
+}
+
+.swatch {
+  display: block;
+  aspect-ratio: 1;
+  border: var(--border) solid var(--line);
+  transition: transform var(--speed);
+}
+
+.swatch-picker__option:hover .swatch {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--line);
+}
+
+.swatch-picker__option input:checked + .swatch {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+  box-shadow: 3px 3px 0 var(--line);
+}
+
+.swatch-picker__option input:focus-visible + .swatch {
+  outline: 3px solid var(--signal);
+  outline-offset: 4px;
+}
+
+/* Status badge ------------------------------------------------------------------ */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  padding: 2px 8px;
+  border: var(--border) solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 var(--text-xs) / 1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--status-color, var(--ink));
+}
+
+.status-badge--idea {
+  --status-color: var(--status-idea);
+}
+.status-badge--todo {
+  --status-color: var(--status-todo);
+}
+.status-badge--in-progress {
+  --status-color: var(--status-in-progress);
+}
+.status-badge--blocked {
+  --status-color: var(--status-blocked);
+}
+.status-badge--review {
+  --status-color: var(--status-review);
+}
+.status-badge--done {
+  --status-color: var(--status-done);
+}
+.status-badge--bug {
+  --status-color: var(--status-bug);
+}
+.status-badge--issue {
+  --status-color: var(--status-issue);
+}
+.status-badge--wontfix {
+  --status-color: var(--status-wontfix);
+}
+
+/* Painted copy buttons (selection / connections / everything) ------------------- */
+
+.context-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 40px;
+  padding: 0 var(--space-2);
+  overflow: hidden;
+  border: var(--border) solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 var(--text-xs) / 1.2 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.context-button > :not(.context-strips) {
+  position: relative;
+  z-index: 1;
+  padding: 3px 6px;
+  background: var(--surface);
+}
+
+.context-button:hover:not(:disabled),
+.context-button[aria-checked='true'] {
+  border-color: var(--signal);
+  box-shadow: inset 0 0 0 2px var(--signal);
+}
+
+.context-button:disabled {
+  opacity: 0.45;
+}
+
+.context-strips {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  pointer-events: none;
+}
+
+.context-strips > span {
+  flex: 1 1 0;
+}
+
+/* Files table --------------------------------------------------------------------- */
+
+.file-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--text-sm);
+}
+
+.file-table th {
+  padding: 4px 6px;
+  border-bottom: var(--border) solid currentColor;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.file-table th:first-child {
+  width: 50%;
+}
+
+.file-table th:nth-child(2) {
+  width: 22%;
+}
+
+.file-table th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-table td:last-child:has(button) {
+  width: 36px;
+  text-align: right;
+}
+
+.file-table th:last-child:empty,
+.file-table th:last-child:has(.visually-hidden) {
+  width: 36px;
+}
+
+.file-table tfoot td {
+  border: 0;
+  font-weight: 600;
+}
+
+.file-table__row--missing td:first-child {
+  text-decoration: line-through;
+}
+
+.file-table--compact {
+  font-size: var(--text-xs);
+}
+
+.file-table--compact td,
+.file-table--compact th {
+  padding: 2px 4px;
+  border-color: currentColor;
+}
+
+.image-placeholder {
+  display: block;
+  background: var(--line-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

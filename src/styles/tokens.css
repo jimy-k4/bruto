@@ -1,0 +1,111 @@
+/*
+ * Design tokens. Every color, size and shadow in the app comes from here, so
+ * both themes stay complete: a new component only uses these variables.
+ *
+ * Brutalism: raw concrete greys, heavy black lines, solid offset shadows and a
+ * single signal color (construction orange) for focus and selection.
+ */
+
+:root {
+  --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 14px;
+  --text-lg: 18px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --border: 2px;
+  --border-heavy: 3px;
+  --shadow-offset: 6px;
+  --radius: 0;
+
+  --topbar-height: 60px;
+  --statusbar-height: 34px;
+
+  --speed: 120ms;
+
+  /* Fine concrete grain, laid over surfaces. */
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Dark: concrete at night. Also the fallback before the theme is known. */
+:root,
+:root[data-theme='dark'] {
+  --bg: #1a1a19;
+  --surface: #232322;
+  --surface-raised: #2c2c2a;
+  --input: #151514;
+  --ink: #edece5;
+  --ink-muted: #b7b6ae;
+  --line: #edece5;
+  --line-soft: rgba(237, 236, 229, 0.16);
+  --inverse-bg: #edece5;
+  --inverse-ink: #151514;
+  --signal: #ff6b2c;
+  --signal-ink: #151514;
+  --danger: #ff7a66;
+  --danger-ink: #151514;
+  --backdrop: rgba(8, 8, 8, 0.72);
+  --noise-opacity: 0.1;
+  --board-line: rgba(237, 236, 229, 0.05);
+  --board-seam: rgba(237, 236, 229, 0.08);
+
+  /* Text on note colors. */
+  --note-ink: #f2f1ea;
+  --pattern-line: rgba(242, 241, 234, 0.16);
+  --pattern-light: rgba(255, 255, 255, 0.06);
+
+  --status-idea: #7aa2ff;
+  --status-todo: #edece5;
+  --status-in-progress: #f0a64a;
+  --status-blocked: #ff7a66;
+  --status-review: #b3a4ff;
+  --status-done: #7fc98a;
+  --status-bug: #ff7a66;
+  --status-issue: #f0a64a;
+  --status-wontfix: #8d8c86;
+}
+
+/* Light: raw concrete by day. */
+:root[data-theme='light'] {
+  --bg: #bfbeb8;
+  --surface: #d5d4ce;
+  --surface-raised: #e1e0da;
+  --input: #ecebe6;
+  --ink: #141413;
+  --ink-muted: #3b3b38;
+  --line: #141413;
+  --line-soft: rgba(20, 20, 19, 0.2);
+  --inverse-bg: #141413;
+  --inverse-ink: #ecebe6;
+  --signal: #d9480f;
+  --signal-ink: #ffffff;
+  --danger: #a3261a;
+  --danger-ink: #ffffff;
+  --backdrop: rgba(30, 30, 28, 0.55);
+  --noise-opacity: 0.16;
+  --board-line: rgba(20, 20, 19, 0.06);
+  --board-seam: rgba(20, 20, 19, 0.1);
+
+  --note-ink: #141413;
+  --pattern-line: rgba(20, 20, 19, 0.17);
+  --pattern-light: rgba(255, 255, 255, 0.2);
+
+  --status-idea: #2456c7;
+  --status-todo: #141413;
+  --status-in-progress: #a35a00;
+  --status-blocked: #a3261a;
+  --status-review: #5a45c2;
+  --status-done: #2b6e37;
+  --status-bug: #a3261a;
+  --status-issue: #a35a00;
+  --status-wontfix: #5b5b57;
+}

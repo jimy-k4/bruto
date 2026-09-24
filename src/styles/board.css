@@ -1,0 +1,418 @@
+/* Board: a concrete slab with a faint grid and board-formed seams. */
+
+.board {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--board-seam) 2px, transparent 2px),
+    linear-gradient(var(--board-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--board-line) 1px, transparent 1px);
+  background-size:
+    100% 192px,
+    32px 32px,
+    32px 32px;
+  touch-action: none;
+  cursor: default;
+}
+
+.board:focus-visible {
+  outline-offset: -3px;
+}
+
+.board.is-panning {
+  cursor: grabbing;
+}
+
+.board.is-connecting {
+  cursor: crosshair;
+}
+
+.board__world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+
+.marquee {
+  position: absolute;
+  z-index: 5;
+  border: var(--border) dashed var(--signal);
+  background: color-mix(in srgb, var(--signal) 12%, transparent);
+  pointer-events: none;
+}
+
+/* Connections ------------------------------------------------------------------ */
+
+.connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.connections marker path {
+  fill: var(--line);
+}
+
+.connection__line {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 3;
+}
+
+.connection__hitbox {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 16;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.connection__hitbox:focus-visible {
+  outline: none;
+  stroke: color-mix(in srgb, var(--signal) 45%, transparent);
+}
+
+.connection:hover .connection__line,
+.connection.is-selected .connection__line {
+  stroke: var(--signal);
+  stroke-width: 4;
+}
+
+/* Notes ------------------------------------------------------------------------ */
+
+.note {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  min-height: 160px;
+  border: var(--border-heavy) solid var(--line);
+  background-color: var(--note-bg);
+  color: var(--note-ink);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--line);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition:
+    translate var(--speed),
+    box-shadow var(--speed);
+}
+
+.note:hover {
+  translate: -2px -2px;
+  box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 var(--line);
+}
+
+.note:focus-visible,
+.note.is-selected {
+  outline: 3px solid var(--signal);
+  outline-offset: 4px;
+}
+
+.note.is-dragging {
+  cursor: grabbing;
+  translate: -4px -4px;
+  box-shadow: 12px 12px 0 var(--line);
+}
+
+.note.is-connecting {
+  outline: 3px dashed var(--signal);
+  outline-offset: 4px;
+  animation: connecting 900ms steps(2) infinite;
+}
+
+.note.is-copied {
+  animation: copied 900ms steps(4);
+}
+
+.note.is-pasted {
+  animation: pasted 400ms steps(4);
+}
+
+@keyframes connecting {
+  50% {
+    outline-color: transparent;
+  }
+}
+
+@keyframes copied {
+  25%,
+  75% {
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--signal);
+  }
+}
+
+@keyframes pasted {
+  from {
+    scale: 0.92;
+    opacity: 0.4;
+  }
+}
+
+/* Header band: the note's pattern, like board-formed concrete. */
+.note__header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 42px;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-heavy) solid var(--line);
+}
+
+.note__header > * {
+  padding: 2px 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 var(--text-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.note__header .status-badge {
+  justify-self: center;
+  border-width: 1px;
+}
+
+.note__id {
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.note__body {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) 40px;
+}
+
+.note__title {
+  font: 400 21px / 1.08 var(--font-display);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.note__description {
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.note__description--empty {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.note__link {
+  display: flex;
+  gap: var(--space-2);
+  padding: 4px 6px;
+  border: 1px solid currentColor;
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+
+.note__link:hover {
+  background: var(--note-ink);
+  color: var(--note-bg);
+}
+
+.note__link-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note__images {
+  display: flex;
+  gap: 6px;
+}
+
+.note__thumbnail {
+  width: 64px;
+  height: 64px;
+  border: var(--border) solid currentColor;
+  object-fit: cover;
+}
+
+.note__more {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  border: var(--border) solid currentColor;
+  font-weight: 600;
+}
+
+.note__ai {
+  display: grid;
+  gap: var(--space-2);
+  border-top: var(--border) solid currentColor;
+  padding-top: var(--space-2);
+}
+
+.note__ai-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 var(--text-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.note__ai-mark {
+  padding: 1px 5px;
+  background: var(--note-ink);
+  color: var(--note-bg);
+}
+
+.note__ai-text,
+.note__feedback {
+  font-size: var(--text-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.note__feedback {
+  padding: var(--space-2);
+  border: var(--border) dashed currentColor;
+}
+
+.note__brand {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: var(--note-ink);
+  color: var(--note-bg);
+  font: 400 12px / 1 var(--font-display);
+}
+
+/* Floating controls ---------------------------------------------------------- */
+
+.zoom-controls {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 10;
+  display: flex;
+  border: var(--border-heavy) solid var(--line);
+  background: var(--surface);
+  box-shadow: 4px 4px 0 var(--line);
+}
+
+.zoom-controls button {
+  min-width: 40px;
+  height: 36px;
+  border: 0;
+  border-left: var(--border) solid var(--line);
+  background: none;
+  font-weight: 600;
+}
+
+.zoom-controls button:first-child {
+  border-left: 0;
+}
+
+.zoom-controls button:nth-child(2) {
+  min-width: 64px;
+}
+
+.zoom-controls button:hover:not(:disabled) {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.zoom-controls button:disabled {
+  opacity: 0.4;
+}
+
+.new-note-button {
+  position: absolute;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: 10;
+  width: 60px;
+  height: 60px;
+  border: var(--border-heavy) solid var(--line);
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--line);
+  font: 400 32px / 1 var(--font-display);
+}
+
+.new-note-button:hover {
+  background: var(--signal);
+  color: var(--signal-ink);
+}
+
+.new-note-button:active {
+  translate: 3px 3px;
+  box-shadow: 3px 3px 0 var(--line);
+}
+
+.board-status,
+.selection-bar {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-heavy) solid var(--line);
+  background: var(--surface);
+  box-shadow: 4px 4px 0 var(--line);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.board-status {
+  top: var(--space-4);
+  left: var(--space-4);
+  border-color: var(--signal);
+}
+
+.selection-bar {
+  bottom: var(--space-5);
+  left: 50%;
+  flex-wrap: wrap;
+  max-width: calc(100% - 180px);
+  transform: translateX(-50%);
+  text-transform: uppercase;
+}
+
+.empty-board {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  width: min(440px, calc(100% - 48px));
+  padding: var(--space-6);
+  border: var(--border-heavy) solid var(--line);
+  background: var(--surface);
+  box-shadow: 10px 10px 0 var(--line);
+  transform: translate(-50%, -50%);
+}
+
+.empty-board__title {
+  font: 400 34px / 1 var(--font-display);
+  text-transform: uppercase;
+}

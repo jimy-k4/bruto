@@ -1,0 +1,175 @@
+/*
+ * Note colors and patterns. The classes only set variables; each element
+ * decides where to paint them (a note's header band, a swatch, a strip…).
+ */
+
+.note-color-concrete {
+  --note-bg: #c5c5c2;
+}
+.note-color-sand {
+  --note-bg: #cfbe95;
+}
+.note-color-ochre {
+  --note-bg: #c8b06a;
+}
+.note-color-oxide {
+  --note-bg: #b76b55;
+}
+.note-color-wine {
+  --note-bg: #9d5a63;
+}
+.note-color-cobalt {
+  --note-bg: #738aa3;
+}
+.note-color-teal {
+  --note-bg: #6f9490;
+}
+.note-color-moss {
+  --note-bg: #7e8e72;
+}
+.note-color-plum {
+  --note-bg: #8f7d99;
+}
+.note-color-slate {
+  --note-bg: #6e7a85;
+}
+.note-color-bark {
+  --note-bg: #a08262;
+}
+.note-color-indigo {
+  --note-bg: #8084ad;
+}
+
+[data-theme='dark'] .note-color-concrete {
+  --note-bg: #484844;
+}
+[data-theme='dark'] .note-color-sand {
+  --note-bg: #7d704c;
+}
+[data-theme='dark'] .note-color-ochre {
+  --note-bg: #796a35;
+}
+[data-theme='dark'] .note-color-oxide {
+  --note-bg: #6f4035;
+}
+[data-theme='dark'] .note-color-wine {
+  --note-bg: #63353b;
+}
+[data-theme='dark'] .note-color-cobalt {
+  --note-bg: #44576d;
+}
+[data-theme='dark'] .note-color-teal {
+  --note-bg: #44625f;
+}
+[data-theme='dark'] .note-color-moss {
+  --note-bg: #4e6047;
+}
+[data-theme='dark'] .note-color-plum {
+  --note-bg: #57506b;
+}
+[data-theme='dark'] .note-color-slate {
+  --note-bg: #454f5c;
+}
+[data-theme='dark'] .note-color-bark {
+  --note-bg: #5c4b38;
+}
+[data-theme='dark'] .note-color-indigo {
+  --note-bg: #4b4f66;
+}
+
+.note-pattern-raw {
+  --pattern:
+    repeating-linear-gradient(0deg, var(--pattern-line) 0 1px, transparent 1px 5px),
+    linear-gradient(135deg, var(--pattern-light), transparent 42%);
+  --pattern-size: auto;
+}
+
+.note-pattern-grid {
+  --pattern:
+    linear-gradient(var(--pattern-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--pattern-line) 1px, transparent 1px);
+  --pattern-size: 14px 14px;
+}
+
+.note-pattern-hatch {
+  --pattern: repeating-linear-gradient(135deg, var(--pattern-line) 0 2px, transparent 2px 11px);
+  --pattern-size: auto;
+}
+
+.note-pattern-bands {
+  --pattern:
+    repeating-linear-gradient(90deg, var(--pattern-line) 0 8px, transparent 8px 22px),
+    linear-gradient(135deg, var(--pattern-light), transparent 48%);
+  --pattern-size: auto;
+}
+
+.note-pattern-dots {
+  --pattern: radial-gradient(var(--pattern-line) 1.5px, transparent 1.6px);
+  --pattern-size: 12px 12px;
+}
+
+.note-pattern-cross {
+  --pattern:
+    repeating-linear-gradient(45deg, var(--pattern-line) 0 2px, transparent 2px 10px),
+    repeating-linear-gradient(-45deg, var(--pattern-line) 0 2px, transparent 2px 10px);
+  --pattern-size: auto;
+}
+
+.note-pattern-waves {
+  --pattern: radial-gradient(
+    16px 10px at 50% -6px,
+    transparent 8px,
+    var(--pattern-line) 9px,
+    transparent 10px
+  );
+  --pattern-size: 24px 16px;
+}
+
+.note-pattern-checker {
+  --pattern: conic-gradient(
+    var(--pattern-line) 25%,
+    transparent 0 50%,
+    var(--pattern-line) 0 75%,
+    transparent 0
+  );
+  --pattern-size: 18px 18px;
+}
+
+.note-pattern-pinstripe {
+  --pattern: repeating-linear-gradient(90deg, var(--pattern-line) 0 1px, transparent 1px 9px);
+  --pattern-size: auto;
+}
+
+.note-pattern-diag {
+  --pattern:
+    repeating-linear-gradient(45deg, var(--pattern-line) 0 3px, transparent 3px 21px),
+    repeating-linear-gradient(45deg, var(--pattern-light) 0 3px, transparent 3px 21px);
+  --pattern-size: auto;
+}
+
+.note-pattern-weave {
+  --pattern:
+    repeating-linear-gradient(45deg, var(--pattern-line) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(-45deg, var(--pattern-line) 0 1px, transparent 1px 7px);
+  --pattern-size: auto;
+}
+
+.note-pattern-triangle {
+  --pattern:
+    linear-gradient(135deg, var(--pattern-line) 25%, transparent 25%),
+    linear-gradient(225deg, var(--pattern-line) 25%, transparent 25%);
+  --pattern-size: 16px 16px;
+}
+
+/* Anything that shows a note's look. */
+.painted,
+.swatch,
+.context-strips > span,
+.note__header,
+.side-panel__header--painted,
+.slab,
+.status-styles__preview {
+  background-color: var(--note-bg, var(--surface));
+  background-image: var(--pattern, none);
+  background-size: var(--pattern-size, auto);
+}
