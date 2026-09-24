@@ -72,7 +72,10 @@ export function NoteEditor({
       autoFocus={false}
       footer={
         <button type="button" className="button button--primary button--block" onClick={onClose}>
-          {t('done')} <kbd>Ctrl Enter</kbd>
+          {t('done')}{' '}
+          <kbd>
+            {t('keyCtrl')} {t('keyEnter')}
+          </kbd>
         </button>
       }
     >

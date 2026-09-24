@@ -19,6 +19,7 @@ import { StatusStylesDialog } from '../panels/StatusStylesDialog'
 import { WorkspaceEditor } from '../panels/WorkspaceEditor'
 import { ProjectRootContext } from '../state/projectRoot'
 import { useNoteClipboard } from '../state/useNoteClipboard'
+import { ensureReadWrite } from '../storage/recentProjects'
 import type { ActiveProject, Projects } from '../state/useProjects'
 import { useToast } from '../ui/toasts'
 import { createWorkspaceActions } from './workspaceActions'
@@ -193,7 +194,10 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
           projectName={project.name}
           status={projects.saveStatus}
           noteCount={workspace.notes.length}
-          onRetry={() => void project.sync.saveNow()}
+          onRetry={async () => {
+            // Save errors usually mean the browser forgot the folder permission.
+            if (await ensureReadWrite(project.handle)) await project.sync.saveNow()
+          }}
           onOverwrite={() => void project.sync.overwriteDisk()}
         />
 
