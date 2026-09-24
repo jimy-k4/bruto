@@ -6,6 +6,8 @@ export const ca: Locale = {
   back: 'Tornar',
   cancel: 'Cancel·lar',
   close: 'Tancar',
+  newVersionAvailable: 'Nova versió de Bruto',
+  reloadApp: 'Recarregar',
   copied: 'Copiat',
   copy: 'Copiar',
   delete: 'Eliminar',

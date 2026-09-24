@@ -6,6 +6,8 @@ export const zh: Locale = {
   back: '返回',
   cancel: '取消',
   close: '关闭',
+  newVersionAvailable: 'Bruto 有新版本',
+  reloadApp: '重新加载',
   copied: '已复制',
   copy: '复制',
   delete: '删除',

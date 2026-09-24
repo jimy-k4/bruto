@@ -6,6 +6,8 @@ export const ptBR: Locale = {
   back: 'Voltar',
   cancel: 'Cancelar',
   close: 'Fechar',
+  newVersionAvailable: 'Nova versão do Bruto',
+  reloadApp: 'Recarregar',
   copied: 'Copiado',
   copy: 'Copiar',
   delete: 'Excluir',

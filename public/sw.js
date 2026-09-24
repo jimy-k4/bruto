@@ -1,6 +1,6 @@
 // Offline support. The app itself is static and holds no user data (notes live
 // in the user's folders), so caching every same-origin GET is safe.
-const CACHE = 'bruto-v1'
+const CACHE = 'bruto-v2'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(['./', './index.html'])))
@@ -21,7 +21,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event
 
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return
+  const url = new URL(request.url)
+
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return
+
+  // Always from the network: it's how an open app learns a newer version is out.
+  if (url.pathname.endsWith('/version.json')) return
 
   // Pages: network first, so a new version shows up as soon as there is a connection.
   if (request.mode === 'navigate') {

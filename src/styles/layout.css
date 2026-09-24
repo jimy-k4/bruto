@@ -549,6 +549,51 @@
   color: var(--signal-ink);
 }
 
+/* New version notice: a stamp over the middle of the status bar. */
+.update-notice {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: calc(100vw - 32px);
+  height: var(--statusbar-height);
+  padding: 0 var(--space-2) 0 var(--space-3);
+  border: var(--border-heavy) solid var(--line);
+  border-bottom: 0;
+  background: var(--signal);
+  color: var(--signal-ink);
+  font: 600 var(--text-xs) / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: notice-in 160ms steps(3);
+}
+
+@keyframes notice-in {
+  from {
+    transform: translate(-50%, 100%);
+  }
+}
+
+.update-notice__button {
+  padding: 4px 10px;
+  border: var(--border) solid currentColor;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.update-notice__button:hover {
+  background: var(--signal-ink);
+  color: var(--signal);
+}
+
 @keyframes toast-in {
   from {
     transform: translateY(12px);
