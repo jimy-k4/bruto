@@ -151,6 +151,7 @@ export const ja: Locale = {
   statusBug: 'バグ',
   statusChangesRequested: '要修正',
   statusWontfix: '対応しない',
+  statusLoop: 'ループ',
 
   // Note editor
   editNote: 'ノートを編集',
@@ -177,6 +178,8 @@ export const ja: Locale = {
   feedbackPlaceholder: '返答を確認したうえで、まだ直っていない点や足りない点。',
   feedbackStatusHint:
     'AI に直してほしい点がありますか?ノートを「{status}」にすると AI に伝わります。',
+  loopStatusHint:
+    '常設ルール：選択していなくても、AI はすべてのタスクで適用し、ステータスを変更しません。',
   markAsStatus: '「{status}」にする',
   color: '色',
   pattern: '模様',

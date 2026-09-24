@@ -67,4 +67,43 @@ describe('buildAiContext', () => {
     expect(text).toContain('## CLOSED NOTES\n\n- [cccccc] CCCCCC-3 (done)')
     expect(text).toContain('## GLOBAL AI CONTEXT\n\nNext.js + Supabase')
   })
+
+  describe('standing rules (status "loop")', () => {
+    const withRule = (): Workspace => ({
+      ...sample(),
+      notes: [
+        ...sample().notes,
+        note('dddddd-4', {
+          status: 'loop',
+          title: 'UPDATE THE DOCS',
+          description: 'On every change',
+        }),
+      ],
+    })
+
+    it('go in every copy, even when not selected, in their own section', () => {
+      for (const scope of ['current', 'connected', 'entire'] as const) {
+        const text = buildAiContext(withRule(), scope, ['aaaaaa-1'])
+        const rules = text.indexOf('## STANDING RULES')
+
+        expect(rules).toBeGreaterThan(-1)
+        expect(text.indexOf('### [dddddd] UPDATE THE DOCS')).toBeGreaterThan(rules)
+        expect(text.indexOf('### [dddddd] UPDATE THE DOCS')).toBeLessThan(text.indexOf('## NOTES'))
+        expect(text.match(/\[dddddd\] UPDATE THE DOCS/g)).toHaveLength(1)
+      }
+    })
+
+    it('are explained only when the project has some', () => {
+      expect(buildAiContext(withRule(), 'current', ['aaaaaa-1'])).toContain('status "loop"')
+      expect(buildAiContext(sample(), 'current', ['aaaaaa-1'])).not.toContain('STANDING RULES')
+    })
+
+    it('keep their connections to the notes being copied', () => {
+      const workspace = addConnection(withRule(), 'dddddd-4', 'aaaaaa-1')
+
+      expect(buildAiContext(workspace, 'current', ['aaaaaa-1'])).toContain(
+        '- [dddddd] UPDATE THE DOCS -> [aaaaaa] AAAAAA-1',
+      )
+    })
+  })
 })

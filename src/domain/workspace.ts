@@ -60,6 +60,11 @@ const STATUS_ALIASES: Record<string, NoteStatus> = {
   'changes requested': 'changes-requested',
   rework: 'changes-requested',
   'a corregir': 'changes-requested',
+  bucle: 'loop',
+  always: 'loop',
+  siempre: 'loop',
+  rule: 'loop',
+  regla: 'loop',
 }
 
 function normalizeStatus(value: unknown): NoteStatus | undefined {

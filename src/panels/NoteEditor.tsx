@@ -114,6 +114,7 @@ export function NoteEditor({
               ))}
             </select>
           </div>
+          {note.status === 'loop' && <p className="field__hint">{t('loopStatusHint')}</p>}
           <button type="button" className="link-button" onClick={onOpenStatusStyles}>
             {t('customizeStatuses')} →
           </button>
@@ -250,18 +251,21 @@ export function NoteEditor({
           />
 
           {/* Written feedback only reaches the AI if the note goes back to it. */}
-          {note.feedback?.trim() && note.status !== 'changes-requested' && (
-            <div className="suggestion">
-              <p>{t('feedbackStatusHint', { status: statusLabel(t, 'changes-requested') })}</p>
-              <button
-                type="button"
-                className="button button--small"
-                onClick={() => onChange({ status: 'changes-requested' })}
-              >
-                {t('markAsStatus', { status: statusLabel(t, 'changes-requested') })}
-              </button>
-            </div>
-          )}
+          {/* A rule stays a rule: feedback on it is read on the next task anyway. */}
+          {note.feedback?.trim() &&
+            note.status !== 'changes-requested' &&
+            note.status !== 'loop' && (
+              <div className="suggestion">
+                <p>{t('feedbackStatusHint', { status: statusLabel(t, 'changes-requested') })}</p>
+                <button
+                  type="button"
+                  className="button button--small"
+                  onClick={() => onChange({ status: 'changes-requested' })}
+                >
+                  {t('markAsStatus', { status: statusLabel(t, 'changes-requested') })}
+                </button>
+              </div>
+            )}
         </div>
 
         <ColorPicker

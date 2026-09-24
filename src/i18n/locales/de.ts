@@ -155,6 +155,7 @@ export const de: Locale = {
   statusBug: 'Fehler',
   statusChangesRequested: 'Nachbessern',
   statusWontfix: 'Verworfen',
+  statusLoop: 'Schleife',
 
   // Note editor
   editNote: 'Notiz bearbeiten',
@@ -182,6 +183,8 @@ export const de: Locale = {
   feedbackPlaceholder: 'Nach dem Prüfen der Antwort: was noch falsch ist oder fehlt.',
   feedbackStatusHint:
     'Muss die KI etwas korrigieren? Setze die Notiz auf „{status}“, damit sie es weiß.',
+  loopStatusHint:
+    'Dauerregel: Die KI wendet sie bei jeder Aufgabe an, auch wenn sie nicht ausgewählt ist, und ändert nie ihren Status.',
   markAsStatus: 'Auf „{status}“ setzen',
   color: 'Farbe',
   pattern: 'Muster',

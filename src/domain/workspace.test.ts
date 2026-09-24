@@ -114,6 +114,20 @@ describe('parseWorkspace', () => {
     expect(workspace.statusStyles).toEqual({ 'changes-requested': { color: 'oxide' } })
   })
 
+  it('understands "bucle" or "always" written by hand as the loop status', () => {
+    const workspace = parseWorkspace(
+      JSON.stringify({
+        version: 3,
+        notes: [
+          { id: 'a', status: 'Bucle' },
+          { id: 'b', status: 'always' },
+        ],
+      }),
+    )
+
+    expect(workspace.notes.map((item) => item.status)).toEqual(['loop', 'loop'])
+  })
+
   it('restyles notes whose status changed while Bruto was closed', () => {
     const styles = {
       todo: { color: 'sand', pattern: 'grid' },

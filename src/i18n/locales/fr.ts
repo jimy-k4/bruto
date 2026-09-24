@@ -155,6 +155,7 @@ export const fr: Locale = {
   statusBug: 'Bogue',
   statusChangesRequested: 'À corriger',
   statusWontfix: 'Abandonnée',
+  statusLoop: 'Boucle',
 
   // Note editor
   editNote: 'Modifier la note',
@@ -183,6 +184,8 @@ export const fr: Locale = {
     'Après relecture de la réponse : ce qui ne va toujours pas ou ce qui manque.',
   feedbackStatusHint:
     'L’IA doit-elle corriger quelque chose ? Passez la note à « {status} » pour qu’elle le sache.',
+  loopStatusHint:
+    "Règle permanente : l'IA l'applique à chaque tâche, même si elle n'est pas sélectionnée, et ne change jamais son statut.",
   markAsStatus: 'Passer à « {status} »',
   color: 'Couleur',
   pattern: 'Motif',

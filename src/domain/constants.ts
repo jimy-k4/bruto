@@ -42,6 +42,7 @@ export const NOTE_STATUSES: readonly NoteStatus[] = [
   'blocked',
   'bug',
   'wontfix',
+  'loop',
 ]
 
 /** Statuses that mean "nothing left to do". */

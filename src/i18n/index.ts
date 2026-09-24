@@ -80,6 +80,7 @@ const STATUS_KEYS: Record<NoteStatus, TranslationKey> = {
   bug: 'statusBug',
   'changes-requested': 'statusChangesRequested',
   wontfix: 'statusWontfix',
+  loop: 'statusLoop',
 }
 
 export const statusLabel = (t: Translate, status: NoteStatus) => t(STATUS_KEYS[status])

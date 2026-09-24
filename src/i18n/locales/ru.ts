@@ -159,6 +159,7 @@ export const ru: Locale = {
   statusBug: 'Ошибка',
   statusChangesRequested: 'На доработку',
   statusWontfix: 'Отклонена',
+  statusLoop: 'Цикл',
 
   // Note editor
   editNote: 'Изменить заметку',
@@ -186,6 +187,8 @@ export const ru: Locale = {
   feedbackPlaceholder: 'После проверки ответа: что всё ещё не так или чего не хватает.',
   feedbackStatusHint:
     'ИИ нужно что-то исправить? Переведите заметку в статус «{status}», чтобы он это увидел.',
+  loopStatusHint:
+    'Постоянное правило: ИИ применяет его в каждой задаче, даже если оно не выбрано, и никогда не меняет его статус.',
   markAsStatus: 'Перевести в «{status}»',
   color: 'Цвет',
   pattern: 'Узор',

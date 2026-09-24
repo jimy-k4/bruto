@@ -154,6 +154,7 @@ export const es = {
   statusBug: 'Bug',
   statusChangesRequested: 'A corregir',
   statusWontfix: 'Descartada',
+  statusLoop: 'Bucle',
 
   // Note editor
   editNote: 'Editar nota',
@@ -180,6 +181,8 @@ export const es = {
   feedback: 'Qué falla',
   feedbackPlaceholder: 'Tras revisar la respuesta: qué sigue mal o qué falta.',
   feedbackStatusHint: '¿La IA tiene que corregir algo? Pasa la nota a «{status}» para que lo sepa.',
+  loopStatusHint:
+    'Regla permanente: la IA la aplica en cada tarea, aunque no la selecciones, y nunca cambia su estado.',
   markAsStatus: 'Marcar como «{status}»',
   color: 'Color',
   pattern: 'Patrón',
