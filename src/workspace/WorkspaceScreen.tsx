@@ -1,9 +1,12 @@
-import { useSyncExternalStore } from 'react'
+import { useMemo, useSyncExternalStore } from 'react'
 import type { AppTheme } from '../types'
 import { Board } from '../board/Board'
+import { BoardSearch } from '../board/BoardSearch'
 import { EmptyBoard, NewNoteButton, SelectionBar, ZoomControls } from '../board/BoardOverlays'
 import { useBoardView } from '../board/useBoardView'
 import { useNoteSizes } from '../board/useNoteSizes'
+import { NOTE_STATUSES } from '../domain/constants'
+import { EMPTY_SEARCH, isSearchActive, searchNotes } from '../domain/search'
 import { useI18n } from '../i18n'
 import { ProjectSwitcher } from '../layout/ProjectSwitcher'
 import { Sidebar } from '../layout/Sidebar'
@@ -48,6 +51,28 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
   const { side, modal, selectedIds, selectedNotes, editingNote } = ui
   const singleSelected = selectedNotes.length === 1 ? selectedNotes[0] : null
 
+  const search = ui.search
+  const matches = useMemo(
+    () => (search ? searchNotes(workspace.notes, search) : []),
+    [workspace.notes, search],
+  )
+  const matchIds = useMemo(
+    () => (search && isSearchActive(search) ? new Set(matches.map((note) => note.id)) : null),
+    [search, matches],
+  )
+  const usedStatuses = useMemo(
+    () => NOTE_STATUSES.filter((status) => workspace.notes.some((note) => note.status === status)),
+    [workspace.notes],
+  )
+
+  const closeSearch = () => {
+    ui.setSearch(null)
+    // Keyboard focus goes to the note that was found, ready to open or move.
+    if (singleSelected) {
+      document.querySelector<HTMLElement>(`[data-note-id="${singleSelected.id}"]`)?.focus()
+    }
+  }
+
   return (
     <ProjectRootContext.Provider value={project.handle}>
       <div className="screen">
@@ -66,6 +91,15 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
           }
           actions={
             <>
+              <button
+                type="button"
+                className="button"
+                aria-pressed={Boolean(search)}
+                title={`${t('search')} (Ctrl+F)`}
+                onClick={() => (search ? closeSearch() : ui.setSearch(EMPTY_SEARCH))}
+              >
+                {t('search')}
+              </button>
               <button type="button" className="button" onClick={() => ui.setModal('styles')}>
                 {t('styles')}
               </button>
@@ -109,6 +143,7 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
               connectingFrom={ui.connectingFrom}
               selectedConnectionId={ui.selectedConnectionId}
               flash={ui.flash}
+              matchIds={matchIds}
               onSelect={ui.select}
               onToggleSelect={ui.toggleSelect}
               onClearSelection={ui.clearSelection}
@@ -121,6 +156,18 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
               onSelectConnection={ui.setSelectedConnectionId}
               onDeleteConnection={actions.deleteConnection}
             />
+
+            {search && (
+              <BoardSearch
+                search={search}
+                matches={matches}
+                statuses={usedStatuses}
+                currentId={singleSelected?.id ?? null}
+                onChange={ui.setSearch}
+                onShow={actions.showNote}
+                onClose={closeSearch}
+              />
+            )}
 
             {workspace.notes.length === 0 && <EmptyBoard onCreate={actions.createNote} />}
 

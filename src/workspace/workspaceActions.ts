@@ -315,6 +315,16 @@ export function createWorkspaceActions({
       if (box) view.centerOn(box)
     },
 
+    /** Selects one note and brings it to the middle of the screen. */
+    showNote(id: string) {
+      const note = current().notes.find((item) => item.id === id)
+
+      if (!note) return
+
+      ui.select([id])
+      view.centerOn(noteRect(note, sizes))
+    },
+
     resetView() {
       view.reset()
     },

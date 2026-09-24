@@ -7,6 +7,9 @@ import { ProjectImage } from '../ui/ProjectImage'
 
 export type NoteFlash = 'copied' | 'pasted' | null
 
+/** How a note looks while the board search is active. */
+export type SearchMark = 'match' | 'dimmed' | null
+
 /** Board interactions, passed as one stable object so cards don't re-render needlessly. */
 export interface NoteCardHandlers {
   onPointerDown: (event: React.PointerEvent<HTMLElement>, note: Note) => void
@@ -22,6 +25,7 @@ interface NoteCardProps {
   connecting: boolean
   dragging: boolean
   flash: NoteFlash
+  searchMark: SearchMark
   handlers: NoteCardHandlers
 }
 
@@ -33,6 +37,7 @@ export const NoteCard = memo(function NoteCard({
   connecting,
   dragging,
   flash,
+  searchMark,
   handlers,
 }: NoteCardProps) {
   const { t } = useI18n()
@@ -55,6 +60,7 @@ export const NoteCard = memo(function NoteCard({
     connecting && 'is-connecting',
     dragging && 'is-dragging',
     flash && `is-${flash}`,
+    searchMark && `is-${searchMark}`,
   ]
 
   // Clicks inside links and buttons must not start a drag.

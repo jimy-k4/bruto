@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { ContextScope, Note, Workspace, WorkspaceDocumentation } from '../types'
 import type { NoteFlash } from '../board/NoteCard'
+import type { NoteSearch } from '../domain/search'
 import type { WorkspaceStore } from '../state/workspaceStore'
 
 export type SidePanelState =
@@ -26,6 +27,8 @@ export function useWorkspaceUi(workspace: Workspace, store: WorkspaceStore) {
     null,
   )
   const [copiedScope, setCopiedScopeState] = useState<ContextScope | null>(null)
+  /** Board search; `null` while the search bar is closed. */
+  const [search, setSearch] = useState<NoteSearch | null>(null)
   const timers = useRef<{ flash?: number; copied?: number }>({})
 
   // Notes deleted by undo or by another tool drop out of the selection.
@@ -111,6 +114,8 @@ export function useWorkspaceUi(workspace: Workspace, store: WorkspaceStore) {
     flashNotes,
     copiedScope,
     markCopied,
+    search,
+    setSearch,
     select,
     toggleSelect,
     clearSelection,

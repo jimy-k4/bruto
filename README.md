@@ -127,6 +127,7 @@ Add `.bruto/` to your `.gitignore` if the notes should stay on your machine.
 | `Ctrl C` / `Ctrl V` | Copy and paste notes, or a screenshot | `Ctrl D`            | Duplicate                                      |
 | `Del`               | Delete (undoable)                     | `Ctrl Z` / `Ctrl Y` | Undo / redo                                    |
 | `F`                 | Centre the view                       | `Alt 1…9`           | Switch open project                            |
+| `Ctrl F` / `/`      | Search notes (text, path or id)       | `Enter`             | Next result (`Shift` for the previous one)     |
 
 Press `?` in the app for the full list.
 

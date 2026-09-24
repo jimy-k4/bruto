@@ -252,3 +252,62 @@ test('writing feedback suggests sending the note back to the AI', async ({ page 
   })
   await expect(page.getByRole('button', { name: /marcar como/i })).toHaveCount(0)
 })
+
+test('search: highlight matches, walk them with Enter, keep the last one selected', async ({
+  page,
+}) => {
+  await openProject(
+    page,
+    workspaceWith([
+      note('alpha', { x: 80, y: 80, description: 'Revisión del login', status: 'todo' }),
+      note('beta', { x: 480, y: 80, status: 'review' }),
+      note('gamma', { x: 880, y: 400, filePaths: ['src/login.ts'], status: 'review' }),
+    ]),
+  )
+
+  await page.locator('.board').click({ position: { x: 700, y: 700 } })
+  await page.keyboard.press('Control+f')
+  await expect(page.getByRole('searchbox')).toBeFocused()
+
+  await page.getByRole('searchbox').fill('LOGIN')
+  await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-match/)
+  await expect(noteCard(page, 'GAMMA')).toHaveClass(/is-match/)
+  await expect(noteCard(page, 'BETA')).toHaveClass(/is-dimmed/)
+  await expect(page.locator('.board-search__count')).toContainText('–/2')
+
+  await page.keyboard.press('Enter')
+  await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-selected/)
+  await page.keyboard.press('Enter')
+  await expect(noteCard(page, 'GAMMA')).toHaveClass(/is-selected/)
+  await expect(page.locator('.board-search__count')).toContainText('2/2')
+
+  // Status filter narrows the matches.
+  await page.getByRole('searchbox').fill('')
+  await page.getByRole('group', { name: 'Filtrar por estado' }).getByText('Por revisar').click()
+  await expect(page.locator('.board-search__count')).toContainText('2/2')
+
+  await page.getByRole('searchbox').focus()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('search')).toHaveCount(0)
+  await expect(noteCard(page, 'GAMMA')).toHaveClass(/is-selected/)
+  await expect(noteCard(page, 'GAMMA')).toBeFocused()
+  await expect(noteCard(page, 'BETA')).not.toHaveClass(/is-dimmed/)
+})
+
+test('search finds a note by the short id used with the AI', async ({ page }) => {
+  await openProject(
+    page,
+    workspaceWith([
+      note('894c20ab-alpha', { title: 'ALPHA' }),
+      note('07cc95cd-beta', { title: 'BETA', x: 500 }),
+    ]),
+  )
+
+  await page.locator('.board').click({ position: { x: 700, y: 700 } })
+  await page.keyboard.press('/')
+  await page.getByRole('searchbox').fill('[07cc95]')
+  await page.keyboard.press('Enter')
+
+  await expect(noteCard(page, 'BETA')).toHaveClass(/is-selected/)
+  await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-dimmed/)
+})
