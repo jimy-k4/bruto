@@ -5,8 +5,9 @@ import { Landing } from './layout/Landing'
 import { RecoveryScreen } from './layout/RecoveryScreen'
 import { HelpDialog } from './panels/HelpDialog'
 import { useTheme } from './preferences'
-import { supportsFileSystemAccess, useProjects } from './state/useProjects'
+import { supportsFileSystemAccess, useProjects, type Projects } from './state/useProjects'
 import { ToastProvider } from './ui/ToastProvider'
+import { UpdateNotice } from './ui/UpdateNotice'
 import { useToast } from './ui/toasts'
 import { WorkspaceScreen } from './workspace/WorkspaceScreen'
 
@@ -21,12 +22,30 @@ export default function App() {
 }
 
 function Root() {
+  const projects = useAppProjects()
+
+  // Saved first, so reloading never asks "leave the page?" over pending changes.
+  const reload = async () => {
+    try {
+      await projects.active?.sync.saveNow()
+    } finally {
+      window.location.reload()
+    }
+  }
+
+  return (
+    <>
+      <Screen projects={projects} />
+      <UpdateNotice onReload={() => void reload()} />
+    </>
+  )
+}
+
+function useAppProjects() {
   const { t } = useI18n()
   const toast = useToast()
-  const [theme, toggleTheme] = useTheme()
-  const [helpOpen, setHelpOpen] = useState(false)
 
-  const projects = useProjects({
+  return useProjects({
     onExternalChange: () => toast({ message: t('externalChangesMerged') }),
     onError: (error) => {
       console.error(error)
@@ -41,6 +60,11 @@ function Root() {
       })
     },
   })
+}
+
+function Screen({ projects }: { projects: Projects }) {
+  const [theme, toggleTheme] = useTheme()
+  const [helpOpen, setHelpOpen] = useState(false)
 
   if (projects.recovery) {
     return (

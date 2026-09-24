@@ -6,6 +6,8 @@ export const ru: Locale = {
   back: 'Назад',
   cancel: 'Отмена',
   close: 'Закрыть',
+  newVersionAvailable: 'Новая версия Bruto',
+  reloadApp: 'Перезагрузить',
   copied: 'Скопировано',
   copy: 'Копировать',
   delete: 'Удалить',

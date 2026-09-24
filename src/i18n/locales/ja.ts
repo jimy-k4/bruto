@@ -6,6 +6,8 @@ export const ja: Locale = {
   back: '戻る',
   cancel: 'キャンセル',
   close: '閉じる',
+  newVersionAvailable: 'Bruto の新しいバージョン',
+  reloadApp: '再読み込み',
   copied: 'コピーしました',
   copy: 'コピー',
   delete: '削除',

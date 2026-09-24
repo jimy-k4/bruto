@@ -5,6 +5,8 @@ export const es = {
   back: 'Volver',
   cancel: 'Cancelar',
   close: 'Cerrar',
+  newVersionAvailable: 'Nueva versión de Bruto',
+  reloadApp: 'Recargar',
   copied: 'Copiado',
   copy: 'Copiar',
   delete: 'Eliminar',
