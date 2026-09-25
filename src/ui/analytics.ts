@@ -1,12 +1,12 @@
 /**
- * Anonymous usage events for the published site (Umami: no cookies, no
+ * Anonymous usage events for the published site (Superveil: no cookies, no
  * personal data). Only which feature was used is sent, never what a project
- * or a note contains. Does nothing where the Umami script isn't loaded:
+ * or a note contains. Does nothing where the Superveil script isn't loaded:
  * development, tests, offline.
  */
 declare global {
   interface Window {
-    umami?: { track: (event: string, data?: Record<string, string | number>) => void }
+    superveil?: (event: string) => void
   }
 }
 
@@ -21,9 +21,16 @@ export type UsageEvent =
   | 'install-prompt'
   | 'app-installed'
 
+/**
+ * Superveil events are plain names, so details ride along in the name
+ * ("lens-open:web:react"), keeping only the characters Superveil accepts.
+ */
 export function track(event: UsageEvent, data?: Record<string, string | number>) {
   try {
-    window.umami?.track(event, data)
+    const name = [event, ...Object.values(data ?? {})]
+      .join(':')
+      .replace(/[^\p{L}\p{N}_:. -]/gu, '-')
+    window.superveil?.(name)
   } catch {
     // Counting must never break the app.
   }
