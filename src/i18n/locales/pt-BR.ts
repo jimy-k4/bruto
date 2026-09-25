@@ -208,7 +208,7 @@ export const ptBR: Locale = {
   featureEverywhereText: 'Instale como app: funciona offline e avisa quando sai uma versão nova.',
   featureLocalTitle: 'Só local',
   featureLocalText:
-    'Sem servidor nem contas: só um contador de visitas anônimo, sem cookies. Suas notas nunca saem das suas pastas.',
+    'Sem servidor nem contas: só estatísticas de uso anônimas, sem cookies. Suas notas nunca saem das suas pastas.',
   landingAnyAiTitle: 'Com qualquer IA',
   landingAnyAiText:
     'Cole a cópia no Claude, ChatGPT, Gemini ou DeepSeek, ou deixe um agente com acesso aos seus arquivos trabalhar direto no quadro: basta uma linha no AGENTS.md ou CLAUDE.md.',

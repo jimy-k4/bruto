@@ -6,6 +6,7 @@ import type {
   Workspace,
   WorkspaceDocumentation,
 } from '../types'
+import { track } from '../ui/analytics'
 import { buildAiContext, estimateTokens, getContextNoteIds } from '../domain/aiContext'
 import { copyNotes, pasteNotes } from '../domain/clipboard'
 import { NOTE_MIN_SIZE } from '../domain/constants'
@@ -242,7 +243,10 @@ export function createWorkspaceActions({
       const content = text ?? buildAiContext(current(), scope, ids)
       const copied = await writeClipboardText(content, describeContextCopy(scope, ids, content))
 
-      if (copied) ui.markCopied(scope)
+      if (copied) {
+        ui.markCopied(scope)
+        track('ai-context-copy', { scope })
+      }
     },
 
     // Files and images ---------------------------------------------------------

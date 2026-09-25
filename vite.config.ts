@@ -19,11 +19,12 @@ const versionFile = (): Plugin => ({
 })
 
 /**
- * Anonymous visit counter (GoatCounter: no cookies, no personal data) for the
- * published site. Only production builds carry it, and it ignores localhost,
- * so development and tests never count. Notes never leave the browser.
+ * Anonymous visits and usage events (Umami: no cookies, no personal data) for
+ * the published site only: production builds carry the script, and it ignores
+ * any other domain, so development, previews and tests never count.
+ * Notes and projects never leave the browser.
  */
-const GOATCOUNTER = 'https://jimy-k4.goatcounter.com/count'
+const UMAMI_WEBSITE = 'ebcc99d5-72f5-43ea-b475-b9e8decfe04e'
 
 const visitCounter = (): Plugin => ({
   name: 'bruto-visit-counter',
@@ -31,8 +32,13 @@ const visitCounter = (): Plugin => ({
   transformIndexHtml: () => [
     {
       tag: 'script',
-      attrs: { 'data-goatcounter': GOATCOUNTER, async: true, src: 'https://gc.zgo.at/count.js' },
-      injectTo: 'body',
+      attrs: {
+        defer: true,
+        src: 'https://cloud.umami.is/script.js',
+        'data-website-id': UMAMI_WEBSITE,
+        'data-domains': 'jimy-k4.github.io',
+      },
+      injectTo: 'head',
     },
   ],
 })

@@ -5,7 +5,7 @@
 **A brutalist task board for projects built with AI.**
 Your notes live inside the project folder, where you and any AI can read and answer them.
 
-[**Open Bruto**](https://jimy-k4.github.io/bruto/) · No account · No server · Works offline · Anonymous visit counter only
+[**Open Bruto**](https://jimy-k4.github.io/bruto/) · No account · No server · Works offline · Anonymous usage stats only
 
 <img src="docs/board-dark.png" alt="Bruto board with notes, arrows between them and the note editor open" width="100%" />
 
@@ -70,8 +70,9 @@ Prefer to run it yourself? See [Development](#development).
 - **Nine languages**, light and dark themes, a colour and pattern per status, installable, works
   offline, and tells an open window when a new version is out.
 - **Local only.** The app is a static page: it has no server and no storage of its own. The published
-  site only counts visits, anonymously and without cookies ([GoatCounter](https://www.goatcounter.com/)):
-  nothing about your projects or notes ever leaves your browser.
+  site counts visits and which features get used (opening a project, a lens, copying AI context),
+  anonymously and without cookies ([Umami](https://umami.is/)): nothing about your projects or notes
+  ever leaves your browser.
   Your notes never leave your folders.
 
 <p>
@@ -214,7 +215,7 @@ e2e/          browser tests against a real (private) file system
 
 ## Support
 
-Bruto is free and has no ads, accounts or tracking. If it saves you time, you can
+Bruto is free, with no ads, no accounts and no personal tracking. If it saves you time, you can
 [buy me a coffee on Ko-fi](https://ko-fi.com/jimy_k4): it's also the heart in the top bar.
 
 ## License

@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useMemo, useSyncExternalStore } from 'react'
+import { track } from '../ui/analytics'
 import type { AppTheme } from '../types'
 import { Board } from '../board/Board'
 import { BoardSearch } from '../board/BoardSearch'
@@ -54,6 +55,15 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
 
   useWorkspaceShortcuts(actions, ui, projects)
 
+  // Counted once per opening, whether by shortcut or button.
+  const searchOpen = ui.search !== null
+  useEffect(() => {
+    if (searchOpen) track('search-open')
+  }, [searchOpen])
+  useEffect(() => {
+    if (ui.view === 'structure') track('structure-open')
+  }, [ui.view])
+
   // Fetched once the board is up, so the view opens at once and works offline too.
   useEffect(() => {
     const timer = window.setTimeout(() => void loadStructureView(), 2000)
@@ -102,7 +112,10 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
               onOpen={() => void projects.openPicker()}
               onClose={(id) => void projects.close(id)}
               recents={projects.recents}
-              onOpenRecent={(recent) => void projects.open(recent.handle)}
+              onOpenRecent={(recent) => {
+                track('project-reopen')
+                void projects.open(recent.handle)
+              }}
             />
           }
           actions={

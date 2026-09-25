@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createDemoProject, supportsDemo } from './demo/demoProject'
+import { track } from './ui/analytics'
 import { useI18n } from './i18n'
 import { I18nProvider } from './i18n/I18nProvider'
 import { Landing } from './layout/Landing'
@@ -73,6 +74,7 @@ function Screen({ projects }: { projects: Projects }) {
   const tryDemo = async () => {
     try {
       await projects.open(await createDemoProject(language))
+      track('demo-open')
     } catch (error) {
       console.error(error)
       toast({ tone: 'error', message: t('demoFailed') })
@@ -115,7 +117,10 @@ function Screen({ projects }: { projects: Projects }) {
         recents={projects.recents}
         onOpenFolder={() => void projects.openPicker()}
         onTryDemo={() => void tryDemo()}
-        onOpenRecent={(recent) => void projects.open(recent.handle)}
+        onOpenRecent={(recent) => {
+          track('project-reopen')
+          void projects.open(recent.handle)
+        }}
         onForgetRecent={(recent) => void projects.forgetRecent(recent.id)}
       />
 
