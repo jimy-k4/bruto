@@ -90,3 +90,15 @@ test('the example project opens from the landing page, in the reader’s languag
   await expect(page.getByRole('group', { name: 'Vistas del proyecto' })).toContainText('Next.js')
   await expect(page.getByRole('group', { name: 'Vistas del proyecto' })).toContainText('PostgreSQL')
 })
+
+test('a link with ?demo opens the example project right away, once', async ({ page }) => {
+  await page.goto('/?demo&ref=launch')
+
+  await expect(page.locator('.project-switcher__trigger')).toContainText('ATLAS')
+  await expect(page.locator('.note')).toHaveCount(6)
+  expect(new URL(page.url()).search).toBe('?ref=launch')
+
+  // Reloading doesn't start the example over: it's among the recent projects instead.
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Recientes' })).toBeVisible()
+})

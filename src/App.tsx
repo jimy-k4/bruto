@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { createDemoProject, supportsDemo } from './demo/demoProject'
+import { useEffect, useEffectEvent, useState } from 'react'
+import { createDemoProject, supportsDemo, takeDemoLink } from './demo/demoProject'
 import { track } from './ui/analytics'
 import { useI18n } from './i18n'
 import { I18nProvider } from './i18n/I18nProvider'
@@ -71,15 +71,22 @@ function Screen({ projects }: { projects: Projects }) {
   const toast = useToast()
 
   // A fresh copy of the example project each time, in the reader's language.
-  const tryDemo = async () => {
+  const tryDemo = async (from: 'button' | 'link') => {
     try {
       await projects.open(await createDemoProject(language))
-      track('demo-open')
+      track('demo-open', { from })
     } catch (error) {
       console.error(error)
       toast({ tone: 'error', message: t('demoFailed') })
     }
   }
+
+  // A link with ?demo, like the "Live demo" of a launch page, skips the landing page.
+  const openLinkedDemo = useEffectEvent(() => {
+    if (takeDemoLink() && supportsDemo()) void tryDemo('link')
+  })
+
+  useEffect(() => openLinkedDemo(), [])
 
   if (projects.recovery) {
     return (
@@ -116,7 +123,7 @@ function Screen({ projects }: { projects: Projects }) {
         loading={projects.loading}
         recents={projects.recents}
         onOpenFolder={() => void projects.openPicker()}
-        onTryDemo={() => void tryDemo()}
+        onTryDemo={() => void tryDemo('button')}
         onOpenRecent={(recent) => {
           track('project-reopen')
           void projects.open(recent.handle)
