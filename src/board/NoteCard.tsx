@@ -4,6 +4,7 @@ import { noteTitle, shortId } from '../domain/workspace'
 import { statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
 import { ProjectImage } from '../ui/ProjectImage'
+import { RichText } from '../ui/RichText'
 
 export type NoteFlash = 'copied' | 'pasted' | null
 
@@ -111,7 +112,7 @@ export const NoteCard = memo(function NoteCard({
         <h3 className={titleSizeClass(title)}>{title}</h3>
 
         {note.description.trim() ? (
-          <p className="note__description">{note.description}</p>
+          <RichText className="note__description" text={note.description} />
         ) : (
           <p className="note__description note__description--empty">{t('noDescription')}</p>
         )}
@@ -166,7 +167,9 @@ export const NoteCard = memo(function NoteCard({
               <span aria-hidden="true">{aiOpen ? '▾' : '▸'}</span>
             </button>
 
-            {aiOpen && note.aiResponse && <p className="note__ai-text">{note.aiResponse}</p>}
+            {aiOpen && note.aiResponse && (
+              <RichText className="note__ai-text" text={note.aiResponse} />
+            )}
             {aiOpen && note.aiFilePaths?.length ? (
               <FileTable paths={note.aiFilePaths} limit={4} compact />
             ) : null}
@@ -174,9 +177,10 @@ export const NoteCard = memo(function NoteCard({
         )}
 
         {note.feedback && (
-          <p className="note__feedback">
-            <strong>{t('feedback')}:</strong> {note.feedback}
-          </p>
+          <div className="note__feedback">
+            <strong>{t('feedback')}:</strong>
+            <RichText text={note.feedback} />
+          </div>
         )}
       </div>
 

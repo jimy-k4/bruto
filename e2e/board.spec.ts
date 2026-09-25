@@ -434,3 +434,33 @@ test('status styles can be copied from another project', async ({ page }) => {
   await waitForSaved(page)
   expect((await readDisk(page)).statusStyles).toEqual({ done: { color: 'moss', pattern: 'bands' } })
 })
+
+test('code in an AI answer shows in a box with a copy button', async ({ page }) => {
+  const command = 'git -C D:/jllinares/Personal/portfolio push origin content/textos:main'
+
+  await openProject(
+    page,
+    workspaceWith([
+      note('push', {
+        title: 'Publicar textos',
+        aiResponse: `Listo. Para subirlo:\n\n\`\`\`bash\n${command}\n\`\`\`\n\nY revisa \`content/textos\`.`,
+      }),
+    ]),
+  )
+
+  const card = noteCard(page, 'Publicar textos')
+
+  await card.getByRole('button', { name: /respuesta de la ia/i }).click()
+  await expect(card.locator('.code-block')).toContainText(command)
+  await expect(card.locator('.rich-text p code')).toHaveText('content/textos')
+
+  await card.getByRole('button', { name: 'Copiar código' }).click()
+  await expect(card.getByRole('button', { name: 'Copiado' })).toBeVisible()
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(command)
+
+  // The editor lists the same code under the answer, ready to copy.
+  await card.dblclick({ position: { x: 20, y: 60 } })
+  await expect(
+    page.getByRole('group', { name: 'Código de la respuesta' }).locator('.code-block'),
+  ).toContainText(command)
+})

@@ -5,6 +5,7 @@ import { en } from './locales/en'
 
 /** Words that are the same in English and in some other languages. */
 const SHARED_WORDS = new Set([
+  'Code',
   'Zoom',
   'Idea',
   'Obsidian',

@@ -13,6 +13,7 @@ const INSTRUCTIONS = [
   '- With file access: notes live in `.bruto/workspace.json` (keep it valid JSON). Find a note by the start of its `id`. When you finish one, write what you did in its `aiResponse`, add the files you created or changed to its `aiFilePaths` (paths relative to the project, keeping the ones already there) and set `status` to "review". Never delete notes or change `x`, `y` or `zIndex`.',
   '- Without file access: answer note by note, starting each answer with its id and ending it with a `Files:` line listing the files you created or changed.',
   '- Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong in "Feedback": fix that first, say what you fixed in `aiResponse`, empty `feedback` and set the status back to "review".',
+  '- Put commands and code the user has to run or paste in `aiResponse` inside Markdown code blocks (```): the note shows each one with a copy button.',
 ]
 
 /** Only added when the project has rules, so other copies stay short. */

@@ -1,10 +1,12 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import type { Note, NoteStatus } from '../types'
 import { NOTE_STATUSES } from '../domain/constants'
+import { parseRichText, type Block } from '../domain/richText'
 import { shortId, type NotePatch } from '../domain/workspace'
 import { statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
 import { ProjectImage } from '../ui/ProjectImage'
+import { CodeBlock } from '../ui/RichText'
 import { SidePanel } from '../ui/SidePanel'
 import { ColorPicker, PatternPicker } from '../ui/StylePicker'
 
@@ -59,6 +61,10 @@ export function NoteEditor({
       onClose()
     }
   }
+
+  const codeBlocks = parseRichText(note.aiResponse ?? '').filter(
+    (block): block is Extract<Block, { kind: 'code' }> => block.kind === 'code',
+  )
 
   const removeFrom = (key: 'filePaths' | 'images' | 'aiFilePaths', path: string) =>
     onChange({ [key]: (note[key] ?? []).filter((item) => item !== path) })
@@ -235,6 +241,15 @@ export function NoteEditor({
             value={note.aiResponse ?? ''}
             onChange={(event) => onChange({ aiResponse: event.target.value })}
           />
+
+          {/* Commands and code in the answer, one click from the clipboard. */}
+          {codeBlocks.length > 0 && (
+            <div className="field__code" role="group" aria-label={t('codeInResponse')}>
+              {codeBlocks.map((block, index) => (
+                <CodeBlock key={index} code={block.code} language={block.language} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Written by the AI; the user only opens or clears them. */}

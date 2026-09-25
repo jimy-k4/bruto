@@ -642,3 +642,79 @@ kbd {
   border-left-width: 6px;
   font-size: var(--text-sm);
 }
+
+/* Text with code ------------------------------------------------------------------ */
+
+.rich-text {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.rich-text p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rich-text p code {
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  font: 500 0.92em / 1.4 var(--font-mono);
+}
+
+/* A slab of code in the other colour, with a button that copies it exactly. */
+.code-block {
+  min-width: 0;
+  border: var(--border) solid var(--line);
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.code-block__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 2px 2px 2px 8px;
+  border-bottom: 1px solid currentColor;
+  font: 600 10px / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.code-block__language {
+  opacity: 0.7;
+}
+
+.code-block__copy {
+  padding: 4px 8px;
+  border: 1px solid currentColor;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.code-block__copy:hover {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--signal-ink);
+}
+
+.code-block__code {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font: 500 12px / 1.5 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.field__code {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
