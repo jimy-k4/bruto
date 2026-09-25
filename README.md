@@ -192,8 +192,9 @@ npm install
 npm run dev        # http://localhost:5173
 npm run check      # format, lint, types and unit tests
 npm run test:e2e   # browser tests (uses the installed Chrome)
-npm run shots      # screenshots of the example project for the landing page and this README
+npm run shots      # screenshots for the landing page, this README and the link preview
 npm run build
+npm run prerender  # after build: the English landing written into index.html, for crawlers
 ```
 
 ```text

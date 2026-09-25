@@ -1,18 +1,76 @@
 <!doctype html>
-<html lang="es" data-theme="dark">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bruto · A task board for coding with AI, inside your repo</title>
     <meta
       name="description"
-      content="Bruto: a brutalist, local-first task board for projects built with AI. Notes live in your project folder."
+      content="Free, open-source task board for building with AI. Notes live in your repo, so you and Claude Code, Cursor or ChatGPT work from the same tasks. No account."
     />
+    <link rel="canonical" href="https://jimy-k4.github.io/bruto/" />
     <meta name="theme-color" content="#1a1a19" />
     <link rel="icon" type="image/svg+xml" href="/brutoIcon.svg" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <title>BRUTO</title>
+
+    <!-- The card a shared link shows (X, LinkedIn, Reddit, Slack…). The image is `npm run shots`. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bruto" />
+    <meta property="og:url" content="https://jimy-k4.github.io/bruto/" />
+    <meta
+      property="og:title"
+      content="Bruto: a task board that lives in your repo, for you and your AI"
+    />
+    <meta
+      property="og:description"
+      content="Write tasks with files, links and screenshots, hand the AI exactly the context it needs with one key, and get its answer back inside the note. Free, open source, no account."
+    />
+    <meta property="og:image" content="https://jimy-k4.github.io/bruto/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Bruto landing page next to a board of task notes" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- What Bruto is, for search engines and AI assistants. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Bruto",
+        "url": "https://jimy-k4.github.io/bruto/",
+        "description": "A brutalist, local-first task board for projects built with AI. Notes live in the project folder, in .bruto/workspace.json, where you and any AI can read and answer them.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux, ChromeOS",
+        "browserRequirements": "Chrome, Edge, Brave or Opera on a computer",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "isAccessibleForFree": true,
+        "license": "https://opensource.org/licenses/MIT",
+        "image": "https://jimy-k4.github.io/bruto/og.png",
+        "screenshot": "https://jimy-k4.github.io/bruto/landing/en/board.jpg",
+        "inLanguage": ["en", "es", "ca", "de", "fr", "pt-BR", "ru", "ja", "zh"],
+        "featureList": [
+          "Task notes stored in the project folder as plain JSON",
+          "Copy the AI context of a selection, its connections or the whole project with one key",
+          "Coding agents answer inside the note and mark it for review",
+          "Structure view and lenses for web apps, APIs and databases",
+          "Works with Claude, ChatGPT, Gemini and coding agents such as Claude Code",
+          "No account, no server, installable and works offline"
+        ],
+        "author": { "@type": "Person", "name": "jimy-k4", "url": "https://github.com/jimy-k4" },
+        "sameAs": ["https://github.com/jimy-k4/bruto"]
+      }
+    </script>
+
+    <style>
+      /* The landing written into the page for crawlers (scripts/prerender.ts): the app draws its own. */
+      [data-js] #root > .prerendered {
+        display: none;
+      }
+    </style>
     <script>
+      document.documentElement.dataset.js = ''
+
       // Apply the saved theme before the first paint, so there is no flash.
       try {
         const theme = localStorage.getItem('bruto-theme')

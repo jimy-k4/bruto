@@ -1,0 +1,16 @@
+# Bruto
+
+> A free, open-source task board for projects built with AI. Notes live inside the project folder, in `.bruto/workspace.json`, so you and any AI (Claude, ChatGPT, Gemini, or coding agents such as Claude Code, Codex or Cursor) read and answer the same tasks. No account, no server, works offline.
+
+- You write tasks as notes: description, files, links, screenshots and a status.
+- One key (`Q`, `W` or `E`) copies exactly the context the AI needs, as Markdown with instructions for the model.
+- An AI that can edit files answers inside the note, lists the files it changed and marks it for review; "changes requested" sends it back with what is still wrong.
+- The structure view and its lenses draw the project (web apps, APIs, databases) with the notes on top.
+- Runs in Chrome, Edge, Brave or Opera on a computer. MIT license.
+
+## Links
+
+- [Bruto](https://jimy-k4.github.io/bruto/): the app
+- [Example project](https://jimy-k4.github.io/bruto/?demo): opens a sample board right away, in the browser
+- [README](https://raw.githubusercontent.com/jimy-k4/bruto/main/README.md): features, working with an AI, the workspace file format and shortcuts
+- [Source code](https://github.com/jimy-k4/bruto)
