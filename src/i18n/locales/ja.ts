@@ -205,7 +205,7 @@ export const ja: Locale = {
     'アプリとしてインストールでき、オフラインでも動き、新しいバージョンを知らせます。',
   featureLocalTitle: 'ローカルのみ',
   featureLocalText:
-    'サーバーなし、アカウントなし、解析なし。ノートはあなたのフォルダーから出ません。',
+    'サーバーもアカウントもなし。Cookie を使わない匿名の訪問カウンターだけです。ノートはあなたのフォルダーから出ません。',
   landingAnyAiTitle: 'どの AI とも',
   landingAnyAiText:
     'コピーを Claude、ChatGPT、Gemini、DeepSeek に貼り付けるか、ファイルにアクセスできるエージェントにボードで直接作業させましょう。AGENTS.md か CLAUDE.md に 1 行書くだけです。',

@@ -5,7 +5,7 @@
 **A brutalist task board for projects built with AI.**
 Your notes live inside the project folder, where you and any AI can read and answer them.
 
-[**Open Bruto**](https://jimy-k4.github.io/bruto/) · No account · No server · Works offline
+[**Open Bruto**](https://jimy-k4.github.io/bruto/) · No account · No server · Works offline · Anonymous visit counter only
 
 <img src="docs/board-dark.png" alt="Bruto board with notes, arrows between them and the note editor open" width="100%" />
 
@@ -69,7 +69,9 @@ Prefer to run it yourself? See [Development](#development).
   trap focus and everything has a readable name for screen readers.
 - **Nine languages**, light and dark themes, a colour and pattern per status, installable, works
   offline, and tells an open window when a new version is out.
-- **Local only.** The app is a static page: it has no server, no analytics and no storage of its own.
+- **Local only.** The app is a static page: it has no server and no storage of its own. The published
+  site only counts visits, anonymously and without cookies ([GoatCounter](https://www.goatcounter.com/)):
+  nothing about your projects or notes ever leaves your browser.
   Your notes never leave your folders.
 
 <p>
