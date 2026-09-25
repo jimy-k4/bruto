@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../i18n'
 import type { ProjectTab } from '../state/useProjects'
+import type { RecentProject } from '../storage/recentProjects'
+import { formatDate } from '../ui/format'
 
 interface ProjectSwitcherProps {
   current: ProjectTab
@@ -8,18 +10,29 @@ interface ProjectSwitcherProps {
   onSwitch: (id: string) => void
   onOpen: () => void
   onClose: (id: string) => void
+  recents: RecentProject[]
+  onOpenRecent: (recent: RecentProject) => void
 }
 
-/** Header menu with every open project. Alt+1…9 jumps straight to one. */
+/** Recent projects listed in the menu; the landing page keeps the full list. */
+const MAX_RECENTS = 8
+
+/** Header menu with every open project (Alt+1…9 jumps straight to one) and the recent ones. */
 export function ProjectSwitcher({
   current,
   tabs,
   onSwitch,
   onOpen,
   onClose,
+  recents,
+  onOpenRecent,
 }: ProjectSwitcherProps) {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const [open, setOpen] = useState(false)
+  // Projects opened before and not open now: the ones worth offering again.
+  const closedRecents = recents
+    .filter((recent) => !tabs.some((tab) => tab.id === recent.id))
+    .slice(0, MAX_RECENTS)
   const rootRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -99,6 +112,32 @@ export function ProjectSwitcher({
               </li>
             ))}
           </ul>
+
+          {closedRecents.length > 0 && (
+            <>
+              <p className="eyebrow">{t('recentProjects')}</p>
+
+              <ul>
+                {closedRecents.map((recent) => (
+                  <li key={recent.id}>
+                    <button
+                      type="button"
+                      className="project-switcher__project project-switcher__project--recent"
+                      onClick={() => {
+                        setOpen(false)
+                        onOpenRecent(recent)
+                      }}
+                    >
+                      <span>{recent.name}</span>
+                      <time dateTime={new Date(recent.openedAt).toISOString()}>
+                        {formatDate(language, recent.openedAt)}
+                      </time>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
 
           <button
             type="button"

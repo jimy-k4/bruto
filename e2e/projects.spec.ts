@@ -45,6 +45,14 @@ test('switches between open projects with the menu and Alt+number', async ({ pag
 
   await page.keyboard.press('Alt+2')
   await expect(noteCard(page, 'SECOND')).toBeVisible()
+
+  // A project closed from the menu can be opened again from the same menu.
+  await page.getByRole('button', { name: 'OTHER', exact: true }).click()
+  await page.getByRole('button', { name: 'Cerrar DEMO' }).click()
+  await page.getByRole('button', { name: 'OTHER', exact: true }).click()
+  await expect(page.getByText('Recientes')).toBeVisible()
+  await page.getByRole('button', { name: /^demo/i }).click()
+  await expect(noteCard(page, 'FIRST')).toBeVisible()
 })
 
 test('the AI context window previews exactly what gets copied', async ({ page }) => {

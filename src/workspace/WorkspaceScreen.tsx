@@ -101,6 +101,8 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
               onSwitch={(id) => void projects.switchTo(id)}
               onOpen={() => void projects.openPicker()}
               onClose={(id) => void projects.close(id)}
+              recents={projects.recents}
+              onOpenRecent={(recent) => void projects.open(recent.handle)}
             />
           }
           actions={
