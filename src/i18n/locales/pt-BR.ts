@@ -357,6 +357,15 @@ export const ptBR: Locale = {
   statusStylesDescription:
     'A cor e o padrão que uma nota assume ao passar para cada status. Depois você ainda pode mudá-los à mão.',
   clearStyle: 'Remover',
+  copyStylesFrom: 'Copiar estilos de outro projeto',
+  copyStylesHint: 'Substitui a aparência de cada status pela desse projeto. Dá para desfazer.',
+  otherFolder: 'Outra pasta…',
+  stylesCopied: 'Estilos copiados de {name}.',
+  stylesSourceMissing: '{name} não tem um quadro do Bruto.',
+  stylesSourceInvalid: 'Não é possível ler o quadro de {name}.',
+  stylesSourceEmpty: '{name} não tem estilos definidos.',
+  stylesSourceSelf: 'Essa pasta é este mesmo projeto.',
+  stylesCopyFailed: 'Não foi possível copiar os estilos.',
 
   // Colors
   colorConcrete: 'Concreto',

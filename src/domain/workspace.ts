@@ -415,6 +415,21 @@ export function setStatusStyle(
   return next
 }
 
+/**
+ * Takes the look of every status from another project. Statuses it leaves
+ * unstyled are cleared too, so both projects end up alike; notes still on
+ * their automatic look follow, as with any change of a status style.
+ */
+export function replaceStatusStyles(
+  workspace: Workspace,
+  styles: StatusStyles | undefined,
+): Workspace {
+  return NOTE_STATUSES.reduce(
+    (next, status) => setStatusStyle(next, status, styles?.[status]),
+    workspace,
+  )
+}
+
 // ---------------------------------------------------------------------------
 // Note operations (all pure: they return a new workspace)
 

@@ -334,6 +334,15 @@ export const zh: Locale = {
   statusStylesTitle: '按状态设置外观',
   statusStylesDescription: '笔记切换到各个状态时会使用的颜色和纹理。之后仍可在笔记中手动修改。',
   clearStyle: '清除',
+  copyStylesFrom: '从其他项目复制样式',
+  copyStylesHint: '用那个项目的外观替换每个状态的外观。可以撤销。',
+  otherFolder: '其他文件夹…',
+  stylesCopied: '已从 {name} 复制样式。',
+  stylesSourceMissing: '{name} 没有 Bruto 看板。',
+  stylesSourceInvalid: '无法读取 {name} 的看板。',
+  stylesSourceEmpty: '{name} 没有设置样式。',
+  stylesSourceSelf: '这个文件夹就是当前项目。',
+  stylesCopyFailed: '无法复制样式。',
 
   // Colors
   colorConcrete: '混凝土',

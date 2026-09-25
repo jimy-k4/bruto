@@ -20,6 +20,7 @@ import {
   raiseNotes,
   removeConnection,
   removeDocumentation,
+  replaceStatusStyles,
   setStatusStyle,
   updateNotes,
   upsertDocumentation,
@@ -36,6 +37,8 @@ import {
   openProjectFile,
   saveNoteImage,
 } from '../storage/projectFiles'
+import { ensureAccess } from '../storage/recentProjects'
+import { readWorkspaceFile } from '../storage/workspaceFile'
 import type { ShowToast } from '../ui/toasts'
 import type { WorkspaceUi } from './useWorkspaceUi'
 
@@ -375,6 +378,63 @@ export function createWorkspaceActions({
     saveAiContext(text: string) {
       store.update((workspace) => ({ ...workspace, aiContext: text }))
       toast({ tone: 'success', message: t('contextSaved') })
+    },
+
+    /** Copies every status look from the Bruto board of another folder. */
+    async copyStatusStylesFrom(source: FileSystemDirectoryHandle) {
+      const name = source.name
+
+      try {
+        if (await source.isSameEntry(root)) {
+          toast({ message: t('stylesSourceSelf') })
+          return
+        }
+
+        if (!(await ensureAccess(source, 'read'))) return
+
+        const disk = await readWorkspaceFile(source, name)
+
+        if (disk.kind !== 'ok') {
+          toast({
+            tone: 'error',
+            message: t(disk.kind === 'missing' ? 'stylesSourceMissing' : 'stylesSourceInvalid', {
+              name,
+            }),
+          })
+          return
+        }
+
+        const styles = disk.workspace.statusStyles
+
+        if (!styles || Object.keys(styles).length === 0) {
+          toast({ message: t('stylesSourceEmpty', { name }) })
+          return
+        }
+
+        store.update((workspace) => replaceStatusStyles(workspace, styles))
+        toast({
+          tone: 'success',
+          message: t('stylesCopied', { name }),
+          action: { label: t('undo'), run: () => store.undo() },
+        })
+      } catch (error) {
+        fail(error, t('stylesCopyFailed'))
+      }
+    },
+
+    async pickStatusStylesSource() {
+      let source: FileSystemDirectoryHandle
+
+      try {
+        source = await window.showDirectoryPicker({ id: 'bruto-styles', mode: 'read' })
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          fail(error, t('stylesCopyFailed'))
+        }
+        return
+      }
+
+      await actions.copyStatusStylesFrom(source)
     },
 
     setStatusStyle(status: NoteStatus, config: StatusStyleConfig | undefined) {

@@ -97,8 +97,15 @@ export async function forgetProject(id: string) {
 }
 
 /** Makes sure Bruto may read and write the folder, asking the user if needed. */
-export async function ensureReadWrite(handle: FileSystemDirectoryHandle): Promise<boolean> {
-  const options = { mode: 'readwrite' } as const
+export const ensureReadWrite = (handle: FileSystemDirectoryHandle) =>
+  ensureAccess(handle, 'readwrite')
+
+/** Asks for access to a folder when the browser doesn't grant it already. */
+export async function ensureAccess(
+  handle: FileSystemDirectoryHandle,
+  mode: 'read' | 'readwrite',
+): Promise<boolean> {
+  const options = { mode } as const
 
   // Without the permission API (private storage, older engines) access is implicit.
   if (!handle.queryPermission || !handle.requestPermission) {

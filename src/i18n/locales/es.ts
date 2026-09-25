@@ -356,6 +356,16 @@ export const es = {
   statusStylesDescription:
     'El color y el patrón que toma una nota al pasar a cada estado. Después puedes cambiarlos a mano en la nota.',
   clearStyle: 'Quitar',
+  copyStylesFrom: 'Copiar estilos de otro proyecto',
+  copyStylesHint:
+    'Sustituye el aspecto de todos los estados por el de ese proyecto. Se puede deshacer.',
+  otherFolder: 'Otra carpeta…',
+  stylesCopied: 'Estilos copiados de {name}.',
+  stylesSourceMissing: '{name} no tiene un tablero de Bruto.',
+  stylesSourceInvalid: 'No se puede leer el tablero de {name}.',
+  stylesSourceEmpty: '{name} no tiene estilos configurados.',
+  stylesSourceSelf: 'Esa carpeta es este mismo proyecto.',
+  stylesCopyFailed: 'No se han podido copiar los estilos.',
 
   // Colors
   colorConcrete: 'Hormigón',

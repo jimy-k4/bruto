@@ -354,6 +354,15 @@ export const en: Locale = {
   statusStylesDescription:
     'The colour and pattern a note takes when it moves to each status. You can still change them by hand afterwards.',
   clearStyle: 'Clear',
+  copyStylesFrom: 'Copy styles from another project',
+  copyStylesHint: 'Replaces the look of every status with that project’s. It can be undone.',
+  otherFolder: 'Another folder…',
+  stylesCopied: 'Styles copied from {name}.',
+  stylesSourceMissing: '{name} has no Bruto board.',
+  stylesSourceInvalid: 'The board of {name} can’t be read.',
+  stylesSourceEmpty: '{name} has no styles set.',
+  stylesSourceSelf: 'That folder is this same project.',
+  stylesCopyFailed: 'The styles couldn’t be copied.',
 
   // Colors
   colorConcrete: 'Concrete',

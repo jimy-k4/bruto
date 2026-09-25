@@ -360,6 +360,15 @@ export const fr: Locale = {
   statusStylesDescription:
     'La couleur et le motif qu’une note prend en passant à chaque statut. Vous pouvez toujours les changer à la main ensuite.',
   clearStyle: 'Retirer',
+  copyStylesFrom: 'Copier les styles d’un autre projet',
+  copyStylesHint: 'Remplace l’apparence de chaque statut par celle de ce projet. Annulable.',
+  otherFolder: 'Autre dossier…',
+  stylesCopied: 'Styles copiés depuis {name}.',
+  stylesSourceMissing: '{name} n’a pas de tableau Bruto.',
+  stylesSourceInvalid: 'Impossible de lire le tableau de {name}.',
+  stylesSourceEmpty: '{name} n’a aucun style défini.',
+  stylesSourceSelf: 'Ce dossier est ce même projet.',
+  stylesCopyFailed: 'Les styles n’ont pas pu être copiés.',
 
   // Colors
   colorConcrete: 'Béton',

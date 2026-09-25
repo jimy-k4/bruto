@@ -328,6 +328,8 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
           <StatusStylesDialog
             styles={workspace.statusStyles}
             onChange={actions.setStatusStyle}
+            onCopyFrom={(source) => void actions.copyStatusStylesFrom(source)}
+            onPickSource={() => void actions.pickStatusStylesSource()}
             onClose={() => ui.setModal(null)}
           />
         )}

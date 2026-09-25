@@ -359,6 +359,16 @@ export const de: Locale = {
   statusStylesDescription:
     'Die Farbe und das Muster, die eine Notiz beim Wechsel in einen Status annimmt. Danach kannst du sie weiterhin von Hand ändern.',
   clearStyle: 'Entfernen',
+  copyStylesFrom: 'Stile aus einem anderen Projekt kopieren',
+  copyStylesHint:
+    'Ersetzt das Aussehen jedes Status durch das dieses Projekts. Lässt sich rückgängig machen.',
+  otherFolder: 'Anderer Ordner…',
+  stylesCopied: 'Stile aus {name} kopiert.',
+  stylesSourceMissing: '{name} hat kein Bruto-Board.',
+  stylesSourceInvalid: 'Das Board von {name} kann nicht gelesen werden.',
+  stylesSourceEmpty: '{name} hat keine Stile festgelegt.',
+  stylesSourceSelf: 'Dieser Ordner ist dieses Projekt.',
+  stylesCopyFailed: 'Die Stile konnten nicht kopiert werden.',
 
   // Colors
   colorConcrete: 'Beton',

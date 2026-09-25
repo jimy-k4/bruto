@@ -351,6 +351,15 @@ export const ja: Locale = {
   statusStylesDescription:
     'ノートが各ステータスに変わったときに付く色と模様です。あとからノートで手動で変えることもできます。',
   clearStyle: '解除',
+  copyStylesFrom: '他のプロジェクトからスタイルをコピー',
+  copyStylesHint: '各ステータスの見た目をそのプロジェクトのものに置き換えます。元に戻せます。',
+  otherFolder: '別のフォルダー…',
+  stylesCopied: '{name} からスタイルをコピーしました。',
+  stylesSourceMissing: '{name} には Bruto のボードがありません。',
+  stylesSourceInvalid: '{name} のボードを読み込めません。',
+  stylesSourceEmpty: '{name} にはスタイルが設定されていません。',
+  stylesSourceSelf: 'そのフォルダーはこのプロジェクト自身です。',
+  stylesCopyFailed: 'スタイルをコピーできませんでした。',
 
   // Colors
   colorConcrete: 'コンクリート',

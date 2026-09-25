@@ -360,6 +360,15 @@ export const ca: Locale = {
   statusStylesDescription:
     'El color i el patró que pren una nota en passar a cada estat. Després els pots canviar a mà a la nota.',
   clearStyle: 'Treure',
+  copyStylesFrom: 'Copiar estils d’un altre projecte',
+  copyStylesHint: 'Substitueix l’aspecte de tots els estats pel d’aquell projecte. Es pot desfer.',
+  otherFolder: 'Una altra carpeta…',
+  stylesCopied: 'Estils copiats de {name}.',
+  stylesSourceMissing: '{name} no té un tauler de Bruto.',
+  stylesSourceInvalid: 'No es pot llegir el tauler de {name}.',
+  stylesSourceEmpty: '{name} no té estils configurats.',
+  stylesSourceSelf: 'Aquesta carpeta és aquest mateix projecte.',
+  stylesCopyFailed: 'No s’han pogut copiar els estils.',
 
   // Colors
   colorConcrete: 'Formigó',

@@ -405,3 +405,32 @@ test('the support link is always one click away from the board', async ({ page }
   await expect(support).toHaveAttribute('href', 'https://ko-fi.com/jimy_k4')
   await expect(support).toHaveAttribute('target', '_blank')
 })
+
+test('status styles can be copied from another project', async ({ page }) => {
+  await openProject(page, workspaceWith([note('alpha', { status: 'done' })]))
+
+  // Another folder with its own board and styles, picked with the folder dialog.
+  await page.evaluate(
+    async (workspace) => {
+      const root = await navigator.storage.getDirectory()
+      const other = await root.getDirectoryHandle('other', { create: true })
+      const bruto = await other.getDirectoryHandle('.bruto', { create: true })
+      const file = await (
+        await bruto.getFileHandle('workspace.json', { create: true })
+      ).createWritable()
+
+      await file.write(JSON.stringify(workspace))
+      await file.close()
+      Object.assign(window, { showDirectoryPicker: async () => other })
+    },
+    workspaceWith([], { statusStyles: { done: { color: 'moss', pattern: 'bands' } } }),
+  )
+
+  await page.getByRole('button', { name: 'Estilos', exact: true }).click()
+  await page.getByRole('button', { name: 'Otra carpeta…' }).click()
+
+  await expect(page.getByText('Estilos copiados de other.')).toBeVisible()
+  await expect(noteCard(page, 'ALPHA')).toHaveClass(/note-color-moss/)
+  await waitForSaved(page)
+  expect((await readDisk(page)).statusStyles).toEqual({ done: { color: 'moss', pattern: 'bands' } })
+})

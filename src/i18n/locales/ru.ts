@@ -363,6 +363,15 @@ export const ru: Locale = {
   statusStylesDescription:
     'Цвет и узор, которые получает заметка при переходе в каждый статус. Потом их всё равно можно поменять вручную.',
   clearStyle: 'Убрать',
+  copyStylesFrom: 'Скопировать стили из другого проекта',
+  copyStylesHint: 'Заменяет вид каждого статуса на вид из того проекта. Можно отменить.',
+  otherFolder: 'Другая папка…',
+  stylesCopied: 'Стили скопированы из {name}.',
+  stylesSourceMissing: 'В {name} нет доски Bruto.',
+  stylesSourceInvalid: 'Не удаётся прочитать доску {name}.',
+  stylesSourceEmpty: 'В {name} стили не настроены.',
+  stylesSourceSelf: 'Это та же папка, что и текущий проект.',
+  stylesCopyFailed: 'Не удалось скопировать стили.',
 
   // Colors
   colorConcrete: 'Бетон',

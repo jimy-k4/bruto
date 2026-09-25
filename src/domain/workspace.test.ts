@@ -10,6 +10,7 @@ import {
   getConnectedNoteIds,
   parseWorkspace,
   raiseNotes,
+  replaceStatusStyles,
   serializeWorkspace,
   setStatusStyle,
   updateNotes,
@@ -226,6 +227,24 @@ describe('status styles', () => {
 
     expect(next.notes.map((item) => item.colorTheme)).toEqual(['teal', 'wine'])
     expect(next.statusStyles).toEqual({ done: { color: 'teal' } })
+  })
+
+  it('takes every status look from another project, clearing the ones it lacks', () => {
+    const workspace = workspaceWith(
+      [
+        note('auto', { status: 'done', colorTheme: 'moss' }),
+        note('custom', { status: 'done', colorTheme: 'wine' }),
+      ],
+      { statusStyles: { done: { color: 'moss' }, todo: { color: 'sand' } } },
+    )
+
+    const next = replaceStatusStyles(workspace, { done: { color: 'teal', pattern: 'dots' } })
+
+    expect(next.statusStyles).toEqual({ done: { color: 'teal', pattern: 'dots' } })
+    expect(next.notes.map((item) => [item.colorTheme, item.pattern])).toEqual([
+      ['teal', 'dots'],
+      ['wine', 'dots'],
+    ])
   })
 
   it('removes the configuration when cleared', () => {
