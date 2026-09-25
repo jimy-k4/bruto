@@ -576,6 +576,20 @@ export const supportsDemo = () =>
   typeof FileSystemFileHandle !== 'undefined' &&
   'createWritable' in FileSystemFileHandle.prototype
 
+/**
+ * Whether the page was opened from a link to the example (`?demo`). The mark is
+ * taken off the address, so reloading keeps the copy instead of starting over.
+ */
+export function takeDemoLink() {
+  const url = new URL(window.location.href)
+
+  if (!url.searchParams.has('demo')) return false
+
+  url.searchParams.delete('demo')
+  window.history.replaceState(window.history.state, '', url)
+  return true
+}
+
 /** Writes a fresh copy of the example project and returns its folder. */
 export async function createDemoProject(language: Language): Promise<FileSystemDirectoryHandle> {
   const root = await navigator.storage.getDirectory()
