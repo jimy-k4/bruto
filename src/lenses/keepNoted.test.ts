@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { ApiModel } from './dotnet'
 import { keepNotedModel } from './keepNoted'
-import type { DbModel } from './plsql'
+import type { DbModel } from './sql'
 import type { WebModel } from './web'
 
 const noted = (wanted: string[]) => (paths: string[]) => paths.some((path) => wanted.includes(path))

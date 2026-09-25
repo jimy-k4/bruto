@@ -25,15 +25,15 @@ import {
 } from '../storage/projectFiles'
 import { ApiLens } from '../lenses/ApiLens'
 import { DbLens } from '../lenses/DbLens'
-import { WEB_CODE, detectLenses, type DetectedLens, type LensKind } from '../lenses/detect'
-import { buildApiModel, isDotnetFile, type ApiModel } from '../lenses/dotnet'
+import { detectLenses, detectionFiles, type DetectedLens, type LensKind } from '../lenses/detect'
+import type { ApiModel } from '../lenses/dotnet'
 import { keepNotedModel } from '../lenses/keepNoted'
 import { LensIcon } from '../lenses/LensIcon'
 import type { LensContext, LensFocus } from '../lenses/lensContext'
-import { buildDbModel, isPlsqlFile, type DbModel } from '../lenses/plsql'
-import { baseName, extensionOf } from '../lenses/source'
+import { emptyModel, loadLens, type LensModel } from '../lenses/load'
+import type { DbModel } from '../lenses/sql'
 import { WebLens } from '../lenses/WebLens'
-import { buildWebModel, isWebFile, type WebModel } from '../lenses/web'
+import type { WebModel } from '../lenses/web'
 import { StructureMap } from './StructureMap'
 
 interface StructureViewProps {
@@ -53,29 +53,7 @@ type Index =
 
 type Lens = 'files' | LensKind
 
-type LensModels = { web?: WebModel; api?: ApiModel; db?: DbModel }
-
-/** Reads only the code a lens needs, then parses it. */
-async function loadLens(kind: LensKind, files: IndexedFile[], paths: string[], lens: DetectedLens) {
-  if (kind === 'web') {
-    const sources = await readSources(
-      files,
-      (path) => WEB_CODE.has(extensionOf(path)) && isWebFile(path),
-    )
-
-    return { web: buildWebModel(paths, sources, lens.framework ?? 'react') }
-  }
-
-  if (kind === 'api') return { api: buildApiModel(await readSources(files, isDotnetFile)) }
-
-  return { db: buildDbModel(await readSources(files, isPlsqlFile)) }
-}
-
-const EMPTY_MODELS: Record<LensKind, LensModels> = {
-  web: { web: { framework: 'react', elements: [] } },
-  api: { api: { resources: [], parts: [] } },
-  db: { db: { tables: [], relations: [], programs: [] } },
-}
+type LensModels = Partial<Record<LensKind, LensModel>>
 
 const LENS_ICONS = { web: 'page', api: 'controller', db: 'table' } as const
 const LENS_TITLES = { web: 'lensWeb', api: 'lensApi', db: 'lensDb' } as const
@@ -130,7 +108,7 @@ export function StructureView({
     indexProjectFiles(root)
       .then(async (files) => {
         const paths = files.map((file) => file.path)
-        const manifests = await readSources(files, (path) => baseName(path) === 'package.json')
+        const samples = await readSources(files, detectionFiles())
 
         if (cancelled) return
         setModels({})
@@ -138,10 +116,7 @@ export function StructureView({
           files,
           paths,
           truncated: files.length >= MAX_INDEXED_FILES,
-          lenses: detectLenses(
-            paths,
-            manifests.map((manifest) => manifest.text),
-          ),
+          lenses: detectLenses(paths, samples),
         })
       })
       .catch((error: unknown) => {
@@ -175,13 +150,13 @@ export function StructureView({
 
     let cancelled = false
 
-    loadLens(activeLens.kind, index.files, index.paths, activeLens)
+    const kind = activeLens.kind
+
+    loadLens(activeLens, index.files, index.paths)
+      // Unreadable code draws an empty lens rather than spinning forever.
+      .catch(() => emptyModel(activeLens))
       .then((model) => {
-        if (!cancelled) setModels((current) => ({ ...current, ...model }))
-      })
-      .catch(() => {
-        // Unreadable code draws an empty lens rather than spinning forever.
-        if (!cancelled) setModels((current) => ({ ...current, ...EMPTY_MODELS[activeLens.kind] }))
+        if (!cancelled) setModels((current) => ({ ...current, [kind]: model }))
       })
 
     return () => {

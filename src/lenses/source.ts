@@ -169,3 +169,31 @@ export function splitTopLevel(text: string, angles = false): string[] {
 
   return parts.map((part) => part.trim()).filter(Boolean)
 }
+
+/** Joins route pieces the way routers do: `/api` + `orders/:id` → `/api/orders/:id`. */
+export function joinRoute(...parts: string[]): string {
+  const joined = parts
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join('/')
+
+  return `/${joined}`.replace(/\/+/g, '/').replace(/(.)\/$/, '$1')
+}
+
+/** The first quoted string in a piece of code: `('orders')`, `({ path: "x" })` → the text. */
+export const firstString = (text: string | undefined) =>
+  /(['"`])((?:(?!\1)[^\\]|\\.)*)\1/.exec(text ?? '')?.[2]
+
+/** Decorators or annotations with their arguments, one bracket level deep: `@Get(':id')`. */
+export const ANNOTATION = String.raw`@[\w.]+(?:\s*\((?:[^()]|\([^()]*\))*\))?`
+
+/** The chain of decorators or annotations written right before `index`. */
+export function annotationsBefore(code: string, index: number): string {
+  const before = code.slice(Math.max(0, index - 2000), index)
+
+  return (
+    new RegExp(
+      String.raw`((?:${ANNOTATION}\s*)*)(?:(?:export|default|public|private|protected|static|final|abstract|async|open|sealed)\s+)*$`,
+    ).exec(before)?.[1] ?? ''
+  )
+}

@@ -108,6 +108,43 @@ function classify(
       return { role: 'layout', route: fileRoute(routeParts) }
   }
 
+  // SvelteKit: src/routes/…/+page.svelte, +layout, +server, +error.
+  const kitRoutes = framework === 'sveltekit' ? routingRoot(segments, 'routes') : -1
+
+  if (kitRoutes !== -1 && stem.startsWith('+')) {
+    const routeParts = original.slice(kitRoutes + 1, -1)
+
+    if (stem === '+page' && extension === 'svelte')
+      return { role: 'page', route: fileRoute(routeParts) }
+    if (extension !== 'svelte') return { role: 'server', route: fileRoute(routeParts) }
+
+    return { role: 'layout', route: fileRoute(routeParts) }
+  }
+
+  // Astro: src/pages/…, where .ts and .js files are endpoints.
+  const astroPages = framework === 'astro' ? routingRoot(segments, 'pages') : -1
+
+  if (astroPages !== -1) {
+    const routeParts = [...original.slice(astroPages + 1, -1), stem]
+
+    return ['ts', 'js'].includes(extension)
+      ? { role: 'server', route: fileRoute(routeParts) }
+      : { role: 'page', route: fileRoute(routeParts) }
+  }
+
+  // Angular names say what a file is: orders.component.ts, auth.guard.ts…
+  if (framework === 'angular') {
+    const kind = ANGULAR_KIND.exec(stem)?.[1]
+
+    if (kind === 'component' || kind === 'directive' || kind === 'pipe')
+      return { role: 'component' }
+    if (kind === 'service' || kind === 'guard' || kind === 'interceptor' || kind === 'resolver')
+      return { role: 'service' }
+    if (kind === 'store' || kind === 'effects' || kind === 'reducer') return { role: 'store' }
+    if (kind === 'module' || kind === 'routes' || kind === 'config' || stem === 'main')
+      return { role: 'entry' }
+  }
+
   // File-based routing: Next's pages/ and Nuxt's pages/.
   const pages = framework === 'next' || framework === 'nuxt' ? routingRoot(segments, 'pages') : -1
 
@@ -128,7 +165,7 @@ function classify(
 
   if (
     has('pages', 'views', 'screens', 'routes') &&
-    ['tsx', 'jsx', 'vue', 'js', 'ts'].includes(extension)
+    ['tsx', 'jsx', 'vue', 'svelte', 'astro', 'js', 'ts'].includes(extension)
   )
     return /^use[A-Z]/.test(stem) ? { role: 'hook' } : { role: 'page' }
   if (has('layouts') || /Layout$/.test(stem)) return { role: 'layout' }
@@ -140,7 +177,8 @@ function classify(
     return { role: 'service' }
   if (/^(App|main|index|router|routes)$/i.test(stem) && segments.length <= 1)
     return { role: 'entry' }
-  if (/^[A-Z]/.test(stem) && ['tsx', 'jsx', 'vue'].includes(extension)) return { role: 'component' }
+  if (/^[A-Z]/.test(stem) && ['tsx', 'jsx', 'vue', 'svelte', 'astro'].includes(extension))
+    return { role: 'component' }
 
   return { role: 'service' }
 }
@@ -155,6 +193,8 @@ const RESOLVE_SUFFIXES = [
   '.jsx',
   '.js',
   '.vue',
+  '.svelte',
+  '.astro',
   '.mjs',
   '/index.tsx',
   '/index.ts',
@@ -245,7 +285,11 @@ function declaredRoutes(source: SourceFile, known: Set<string>): Map<string, str
   for (const match of text.matchAll(/\bpath\s*:\s*['"`]([^'"`]*)['"`]/g)) {
     // The component is declared next to the path, inside the same route object.
     const around = text.slice(match.index, match.index + 300).split(/\bpath\s*:/)[1] ?? ''
-    const lazyImport = /\bcomponent\s*:\s*\(\)\s*=>\s*import\(\s*['"]([^'"]+)['"]/.exec(around)?.[1]
+    // Vue's component: () => import(…) and Angular's loadComponent: () => import(…).
+    const lazyImport =
+      /\b(?:component|loadComponent)\s*:\s*\(\)\s*=>\s*import\(\s*['"]([^'"]+)['"]/.exec(
+        around,
+      )?.[1]
     const component = /\b(?:component|element|Component)\s*:\s*<?\s*([A-Z]\w*)/.exec(around)?.[1]
     const target = lazyImport
       ? resolveImport(source.path, lazyImport, known)
@@ -257,6 +301,19 @@ function declaredRoutes(source: SourceFile, known: Set<string>): Map<string, str
   }
 
   return routes
+}
+
+const ANGULAR_KIND =
+  /\.(component|service|guard|interceptor|resolver|pipe|directive|module|routes|config|store|effects|reducer)$/
+
+/** What a file is called on the lens: route files take their folder's name, Angular drops its suffix. */
+function elementName(path: string): string {
+  const stem = stemOf(path)
+
+  if (stem === 'index' || stem === 'page' || stem.startsWith('+'))
+    return baseName(dirName(path)) || stem
+
+  return stem.replace(ANGULAR_KIND, '')
 }
 
 /** Everything the web lens draws: each file with its role, route and imports. */
@@ -299,10 +356,7 @@ export function buildWebModel(
 
     return {
       path,
-      name:
-        stemOf(path) === 'index' || stemOf(path) === 'page'
-          ? baseName(dirName(path)) || stemOf(path)
-          : stemOf(path),
+      name: elementName(path),
       // A file a router points at is a page, whatever folder it lives in.
       role: routed && role !== 'layout' ? 'page' : role,
       route: route ?? routed,

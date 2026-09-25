@@ -94,6 +94,31 @@ test('"only with notes" keeps what notes point at, on the map, the lenses and th
   ])
 })
 
+test('a Supabase project gets a PostgreSQL lens with row level security and policies', async ({
+  page,
+}) => {
+  await openProject(page, workspaceWith([]))
+  await page.evaluate(writeProjectFiles, {
+    'supabase/migrations/001_init.sql': `create table public.profiles (id uuid primary key, name text);
+create table public.bookings (id bigint primary key, profile_id uuid references public.profiles (id));
+alter table public.profiles enable row level security;
+create policy "Own profile" on public.profiles for select using (auth.uid() = id);`,
+  })
+  await page.keyboard.press('m')
+  await page
+    .getByRole('group', { name: 'Vistas del proyecto' })
+    .getByRole('button', { name: /BBDD\s*PostgreSQL/ })
+    .click()
+
+  const profiles = page.locator('.lens-table', { hasText: 'profiles' })
+
+  await expect(profiles.getByTitle(/Seguridad a nivel de fila/)).toBeVisible()
+  await expect(page.locator('.lens-er__line')).toHaveCount(1)
+  await expect(page.locator('.lens-tile', { hasText: 'Own profile' })).toContainText(
+    'sobre profiles · SELECT',
+  )
+})
+
 test('only the lenses a project fits are offered', async ({ page }) => {
   await openProject(page, workspaceWith([]))
   await page.evaluate(writeProjectFiles, { 'db/schema.sql': 'CREATE TABLE t (id NUMBER);' })

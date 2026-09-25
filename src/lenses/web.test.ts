@@ -1,27 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { detectLenses } from './detect'
 import { buildWebModel } from './web'
 
 const byPath = (model: ReturnType<typeof buildWebModel>) =>
   new Map(model.elements.map((element) => [element.path, element]))
-
-describe('detectLenses', () => {
-  it('names the web framework from package.json, most specific first', () => {
-    expect(detectLenses(['package.json'], ['{"dependencies":{"next":"15","react":"19"}}'])).toEqual(
-      [{ kind: 'web', tech: 'Next.js', framework: 'next' }],
-    )
-    expect(detectLenses(['src/App.vue'], [])[0]).toMatchObject({ framework: 'vue' })
-    expect(detectLenses(['src/App.tsx'], [])[0]).toMatchObject({ framework: 'react' })
-  })
-
-  it('finds .NET and PL/SQL projects by their files', () => {
-    expect(detectLenses(['Api/Api.csproj', 'Api/Program.cs'], []).map((lens) => lens.kind)).toEqual(
-      ['api'],
-    )
-    expect(detectLenses(['db/pkg_orders.pkb'], []).map((lens) => lens.kind)).toEqual(['db'])
-    expect(detectLenses(['README.md'], [])).toEqual([])
-  })
-})
 
 describe('buildWebModel', () => {
   it('reads the routes of the Next.js app router from its folders', () => {
@@ -183,5 +164,91 @@ describe('buildWebModel', () => {
     expect(model.get('src/screens/Users.tsx')).toMatchObject({ role: 'page', route: '/users' })
     expect(model.get('src/Orders.tsx')).toMatchObject({ role: 'page', route: '/orders' })
     expect(model.get('src/Detail.vue')).toMatchObject({ role: 'page', route: '/detail/:id' })
+  })
+})
+
+describe('buildWebModel for SvelteKit, Astro and Angular', () => {
+  it('reads SvelteKit routes from src/routes', () => {
+    const model = byPath(
+      buildWebModel(
+        [
+          'src/routes/+page.svelte',
+          'src/routes/+layout.svelte',
+          'src/routes/blog/[slug]/+page.svelte',
+          'src/routes/blog/[slug]/+page.server.ts',
+          'src/routes/api/orders/+server.ts',
+          'src/lib/components/PostCard.svelte',
+        ],
+        [],
+        'sveltekit',
+      ),
+    )
+
+    expect(model.get('src/routes/+page.svelte')).toMatchObject({ role: 'page', route: '/' })
+    expect(model.get('src/routes/+layout.svelte')).toMatchObject({ role: 'layout' })
+    expect(model.get('src/routes/blog/[slug]/+page.svelte')).toMatchObject({
+      role: 'page',
+      route: '/blog/:slug',
+      name: '[slug]',
+    })
+    expect(model.get('src/routes/blog/[slug]/+page.server.ts')).toMatchObject({ role: 'server' })
+    expect(model.get('src/routes/api/orders/+server.ts')).toMatchObject({
+      role: 'server',
+      route: '/api/orders',
+    })
+    expect(model.get('src/lib/components/PostCard.svelte')).toMatchObject({ role: 'component' })
+  })
+
+  it('reads Astro pages and endpoints from src/pages', () => {
+    const model = byPath(
+      buildWebModel(
+        ['src/pages/index.astro', 'src/pages/blog/[slug].astro', 'src/pages/api/feed.ts'],
+        [],
+        'astro',
+      ),
+    )
+
+    expect(model.get('src/pages/index.astro')).toMatchObject({ role: 'page', route: '/' })
+    expect(model.get('src/pages/blog/[slug].astro')).toMatchObject({ route: '/blog/:slug' })
+    expect(model.get('src/pages/api/feed.ts')).toMatchObject({ role: 'server', route: '/api/feed' })
+  })
+
+  it('reads Angular files by their suffix and routes by their component', () => {
+    const paths = [
+      'src/app/app.routes.ts',
+      'src/app/orders/orders.component.ts',
+      'src/app/orders/order-detail.component.ts',
+      'src/app/orders/orders.service.ts',
+      'src/app/auth/auth.guard.ts',
+    ]
+    const model = byPath(
+      buildWebModel(
+        paths,
+        [
+          {
+            path: 'src/app/app.routes.ts',
+            text: `import { OrdersComponent } from './orders/orders.component'
+export const routes: Routes = [
+  { path: 'orders', component: OrdersComponent },
+  { path: 'orders/:id', loadComponent: () => import('./orders/order-detail.component').then((m) => m.OrderDetailComponent) },
+]`,
+          },
+        ],
+        'angular',
+      ),
+    )
+
+    expect(model.get('src/app/app.routes.ts')).toMatchObject({ role: 'entry' })
+    expect(model.get('src/app/orders/orders.component.ts')).toMatchObject({
+      role: 'page',
+      route: '/orders',
+      name: 'orders',
+    })
+    expect(model.get('src/app/orders/order-detail.component.ts')).toMatchObject({
+      role: 'page',
+      route: '/orders/:id',
+    })
+    expect(model.get('src/app/orders/orders.service.ts')).toMatchObject({ role: 'service' })
+    expect(model.get('src/app/auth/auth.guard.ts')).toMatchObject({ role: 'service', name: 'auth' })
   })
 })

@@ -49,6 +49,8 @@ export const es = {
   lensFunctions: 'Funciones',
   lensSequences: 'Secuencias',
   lensTypes: 'Tipos',
+  lensPolicies: 'Políticas',
+  rowLevelSecurity: 'Seguridad a nivel de fila: cada lectura y escritura pasa por sus políticas',
   packageSpec: 'Especificación',
   packageBody: 'Cuerpo',
   packageMissing: 'No encontrado',

@@ -50,6 +50,9 @@ export const fr: Locale = {
   lensFunctions: 'Fonctions',
   lensSequences: 'Séquences',
   lensTypes: 'Types',
+  lensPolicies: 'Politiques',
+  rowLevelSecurity:
+    'Sécurité au niveau des lignes : chaque lecture et écriture passe par ses politiques',
   packageSpec: 'Spécification',
   packageBody: 'Corps',
   packageMissing: 'Introuvable',

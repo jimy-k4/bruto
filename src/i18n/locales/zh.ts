@@ -48,6 +48,8 @@ export const zh: Locale = {
   lensFunctions: '函数',
   lensSequences: '序列',
   lensTypes: '类型',
+  lensPolicies: '策略',
+  rowLevelSecurity: '行级安全：每次读写都要经过它的策略',
   packageSpec: '规范',
   packageBody: '包体',
   packageMissing: '未找到',

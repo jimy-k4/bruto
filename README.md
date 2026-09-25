@@ -44,14 +44,16 @@ Prefer to run it yourself? See [Development](#development).
   have or lack: files, an AI response, images, a web link.
 - **Lenses.** When Bruto recognises the project, the structure view offers it drawn by what its files
   are, still with the notes on each element:
-  - **Web** (React, Vue, Next.js, Nuxt): pages as browser windows with their route and the components on
-    them, a wall of components sized by use, then layouts, server routes, hooks, state and services.
-  - **API** (.NET): controllers and minimal APIs as resources listing their endpoints, verb, route and
-    authorization, with the services they depend on; then services, repositories, data, models and
-    middleware.
-  - **Database** (Oracle PL/SQL): tables with their columns and keys as an entity-relationship diagram,
-    packages split into specification and body, then views, triggers, procedures, functions and
-    sequences.
+  - **Web** (React, Vue, Svelte, Next.js, Nuxt, SvelteKit, Astro, Angular): pages as browser windows
+    with their route and the components on them, a wall of components sized by use, then layouts,
+    server routes, hooks, state and services.
+  - **API** (.NET, NestJS, Express, Fastify, FastAPI, Flask, Spring): controllers and routers as
+    resources listing their endpoints, verb, route and authorization, with the services they depend
+    on; then services, repositories, data, models and middleware.
+  - **Database** (Oracle PL/SQL, PostgreSQL and Supabase, plain SQL, Prisma): tables with their
+    columns and keys as an entity-relationship diagram, following migrations in order; packages split
+    into specification and body, row level security and its policies, then views, triggers,
+    procedures, functions and sequences.
 - **AI context.** Copy the selection, the selection plus everything it points to, or the whole
   project, as clean Markdown with short instructions for the model. A preview shows exactly what gets
   copied and roughly how many tokens it is.
@@ -188,7 +190,7 @@ src/
   state/      in-memory workspace with undo, and the engine that keeps it in sync with disk
   board/      the canvas: notes, connections, pan, zoom, selection, search
   structure/  the structure view and its file map
-  lenses/     reading web, .NET and PL/SQL code, and drawing each kind of project
+  lenses/     reading web, API and database code of many stacks, and drawing each kind
   workspace/  the project screen: actions, shortcuts, UI state
   panels/     editors and dialogs
   layout/     top bar, sidebar, status bar, landing

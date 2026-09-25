@@ -50,6 +50,8 @@ export const en: Locale = {
   lensFunctions: 'Functions',
   lensSequences: 'Sequences',
   lensTypes: 'Types',
+  lensPolicies: 'Policies',
+  rowLevelSecurity: 'Row level security: every read and write goes through its policies',
   packageSpec: 'Specification',
   packageBody: 'Body',
   packageMissing: 'Not found',

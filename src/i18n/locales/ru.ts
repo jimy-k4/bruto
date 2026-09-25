@@ -51,6 +51,8 @@ export const ru: Locale = {
   lensFunctions: 'Функции',
   lensSequences: 'Последовательности',
   lensTypes: 'Типы',
+  lensPolicies: 'Политики',
+  rowLevelSecurity: 'Защита на уровне строк: каждое чтение и запись проходят через её политики',
   packageSpec: 'Спецификация',
   packageBody: 'Тело',
   packageMissing: 'Не найдено',

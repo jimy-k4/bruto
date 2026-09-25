@@ -1,4 +1,4 @@
-import type { Relation, Table } from './plsql'
+import type { Relation, Table } from './sql'
 
 export const CARD_WIDTH = 236
 export const CARD_HEADER = 38

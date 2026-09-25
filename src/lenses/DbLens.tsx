@@ -4,7 +4,7 @@ import { CARD_HEADER, CARD_ROW, CARD_ROWS, layoutEr, type PlacedTable } from './
 import { LensIcon, type LensIconName } from './LensIcon'
 import { LensSection, LensTile, Marks } from './LensParts'
 import { elementClasses, type LensContext } from './lensContext'
-import type { DbModel, Program, ProgramKind, Relation } from './plsql'
+import type { DbModel, Program, ProgramKind, Relation } from './sql'
 
 const PROGRAM_GROUPS: {
   kind: Exclude<ProgramKind, 'package'>
@@ -17,7 +17,12 @@ const PROGRAM_GROUPS: {
   { kind: 'function', icon: 'function', title: 'lensFunctions' },
   { kind: 'sequence', icon: 'sequence', title: 'lensSequences' },
   { kind: 'type', icon: 'type', title: 'lensTypes' },
+  { kind: 'policy', icon: 'policy', title: 'lensPolicies' },
 ]
+
+/** Policies share names across tables ("Users read their own rows"): they are told apart by table. */
+const programKey = (program: Program) =>
+  program.kind === 'policy' ? `${program.name}@${program.on ?? ''}` : program.name
 
 /** Members listed per package half before "+N". */
 const MAX_MEMBERS = 8
@@ -152,6 +157,11 @@ ${table.path}`}
                   <span className="lens-table__head" style={{ height: CARD_HEADER }}>
                     <LensIcon name="table" />
                     <span className="lens-table__name">{table.name}</span>
+                    {table.rls && (
+                      <abbr className="lens-table__rls" title={t('rowLevelSecurity')}>
+                        <LensIcon name="lock" />
+                      </abbr>
+                    )}
                     <Marks notes={notes} />
                   </span>
                   {table.columns.slice(0, CARD_ROWS).map((column) => (
@@ -202,14 +212,16 @@ ${table.path}`}
             <div className="lens-tiles">
               {programs.map((program) => (
                 <LensTile
-                  key={program.name}
+                  key={programKey(program)}
                   context={context}
-                  focusKey={`db:${program.kind}:${program.name}`}
+                  focusKey={`db:${program.kind}:${programKey(program)}`}
                   icon={group.icon}
                   name={program.name}
                   meta={
                     program.on
-                      ? t('onTable', { table: program.on })
+                      ? [t('onTable', { table: program.on }), program.command?.toUpperCase()]
+                          .filter(Boolean)
+                          .join(' · ')
                       : program.tables.length > 0
                         ? program.tables.join(', ')
                         : undefined

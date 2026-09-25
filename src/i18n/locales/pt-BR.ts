@@ -50,6 +50,9 @@ export const ptBR: Locale = {
   lensFunctions: 'Funções',
   lensSequences: 'Sequências',
   lensTypes: 'Tipos',
+  lensPolicies: 'Políticas',
+  rowLevelSecurity:
+    'Segurança em nível de linha: cada leitura e escrita passa pelas suas políticas',
   packageSpec: 'Especificação',
   packageBody: 'Corpo',
   packageMissing: 'Não encontrado',

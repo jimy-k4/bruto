@@ -48,6 +48,8 @@ export const ja: Locale = {
   lensFunctions: 'ファンクション',
   lensSequences: 'シーケンス',
   lensTypes: '型',
+  lensPolicies: 'ポリシー',
+  rowLevelSecurity: '行レベルセキュリティ：すべての読み書きがポリシーを通ります',
   packageSpec: '仕様部',
   packageBody: '本体',
   packageMissing: '見つかりません',

@@ -1,5 +1,5 @@
 import type { ApiModel } from './dotnet'
-import type { DbModel } from './plsql'
+import type { DbModel } from './sql'
 import type { WebModel } from './web'
 
 /** Whether some note points at any of these files. */

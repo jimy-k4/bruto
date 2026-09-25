@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { layoutEr } from './erLayout'
-import type { Relation, Table } from './plsql'
+import type { Relation, Table } from './sql'
 
 const table = (name: string, columns = 3): Table => ({
   name,

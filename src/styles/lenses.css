@@ -523,6 +523,16 @@
   white-space: nowrap;
 }
 
+.lens-table__rls {
+  display: inline-flex;
+  flex: none;
+}
+
+.lens-table__rls .lens-icon {
+  width: 13px;
+  height: 13px;
+}
+
 .lens-column {
   display: grid;
   flex: none;

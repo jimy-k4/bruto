@@ -50,6 +50,9 @@ export const ca: Locale = {
   lensFunctions: 'Funcions',
   lensSequences: 'Seqüències',
   lensTypes: 'Tipus',
+  lensPolicies: 'Polítiques',
+  rowLevelSecurity:
+    'Seguretat a nivell de fila: cada lectura i escriptura passa per les seves polítiques',
   packageSpec: 'Especificació',
   packageBody: 'Cos',
   packageMissing: 'No trobat',
