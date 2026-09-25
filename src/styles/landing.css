@@ -3,11 +3,16 @@
   overflow-y: auto;
 }
 
+/* A column of sections, each as tall as its content: none is squeezed to fit the window. */
 .landing {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 72px;
   padding: 64px clamp(24px, 6vw, 96px) 96px;
+}
+
+.landing > * {
+  flex: none;
 }
 
 .landing__hero {
@@ -15,7 +20,7 @@
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   align-items: center;
   gap: var(--space-6);
-  min-height: 52vh;
+  min-height: min(52vh, 560px);
 }
 
 .landing__intro {
@@ -36,37 +41,154 @@
   line-height: 1.5;
 }
 
-/* Heavy concrete slabs, cantilevered like brutalist volumes. */
-.landing__slabs {
-  position: relative;
-  height: 420px;
+.landing__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
 }
 
-.slab {
-  position: absolute;
+.landing__hint {
+  margin-top: calc(var(--space-2) * -1);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* The app itself, framed like a slab hung on the wall. */
+.landing__shot {
+  margin: 0;
   border: var(--border-heavy) solid var(--line);
+  background: var(--surface);
   box-shadow: 14px 14px 0 var(--line);
 }
 
-.slab--tall {
-  top: 0;
-  right: 18%;
-  width: 46%;
-  height: 86%;
+.landing__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1440 / 900;
 }
 
-.slab--wide {
-  right: 0;
-  bottom: 12%;
-  width: 72%;
-  height: 34%;
+/* Text beside a screenshot; every other one the other way round. */
+.landing__feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 80px);
 }
 
-.slab--small {
-  bottom: 0;
-  left: 22%;
-  width: 22%;
-  height: 22%;
+.landing__feature--flip {
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+
+.landing__feature--flip .landing__feature-text {
+  order: 2;
+}
+
+.landing__feature-text {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.landing__feature-text p,
+.landing__cta p {
+  max-width: 56ch;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.landing__feature-title {
+  font: 400 clamp(32px, 4vw, 52px) / 0.95 var(--font-display);
+  text-transform: uppercase;
+}
+
+.landing__stacks {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  border-top: var(--border-heavy) solid var(--line);
+}
+
+.landing__stacks div {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border) solid var(--line-soft);
+}
+
+.landing__stacks dt {
+  font: 600 var(--text-xs) / 1.6 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--signal);
+}
+
+.landing__stacks dd {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+/* Six cards: three by two on a wide screen, never four and two. */
+.landing__features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: var(--space-4);
+}
+
+.landing__card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: var(--border-heavy) solid var(--line);
+  border-top-width: 10px;
+  background: var(--surface);
+}
+
+.landing__card h3 {
+  font: 400 20px / 1.1 var(--font-display);
+  text-transform: uppercase;
+}
+
+.landing__card p {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.landing__code {
+  display: grid;
+  margin: 0;
+  border: var(--border-heavy) solid var(--line);
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+  box-shadow: 14px 14px 0 var(--signal);
+  font: 500 var(--text-sm) / 1.6 var(--font-mono);
+  white-space: pre-wrap;
+}
+
+.landing__code-file {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: var(--border) solid currentColor;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.landing__code code {
+  padding: var(--space-5) var(--space-4);
+}
+
+.landing__cta {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+  padding: clamp(32px, 5vw, 64px);
+  border: var(--border-heavy) solid var(--line);
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(var(--board-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--board-line) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .landing__section {
@@ -191,14 +313,17 @@
 }
 
 @media (max-width: 900px) {
+  /* One column. Flex, not grid: a grid row would not count the full-width screenshot's height. */
   .landing__hero,
+  .landing__feature {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .ai-dialog__layout,
   .files-dialog__columns {
     grid-template-columns: 1fr;
-  }
-
-  .landing__slabs {
-    display: none;
   }
 
   .steps__item {

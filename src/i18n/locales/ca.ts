@@ -168,6 +168,49 @@ export const ca: Locale = {
   landingStep3Title: 'Passa-les a la IA',
   landingStep3Text:
     'Copia el context amb Q, W o E. Si la IA pot editar fitxers, respon a la mateixa nota i la marca per revisar.',
+  tryDemo: 'Provar amb un exemple',
+  tryDemoHint: 'L’exemple s’obre a l’instant i només es desa en aquest navegador.',
+  demoFailed: 'No s’ha pogut crear el projecte d’exemple.',
+  landingStep4Title: 'Revisa i corregeix',
+  landingStep4Text:
+    'El que respon la IA queda a la nota. Si alguna cosa falla, escriu què i passa-la a «A corregir»: torna amb tot el seu context.',
+  landingShotBoard:
+    'El tauler de Bruto amb notes en diversos estats, fletxes entre elles i l’editor d’una nota obert',
+  landingShotContext:
+    'La finestra de context IA amb el context global i la vista prèvia del que es copia',
+  landingShotLenses:
+    'La vista web: les pantalles com a finestres de navegador amb els seus components, i les notes de la triada',
+  landingContextTitle: 'El context just, amb una tecla',
+  landingContextText:
+    'Copia la selecció, la selecció amb tot el que connecta o el projecte sencer, com a Markdown net amb instruccions per al model. Una vista prèvia ensenya exactament què es copia i quants tokens ocupa, i un context global porta el teu stack i les teves decisions a cada còpia.',
+  landingLensesTitle: 'El teu projecte, dibuixat',
+  landingLensesText:
+    'La vista d’estructura ensenya on és la feina: les carpetes com a blocs, marcats amb les notes que hi apunten. Si Bruto reconeix el projecte, el dibuixa pel que és: pantalles amb els seus components, recursos de l’API amb els seus endpoints, taules amb les seves claus i polítiques.',
+  landingFeaturesTitle: 'I a més',
+  featureBoardTitle: 'Un tauler de debò',
+  featureBoardText:
+    'Notes amb estat, fitxers, enllaç i captures. Arrossega-les, connecta-les amb fletxes i edita’n moltes alhora.',
+  featureSearchTitle: 'Troba qualsevol cosa',
+  featureSearchText:
+    'Ctrl+F cerca per text, ruta o id, i filtra per estat i pel que té cada nota: fitxers, resposta de la IA, imatges o enllaç.',
+  featureSafeTitle: 'Conviu amb altres eines',
+  featureSafeText:
+    'Cada desament llegeix abans el fitxer i fusiona, nota a nota, el que ha canviat fora. Un fitxer trencat mai no se sobreescriu i sempre hi ha còpia.',
+  featureKeyboardTitle: 'Teclat primer',
+  featureKeyboardText:
+    'Cada acció té drecera, les notes es recorren amb Tab i tot té nom per als lectors de pantalla.',
+  featureEverywhereTitle: 'Nou idiomes, dos temes',
+  featureEverywhereText:
+    'Instal·la-la com a app, funciona sense connexió i t’avisa quan hi ha una versió nova.',
+  featureLocalTitle: 'Només local',
+  featureLocalText:
+    'Sense servidor, sense comptes, sense analítiques. Les teves notes no surten de les teves carpetes.',
+  landingAnyAiTitle: 'Amb qualsevol IA',
+  landingAnyAiText:
+    'Enganxa la còpia a Claude, ChatGPT, Gemini o DeepSeek, o deixa que un agent amb accés als teus fitxers treballi directament al tauler: n’hi ha prou amb una línia a AGENTS.md o CLAUDE.md.',
+  landingCtaTitle: 'Prova-ho amb el teu projecte',
+  landingCtaText:
+    'Gratuït i de codi obert. Per obrir les teves carpetes necessites Chrome, Edge, Brave o Opera en un ordinador.',
   localFirst: 'Local',
   noCloud: 'Sense núvol, sense comptes',
   sourceCode: 'Codi font',

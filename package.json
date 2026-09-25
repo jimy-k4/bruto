@@ -18,7 +18,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "check": "prettier --check . && eslint . && tsc -b && vitest run"
+    "check": "prettier --check . && eslint . && tsc -b && vitest run",
+    "shots": "playwright test --config playwright.shots.config.ts"
   },
   "dependencies": {
     "@fontsource/archivo-black": "^5.3.0",

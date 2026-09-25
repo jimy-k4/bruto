@@ -160,6 +160,41 @@ export const zh: Locale = {
   landingStep3Title: '交给 AI',
   landingStep3Text:
     '用 Q、W 或 E 复制上下文。如果 AI 能编辑文件,它会直接在笔记中回复,并标记为待审核。',
+  tryDemo: '用示例试试',
+  tryDemoHint: '示例立即打开，只保存在这个浏览器里。',
+  demoFailed: '无法创建示例项目。',
+  landingStep4Title: '审核并退回',
+  landingStep4Text:
+    'AI 的回答留在笔记里。如果还有问题，写下是什么并标为“需修改”：它会带着全部上下文退回。',
+  landingShotBoard: 'Bruto 看板：不同状态的笔记、它们之间的箭头，以及打开的笔记编辑器',
+  landingShotContext: 'AI 上下文窗口，包含全局上下文和复制内容的预览',
+  landingShotLenses: 'Web 视图：页面画成浏览器窗口，带着各自的组件，以及所选页面的笔记',
+  landingContextTitle: '恰到好处的上下文，一键即得',
+  landingContextText:
+    '复制所选笔记、所选笔记及其指向的全部内容，或整个项目，生成带模型指令的干净 Markdown。预览准确显示复制了什么、占多少 token，全局上下文则在每次复制中带上你的技术栈和决策。',
+  landingLensesTitle: '把你的项目画出来',
+  landingLensesText:
+    '结构视图显示工作在哪里：文件夹画成方块，并标出指向它们的笔记。当 Bruto 识别出项目时，会按它的本来面目来画：带组件的页面、带端点的 API 资源、带键和策略的数据表。',
+  landingFeaturesTitle: '还有',
+  featureBoardTitle: '真正的看板',
+  featureBoardText: '笔记带状态、文件、链接和截图。拖动它们，用箭头连接，一次编辑多条。',
+  featureSearchTitle: '什么都找得到',
+  featureSearchText:
+    'Ctrl+F 按文本、路径或 id 搜索，并按状态和笔记内容筛选：文件、AI 回复、图片或链接。',
+  featureSafeTitle: '与其他工具和平共处',
+  featureSafeText:
+    '每次保存都会先读取文件，并逐条笔记合并外部的改动。损坏的文件绝不会被覆盖，也总有备份。',
+  featureKeyboardTitle: '键盘优先',
+  featureKeyboardText: '每个操作都有快捷键，笔记可用 Tab 访问，所有内容都有供读屏软件使用的名称。',
+  featureEverywhereTitle: '九种语言，两种主题',
+  featureEverywhereText: '可作为应用安装，离线可用，有新版本时会提醒你。',
+  featureLocalTitle: '仅限本地',
+  featureLocalText: '没有服务器，没有账户，没有统计。你的笔记从不离开你的文件夹。',
+  landingAnyAiTitle: '适用于任何 AI',
+  landingAnyAiText:
+    '把复制的内容粘贴到 Claude、ChatGPT、Gemini 或 DeepSeek，或者让能访问你文件的智能体直接在看板上工作：在 AGENTS.md 或 CLAUDE.md 里加一行就够了。',
+  landingCtaTitle: '用你的项目试试',
+  landingCtaText: '免费且开源。要打开你的文件夹，需要在电脑上使用 Chrome、Edge、Brave 或 Opera。',
   localFirst: '本地',
   noCloud: '无需云端,无需账号',
   sourceCode: '源代码',

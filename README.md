@@ -30,6 +30,9 @@ Nothing to download. Open **[jimy-k4.github.io/bruto](https://jimy-k4.github.io/
 Brave or Opera and press **Install app** in the top bar (or the install icon in the address bar).
 Bruto then opens in its own window, from the Start menu or the Dock, and works offline.
 
+Just looking? **Try an example project** on the landing page: a small booking app with notes in every
+status and code for the structure view, kept only in your browser.
+
 Prefer to run it yourself? See [Development](#development).
 
 ## Features
@@ -180,6 +183,7 @@ npm install
 npm run dev        # http://localhost:5173
 npm run check      # format, lint, types and unit tests
 npm run test:e2e   # browser tests (uses the installed Chrome)
+npm run shots      # screenshots of the example project for the landing page and this README
 npm run build
 ```
 

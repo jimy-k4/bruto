@@ -166,6 +166,49 @@ export const es = {
   landingStep3Title: 'Pásaselas a la IA',
   landingStep3Text:
     'Copia el contexto con Q, W o E. Si la IA puede editar ficheros, contesta en la propia nota y la marca para revisión.',
+  tryDemo: 'Probar con un ejemplo',
+  tryDemoHint: 'El ejemplo se abre al momento y se guarda solo en este navegador.',
+  demoFailed: 'No se ha podido crear el proyecto de ejemplo.',
+  landingStep4Title: 'Revisa y corrige',
+  landingStep4Text:
+    'Lo que responde la IA queda en la nota. Si algo falla, escribe qué y pásala a «A corregir»: vuelve con todo su contexto.',
+  landingShotBoard:
+    'El tablero de Bruto con notas en varios estados, flechas entre ellas y el editor de una nota abierto',
+  landingShotContext:
+    'La ventana de contexto IA con el contexto global y la vista previa de lo que se copia',
+  landingShotLenses:
+    'La vista web: las pantallas como ventanas de navegador con sus componentes, y las notas de la elegida',
+  landingContextTitle: 'El contexto justo, con una tecla',
+  landingContextText:
+    'Copia la selección, la selección con todo lo que conecta o el proyecto entero, como Markdown limpio con instrucciones para el modelo. Una vista previa enseña exactamente qué se copia y cuántos tokens ocupa, y un contexto global lleva tu stack y tus decisiones en cada copia.',
+  landingLensesTitle: 'Tu proyecto, dibujado',
+  landingLensesText:
+    'La vista de estructura enseña dónde está el trabajo: las carpetas como bloques, marcados con las notas que apuntan a ellas. Si Bruto reconoce el proyecto, lo dibuja por lo que es: pantallas con sus componentes, recursos de la API con sus endpoints, tablas con sus claves y sus políticas.',
+  landingFeaturesTitle: 'Y además',
+  featureBoardTitle: 'Un tablero de verdad',
+  featureBoardText:
+    'Notas con estado, ficheros, enlace y capturas. Arrástralas, conéctalas con flechas y edita muchas a la vez.',
+  featureSearchTitle: 'Encuentra cualquier cosa',
+  featureSearchText:
+    'Ctrl+F busca por texto, ruta o id, y filtra por estado y por lo que tiene cada nota: ficheros, respuesta de la IA, imágenes o enlace.',
+  featureSafeTitle: 'Convive con otras herramientas',
+  featureSafeText:
+    'Cada guardado lee antes el fichero y fusiona, nota a nota, lo que cambió fuera. Un fichero roto nunca se sobrescribe y siempre hay copia.',
+  featureKeyboardTitle: 'Teclado primero',
+  featureKeyboardText:
+    'Cada acción tiene atajo, las notas se recorren con Tab y todo tiene nombre para los lectores de pantalla.',
+  featureEverywhereTitle: 'Nueve idiomas, dos temas',
+  featureEverywhereText:
+    'Instálala como app, funciona sin conexión y te avisa cuando hay una versión nueva.',
+  featureLocalTitle: 'Solo local',
+  featureLocalText:
+    'Sin servidor, sin cuentas, sin analíticas. Tus notas no salen de tus carpetas.',
+  landingAnyAiTitle: 'Con cualquier IA',
+  landingAnyAiText:
+    'Pega la copia en Claude, ChatGPT, Gemini o DeepSeek, o deja que un agente con acceso a tus ficheros trabaje directamente en el tablero: basta una línea en AGENTS.md o CLAUDE.md.',
+  landingCtaTitle: 'Pruébalo con tu proyecto',
+  landingCtaText:
+    'Gratis y de código abierto. Para abrir tus carpetas necesitas Chrome, Edge, Brave u Opera en un ordenador.',
   localFirst: 'Local',
   noCloud: 'Sin nube, sin cuentas',
   sourceCode: 'Código fuente',

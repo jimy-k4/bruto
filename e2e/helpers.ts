@@ -42,7 +42,8 @@ export async function openProject(page: Page, workspace?: unknown, rawText?: str
     { workspace, rawText },
   )
 
-  await page.getByRole('button', { name: /abrir carpeta de proyecto/i }).click()
+  // The landing page offers it at the top and again at the end.
+  await page.getByRole('button', { name: /abrir carpeta de proyecto/i }).first().click()
 
   // Ready when the workspace (or the recovery screen) is on screen.
   await expect(page.locator('.save-status, .recovery')).toBeVisible()

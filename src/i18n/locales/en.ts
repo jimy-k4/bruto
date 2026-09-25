@@ -166,6 +166,48 @@ export const en: Locale = {
   landingStep3Title: 'Hand them to the AI',
   landingStep3Text:
     'Copy the context with Q, W or E. If the AI can edit files, it answers inside the note and marks it for review.',
+  tryDemo: 'Try an example project',
+  tryDemoHint: 'The example opens right away and lives only in this browser.',
+  demoFailed: 'The example project couldn’t be created.',
+  landingStep4Title: 'Review and send back',
+  landingStep4Text:
+    'What the AI answers stays in the note. If something is still wrong, write what and mark it “Changes requested”: it goes back with all its context.',
+  landingShotBoard:
+    'The Bruto board with notes in several statuses, arrows between them and the editor of one note open',
+  landingShotContext:
+    'The AI context window with the global context and a preview of what gets copied',
+  landingShotLenses:
+    'The web lens: screens drawn as browser windows with their components, and the notes on the one picked',
+  landingContextTitle: 'The right context, one key away',
+  landingContextText:
+    'Copy the selection, the selection with everything it points to, or the whole project, as clean Markdown with instructions for the model. A preview shows exactly what gets copied and how many tokens it is, and a global context carries your stack and decisions in every copy.',
+  landingLensesTitle: 'Your project, drawn',
+  landingLensesText:
+    'The structure view shows where the work is: folders as blocks, marked with the notes that point at them. When Bruto recognises the project, it draws it for what it is: screens with their components, API resources with their endpoints, tables with their keys and policies.',
+  landingFeaturesTitle: 'And also',
+  featureBoardTitle: 'A real board',
+  featureBoardText:
+    'Notes with a status, files, a link and screenshots. Drag them, connect them with arrows and edit many at once.',
+  featureSearchTitle: 'Find anything',
+  featureSearchText:
+    'Ctrl+F searches by text, path or id, and filters by status and by what a note has: files, an AI response, images or a link.',
+  featureSafeTitle: 'Safe with other tools',
+  featureSafeText:
+    'Every save reads the file first and merges what changed elsewhere, note by note. A broken file is never overwritten and there is always a backup.',
+  featureKeyboardTitle: 'Keyboard first',
+  featureKeyboardText:
+    'Every action has a shortcut, notes are reachable with Tab and everything has a name for screen readers.',
+  featureEverywhereTitle: 'Nine languages, two themes',
+  featureEverywhereText:
+    'Install it as an app, it works offline and tells you when a new version is out.',
+  featureLocalTitle: 'Local only',
+  featureLocalText: 'No server, no accounts, no analytics. Your notes never leave your folders.',
+  landingAnyAiTitle: 'With any AI',
+  landingAnyAiText:
+    'Paste the copy into Claude, ChatGPT, Gemini or DeepSeek, or let an agent with access to your files work on the board directly: one line in AGENTS.md or CLAUDE.md is enough.',
+  landingCtaTitle: 'Try it on your project',
+  landingCtaText:
+    'Free and open source. Opening your folders needs Chrome, Edge, Brave or Opera on a computer.',
   localFirst: 'Local',
   noCloud: 'No cloud, no accounts',
   sourceCode: 'Source code',

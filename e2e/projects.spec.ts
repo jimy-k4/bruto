@@ -74,3 +74,19 @@ test('the AI context window previews exactly what gets copied', async ({ page })
   await page.keyboard.press('Escape')
   await expect(dialog).toHaveCount(0)
 })
+
+test('the example project opens from the landing page, in the reader’s language', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Probar con un ejemplo' }).first().click()
+
+  await expect(page.locator('.project-switcher__trigger')).toContainText('ATLAS')
+  await expect(page.locator('.note')).toHaveCount(6)
+  await expect(noteCard(page, 'Cancelar una reserva')).toContainText('Por revisar')
+
+  // Its code gives the structure view something to draw: a Next.js front and Supabase.
+  await page.keyboard.press('m')
+  await expect(page.getByRole('group', { name: 'Vistas del proyecto' })).toContainText('Next.js')
+  await expect(page.getByRole('group', { name: 'Vistas del proyecto' })).toContainText('PostgreSQL')
+})

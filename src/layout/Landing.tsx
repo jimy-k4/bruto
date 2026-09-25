@@ -1,5 +1,5 @@
 import type { AppTheme } from '../types'
-import { useI18n } from '../i18n'
+import { useI18n, type TranslationKey } from '../i18n'
 import type { RecentProject } from '../storage/recentProjects'
 import { REPOSITORY_URL, SUPPORT_URL } from '../config'
 import { formatDate } from '../ui/format'
@@ -10,31 +10,90 @@ interface LandingProps {
   onToggleTheme: () => void
   onOpenHelp: () => void
   supported: boolean
+  /** The example project can be tried in this browser. */
+  demoSupported: boolean
   loading: boolean
   recents: RecentProject[]
   onOpenFolder: () => void
+  onTryDemo: () => void
   onOpenRecent: (project: RecentProject) => void
   onForgetRecent: (project: RecentProject) => void
 }
 
+const STEPS: [TranslationKey, TranslationKey][] = [
+  ['landingStep1Title', 'landingStep1Text'],
+  ['landingStep2Title', 'landingStep2Text'],
+  ['landingStep3Title', 'landingStep3Text'],
+  ['landingStep4Title', 'landingStep4Text'],
+]
+
+const FEATURES: [TranslationKey, TranslationKey][] = [
+  ['featureBoardTitle', 'featureBoardText'],
+  ['featureSearchTitle', 'featureSearchText'],
+  ['featureSafeTitle', 'featureSafeText'],
+  ['featureKeyboardTitle', 'featureKeyboardText'],
+  ['featureEverywhereTitle', 'featureEverywhereText'],
+  ['featureLocalTitle', 'featureLocalText'],
+]
+
+/** What the lenses can read. Product names, the same in every language. */
+const STACKS: [TranslationKey, string][] = [
+  ['lensWeb', 'React · Vue · Svelte · Next.js · Nuxt · SvelteKit · Astro · Angular'],
+  ['lensApi', '.NET · NestJS · Express · Fastify · FastAPI · Flask · Spring'],
+  ['lensDb', 'Oracle PL/SQL · PostgreSQL · Supabase · SQL · Prisma'],
+]
+
+const AGENTS_LINE =
+  'Tasks for this project are in `.bruto/workspace.json`. Work on notes whose status is "todo".'
+
+/** Screenshots of the example project, taken in every language (`npm run shots`). */
+const shot = (language: string, name: string) =>
+  `${import.meta.env.BASE_URL}landing/${language}/${name}.jpg`
+
+/**
+ * The front door: open a project, pick up a recent one, or try the example.
+ * Below, what Bruto does, shown with the app itself.
+ */
 export function Landing({
   theme,
   onToggleTheme,
   onOpenHelp,
   supported,
+  demoSupported,
   loading,
   recents,
   onOpenFolder,
+  onTryDemo,
   onOpenRecent,
   onForgetRecent,
 }: LandingProps) {
   const { t, language } = useI18n()
 
-  const steps = [
-    { title: t('landingStep1Title'), text: t('landingStep1Text') },
-    { title: t('landingStep2Title'), text: t('landingStep2Text') },
-    { title: t('landingStep3Title'), text: t('landingStep3Text') },
-  ]
+  const actions = (
+    <div className="landing__actions">
+      {supported && (
+        <button
+          type="button"
+          className="button button--primary button--large"
+          onClick={onOpenFolder}
+          disabled={loading}
+        >
+          {loading ? t('opening') : t('openProjectFolder')}
+        </button>
+      )}
+
+      {demoSupported && (
+        <button
+          type="button"
+          className="button button--large"
+          onClick={onTryDemo}
+          disabled={loading}
+        >
+          {t('tryDemo')}
+        </button>
+      )}
+    </div>
+  )
 
   return (
     <div className="screen">
@@ -47,27 +106,25 @@ export function Landing({
             <h1 className="landing__title">BRUTO</h1>
             <p className="landing__lead">{t('landingDescription')}</p>
 
-            {supported ? (
-              <button
-                type="button"
-                className="button button--primary button--large"
-                onClick={onOpenFolder}
-                disabled={loading}
-              >
-                {loading ? t('opening') : t('openProjectFolder')}
-              </button>
-            ) : (
+            {actions}
+
+            {demoSupported && <p className="landing__hint">{t('tryDemoHint')}</p>}
+
+            {!supported && (
               <p className="notice" role="alert">
                 {t('browserUnsupported')}
               </p>
             )}
           </div>
 
-          <div className="landing__slabs" aria-hidden="true">
-            <span className="slab slab--tall note-color-concrete note-pattern-pinstripe" />
-            <span className="slab slab--wide note-color-slate note-pattern-grid" />
-            <span className="slab slab--small note-color-oxide note-pattern-raw" />
-          </div>
+          <figure className="landing__shot">
+            <img
+              src={shot(language, 'board')}
+              alt={t('landingShotBoard')}
+              width={1440}
+              height={900}
+            />
+          </figure>
         </section>
 
         {recents.length > 0 && (
@@ -109,16 +166,100 @@ export function Landing({
           </h2>
 
           <ol className="steps">
-            {steps.map((step, index) => (
-              <li key={step.title} className="steps__item">
+            {STEPS.map(([title, text], index) => (
+              <li key={title} className="steps__item">
                 <span className="steps__number" aria-hidden="true">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
+                <h3>{t(title)}</h3>
+                <p>{t(text)}</p>
               </li>
             ))}
           </ol>
+        </section>
+
+        <section className="landing__feature" aria-labelledby="context-title">
+          <div className="landing__feature-text">
+            <h2 id="context-title" className="landing__feature-title">
+              {t('landingContextTitle')}
+            </h2>
+            <p>{t('landingContextText')}</p>
+          </div>
+
+          <figure className="landing__shot">
+            <img
+              src={shot(language, 'ai-context')}
+              alt={t('landingShotContext')}
+              width={1440}
+              height={900}
+              loading="lazy"
+            />
+          </figure>
+        </section>
+
+        <section className="landing__feature landing__feature--flip" aria-labelledby="lenses-title">
+          <div className="landing__feature-text">
+            <h2 id="lenses-title" className="landing__feature-title">
+              {t('landingLensesTitle')}
+            </h2>
+            <p>{t('landingLensesText')}</p>
+
+            <dl className="landing__stacks">
+              {STACKS.map(([label, names]) => (
+                <div key={label}>
+                  <dt>{t(label)}</dt>
+                  <dd>{names}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <figure className="landing__shot">
+            <img
+              src={shot(language, 'lenses')}
+              alt={t('landingShotLenses')}
+              width={1440}
+              height={900}
+              loading="lazy"
+            />
+          </figure>
+        </section>
+
+        <section className="landing__section" aria-labelledby="features-title">
+          <h2 id="features-title" className="section-title">
+            {t('landingFeaturesTitle')}
+          </h2>
+
+          <ul className="landing__features">
+            {FEATURES.map(([title, text]) => (
+              <li key={title} className="landing__card">
+                <h3>{t(title)}</h3>
+                <p>{t(text)}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="landing__feature" aria-labelledby="any-ai-title">
+          <div className="landing__feature-text">
+            <h2 id="any-ai-title" className="landing__feature-title">
+              {t('landingAnyAiTitle')}
+            </h2>
+            <p>{t('landingAnyAiText')}</p>
+          </div>
+
+          <pre className="landing__code">
+            <span className="landing__code-file">AGENTS.md</span>
+            <code>{AGENTS_LINE}</code>
+          </pre>
+        </section>
+
+        <section className="landing__cta" aria-labelledby="cta-title">
+          <h2 id="cta-title" className="landing__feature-title">
+            {t('landingCtaTitle')}
+          </h2>
+          <p>{t('landingCtaText')}</p>
+          {actions}
         </section>
       </main>
 

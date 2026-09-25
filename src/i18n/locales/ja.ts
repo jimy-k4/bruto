@@ -163,6 +163,49 @@ export const ja: Locale = {
   landingStep3Title: 'AI に渡す',
   landingStep3Text:
     'Q、W、E でコンテキストをコピー。ファイルを編集できる AI なら、ノートに直接返答してレビュー待ちにします。',
+  tryDemo: 'サンプルで試す',
+  tryDemoHint: 'サンプルはすぐに開き、このブラウザーの中だけに保存されます。',
+  demoFailed: 'サンプルプロジェクトを作成できませんでした。',
+  landingStep4Title: 'レビューして差し戻す',
+  landingStep4Text:
+    'AI の回答はノートに残ります。問題があれば内容を書いて「要修正」にすれば、文脈ごと差し戻せます。',
+  landingShotBoard:
+    'さまざまなステータスのノートと矢印、開いたノートエディターが並ぶ Bruto のボード',
+  landingShotContext:
+    'グローバルコンテキストとコピー内容のプレビューが表示された AI コンテキストウィンドウ',
+  landingShotLenses:
+    'Web ビュー：画面をブラウザーウィンドウとして、コンポーネントと選んだ画面のノートとともに表示',
+  landingContextTitle: 'ちょうどいいコンテキストを、キーひとつで',
+  landingContextText:
+    '選択したノート、選択からつながるすべて、またはプロジェクト全体を、モデル向けの指示付きのきれいな Markdown としてコピー。プレビューでコピー内容とトークン数を正確に確認でき、グローバルコンテキストでスタックや決定事項を毎回添えられます。',
+  landingLensesTitle: 'プロジェクトを図にする',
+  landingLensesText:
+    '構造ビューは作業の場所を示します。フォルダーをブロックとして描き、そこを指すノートで印を付けます。Bruto がプロジェクトを認識すると、その実体どおりに描きます：コンポーネント付きの画面、エンドポイント付きの API リソース、キーとポリシー付きのテーブル。',
+  landingFeaturesTitle: 'さらに',
+  featureBoardTitle: '本物のボード',
+  featureBoardText:
+    'ステータス、ファイル、リンク、スクリーンショット付きのノート。ドラッグし、矢印でつなぎ、まとめて編集できます。',
+  featureSearchTitle: '何でも見つかる',
+  featureSearchText:
+    'Ctrl+F でテキスト・パス・ID を検索し、ステータスやノートの中身（ファイル、AI の回答、画像、リンク）で絞り込めます。',
+  featureSafeTitle: '他のツールと共存',
+  featureSafeText:
+    '保存のたびに先にファイルを読み、外で変わった内容をノート単位でマージします。壊れたファイルは上書きせず、バックアップも常にあります。',
+  featureKeyboardTitle: 'キーボード優先',
+  featureKeyboardText:
+    'すべての操作にショートカットがあり、ノートは Tab で移動でき、スクリーンリーダー用の名前も付いています。',
+  featureEverywhereTitle: '9 言語、2 つのテーマ',
+  featureEverywhereText:
+    'アプリとしてインストールでき、オフラインでも動き、新しいバージョンを知らせます。',
+  featureLocalTitle: 'ローカルのみ',
+  featureLocalText:
+    'サーバーなし、アカウントなし、解析なし。ノートはあなたのフォルダーから出ません。',
+  landingAnyAiTitle: 'どの AI とも',
+  landingAnyAiText:
+    'コピーを Claude、ChatGPT、Gemini、DeepSeek に貼り付けるか、ファイルにアクセスできるエージェントにボードで直接作業させましょう。AGENTS.md か CLAUDE.md に 1 行書くだけです。',
+  landingCtaTitle: '自分のプロジェクトで試す',
+  landingCtaText:
+    '無料でオープンソース。フォルダーを開くには、パソコンの Chrome、Edge、Brave、Opera が必要です。',
   localFirst: 'ローカル',
   noCloud: 'クラウドもアカウントも不要',
   sourceCode: 'ソースコード',

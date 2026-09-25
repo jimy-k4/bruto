@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createDemoProject, supportsDemo } from './demo/demoProject'
 import { useI18n } from './i18n'
 import { I18nProvider } from './i18n/I18nProvider'
 import { Landing } from './layout/Landing'
@@ -65,6 +66,18 @@ function useAppProjects() {
 function Screen({ projects }: { projects: Projects }) {
   const [theme, toggleTheme] = useTheme()
   const [helpOpen, setHelpOpen] = useState(false)
+  const { t, language } = useI18n()
+  const toast = useToast()
+
+  // A fresh copy of the example project each time, in the reader's language.
+  const tryDemo = async () => {
+    try {
+      await projects.open(await createDemoProject(language))
+    } catch (error) {
+      console.error(error)
+      toast({ tone: 'error', message: t('demoFailed') })
+    }
+  }
 
   if (projects.recovery) {
     return (
@@ -97,9 +110,11 @@ function Screen({ projects }: { projects: Projects }) {
         onToggleTheme={toggleTheme}
         onOpenHelp={() => setHelpOpen(true)}
         supported={supportsFileSystemAccess()}
+        demoSupported={supportsDemo()}
         loading={projects.loading}
         recents={projects.recents}
         onOpenFolder={() => void projects.openPicker()}
+        onTryDemo={() => void tryDemo()}
         onOpenRecent={(recent) => void projects.open(recent.handle)}
         onForgetRecent={(recent) => void projects.forgetRecent(recent.id)}
       />

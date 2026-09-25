@@ -168,6 +168,49 @@ export const fr: Locale = {
   landingStep3Title: 'Confiez-les à l’IA',
   landingStep3Text:
     'Copiez le contexte avec Q, W ou E. Si l’IA peut modifier des fichiers, elle répond dans la note et la marque pour relecture.',
+  tryDemo: 'Essayer avec un exemple',
+  tryDemoHint: 'L’exemple s’ouvre tout de suite et reste uniquement dans ce navigateur.',
+  demoFailed: 'Impossible de créer le projet d’exemple.',
+  landingStep4Title: 'Relire et renvoyer',
+  landingStep4Text:
+    'Ce que répond l’IA reste dans la note. Si quelque chose ne va pas, écrivez quoi et passez-la en « À corriger » : elle repart avec tout son contexte.',
+  landingShotBoard:
+    'Le tableau de Bruto avec des notes dans plusieurs statuts, des flèches entre elles et l’éditeur d’une note ouvert',
+  landingShotContext:
+    'La fenêtre de contexte IA avec le contexte global et l’aperçu de ce qui est copié',
+  landingShotLenses:
+    'La vue web : les écrans dessinés comme des fenêtres de navigateur avec leurs composants, et les notes de celui choisi',
+  landingContextTitle: 'Le bon contexte, en une touche',
+  landingContextText:
+    'Copiez la sélection, la sélection avec tout ce qu’elle relie ou le projet entier, en Markdown propre avec des instructions pour le modèle. Un aperçu montre exactement ce qui est copié et combien de tokens cela fait, et un contexte global emporte votre stack et vos décisions dans chaque copie.',
+  landingLensesTitle: 'Votre projet, dessiné',
+  landingLensesText:
+    'La vue de structure montre où est le travail : les dossiers en blocs, marqués par les notes qui pointent vers eux. Quand Bruto reconnaît le projet, il le dessine pour ce qu’il est : des écrans avec leurs composants, des ressources d’API avec leurs endpoints, des tables avec leurs clés et leurs politiques.',
+  landingFeaturesTitle: 'Et aussi',
+  featureBoardTitle: 'Un vrai tableau',
+  featureBoardText:
+    'Des notes avec statut, fichiers, lien et captures. Déplacez-les, reliez-les par des flèches et modifiez-en plusieurs à la fois.',
+  featureSearchTitle: 'Tout retrouver',
+  featureSearchText:
+    'Ctrl+F cherche par texte, chemin ou id, et filtre par statut et par ce que contient chaque note : fichiers, réponse de l’IA, images ou lien.',
+  featureSafeTitle: 'Cohabite avec vos autres outils',
+  featureSafeText:
+    'Chaque enregistrement relit d’abord le fichier et fusionne, note par note, ce qui a changé ailleurs. Un fichier cassé n’est jamais écrasé et il y a toujours une sauvegarde.',
+  featureKeyboardTitle: 'Le clavier d’abord',
+  featureKeyboardText:
+    'Chaque action a son raccourci, les notes se parcourent avec Tab et tout a un nom pour les lecteurs d’écran.',
+  featureEverywhereTitle: 'Neuf langues, deux thèmes',
+  featureEverywhereText:
+    'Installez-la comme une app : elle marche hors ligne et vous prévient quand une nouvelle version sort.',
+  featureLocalTitle: 'Uniquement en local',
+  featureLocalText:
+    'Pas de serveur, pas de compte, pas de statistiques. Vos notes ne quittent jamais vos dossiers.',
+  landingAnyAiTitle: 'Avec n’importe quelle IA',
+  landingAnyAiText:
+    'Collez la copie dans Claude, ChatGPT, Gemini ou DeepSeek, ou laissez un agent qui a accès à vos fichiers travailler directement sur le tableau : une ligne dans AGENTS.md ou CLAUDE.md suffit.',
+  landingCtaTitle: 'Essayez-le sur votre projet',
+  landingCtaText:
+    'Gratuit et open source. Pour ouvrir vos dossiers, il faut Chrome, Edge, Brave ou Opera sur un ordinateur.',
   localFirst: 'Local',
   noCloud: 'Sans cloud, sans compte',
   sourceCode: 'Code source',

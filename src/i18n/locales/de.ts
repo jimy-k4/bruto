@@ -168,6 +168,49 @@ export const de: Locale = {
   landingStep3Title: 'An die KI übergeben',
   landingStep3Text:
     'Kopiere den Kontext mit Q, W oder E. Kann die KI Dateien bearbeiten, antwortet sie direkt in der Notiz und markiert sie zur Prüfung.',
+  tryDemo: 'Mit einem Beispiel ausprobieren',
+  tryDemoHint: 'Das Beispiel öffnet sich sofort und bleibt nur in diesem Browser.',
+  demoFailed: 'Das Beispielprojekt konnte nicht angelegt werden.',
+  landingStep4Title: 'Prüfen und zurückgeben',
+  landingStep4Text:
+    'Was die KI antwortet, bleibt in der Notiz. Stimmt etwas nicht, schreib auf, was, und setz sie auf „Nachbessern“: Sie geht mit ihrem ganzen Kontext zurück.',
+  landingShotBoard:
+    'Das Bruto-Board mit Notizen in verschiedenen Status, Pfeilen dazwischen und dem geöffneten Editor einer Notiz',
+  landingShotContext:
+    'Das KI-Kontext-Fenster mit dem globalen Kontext und der Vorschau dessen, was kopiert wird',
+  landingShotLenses:
+    'Die Web-Ansicht: Seiten als Browserfenster mit ihren Komponenten und den Notizen zur gewählten',
+  landingContextTitle: 'Der richtige Kontext, eine Taste entfernt',
+  landingContextText:
+    'Kopiere die Auswahl, die Auswahl mit allem, worauf sie zeigt, oder das ganze Projekt, als sauberes Markdown mit Anweisungen für das Modell. Eine Vorschau zeigt genau, was kopiert wird und wie viele Tokens es sind, und ein globaler Kontext bringt deinen Stack und deine Entscheidungen in jede Kopie.',
+  landingLensesTitle: 'Dein Projekt, gezeichnet',
+  landingLensesText:
+    'Die Strukturansicht zeigt, wo die Arbeit ist: Ordner als Blöcke, markiert mit den Notizen, die auf sie zeigen. Erkennt Bruto das Projekt, zeichnet es, was es ist: Seiten mit ihren Komponenten, API-Ressourcen mit ihren Endpunkten, Tabellen mit ihren Schlüsseln und Richtlinien.',
+  landingFeaturesTitle: 'Außerdem',
+  featureBoardTitle: 'Ein echtes Board',
+  featureBoardText:
+    'Notizen mit Status, Dateien, Link und Screenshots. Verschiebe sie, verbinde sie mit Pfeilen und bearbeite viele auf einmal.',
+  featureSearchTitle: 'Alles finden',
+  featureSearchText:
+    'Strg+F sucht nach Text, Pfad oder ID und filtert nach Status und danach, was eine Notiz hat: Dateien, KI-Antwort, Bilder oder Link.',
+  featureSafeTitle: 'Verträgt sich mit anderen Tools',
+  featureSafeText:
+    'Jedes Speichern liest die Datei zuerst und führt zusammen, was anderswo geändert wurde, Notiz für Notiz. Eine kaputte Datei wird nie überschrieben, und es gibt immer eine Sicherung.',
+  featureKeyboardTitle: 'Tastatur zuerst',
+  featureKeyboardText:
+    'Jede Aktion hat ein Tastenkürzel, Notizen sind mit Tab erreichbar und alles hat einen Namen für Screenreader.',
+  featureEverywhereTitle: 'Neun Sprachen, zwei Themes',
+  featureEverywhereText:
+    'Installier sie als App: Sie läuft offline und sagt dir, wenn es eine neue Version gibt.',
+  featureLocalTitle: 'Nur lokal',
+  featureLocalText:
+    'Kein Server, keine Konten, keine Analyse. Deine Notizen verlassen nie deine Ordner.',
+  landingAnyAiTitle: 'Mit jeder KI',
+  landingAnyAiText:
+    'Füg die Kopie in Claude, ChatGPT, Gemini oder DeepSeek ein, oder lass einen Agenten mit Zugriff auf deine Dateien direkt am Board arbeiten: Eine Zeile in AGENTS.md oder CLAUDE.md reicht.',
+  landingCtaTitle: 'Probier es mit deinem Projekt',
+  landingCtaText:
+    'Kostenlos und Open Source. Zum Öffnen deiner Ordner brauchst du Chrome, Edge, Brave oder Opera auf einem Computer.',
   localFirst: 'Lokal',
   noCloud: 'Keine Cloud, keine Konten',
   sourceCode: 'Quellcode',

@@ -167,6 +167,48 @@ export const ptBR: Locale = {
   landingStep3Title: 'Passe para a IA',
   landingStep3Text:
     'Copie o contexto com Q, W ou E. Se a IA puder editar arquivos, ela responde na própria nota e a marca para revisão.',
+  tryDemo: 'Experimentar com um exemplo',
+  tryDemoHint: 'O exemplo abre na hora e fica só neste navegador.',
+  demoFailed: 'Não foi possível criar o projeto de exemplo.',
+  landingStep4Title: 'Revise e devolva',
+  landingStep4Text:
+    'O que a IA responde fica na nota. Se algo ainda estiver errado, escreva o quê e mude para “A corrigir”: ela volta com todo o contexto.',
+  landingShotBoard:
+    'O quadro do Bruto com notas em vários status, setas entre elas e o editor de uma nota aberto',
+  landingShotContext:
+    'A janela de contexto de IA com o contexto global e a prévia do que é copiado',
+  landingShotLenses:
+    'A visão web: telas desenhadas como janelas do navegador com seus componentes, e as notas da escolhida',
+  landingContextTitle: 'O contexto certo, a uma tecla',
+  landingContextText:
+    'Copie a seleção, a seleção com tudo o que ela conecta ou o projeto inteiro, como Markdown limpo com instruções para o modelo. Uma prévia mostra exatamente o que é copiado e quantos tokens ocupa, e um contexto global leva seu stack e suas decisões em cada cópia.',
+  landingLensesTitle: 'Seu projeto, desenhado',
+  landingLensesText:
+    'A visão de estrutura mostra onde está o trabalho: pastas como blocos, marcadas com as notas que apontam para elas. Quando o Bruto reconhece o projeto, ele o desenha pelo que é: telas com seus componentes, recursos da API com seus endpoints, tabelas com suas chaves e políticas.',
+  landingFeaturesTitle: 'E mais',
+  featureBoardTitle: 'Um quadro de verdade',
+  featureBoardText:
+    'Notas com status, arquivos, link e capturas. Arraste, conecte com setas e edite várias de uma vez.',
+  featureSearchTitle: 'Encontre qualquer coisa',
+  featureSearchText:
+    'Ctrl+F busca por texto, caminho ou id, e filtra por status e pelo que cada nota tem: arquivos, resposta da IA, imagens ou link.',
+  featureSafeTitle: 'Convive com outras ferramentas',
+  featureSafeText:
+    'Cada salvamento lê o arquivo antes e junta, nota a nota, o que mudou fora. Um arquivo quebrado nunca é sobrescrito e sempre há cópia.',
+  featureKeyboardTitle: 'Teclado primeiro',
+  featureKeyboardText:
+    'Toda ação tem atalho, as notas são alcançáveis com Tab e tudo tem nome para leitores de tela.',
+  featureEverywhereTitle: 'Nove idiomas, dois temas',
+  featureEverywhereText: 'Instale como app: funciona offline e avisa quando sai uma versão nova.',
+  featureLocalTitle: 'Só local',
+  featureLocalText:
+    'Sem servidor, sem contas, sem analytics. Suas notas nunca saem das suas pastas.',
+  landingAnyAiTitle: 'Com qualquer IA',
+  landingAnyAiText:
+    'Cole a cópia no Claude, ChatGPT, Gemini ou DeepSeek, ou deixe um agente com acesso aos seus arquivos trabalhar direto no quadro: basta uma linha no AGENTS.md ou CLAUDE.md.',
+  landingCtaTitle: 'Experimente no seu projeto',
+  landingCtaText:
+    'Grátis e de código aberto. Para abrir suas pastas você precisa do Chrome, Edge, Brave ou Opera num computador.',
   localFirst: 'Local',
   noCloud: 'Sem nuvem, sem contas',
   sourceCode: 'Código-fonte',
