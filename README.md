@@ -71,7 +71,7 @@ Prefer to run it yourself? See [Development](#development).
   offline, and tells an open window when a new version is out.
 - **Local only.** The app is a static page: it has no server and no storage of its own. The published
   site counts visits and which features get used (opening a project, a lens, copying AI context),
-  anonymously and without cookies ([Umami](https://umami.is/)): nothing about your projects or notes
+  anonymously and without cookies (Superveil, a small self-hosted counter): nothing about your projects or notes
   ever leaves your browser.
   Your notes never leave your folders.
 

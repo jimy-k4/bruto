@@ -19,13 +19,12 @@ const versionFile = (): Plugin => ({
 })
 
 /**
- * Anonymous visits and usage events (Umami: no cookies, no personal data) for
- * the published site only: production builds carry the script, and it ignores
- * any other domain, so development, previews and tests never count.
+ * Anonymous visits and usage events (Superveil: no cookies, no personal data)
+ * for the published site only: production builds carry the script, it skips
+ * localhost and automated browsers, and Superveil drops hits from any domain
+ * but jimy-k4.github.io, so development, previews and tests never count.
  * Notes and projects never leave the browser.
  */
-const UMAMI_WEBSITE = 'ebcc99d5-72f5-43ea-b475-b9e8decfe04e'
-
 const visitCounter = (): Plugin => ({
   name: 'bruto-visit-counter',
   apply: 'build',
@@ -34,9 +33,8 @@ const visitCounter = (): Plugin => ({
       tag: 'script',
       attrs: {
         defer: true,
-        src: 'https://cloud.umami.is/script.js',
-        'data-website-id': UMAMI_WEBSITE,
-        'data-domains': 'jimy-k4.github.io',
+        src: 'https://jimy-superveil.vercel.app/p.js',
+        'data-site': 'bruto',
       },
       injectTo: 'head',
     },
