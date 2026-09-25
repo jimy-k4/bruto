@@ -97,3 +97,30 @@ test('long names stay inside their boxes', async ({ page }) => {
     }
   }
 })
+
+test('a long link or file path never pushes the text out of its note', async ({ page }) => {
+  await openProject(
+    page,
+    workspaceWith([
+      note('a', {
+        title: 'Actualizar README.md de mi perfil de GitHub',
+        description: 'Quiero algo acorde a lo que llevamos construyendo estos días.',
+        webUrl:
+          'https://github.com/jimy-k4/.github/edit/main/profile/README.md?plain=1&version=latest',
+        filePaths: [`src/${LONG}/${LONG}/${LONG}.tsx`],
+      }),
+    ]),
+  )
+
+  const card = page.locator('.note').first()
+  const inside = await card.evaluate((element) => {
+    const box = element.getBoundingClientRect()
+
+    return [...element.querySelectorAll('.note__body *')].every(
+      (child) => child.getBoundingClientRect().right <= box.right + 1,
+    )
+  })
+
+  expect(inside).toBe(true)
+  await expect(card.locator('.note__link')).toHaveAttribute('title', /README\.md\?plain=1/)
+})

@@ -122,6 +122,7 @@ export const NoteCard = memo(function NoteCard({
           <a
             className="note__link"
             href={note.webUrl}
+            title={note.webUrl}
             target="_blank"
             rel="noopener noreferrer"
             onPointerDown={stop}

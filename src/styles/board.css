@@ -188,8 +188,10 @@
   text-transform: none;
 }
 
+/* One column as wide as the note: a long link or path is cut, it never widens the text. */
 .note__body {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   padding: var(--space-4) var(--space-4) 40px;
 }
