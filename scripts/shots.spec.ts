@@ -57,7 +57,7 @@ const shots = {
   /** Search with a content filter on. */
   async search(page: Page) {
     // An empty spot of the board, so no note is selected.
-    await page.mouse.click(1300, 820)
+    await page.mouse.click(1400, 450)
     await page.keyboard.press('Control+f')
     await page.getByRole('searchbox').fill('booking')
     await page.locator('.board-search__trait').first().click()

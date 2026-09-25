@@ -32,6 +32,9 @@ interface NoteCardProps {
 
 const MAX_THUMBNAILS = 3
 
+/** An open AI response can reach the note below: while open, its note goes on top of the rest. */
+const OPEN_ABOVE = 1_000_000
+
 /** Words longer than this don't fit a card line at the full title size. */
 const LONG_WORD = 13
 const VERY_LONG_WORD = 17
@@ -84,7 +87,7 @@ export const NoteCard = memo(function NoteCard({
     <article
       ref={ref}
       className={classes.filter(Boolean).join(' ')}
-      style={{ left: note.x, top: note.y, zIndex: note.zIndex }}
+      style={{ left: note.x, top: note.y, zIndex: aiOpen ? OPEN_ABOVE + note.zIndex : note.zIndex }}
       data-note-id={note.id}
       tabIndex={0}
       aria-roledescription={t('note')}
