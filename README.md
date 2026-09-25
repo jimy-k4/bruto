@@ -44,7 +44,7 @@ Prefer to run it yourself? See [Development](#development).
   that no longer exist. _Only with notes_ hides everything no note points at, here, in the lenses and
   in the files window.
 - **Search.** `Ctrl F` finds notes by text, path or id, and filters them by status and by what they
-  have or lack: files, an AI response, images, a web link.
+  have or lack: files, an AI response, code, images, a web link.
 - **Lenses.** When Bruto recognises the project, the structure view offers it drawn by what its files
   are, still with the notes on each element:
   - **Web** (React, Vue, Svelte, Next.js, Nuxt, SvelteKit, Astro, Angular): pages as browser windows

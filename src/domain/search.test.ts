@@ -110,6 +110,26 @@ describe('searchNotes', () => {
     ).toEqual(['blank'])
   })
 
+  it('finds notes with code anywhere a note shows it', () => {
+    const notes = [
+      note('block', { description: 'Run:\n```bash\nnpm test\n```' }),
+      note('inline', { aiResponse: 'Renamed `useCart` to `useBasket`.', x: 10 }),
+      note('feedback', { feedback: '`npm run build` still fails', x: 20 }),
+      note('plain', { description: 'No code here, just words.', x: 30 }),
+      note('title', { title: '`not code in a title`', x: 40 }),
+    ]
+
+    expect(ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { code: true } }))).toEqual([
+      'block',
+      'inline',
+      'feedback',
+    ])
+    expect(ids(searchNotes(notes, { ...EMPTY_SEARCH, traits: { code: false } }))).toEqual([
+      'plain',
+      'title',
+    ])
+  })
+
   it('cycles a trait filter through with, without and either', () => {
     expect(nextTraitFilter(undefined)).toBe(true)
     expect(nextTraitFilter(true)).toBe(false)

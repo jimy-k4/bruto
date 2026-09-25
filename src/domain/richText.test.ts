@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { hasCodeBlocks, parseRichText } from './richText'
+import { hasCode, hasCodeBlocks, parseRichText } from './richText'
 
 describe('parseRichText', () => {
   it('leaves plain text as it is', () => {
@@ -65,5 +65,12 @@ describe('parseRichText', () => {
     expect(hasCodeBlocks('Uses `x` inline only')).toBe(false)
     expect(hasCodeBlocks('```\nx\n```')).toBe(true)
     expect(hasCodeBlocks(undefined)).toBe(false)
+  })
+
+  it('says whether there is any code, inline included', () => {
+    expect(hasCode('Uses `x` inline only')).toBe(true)
+    expect(hasCode('`npm test`')).toBe(true)
+    expect(hasCode('No code, not even a stray ` backtick')).toBe(false)
+    expect(hasCode(undefined)).toBe(false)
   })
 })

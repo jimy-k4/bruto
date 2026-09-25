@@ -464,3 +464,28 @@ test('code in an AI answer shows in a box with a copy button', async ({ page }) 
     page.getByRole('group', { name: 'Código de la respuesta' }).locator('.code-block'),
   ).toContainText(command)
 })
+
+test('search filters notes that contain code', async ({ page }) => {
+  await openProject(
+    page,
+    workspaceWith([
+      note('alpha', { x: 80, y: 80, description: 'Run it:\n```bash\nnpm test\n```' }),
+      note('beta', { x: 480, y: 80, aiResponse: 'Renamed `useCart`.' }),
+      note('gamma', { x: 880, y: 80, description: 'Only words.' }),
+    ]),
+  )
+
+  await page.locator('.board').click({ position: { x: 700, y: 700 } })
+  await page.keyboard.press('Control+f')
+
+  const code = page.getByRole('button', { name: 'Código', exact: true })
+  await code.click()
+  await expect(page.getByRole('button', { name: 'Con código', exact: true })).toBeVisible()
+  await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-match/)
+  await expect(noteCard(page, 'BETA')).toHaveClass(/is-match/)
+  await expect(noteCard(page, 'GAMMA')).toHaveClass(/is-dimmed/)
+
+  await page.getByRole('button', { name: 'Con código', exact: true }).click()
+  await expect(noteCard(page, 'GAMMA')).toHaveClass(/is-match/)
+  await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-dimmed/)
+})

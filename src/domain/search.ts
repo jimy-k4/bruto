@@ -1,9 +1,10 @@
 import type { Note, NoteStatus } from '../types'
+import { hasCode } from './richText'
 
 /** Things a note can have or lack, to filter by. */
-export type NoteTrait = 'files' | 'aiResponse' | 'images' | 'webUrl'
+export type NoteTrait = 'files' | 'aiResponse' | 'code' | 'images' | 'webUrl'
 
-export const NOTE_TRAITS: NoteTrait[] = ['files', 'aiResponse', 'images', 'webUrl']
+export const NOTE_TRAITS: NoteTrait[] = ['files', 'aiResponse', 'code', 'images', 'webUrl']
 
 /** Per trait: only notes with it (`true`), only notes without it (`false`), or either (absent). */
 export type TraitFilter = Partial<Record<NoteTrait, boolean>>
@@ -19,6 +20,8 @@ export const hasTrait: Record<NoteTrait, (note: Note) => boolean> = {
   // Linked by the user or touched by the AI: either way the note is about files.
   files: (note) => note.filePaths.length > 0 || (note.aiFilePaths?.length ?? 0) > 0,
   aiResponse: (note) => Boolean(note.aiResponse?.trim()),
+  // Code written by either side: in the description, the AI's answer or the feedback.
+  code: (note) => [note.description, note.aiResponse, note.feedback].some(hasCode),
   images: (note) => note.images.length > 0,
   webUrl: (note) => Boolean(note.webUrl.trim()),
 }
