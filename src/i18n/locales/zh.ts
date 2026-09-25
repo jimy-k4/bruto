@@ -195,7 +195,8 @@ export const zh: Locale = {
   featureEverywhereTitle: '九种语言，两种主题',
   featureEverywhereText: '可作为应用安装，离线可用，有新版本时会提醒你。',
   featureLocalTitle: '仅限本地',
-  featureLocalText: '没有服务器，没有账户，没有统计。你的笔记从不离开你的文件夹。',
+  featureLocalText:
+    '没有服务器，没有账户：只有一个匿名的访问计数器，不用 Cookie。你的笔记从不离开你的文件夹。',
   landingAnyAiTitle: '适用于任何 AI',
   landingAnyAiText:
     '把复制的内容粘贴到 Claude、ChatGPT、Gemini 或 DeepSeek，或者让能访问你文件的智能体直接在看板上工作：在 AGENTS.md 或 CLAUDE.md 里加一行就够了。',

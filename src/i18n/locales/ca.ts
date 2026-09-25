@@ -210,7 +210,7 @@ export const ca: Locale = {
     'Instal·la-la com a app, funciona sense connexió i t’avisa quan hi ha una versió nova.',
   featureLocalTitle: 'Només local',
   featureLocalText:
-    'Sense servidor, sense comptes, sense analítiques. Les teves notes no surten de les teves carpetes.',
+    'Sense servidor ni comptes: només un comptador de visites anònim, sense galetes. Les teves notes no surten de les teves carpetes.',
   landingAnyAiTitle: 'Amb qualsevol IA',
   landingAnyAiText:
     'Enganxa la còpia a Claude, ChatGPT, Gemini o DeepSeek, o deixa que un agent amb accés als teus fitxers treballi directament al tauler: n’hi ha prou amb una línia a AGENTS.md o CLAUDE.md.',

@@ -207,7 +207,8 @@ export const en: Locale = {
   featureEverywhereText:
     'Install it as an app, it works offline and tells you when a new version is out.',
   featureLocalTitle: 'Local only',
-  featureLocalText: 'No server, no accounts, no analytics. Your notes never leave your folders.',
+  featureLocalText:
+    'No server, no accounts: just an anonymous visit counter, no cookies. Your notes never leave your folders.',
   landingAnyAiTitle: 'With any AI',
   landingAnyAiText:
     'Paste the copy into Claude, ChatGPT, Gemini or DeepSeek, or let an agent with access to your files work on the board directly: one line in AGENTS.md or CLAUDE.md is enough.',

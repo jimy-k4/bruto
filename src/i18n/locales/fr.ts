@@ -210,7 +210,7 @@ export const fr: Locale = {
     'Installez-la comme une app : elle marche hors ligne et vous prévient quand une nouvelle version sort.',
   featureLocalTitle: 'Uniquement en local',
   featureLocalText:
-    'Pas de serveur, pas de compte, pas de statistiques. Vos notes ne quittent jamais vos dossiers.',
+    'Pas de serveur, pas de compte : juste un compteur de visites anonyme, sans cookies. Vos notes ne quittent jamais vos dossiers.',
   landingAnyAiTitle: 'Avec n’importe quelle IA',
   landingAnyAiText:
     'Collez la copie dans Claude, ChatGPT, Gemini ou DeepSeek, ou laissez un agent qui a accès à vos fichiers travailler directement sur le tableau : une ligne dans AGENTS.md ou CLAUDE.md suffit.',
