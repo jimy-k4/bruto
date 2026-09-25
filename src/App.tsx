@@ -13,6 +13,8 @@ import { UpdateNotice } from './ui/UpdateNotice'
 import { useToast } from './ui/toasts'
 import { WorkspaceScreen } from './workspace/WorkspaceScreen'
 
+const LANDING_TITLE = document.title
+
 export default function App() {
   return (
     <I18nProvider>
@@ -87,6 +89,13 @@ function Screen({ projects }: { projects: Projects }) {
   })
 
   useEffect(() => openLinkedDemo(), [])
+
+  // The landing page keeps the descriptive title from index.html; an open project names the tab.
+  const projectName = projects.active?.name
+
+  useEffect(() => {
+    document.title = projectName ? `${projectName.toUpperCase()} · BRUTO` : LANDING_TITLE
+  }, [projectName])
 
   if (projects.recovery) {
     return (

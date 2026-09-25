@@ -19,7 +19,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "check": "prettier --check . && eslint . && tsc -b && vitest run",
-    "shots": "playwright test --config playwright.shots.config.ts"
+    "shots": "playwright test --config playwright.shots.config.ts",
+    "prerender": "node scripts/prerender.ts"
   },
   "dependencies": {
     "@fontsource/archivo-black": "^5.3.0",

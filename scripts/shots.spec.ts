@@ -96,6 +96,19 @@ for (const { value: language } of LANGUAGES) {
   }
 }
 
+// The card a shared link shows (og:image in index.html): the landing page, 1200×630.
+test('social preview', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('bruto-language', 'en')
+    localStorage.setItem('bruto-theme', 'dark')
+  })
+  await page.setViewportSize({ width: 1200, height: 630 })
+  await page.goto('/')
+  await expect(page.locator('.landing__shot img').first()).toHaveJSProperty('complete', true)
+  await page.waitForTimeout(500)
+  await page.screenshot({ path: 'public/og.png' })
+})
+
 for (const [shot, theme, name] of README) {
   test(`readme ${name}`, async ({ page }) => {
     await openExample(page, 'en', theme)
