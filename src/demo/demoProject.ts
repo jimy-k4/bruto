@@ -344,7 +344,11 @@ export const DEMO_TEXTS: Record<Language, DemoText> = {
   },
 }
 
-/** Where each note sits and what it holds besides its words. */
+/**
+ * Where each note sits and what it holds besides its words. The second row
+ * leaves room for the first to open its AI responses, and still fits a
+ * 1440×900 window.
+ */
 const NOTES: {
   key: DemoNoteKey
   id: string
@@ -396,7 +400,7 @@ const NOTES: {
     key: 'payments',
     id: 'e1f2a3b4-0000-4000-8000-000000000005',
     x: 60,
-    y: 430,
+    y: 560,
     status: 'done',
     colorTheme: 'moss',
     pattern: 'bands',
@@ -406,7 +410,7 @@ const NOTES: {
     key: 'reminders',
     id: 'd9e8f7a6-0000-4000-8000-000000000004',
     x: 420,
-    y: 430,
+    y: 560,
     status: 'todo',
     colorTheme: 'sand',
     pattern: 'grid',
@@ -416,7 +420,7 @@ const NOTES: {
     key: 'tests',
     id: 'f0e1d2c3-0000-4000-8000-000000000006',
     x: 780,
-    y: 430,
+    y: 560,
     status: 'loop',
     colorTheme: 'concrete',
     pattern: 'raw',
