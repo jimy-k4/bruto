@@ -210,7 +210,7 @@ export const de: Locale = {
     'Installier sie als App: Sie läuft offline und sagt dir, wenn es eine neue Version gibt.',
   featureLocalTitle: 'Nur lokal',
   featureLocalText:
-    'Kein Server, keine Konten: nur ein anonymer Besuchszähler, ohne Cookies. Deine Notizen verlassen nie deine Ordner.',
+    'Kein Server, keine Konten: nur anonyme Nutzungsstatistik, ohne Cookies. Deine Notizen verlassen nie deine Ordner.',
   landingAnyAiTitle: 'Mit jeder KI',
   landingAnyAiText:
     'Füg die Kopie in Claude, ChatGPT, Gemini oder DeepSeek ein, oder lass einen Agenten mit Zugriff auf deine Dateien direkt am Board arbeiten: Eine Zeile in AGENTS.md oder CLAUDE.md reicht.',

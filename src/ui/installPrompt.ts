@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import { track } from './analytics'
 
 /** Chromium's install event: not in TypeScript's DOM library yet. */
 interface BeforeInstallPromptEvent extends Event {
@@ -17,6 +18,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
 })
 
 window.addEventListener('appinstalled', () => {
+  track('app-installed')
   deferred = null
   notify()
 })
@@ -26,6 +28,7 @@ async function install() {
 
   deferred = null
   notify()
+  track('install-prompt')
   await event?.prompt()
 }
 

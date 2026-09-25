@@ -208,7 +208,7 @@ export const es = {
     'Instálala como app, funciona sin conexión y te avisa cuando hay una versión nueva.',
   featureLocalTitle: 'Solo local',
   featureLocalText:
-    'Sin servidor ni cuentas: solo un contador de visitas anónimo, sin cookies. Tus notas no salen de tus carpetas.',
+    'Sin servidor ni cuentas: solo estadísticas de uso anónimas, sin cookies. Tus notas no salen de tus carpetas.',
   landingAnyAiTitle: 'Con cualquier IA',
   landingAnyAiText:
     'Pega la copia en Claude, ChatGPT, Gemini o DeepSeek, o deja que un agente con acceso a tus ficheros trabaje directamente en el tablero: basta una línea en AGENTS.md o CLAUDE.md.',

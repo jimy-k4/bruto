@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { track } from '../ui/analytics'
 import type { Note } from '../types'
 import { CLOSED_STATUSES } from '../domain/constants'
 import {
@@ -206,6 +207,10 @@ export function StructureView({
   }
 
   const chooseLens = (next: Lens) => {
+    const lens = detected.find((item) => item.kind === next)
+
+    // Which lens and which stack, e.g. "db" and "PL/SQL": never anything from the project itself.
+    if (lens) track('lens-open', { lens: lens.kind, tech: lens.tech })
     setLens(next)
     setLensFocus(null)
   }

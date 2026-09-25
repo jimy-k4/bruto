@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { track } from '../ui/analytics'
 import type { Workspace } from '../types'
 import {
   ensureReadWrite,
@@ -137,6 +138,7 @@ export function useProjects({ onExternalChange, onError }: Options) {
   const openPicker = useCallback(async () => {
     try {
       await open(await window.showDirectoryPicker({ id: 'bruto', mode: 'readwrite' }))
+      track('project-open')
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) {
         callbacks.current.onError(error)
