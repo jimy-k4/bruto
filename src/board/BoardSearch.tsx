@@ -26,6 +26,7 @@ const stop = (event: React.PointerEvent) => event.stopPropagation()
 const TRAIT_LABELS: Record<NoteTrait, [TranslationKey, TranslationKey, TranslationKey]> = {
   files: ['filterFiles', 'filterWithFiles', 'filterWithoutFiles'],
   aiResponse: ['filterAiResponse', 'filterWithAiResponse', 'filterWithoutAiResponse'],
+  code: ['filterCode', 'filterWithCode', 'filterWithoutCode'],
   images: ['filterImages', 'filterWithImages', 'filterWithoutImages'],
   webUrl: ['filterWeb', 'filterWithWeb', 'filterWithoutWeb'],
 }

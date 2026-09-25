@@ -82,6 +82,13 @@ export function parseRichText(text: string): Block[] {
   return blocks
 }
 
+/** Whether a text has any code at all: a block, or `code` inside a line. */
+export const hasCode = (text: string | undefined) =>
+  Boolean(text) &&
+  parseRichText(text!).some(
+    (block) => block.kind === 'code' || block.parts.some((part) => part.kind === 'code'),
+  )
+
 /** Whether a text has any code worth a copy button. */
 export const hasCodeBlocks = (text: string | undefined) =>
   Boolean(text) && parseRichText(text!).some((block) => block.kind === 'code')
