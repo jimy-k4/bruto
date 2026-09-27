@@ -322,8 +322,21 @@
   gap: var(--space-4);
 }
 
-.statusbar__links a:hover {
+.statusbar__links a:hover,
+.statusbar__link:hover {
   color: var(--signal);
+}
+
+/* A link-looking button in the footer: opens a window instead of a page. */
+.statusbar__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-decoration: underline;
+  text-transform: inherit;
 }
 
 .save-status {

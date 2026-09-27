@@ -220,6 +220,21 @@ e2e/          browser tests against a real (private) file system
 Bruto is free, with no ads, no accounts and no personal tracking. If it saves you time, you can
 [buy me a coffee on Ko-fi](https://ko-fi.com/jimy_k4): it's also the heart in the top bar.
 
+## Privacy
+
+Bruto runs in your browser: projects and notes are read from and saved to your folders and never sent
+anywhere. The published site counts visits and which features get used, with
+[Superveil](https://github.com/jimy-k4/superveil), a small self-hosted counter:
+
+- **Measured:** the page, the site a visit came from, the approximate country, the kind of device, and
+  events such as opening a project or a lens. Never anything a project or a note contains.
+- **Not measured:** no cookies, nothing stored in your browser, no IP address kept. A visitor is an
+  anonymous identifier that changes every day, so nobody can be followed from one day to the next.
+- **Kept:** on Vercel and Supabase, deleted after 13 months.
+
+The landing page has the same notice under **Privacy**. Development builds, previews and tests never
+count.
+
 ## License
 
 [MIT](LICENSE)

@@ -5,6 +5,22 @@ export const es = {
   back: 'Volver',
   cancel: 'Cancelar',
   close: 'Cerrar',
+  privacyTitle: 'Privacidad',
+  privacyIntro:
+    'Bruto funciona en tu navegador. Tus proyectos y tus notas se leen y se guardan en tus carpetas y nunca se envían a ningún sitio.',
+  privacyMeasureTitle: 'Qué se mide',
+  privacyMeasureText:
+    'La web pública cuenta visitas y qué funciones se usan (abrir la demo o un proyecto, el buscador, el visor, cada lente, copiar contexto IA, instalar la app) para saber qué mejorar. De cada visita queda: la página, la web de procedencia, el país aproximado y el tipo de dispositivo.',
+  privacyNotTitle: 'Qué no se mide',
+  privacyNotText:
+    'No hay cookies ni se guarda nada en tu navegador. Tu dirección IP no se guarda: solo se usa, junto con el navegador, para calcular un identificador anónimo que cambia cada día, así que nadie puede seguirte de un día a otro. Nada de lo que escribes sale de tu equipo.',
+  privacyWhereTitle: 'Dónde y cuánto tiempo',
+  privacyWhereText:
+    'Los datos van a Superveil, un contador propio alojado en Vercel con la base de datos en Supabase, y se borran a los 13 meses.',
+  privacyRightsTitle: 'Tus derechos',
+  privacyRightsText:
+    'Como no se guarda nada que te identifique, no hay datos tuyos que consultar ni borrar. Para cualquier duda sobre privacidad, abre una incidencia en GitHub.',
+  privacyContact: 'Escribir en GitHub',
   lenses: 'Vistas del proyecto',
   lensFiles: 'Ficheros',
   lensWeb: 'Web',

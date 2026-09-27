@@ -6,6 +6,22 @@ export const ca: Locale = {
   back: 'Tornar',
   cancel: 'Cancel·lar',
   close: 'Tancar',
+  privacyTitle: 'Privadesa',
+  privacyIntro:
+    'Bruto funciona al teu navegador. Els teus projectes i les teves notes es llegeixen i es desen a les teves carpetes i mai no s’envien enlloc.',
+  privacyMeasureTitle: 'Què es mesura',
+  privacyMeasureText:
+    'La web pública compta visites i quines funcions es fan servir (obrir la demo o un projecte, el cercador, el visor, cada lent, copiar context IA, instal·lar l’app) per saber què millorar. De cada visita queda: la pàgina, la web de procedència, el país aproximat i el tipus de dispositiu.',
+  privacyNotTitle: 'Què no es mesura',
+  privacyNotText:
+    'No hi ha galetes ni es desa res al teu navegador. La teva adreça IP no es desa: només s’usa, amb el navegador, per calcular un identificador anònim que canvia cada dia, així que ningú no et pot seguir d’un dia a l’altre. Res del que escrius no surt del teu equip.',
+  privacyWhereTitle: 'On i durant quant de temps',
+  privacyWhereText:
+    'Les dades van a Superveil, un comptador propi allotjat a Vercel amb la base de dades a Supabase, i s’esborren als 13 mesos.',
+  privacyRightsTitle: 'Els teus drets',
+  privacyRightsText:
+    'Com que no es desa res que t’identifiqui, no hi ha dades teves per consultar ni esborrar. Per a qualsevol dubte sobre privadesa, obre una incidència a GitHub.',
+  privacyContact: 'Escriure a GitHub',
   lenses: 'Vistes del projecte',
   lensFiles: 'Fitxers',
   lensWeb: 'Web',

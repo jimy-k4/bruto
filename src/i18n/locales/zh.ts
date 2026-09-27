@@ -6,6 +6,22 @@ export const zh: Locale = {
   back: '返回',
   cancel: '取消',
   close: '关闭',
+  privacyTitle: '隐私',
+  privacyIntro:
+    'Bruto 在你的浏览器中运行。你的项目和笔记在你的文件夹中读取和保存，从不发送到任何地方。',
+  privacyMeasureTitle: '统计了什么',
+  privacyMeasureText:
+    '公开网站会统计访问量和使用了哪些功能(打开演示或项目、搜索、结构视图、各个镜头、复制 AI 上下文、安装应用)，以便知道该改进什么。每次访问记录：页面、来源网站、大致国家和设备类型。',
+  privacyNotTitle: '没有统计什么',
+  privacyNotText:
+    '不使用 Cookie，也不在浏览器中保存任何东西。不保存你的 IP 地址：它只和浏览器信息一起用于计算一个每天更换的匿名标识，所以没有人能跨天追踪你。你写的任何内容都不会离开你的电脑。',
+  privacyWhereTitle: '存放在哪里、保存多久',
+  privacyWhereText:
+    '数据发送到 Superveil(部署在 Vercel 上的自有计数器，数据库在 Supabase)，13 个月后删除。',
+  privacyRightsTitle: '你的权利',
+  privacyRightsText:
+    '由于不保存任何能识别你的信息，所以没有属于你的数据可供查询或删除。如有隐私方面的问题，请在 GitHub 上提交 issue。',
+  privacyContact: '在 GitHub 上留言',
   lenses: '项目视图',
   lensFiles: '文件',
   lensWeb: 'Web',

@@ -102,3 +102,21 @@ test('a link with ?demo opens the example project right away, once', async ({ pa
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Recientes' })).toBeVisible()
 })
+
+test('the privacy notice says what is measured and what never leaves the browser', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Privacidad', exact: true }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Privacidad' })
+  await expect(dialog).toContainText('nunca se envían a ningún sitio')
+  await expect(dialog).toContainText('13 meses')
+  await expect(dialog.getByRole('link', { name: 'Escribir en GitHub' })).toHaveAttribute(
+    'href',
+    'https://github.com/jimy-k4/bruto/issues',
+  )
+
+  await page.keyboard.press('Escape')
+  await expect(dialog).toHaveCount(0)
+})

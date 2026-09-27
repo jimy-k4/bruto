@@ -6,6 +6,7 @@ import { I18nProvider } from './i18n/I18nProvider'
 import { Landing } from './layout/Landing'
 import { RecoveryScreen } from './layout/RecoveryScreen'
 import { HelpDialog } from './panels/HelpDialog'
+import { PrivacyDialog } from './panels/PrivacyDialog'
 import { useTheme } from './preferences'
 import { supportsFileSystemAccess, useProjects, type Projects } from './state/useProjects'
 import { ToastProvider } from './ui/ToastProvider'
@@ -69,6 +70,7 @@ function useAppProjects() {
 function Screen({ projects }: { projects: Projects }) {
   const [theme, toggleTheme] = useTheme()
   const [helpOpen, setHelpOpen] = useState(false)
+  const [privacyOpen, setPrivacyOpen] = useState(false)
   const { t, language } = useI18n()
   const toast = useToast()
 
@@ -127,6 +129,7 @@ function Screen({ projects }: { projects: Projects }) {
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenHelp={() => setHelpOpen(true)}
+        onOpenPrivacy={() => setPrivacyOpen(true)}
         supported={supportsFileSystemAccess()}
         demoSupported={supportsDemo()}
         loading={projects.loading}
@@ -141,6 +144,7 @@ function Screen({ projects }: { projects: Projects }) {
       />
 
       {helpOpen && <HelpDialog onClose={() => setHelpOpen(false)} />}
+      {privacyOpen && <PrivacyDialog onClose={() => setPrivacyOpen(false)} />}
     </>
   )
 }

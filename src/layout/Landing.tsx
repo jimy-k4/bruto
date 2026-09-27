@@ -9,6 +9,7 @@ interface LandingProps {
   theme: AppTheme
   onToggleTheme: () => void
   onOpenHelp: () => void
+  onOpenPrivacy: () => void
   supported: boolean
   /** The example project can be tried in this browser. */
   demoSupported: boolean
@@ -58,6 +59,7 @@ export function Landing({
   theme,
   onToggleTheme,
   onOpenHelp,
+  onOpenPrivacy,
   supported,
   demoSupported,
   loading,
@@ -267,6 +269,9 @@ export function Landing({
         <span>BRUTO / {t('localFirst')}</span>
         <span className="statusbar__links">
           {t('noCloud')}
+          <button type="button" className="statusbar__link" onClick={onOpenPrivacy}>
+            {t('privacyTitle')}
+          </button>
           <a href={REPOSITORY_URL} target="_blank" rel="noopener noreferrer">
             {t('sourceCode')}
           </a>

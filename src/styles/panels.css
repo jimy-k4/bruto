@@ -260,3 +260,20 @@
   top: 4px;
   right: 4px;
 }
+
+.privacy {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+}
+
+.privacy__section {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.privacy__section p {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
