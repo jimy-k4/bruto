@@ -6,6 +6,22 @@ export const ptBR: Locale = {
   back: 'Voltar',
   cancel: 'Cancelar',
   close: 'Fechar',
+  privacyTitle: 'Privacidade',
+  privacyIntro:
+    'O Bruto roda no seu navegador. Seus projetos e notas são lidos e salvos nas suas pastas e nunca são enviados para lugar nenhum.',
+  privacyMeasureTitle: 'O que é medido',
+  privacyMeasureText:
+    'O site público conta visitas e quais funções são usadas (abrir a demo ou um projeto, a busca, a visão de estrutura, cada lente, copiar contexto de IA, instalar o app) para saber o que melhorar. De cada visita fica: a página, o site de origem, o país aproximado e o tipo de dispositivo.',
+  privacyNotTitle: 'O que não é',
+  privacyNotText:
+    'Sem cookies e nada salvo no seu navegador. Seu endereço IP não é guardado: junto com o navegador, ele só serve para calcular um identificador anônimo que muda todo dia, então ninguém pode seguir você de um dia para o outro. Nada do que você escreve sai do seu computador.',
+  privacyWhereTitle: 'Onde e por quanto tempo',
+  privacyWhereText:
+    'Os dados vão para o Superveil, um contador próprio hospedado na Vercel com banco de dados no Supabase, e são apagados após 13 meses.',
+  privacyRightsTitle: 'Seus direitos',
+  privacyRightsText:
+    'Como nada que identifique você é guardado, não há dados seus para consultar ou apagar. Para qualquer dúvida sobre privacidade, abra uma issue no GitHub.',
+  privacyContact: 'Escrever no GitHub',
   lenses: 'Visões do projeto',
   lensFiles: 'Arquivos',
   lensWeb: 'Web',

@@ -6,6 +6,22 @@ export const ja: Locale = {
   back: '戻る',
   cancel: 'キャンセル',
   close: '閉じる',
+  privacyTitle: 'プライバシー',
+  privacyIntro:
+    'Bruto はブラウザーの中で動きます。プロジェクトとノートはあなたのフォルダーで読み書きされ、どこにも送信されません。',
+  privacyMeasureTitle: '計測していること',
+  privacyMeasureText:
+    '公開サイトでは、改善点を知るために訪問数と使われた機能(デモやプロジェクトを開く、検索、構造ビュー、各レンズ、AI コンテキストのコピー、アプリのインストール)を数えます。各訪問で記録するのは、ページ、参照元サイト、おおよその国、デバイスの種類です。',
+  privacyNotTitle: '計測していないこと',
+  privacyNotText:
+    'Cookie は使わず、ブラウザーには何も保存しません。IP アドレスは保存しません。ブラウザー情報と合わせて、毎日変わる匿名 ID の計算に使うだけなので、日をまたいで追跡されることはありません。あなたが書いた内容がコンピューターの外に出ることはありません。',
+  privacyWhereTitle: '保存場所と期間',
+  privacyWhereText:
+    'データは Superveil(Vercel 上の自前カウンター、データベースは Supabase)に送られ、13 か月後に削除されます。',
+  privacyRightsTitle: 'あなたの権利',
+  privacyRightsText:
+    'あなたを特定する情報は保存しないため、照会や削除の対象となるデータはありません。プライバシーについての質問は GitHub の Issue でどうぞ。',
+  privacyContact: 'GitHub に書く',
   lenses: 'プロジェクトのビュー',
   lensFiles: 'ファイル',
   lensWeb: 'Web',

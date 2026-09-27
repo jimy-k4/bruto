@@ -6,6 +6,22 @@ export const en: Locale = {
   back: 'Back',
   cancel: 'Cancel',
   close: 'Close',
+  privacyTitle: 'Privacy',
+  privacyIntro:
+    'Bruto runs in your browser. Your projects and notes are read from and saved to your folders, and never sent anywhere.',
+  privacyMeasureTitle: 'What is measured',
+  privacyMeasureText:
+    'The published site counts visits and which features get used (opening the demo or a project, the search, the structure view, each lens, copying AI context, installing the app) to know what to improve. Each visit records the page, the site it came from, the approximate country and the kind of device.',
+  privacyNotTitle: 'What is not',
+  privacyNotText:
+    'No cookies, and nothing stored in your browser. Your IP address is not stored: together with your browser, it only feeds an anonymous identifier that changes every day, so nobody can follow you from one day to the next. Nothing you write leaves your computer.',
+  privacyWhereTitle: 'Where and for how long',
+  privacyWhereText:
+    'The data goes to Superveil, a self-hosted counter running on Vercel with its database on Supabase, and is deleted after 13 months.',
+  privacyRightsTitle: 'Your rights',
+  privacyRightsText:
+    'Since nothing that identifies you is stored, there is no data of yours to look up or delete. For any privacy question, open an issue on GitHub.',
+  privacyContact: 'Write on GitHub',
   lenses: 'Project views',
   lensFiles: 'Files',
   lensWeb: 'Web',
