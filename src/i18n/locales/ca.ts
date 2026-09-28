@@ -523,7 +523,8 @@ export const ca: Locale = {
   shortcutSave: 'Desar',
   shortcutSaveDescription: 'Desa ara. Bruto desa sol, així que gairebé mai no cal.',
   shortcutSwitchProject: 'Canviar de projecte',
-  shortcutSwitchProjectDescription: 'Salta al projecte obert número 1 a 9.',
+  shortcutSwitchProjectDescription:
+    'Salta al projecte obert número 1 a 9. Mantén Alt per veure quin número té cadascun.',
   shortcutEscape: 'Tancar o cancel·lar',
   shortcutEscapeDescription:
     "Tanca la finestra o l'editor, cancel·la la connexió o treu la selecció.",

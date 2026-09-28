@@ -519,7 +519,8 @@ export const es = {
   shortcutSave: 'Guardar',
   shortcutSaveDescription: 'Guarda ya. Bruto guarda solo, así que casi nunca hace falta.',
   shortcutSwitchProject: 'Cambiar de proyecto',
-  shortcutSwitchProjectDescription: 'Salta al proyecto abierto número 1 a 9.',
+  shortcutSwitchProjectDescription:
+    'Salta al proyecto abierto número 1 a 9. Mantén Alt para ver qué número tiene cada uno.',
   shortcutEscape: 'Cerrar o cancelar',
   shortcutEscapeDescription:
     'Cierra la ventana o el editor, cancela la conexión o quita la selección.',

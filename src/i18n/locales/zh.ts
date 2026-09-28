@@ -485,7 +485,7 @@ export const zh: Locale = {
   shortcutSave: '保存',
   shortcutSaveDescription: '立即保存。Bruto 会自动保存,所以很少需要。',
   shortcutSwitchProject: '切换项目',
-  shortcutSwitchProjectDescription: '跳到第 1 至 9 个已打开的项目。',
+  shortcutSwitchProjectDescription: '跳到第 1 至 9 个已打开的项目。按住 Alt 可查看每个项目的编号。',
   shortcutEscape: '关闭或取消',
   shortcutEscapeDescription: '关闭窗口或编辑器、取消关联,或取消选中。',
   shortcutHelp: '帮助',

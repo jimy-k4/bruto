@@ -3,6 +3,7 @@ import { useI18n } from '../i18n'
 import type { ProjectTab } from '../state/useProjects'
 import type { RecentProject } from '../storage/recentProjects'
 import { formatDate } from '../ui/format'
+import { useAltHold } from '../ui/useAltHold'
 
 interface ProjectSwitcherProps {
   current: ProjectTab
@@ -17,7 +18,10 @@ interface ProjectSwitcherProps {
 /** Recent projects listed in the menu; the landing page keeps the full list. */
 const MAX_RECENTS = 8
 
-/** Header menu with every open project (Alt+1…9 jumps straight to one) and the recent ones. */
+/**
+ * Header menu with every open project and the recent ones. Alt+1…9 jumps
+ * straight to an open one; holding Alt shows the menu with those numbers.
+ */
 export function ProjectSwitcher({
   current,
   tabs,
@@ -29,6 +33,8 @@ export function ProjectSwitcher({
 }: ProjectSwitcherProps) {
   const { t, language } = useI18n()
   const [open, setOpen] = useState(false)
+  // Holding Alt shows the list with its numbers, so nobody has to remember which is which.
+  const peeking = useAltHold()
   // Projects opened before and not open now: the ones worth offering again.
   const closedRecents = recents
     .filter((recent) => !tabs.some((tab) => tab.id === recent.id))
@@ -78,8 +84,8 @@ export function ProjectSwitcher({
         </span>
       </button>
 
-      {open && (
-        <div className="project-switcher__menu">
+      {(open || peeking) && (
+        <div className={`project-switcher__menu ${peeking && !open ? 'is-peeking' : ''}`}>
           <p className="eyebrow">{t('openProjects')}</p>
 
           <ul>

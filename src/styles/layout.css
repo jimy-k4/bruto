@@ -141,6 +141,13 @@
   font-size: var(--text-xs);
 }
 
+/* Shown while Alt is held: the numbers are what the user came for. */
+.project-switcher__menu.is-peeking kbd {
+  border-color: var(--signal);
+  background: var(--signal);
+  color: var(--signal-ink);
+}
+
 .project-switcher__project[aria-current='true'] {
   border-color: var(--signal);
   box-shadow: inset 4px 0 0 var(--signal);

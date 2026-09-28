@@ -524,7 +524,8 @@ export const fr: Locale = {
   shortcutSaveDescription:
     'Enregistre maintenant. Bruto enregistre tout seul, c’est rarement utile.',
   shortcutSwitchProject: 'Changer de projet',
-  shortcutSwitchProjectDescription: 'Passe au projet ouvert numéro 1 à 9.',
+  shortcutSwitchProjectDescription:
+    'Passe au projet ouvert numéro 1 à 9. Maintenez Alt pour voir le numéro de chacun.',
   shortcutEscape: 'Fermer ou annuler',
   shortcutEscapeDescription: 'Ferme la fenêtre ou l’éditeur, annule le lien ou vide la sélection.',
   shortcutHelp: 'Aide',

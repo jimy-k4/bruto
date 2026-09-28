@@ -522,7 +522,8 @@ export const ru: Locale = {
   shortcutSave: 'Сохранить',
   shortcutSaveDescription: 'Сохраняет сразу. Bruto сохраняет сам, так что это почти не нужно.',
   shortcutSwitchProject: 'Сменить проект',
-  shortcutSwitchProjectDescription: 'Переходит к открытому проекту с номером от 1 до 9.',
+  shortcutSwitchProjectDescription:
+    'Переходит к открытому проекту с номером от 1 до 9. Удерживайте Alt, чтобы увидеть номера.',
   shortcutEscape: 'Закрыть или отменить',
   shortcutEscapeDescription: 'Закрывает окно или редактор, отменяет связь или снимает выбор.',
   shortcutHelp: 'Справка',

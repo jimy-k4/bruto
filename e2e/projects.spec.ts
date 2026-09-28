@@ -120,3 +120,39 @@ test('the privacy notice says what is measured and what never leaves the browser
   await page.keyboard.press('Escape')
   await expect(dialog).toHaveCount(0)
 })
+
+test('holding Alt shows the open projects with their numbers', async ({ page }) => {
+  await openProject(page, workspaceWith([note('first')]))
+
+  await page.evaluate(async () => {
+    const root = await navigator.storage.getDirectory()
+    const other = await root.getDirectoryHandle('other', { create: true })
+    const bruto = await other.getDirectoryHandle('.bruto', { create: true })
+    const file = await (
+      await bruto.getFileHandle('workspace.json', { create: true })
+    ).createWritable()
+
+    await file.write(JSON.stringify({ notes: [{ id: 'second', title: 'SECOND' }] }))
+    await file.close()
+    Object.assign(window, { showDirectoryPicker: async () => other })
+  })
+  await page.getByRole('button', { name: 'DEMO', exact: true }).click()
+  await page.getByRole('button', { name: '+ Abrir proyecto' }).click()
+  await expect(noteCard(page, 'SECOND')).toBeVisible()
+
+  const menu = page.locator('.project-switcher__menu')
+
+  // A quick Alt+number shows nothing.
+  await page.keyboard.press('Alt+1')
+  await expect(noteCard(page, 'FIRST')).toBeVisible()
+  await expect(menu).toHaveCount(0)
+
+  // Held, the list appears with its numbers; Alt+2 still switches; letting go hides it.
+  await page.keyboard.down('Alt')
+  await expect(menu).toHaveClass(/is-peeking/)
+  await expect(menu).toContainText('Alt 2')
+  await page.keyboard.press('2')
+  await expect(noteCard(page, 'SECOND')).toBeVisible()
+  await page.keyboard.up('Alt')
+  await expect(menu).toHaveCount(0)
+})

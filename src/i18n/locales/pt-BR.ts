@@ -519,7 +519,8 @@ export const ptBR: Locale = {
   shortcutSave: 'Salvar',
   shortcutSaveDescription: 'Salva agora. O Bruto salva sozinho, então quase nunca é necessário.',
   shortcutSwitchProject: 'Trocar de projeto',
-  shortcutSwitchProjectDescription: 'Vai para o projeto aberto de número 1 a 9.',
+  shortcutSwitchProjectDescription:
+    'Vai para o projeto aberto de número 1 a 9. Segure Alt para ver o número de cada um.',
   shortcutEscape: 'Fechar ou cancelar',
   shortcutEscapeDescription: 'Fecha a janela ou o editor, cancela a conexão ou limpa a seleção.',
   shortcutHelp: 'Ajuda',

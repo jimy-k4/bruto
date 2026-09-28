@@ -516,7 +516,8 @@ export const en: Locale = {
   shortcutSave: 'Save',
   shortcutSaveDescription: 'Saves now. Bruto saves on its own, so it is rarely needed.',
   shortcutSwitchProject: 'Switch project',
-  shortcutSwitchProjectDescription: 'Jumps to open project number 1 to 9.',
+  shortcutSwitchProjectDescription:
+    'Jumps to open project number 1 to 9. Hold Alt to see which number each one has.',
   shortcutEscape: 'Close or cancel',
   shortcutEscapeDescription:
     'Closes the window or editor, cancels the connection or clears the selection.',

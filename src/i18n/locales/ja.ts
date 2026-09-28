@@ -513,7 +513,8 @@ export const ja: Locale = {
   shortcutSave: '保存',
   shortcutSaveDescription: 'すぐに保存します。Bruto は自動で保存するので、ほとんど必要ありません。',
   shortcutSwitchProject: 'プロジェクトを切り替え',
-  shortcutSwitchProjectDescription: '開いているプロジェクトの 1〜9 番目に移動します。',
+  shortcutSwitchProjectDescription:
+    '開いているプロジェクトの 1〜9 番目に移動します。Alt を押し続けると番号が表示されます。',
   shortcutEscape: '閉じる・キャンセル',
   shortcutEscapeDescription:
     'ウィンドウやエディターを閉じる、つながりを取り消す、または選択を解除します。',

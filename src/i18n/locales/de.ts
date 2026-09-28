@@ -527,7 +527,8 @@ export const de: Locale = {
   shortcutSave: 'Speichern',
   shortcutSaveDescription: 'Speichert sofort. Bruto speichert selbst, daher selten nötig.',
   shortcutSwitchProject: 'Projekt wechseln',
-  shortcutSwitchProjectDescription: 'Springt zum offenen Projekt Nummer 1 bis 9.',
+  shortcutSwitchProjectDescription:
+    'Springt zum offenen Projekt Nummer 1 bis 9. Halte Alt gedrückt, um die Nummern zu sehen.',
   shortcutEscape: 'Schließen oder abbrechen',
   shortcutEscapeDescription:
     'Schließt Fenster oder Editor, bricht die Verbindung ab oder hebt die Auswahl auf.',
