@@ -70,6 +70,23 @@ export interface Note {
   aiFilePaths?: string[]
   /** What the user found wrong when reviewing the AI's work. */
   feedback?: string
+  /** Notes in other projects this one blocks, waits on or relates to. */
+  crossLinks?: CrossLink[]
+}
+
+/** How a note relates to one in another project, seen from this note. */
+export type CrossLinkKind = 'blocks' | 'blocked-by' | 'related'
+
+export interface CrossLink {
+  kind: CrossLinkKind
+  /** The other project's folder name: how Bruto finds it again. */
+  project: string
+  /** Its id among this browser's recent projects, when known: a surer match. */
+  projectId?: string
+  noteId: string
+  /** The other note's title and status when last seen, shown while its project can't be read. */
+  title?: string
+  status?: NoteStatus
 }
 
 export interface Connection {

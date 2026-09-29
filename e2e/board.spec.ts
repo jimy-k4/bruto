@@ -573,3 +573,21 @@ test('a note holds several links, added, pasted and removed in the editor', asyn
     'https://d.dev',
   ])
 })
+
+test('the editor explains how to format a note, with each example rendered', async ({ page }) => {
+  await openProject(page, workspaceWith([note('alpha')]))
+  await noteCard(page, 'ALPHA').click()
+
+  await page.getByRole('button', { name: 'Formato' }).first().click()
+
+  const help = page.getByRole('dialog', { name: 'Dar formato al texto' })
+  await expect(help.getByRole('heading', { name: 'Título', level: 4 })).toBeVisible()
+  await expect(help.locator('td strong')).toHaveText('negrita')
+  await expect(help.getByRole('link', { name: 'un enlace' })).toBeVisible()
+  await expect(help.locator('.code-block')).toContainText('npm test')
+
+  // Escape closes the help and leaves the editor open.
+  await page.keyboard.press('Escape')
+  await expect(help).toBeHidden()
+  await expect(page.getByLabel('Título', { exact: true })).toBeVisible()
+})

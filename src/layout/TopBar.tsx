@@ -1,8 +1,10 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { AppTheme, Language } from '../types'
 import { SUPPORT_URL } from '../config'
 import { LANGUAGES } from '../domain/constants'
 import { useI18n } from '../i18n'
+import { NEWS, markNewsSeen, seenNews, unseenNews } from '../news/news'
+import { NewsDialog } from '../panels/NewsDialog'
 import { useInstallPrompt } from '../ui/installPrompt'
 
 interface TopBarProps {
@@ -18,6 +20,17 @@ interface TopBarProps {
 export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: TopBarProps) {
   const { t, language, setLanguage } = useI18n()
   const install = useInstallPrompt()
+  const [unread, setUnread] = useState(
+    () => new Set(unseenNews(seenNews()).map((entry) => entry.id)),
+  )
+  // What was unread when the board opened stays marked while it is open.
+  const [newsOpen, setNewsOpen] = useState<Set<string> | null>(null)
+
+  const openNews = () => {
+    setNewsOpen(unread)
+    markNewsSeen()
+    setUnread(new Set())
+  }
 
   return (
     <header className="topbar">
@@ -37,6 +50,22 @@ export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: T
         )}
 
         {actions}
+
+        <button
+          type="button"
+          className="button topbar__news"
+          onClick={openNews}
+          aria-label={
+            unread.size > 0 ? `${t('news')}, ${t('newsUnread', { count: unread.size })}` : undefined
+          }
+        >
+          {t('news')}
+          {unread.size > 0 && (
+            <span className="topbar__news-count" aria-hidden="true">
+              {unread.size}
+            </span>
+          )}
+        </button>
 
         <button type="button" className="button" onClick={onOpenHelp}>
           {t('help')}
@@ -79,6 +108,10 @@ export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: T
           </a>
         )}
       </nav>
+
+      {newsOpen && (
+        <NewsDialog entries={NEWS} unread={newsOpen} onClose={() => setNewsOpen(null)} />
+      )}
     </header>
   )
 }

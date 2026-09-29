@@ -587,3 +587,78 @@
   font: 400 34px / 1 var(--font-display);
   text-transform: uppercase;
 }
+
+/* Links to other projects ------------------------------------------------------- */
+
+/* Waiting on another project: hazard tape across the note, under its header. */
+.note__tape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 3px var(--space-3);
+  border-bottom: var(--border-heavy) solid var(--line);
+  font: 700 var(--text-xs) / 1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.note__tape span {
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.note__tape--blocked {
+  background: repeating-linear-gradient(-45deg, var(--status-blocked) 0 10px, var(--ink) 10px 20px);
+}
+
+/* Holding another project up: a band in the signal colour. */
+.note__tape--blocking {
+  background: var(--signal);
+}
+
+.note__tape--blocking span {
+  border-color: var(--signal-ink);
+  background: var(--signal);
+  color: var(--signal-ink);
+}
+
+.note__cross-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+
+.note__cross-link {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 1px solid currentColor;
+  background: none;
+  color: inherit;
+  font: 500 var(--text-xs) / 1.4 var(--font-mono);
+  text-align: left;
+  cursor: pointer;
+}
+
+.note__cross-link:hover {
+  background: var(--note-ink);
+  color: var(--note-bg);
+}
+
+.note__cross-link-kind {
+  flex: none;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.note__cross-link-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

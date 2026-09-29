@@ -55,6 +55,52 @@ test('switches between open projects with the menu and Alt+number', async ({ pag
   await expect(noteCard(page, 'FIRST')).toBeVisible()
 })
 
+test('each project keeps its zoom and position on the board', async ({ page }) => {
+  await openProject(page, workspaceWith([note('first')]))
+
+  await page.evaluate(async () => {
+    const root = await navigator.storage.getDirectory()
+    const other = await root.getDirectoryHandle('other', { create: true })
+    const bruto = await other.getDirectoryHandle('.bruto', { create: true })
+    const file = await (
+      await bruto.getFileHandle('workspace.json', { create: true })
+    ).createWritable()
+
+    await file.write(JSON.stringify({ notes: [{ id: 'second', title: 'SECOND' }] }))
+    await file.close()
+    Object.assign(window, { showDirectoryPicker: async () => other })
+  })
+
+  const zoom = page.getByRole('group', { name: 'Zoom' })
+  const first = noteCard(page, 'FIRST')
+
+  // Moved and zoomed out in the first project.
+  await page.mouse.move(700, 600)
+  await page.mouse.down({ button: 'middle' })
+  await page.mouse.move(900, 700, { steps: 5 })
+  await page.mouse.up({ button: 'middle' })
+  await zoom.getByRole('button', { name: 'Alejar' }).click()
+  await zoom.getByRole('button', { name: 'Alejar' }).click()
+  await expect(zoom).toContainText('76%')
+  const where = await first.boundingBox()
+
+  // The second project starts where it always did.
+  await page.getByRole('button', { name: 'DEMO', exact: true }).click()
+  await page.getByRole('button', { name: '+ Abrir proyecto' }).click()
+  await expect(noteCard(page, 'SECOND')).toBeVisible()
+  await expect(zoom).toContainText('100%')
+
+  // Back to the first: the board is where it was left, also after a reload.
+  await page.keyboard.press('Alt+1')
+  await expect(zoom).toContainText('76%')
+  expect(await first.boundingBox()).toEqual(where)
+
+  await page.reload()
+  await page.getByRole('button', { name: /^demo/i }).first().click()
+  await expect(zoom).toContainText('76%')
+  expect(await noteCard(page, 'FIRST').boundingBox()).toEqual(where)
+})
+
 test('the AI context window previews exactly what gets copied', async ({ page }) => {
   await openProject(page, workspaceWith([note('abc123-x', { title: 'Login', status: 'todo' })]))
 

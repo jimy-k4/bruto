@@ -17,6 +17,7 @@ import {
   isNotePattern,
   isNoteStatus,
 } from './constants'
+import { normalizeCrossLinks } from './crossLinks'
 
 /** Thrown when `workspace.json` can't be understood. The message is shown to the user. */
 export class WorkspaceFormatError extends Error {
@@ -87,6 +88,7 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   const aiResponse = asString(raw.aiResponse)
   const feedback = asString(raw.feedback)
   const aiFilePaths = asStringList(raw.aiFilePaths)
+  const crossLinks = normalizeCrossLinks(raw.crossLinks)
 
   // Unknown fields are kept so other tools never lose data through Bruto.
   const note: Note = {
@@ -110,11 +112,13 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   delete note.aiResponse
   delete note.feedback
   delete note.aiFilePaths
+  delete note.crossLinks
 
   if (status) note.status = status
   if (aiResponse.trim()) note.aiResponse = aiResponse
   if (aiFilePaths.length > 0) note.aiFilePaths = aiFilePaths
   if (feedback.trim()) note.feedback = feedback
+  if (crossLinks.length > 0) note.crossLinks = crossLinks
 
   return note
 }
@@ -540,13 +544,20 @@ export function insertNotes(
   const zStart = nextZIndex(workspace)
   const newIds = new Map(notes.map((note) => [note.id, crypto.randomUUID()]))
 
-  const copies = notes.map((note, index) => ({
-    ...structuredClone(note),
-    id: newIds.get(note.id)!,
-    x: Math.round(note.x + offset.x),
-    y: Math.round(note.y + offset.y),
-    zIndex: zStart + index,
-  }))
+  const copies = notes.map((note, index) => {
+    const copy: Note = {
+      ...structuredClone(note),
+      id: newIds.get(note.id)!,
+      x: Math.round(note.x + offset.x),
+      y: Math.round(note.y + offset.y),
+      zIndex: zStart + index,
+    }
+
+    // The other project's note points back at the original only: a copy's link would be one-sided.
+    delete copy.crossLinks
+
+    return copy
+  })
 
   const copiedConnections = connections
     .filter((connection) => newIds.has(connection.from) && newIds.has(connection.to))

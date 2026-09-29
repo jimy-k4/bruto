@@ -1,6 +1,7 @@
 import type { Workspace } from '../types'
 import { createEmptyWorkspace, serializeWorkspace } from '../domain/workspace'
 import {
+  exclusive,
   getWorkspaceFileStamp,
   readLatestValidBackup,
   readWorkspaceFile,
@@ -23,8 +24,8 @@ export function createWorkspaceIO(handle: FileSystemDirectoryHandle): WorkspaceI
   const title = projectTitle(handle)
 
   return {
-    read: () => readWorkspaceFile(handle, title),
-    write: (text) => writeWorkspaceFile(handle, text),
+    read: () => exclusive(handle, () => readWorkspaceFile(handle, title)),
+    write: (text) => exclusive(handle, () => writeWorkspaceFile(handle, text)),
     stamp: () => getWorkspaceFileStamp(handle),
   }
 }
@@ -33,7 +34,10 @@ export function createWorkspaceIO(handle: FileSystemDirectoryHandle): WorkspaceI
  * Reads the project's workspace, creating it on first use. A file that can't
  * be read is reported, never replaced: the user decides what to do.
  */
-export async function loadWorkspace(handle: FileSystemDirectoryHandle): Promise<LoadResult> {
+export const loadWorkspace = (handle: FileSystemDirectoryHandle) =>
+  exclusive(handle, () => loadWorkspaceNow(handle))
+
+async function loadWorkspaceNow(handle: FileSystemDirectoryHandle): Promise<LoadResult> {
   const title = projectTitle(handle)
   const disk = await readWorkspaceFile(handle, title)
 

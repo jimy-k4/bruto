@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Point } from '../types'
 import { ZOOM_MAX, ZOOM_MIN } from '../domain/constants'
 import type { Rect } from './geometry'
@@ -10,14 +10,70 @@ export interface BoardView {
 
 const clampZoom = (zoom: number) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoom))
 
+const HOME: BoardView = { pan: { x: 0, y: 0 }, zoom: 1 }
+
+/** Each project's camera lives in this browser, not in `workspace.json`: panning isn't a change to the project. */
+const storageKey = (projectId: string) => `bruto-view:${projectId}`
+
+/** Where a project's board was left, or the start when it was never opened here. */
+export function savedView(projectId: string | undefined): BoardView {
+  if (!projectId) return HOME
+
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(storageKey(projectId)) ?? 'null')
+    const { x, y, zoom } = (saved ?? {}) as Record<string, unknown>
+
+    if ([x, y, zoom].every((value) => typeof value === 'number' && Number.isFinite(value)))
+      return { pan: { x: x as number, y: y as number }, zoom: clampZoom(zoom as number) }
+  } catch {
+    // Unreadable or blocked storage: start at the beginning.
+  }
+
+  return HOME
+}
+
+function saveView(projectId: string, { pan, zoom }: BoardView) {
+  try {
+    localStorage.setItem(storageKey(projectId), JSON.stringify({ x: pan.x, y: pan.y, zoom }))
+  } catch {
+    // Without storage the camera only lasts while the project is open.
+  }
+}
+
+/** Panning fires on every pointer move: the camera is written once it settles. */
+const SAVE_DELAY = 400
+
 /**
  * Pan and zoom of the board. Attach `canvasRef` to the visible board area;
- * world coordinates are the notes' own x/y.
+ * world coordinates are the notes' own x/y. With a `projectId`, the camera is
+ * remembered per project: switching back finds the board where it was left.
  */
-export function useBoardView() {
-  const [view, setView] = useState<BoardView>({ pan: { x: 0, y: 0 }, zoom: 1 })
+export function useBoardView(projectId?: string) {
+  const [view, setView] = useState<BoardView>(() => savedView(projectId))
   const viewRef = useRef(view)
   const canvasRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!projectId) return
+
+    const timer = window.setTimeout(() => saveView(projectId, view), SAVE_DELAY)
+
+    return () => window.clearTimeout(timer)
+  }, [projectId, view])
+
+  // Leaving the project (or the page) before the delay still keeps the last position.
+  useEffect(() => {
+    if (!projectId) return
+
+    const flush = () => saveView(projectId, viewRef.current)
+
+    window.addEventListener('pagehide', flush)
+
+    return () => {
+      window.removeEventListener('pagehide', flush)
+      flush()
+    }
+  }, [projectId])
 
   const apply = useCallback((next: BoardView) => {
     viewRef.current = next
@@ -56,7 +112,7 @@ export function useBoardView() {
       zoomAround,
       zoomIn: () => zoomAround(1.15),
       zoomOut: () => zoomAround(1 / 1.15),
-      reset: () => apply({ pan: { x: 0, y: 0 }, zoom: 1 }),
+      reset: () => apply(HOME),
       panBy: (dx: number, dy: number) => {
         const { pan, zoom } = viewRef.current
 

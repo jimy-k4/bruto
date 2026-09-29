@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { Note, Point, Workspace } from '../types'
+import type { CrossLink, Note, Point, Workspace } from '../types'
+import type { LinkedNoteInfo } from '../domain/crossLinks'
 import { useI18n } from '../i18n'
 import { ConnectionLayer } from './ConnectionLayer'
 import { NoteCard, type NoteCardHandlers, type NoteFlash } from './NoteCard'
@@ -20,6 +21,8 @@ export interface BoardCallbacks {
   onConnect: (from: string, to: string) => void
   onSelectConnection: (id: string | null) => void
   onDeleteConnection: (id: string) => void
+  /** Follows a link to a note in another project. */
+  onOpenLink: (link: CrossLink) => void
 }
 
 interface BoardProps extends BoardCallbacks {
@@ -34,6 +37,8 @@ interface BoardProps extends BoardCallbacks {
   flash: { ids: string[]; kind: Exclude<NoteFlash, null> } | null
   /** Notes found by the board search; `null` when nothing is being searched. */
   matchIds: Set<string> | null
+  /** Linked notes in other projects, as read from them. */
+  linkInfo: Map<string, LinkedNoteInfo>
 }
 
 /** A drag becomes a move only after this many screen pixels; below it, it's a click. */
@@ -213,6 +218,7 @@ export function Board(props: BoardProps) {
   const handlers = useMemo<NoteCardHandlers>(
     () => ({
       observe: props.observe,
+      onOpenLink: (link: CrossLink) => latest.current.onOpenLink(link),
       onPointerDown: handleNotePointerDown,
       onDoubleClick: (event, note) => {
         event.stopPropagation()
@@ -393,6 +399,7 @@ export function Board(props: BoardProps) {
             dragging={draggingId !== null && selected.has(note.id) ? true : draggingId === note.id}
             flash={flashed.has(note.id) ? flash!.kind : null}
             searchMark={matchIds ? (matchIds.has(note.id) ? 'match' : 'dimmed') : null}
+            linkInfo={props.linkInfo}
             handlers={handlers}
           />
         ))}
