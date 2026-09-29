@@ -47,7 +47,7 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
   const { t } = useI18n()
   const toast = useToast()
   const { workspace } = useSyncExternalStore(project.store.subscribe, project.store.getSnapshot)
-  const { canvasRef, view } = useBoardView()
+  const { canvasRef, view } = useBoardView(project.id)
   const { sizes, observe } = useNoteSizes()
   const clipboard = useNoteClipboard()
   const ui = useWorkspaceUi(workspace, project.store)
