@@ -129,14 +129,15 @@ always apply the notes whose status is "loop".
 ### As an MCP server
 
 Agents that speak MCP (Claude Code, Claude Desktop, Cursor, Windsurf…) can use the board through
-tools instead of editing the file: list the notes, read the context, answer a note and send it to
-review, propose new ones. It runs on your machine, next to your project:
+tools instead of editing the file: list and search the notes, read the context, mark one in progress,
+answer it and send it to review, propose new ones. It runs on your machine, and once added works in
+every project with a board:
 
 ```bash
-claude mcp add bruto -- npx -y bruto-mcp
+claude mcp add --scope user bruto -- npx -y bruto-mcp
 ```
 
-Other clients and every tool: [mcp/README.md](mcp/README.md).
+Other clients, Windows and every tool: [mcp/README.md](mcp/README.md).
 
 ## The workspace file
 

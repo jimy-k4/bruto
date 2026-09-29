@@ -10,11 +10,14 @@ else. Bruto, if it's open, shows each change as soon as it's written.
 
 It needs Node.js 20 or newer.
 
-**Claude Code**, from the project folder:
+**Claude Code**, once for every project (the server finds the board of the folder you work in):
 
 ```bash
-claude mcp add bruto -- npx -y bruto-mcp
+claude mcp add --scope user bruto -- npx -y bruto-mcp
 ```
+
+Without `--scope user`, it's added to the current project only. Check it with `claude mcp list`: it
+should say `✓ Connected` (the first time takes a few seconds while `npx` downloads it).
 
 Or, to share it with everyone who opens the project (Claude Code in the terminal, the desktop app or
 an IDE), a `.mcp.json` file at its root:
@@ -48,7 +51,14 @@ several projects.
 ### On Windows
 
 Clients can't start `npx` directly: run it through `cmd`. Behind a company proxy that inspects HTTPS,
-Node also needs the system's certificates to download the package:
+Node also needs the system's certificates to download the package. With Claude Code, in PowerShell,
+quote the `--` (Windows PowerShell drops it otherwise, and `claude` reads `-y` as its own option):
+
+```powershell
+claude mcp add --scope user bruto -e NODE_OPTIONS=--use-system-ca '--' cmd /c npx -y bruto-mcp
+```
+
+In a client's settings or a `.mcp.json`:
 
 ```json
 {

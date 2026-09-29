@@ -48,7 +48,7 @@ const AGENTS_LINE =
   'Tasks for this project are in `.bruto/workspace.json`. Work on notes whose status is "todo".'
 
 /** The MCP server (mcp/ in the repository), as Claude Code adds it. */
-const MCP_LINE = 'claude mcp add bruto -- npx -y bruto-mcp'
+const MCP_LINE = 'claude mcp add --scope user bruto -- npx -y bruto-mcp'
 
 /** Screenshots of the example project, taken in every language (`npm run shots`). */
 const shot = (language: string, name: string) =>
