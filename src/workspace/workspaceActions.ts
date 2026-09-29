@@ -3,12 +3,14 @@ import type {
   NoteStatus,
   Point,
   StatusStyleConfig,
+  StyleKey,
   Workspace,
   WorkspaceDocumentation,
 } from '../types'
 import { track } from '../ui/analytics'
 import { buildAiContext, estimateTokens, getContextNoteIds } from '../domain/aiContext'
 import { copyNotes, pasteNotes } from '../domain/clipboard'
+import { kindOf, type KindFilter } from '../domain/search'
 import { NOTE_MIN_SIZE } from '../domain/constants'
 import {
   addConnection,
@@ -381,6 +383,15 @@ export function createWorkspaceActions({
       ui.select(current().notes.map((note) => note.id))
     },
 
+    /** Selects the notes of a kind ("task" for those without one) and brings them into view. */
+    selectKind(kind: KindFilter) {
+      const notes = current().notes.filter((note) => kindOf(note) === kind)
+      const box = boundingRect(notes.map((note) => noteRect(note, sizes)))
+
+      ui.select(notes.map((note) => note.id))
+      if (box) view.centerOn(box)
+    },
+
     selectStatus(status: NoteStatus) {
       const notes = current().notes.filter((note) => note.status === status)
       const box = boundingRect(notes.map((note) => noteRect(note, sizes)))
@@ -457,7 +468,7 @@ export function createWorkspaceActions({
       await actions.copyStatusStylesFrom(source)
     },
 
-    setStatusStyle(status: NoteStatus, config: StatusStyleConfig | undefined) {
+    setStatusStyle(status: StyleKey, config: StatusStyleConfig | undefined) {
       store.update((workspace) => setStatusStyle(workspace, status, config))
     },
 

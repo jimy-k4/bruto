@@ -323,12 +323,10 @@ export const ptBR: Locale = {
   statusBlocked: 'Bloqueada',
   statusReview: 'Para revisar',
   statusDone: 'Concluída',
-  statusBug: 'Defeito',
+  kindBug: 'Defeito',
   statusChangesRequested: 'A corrigir',
   statusWontfix: 'Descartada',
-  statusLoop: 'Loop contínuo',
-
-  // Note editor
+  kindRule: 'Regra',
   editNote: 'Editar nota',
   title: 'Título',
   description: 'Descrição',
@@ -355,8 +353,8 @@ export const ptBR: Locale = {
   feedback: 'O que está errado',
   feedbackPlaceholder: 'Depois de revisar a resposta: o que ainda está errado ou faltando.',
   feedbackStatusHint: 'A IA precisa corrigir algo? Passe a nota para “{status}” para ela saber.',
-  loopStatusHint:
-    'Regra permanente: a IA a aplica em cada tarefa, mesmo sem estar selecionada, e nunca muda seu status.',
+  ruleHint:
+    'Regra permanente: a IA a aplica em cada tarefa, mesmo sem estar selecionada, e nunca a responde. Para retirá-la, marque-a como “{done}” ou “{wontfix}”.',
   markAsStatus: 'Marcar como “{status}”',
   color: 'Cor',
   pattern: 'Padrão',
@@ -589,4 +587,7 @@ export const ptBR: Locale = {
   shortcutAltDrag: 'Duplicar arrastando',
   shortcutAltDragDescription:
     'Arraste uma nota com Alt pressionada: a original fica e você leva a cópia.',
+  kind: 'Tipo',
+  kindTask: 'Tarefa',
+  filterByKind: 'Filtrar por tipo',
 }

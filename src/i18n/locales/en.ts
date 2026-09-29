@@ -321,12 +321,10 @@ export const en: Locale = {
   statusBlocked: 'Blocked',
   statusReview: 'To review',
   statusDone: 'Done',
-  statusBug: 'Bug',
+  kindBug: 'Bug',
   statusChangesRequested: 'Changes requested',
   statusWontfix: "Won't fix",
-  statusLoop: 'Loop',
-
-  // Note editor
+  kindRule: 'Rule',
   editNote: 'Edit note',
   title: 'Title',
   description: 'Description',
@@ -353,8 +351,8 @@ export const en: Locale = {
   feedback: "What's wrong",
   feedbackPlaceholder: 'After reviewing the answer: what is still wrong or missing.',
   feedbackStatusHint: 'Does the AI need to fix something? Move the note to “{status}” so it knows.',
-  loopStatusHint:
-    "Standing rule: the AI applies it on every task, even when it isn't selected, and never changes its status.",
+  ruleHint:
+    "Standing rule: the AI applies it on every task, even when it isn't selected, and never answers it. To retire it, mark it “{done}” or “{wontfix}”.",
   markAsStatus: 'Mark as “{status}”',
   color: 'Colour',
   pattern: 'Pattern',
@@ -586,4 +584,7 @@ export const en: Locale = {
   shortcutAltDrag: 'Duplicate by dragging',
   shortcutAltDragDescription:
     'Drag a note while holding Alt: the original stays and you carry the copy.',
+  kind: 'Kind',
+  kindTask: 'Task',
+  filterByKind: 'Filter by kind',
 }

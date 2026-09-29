@@ -2,10 +2,10 @@ import { useEffect, useId, useRef, useState } from 'react'
 import type { CrossLink, Note, NoteStatus } from '../types'
 import type { LinkedNoteInfo } from '../domain/crossLinks'
 import type { ActiveProject } from '../state/useProjects'
-import { NOTE_STATUSES } from '../domain/constants'
+import { NOTE_KINDS, NOTE_STATUSES } from '../domain/constants'
 import { codeBlocks } from '../domain/richText'
 import { shortId, type NotePatch } from '../domain/workspace'
-import { statusLabel, useI18n } from '../i18n'
+import { kindLabel, statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
 import { CrossLinksField } from './CrossLinksField'
 import { FormatHelp } from './FormatHelp'
@@ -51,6 +51,7 @@ export function NoteEditor({
   const ids = {
     title: useId(),
     status: useId(),
+    kind: useId(),
     description: useId(),
     ai: useId(),
     feedback: useId(),
@@ -131,6 +132,28 @@ export function NoteEditor({
           />
         </div>
 
+        <fieldset className="field">
+          <legend className="field__label">{t('kind')}</legend>
+          <div className="segmented">
+            {[undefined, ...NOTE_KINDS].map((kind) => (
+              <label key={kind ?? 'task'} className="segmented__option">
+                <input
+                  type="radio"
+                  name={ids.kind}
+                  checked={note.kind === kind}
+                  onChange={() => onChange({ kind })}
+                />
+                <span>{kindLabel(t, kind)}</span>
+              </label>
+            ))}
+          </div>
+          {note.kind === 'rule' && (
+            <p className="field__hint">
+              {t('ruleHint', { done: statusLabel(t, 'done'), wontfix: statusLabel(t, 'wontfix') })}
+            </p>
+          )}
+        </fieldset>
+
         <div className="field">
           <label className="field__label" htmlFor={ids.status}>
             {t('status')}
@@ -152,7 +175,6 @@ export function NoteEditor({
               ))}
             </select>
           </div>
-          {note.status === 'loop' && <p className="field__hint">{t('loopStatusHint')}</p>}
           <button type="button" className="link-button" onClick={onOpenStatusStyles}>
             {t('customizeStatuses')} →
           </button>
@@ -357,20 +379,18 @@ export function NoteEditor({
 
           {/* Written feedback only reaches the AI if the note goes back to it. */}
           {/* A rule stays a rule: feedback on it is read on the next task anyway. */}
-          {note.feedback?.trim() &&
-            note.status !== 'changes-requested' &&
-            note.status !== 'loop' && (
-              <div className="suggestion">
-                <p>{t('feedbackStatusHint', { status: statusLabel(t, 'changes-requested') })}</p>
-                <button
-                  type="button"
-                  className="button button--small"
-                  onClick={() => onChange({ status: 'changes-requested' })}
-                >
-                  {t('markAsStatus', { status: statusLabel(t, 'changes-requested') })}
-                </button>
-              </div>
-            )}
+          {note.feedback?.trim() && note.status !== 'changes-requested' && note.kind !== 'rule' && (
+            <div className="suggestion">
+              <p>{t('feedbackStatusHint', { status: statusLabel(t, 'changes-requested') })}</p>
+              <button
+                type="button"
+                className="button button--small"
+                onClick={() => onChange({ status: 'changes-requested' })}
+              >
+                {t('markAsStatus', { status: statusLabel(t, 'changes-requested') })}
+              </button>
+            </div>
+          )}
         </div>
 
         <ColorPicker

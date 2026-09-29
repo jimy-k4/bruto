@@ -2,18 +2,23 @@ import type {
   Connection,
   DocumentationType,
   Note,
+  NoteKind,
   NoteStatus,
   Point,
   StatusStyleConfig,
   StatusStyles,
+  StyleKey,
   Workspace,
   WorkspaceDocumentation,
 } from '../types'
 import {
+  CLOSED_STATUSES,
   DUPLICATE_OFFSET,
-  NOTE_STATUSES,
+  KIND_STYLE_KEY,
+  STYLE_KEYS,
   WORKSPACE_VERSION,
   isNoteColor,
+  isNoteKind,
   isNotePattern,
   isNoteStatus,
 } from './constants'
@@ -68,12 +73,25 @@ const STATUS_ALIASES: Record<string, NoteStatus> = {
   'changes requested': 'changes-requested',
   rework: 'changes-requested',
   'a corregir': 'changes-requested',
-  bucle: 'loop',
-  always: 'loop',
-  siempre: 'loop',
-  rule: 'loop',
-  regla: 'loop',
 }
+
+/**
+ * Words for a kind, in `kind` or, as files up to v3 have it, in `status`:
+ * "bug" and "loop" were statuses before they became kinds.
+ */
+const KIND_ALIASES: Record<string, NoteKind> = {
+  bug: 'bug',
+  error: 'bug',
+  rule: 'rule',
+  regla: 'rule',
+  loop: 'rule',
+  bucle: 'rule',
+  always: 'rule',
+  siempre: 'rule',
+}
+
+const kindWord = (value: unknown): NoteKind | undefined =>
+  typeof value === 'string' ? KIND_ALIASES[value.trim().toLowerCase()] : undefined
 
 function normalizeStatus(value: unknown): NoteStatus | undefined {
   if (isNoteStatus(value)) {
@@ -84,7 +102,14 @@ function normalizeStatus(value: unknown): NoteStatus | undefined {
 }
 
 function normalizeNote(raw: UnknownRecord, index: number): Note {
-  const status = normalizeStatus(raw.status)
+  // A v3 bug was a status: it becomes a bug still to do. A v3 rule had no other status.
+  const statusKind = kindWord(raw.status)
+  const kind = isNoteKind(raw.kind) ? raw.kind : (kindWord(raw.kind) ?? statusKind)
+  const status = statusKind
+    ? statusKind === 'bug'
+      ? 'todo'
+      : undefined
+    : normalizeStatus(raw.status)
   const aiResponse = asString(raw.aiResponse)
   const feedback = asString(raw.feedback)
   const aiFilePaths = asStringList(raw.aiFilePaths)
@@ -109,12 +134,14 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   // One link used to be `webUrl`: it becomes the first of the list.
   Reflect.deleteProperty(note, 'webUrl')
   delete note.status
+  delete note.kind
   delete note.aiResponse
   delete note.feedback
   delete note.aiFilePaths
   delete note.crossLinks
 
   if (status) note.status = status
+  if (kind) note.kind = kind
   if (aiResponse.trim()) note.aiResponse = aiResponse
   if (aiFilePaths.length > 0) note.aiFilePaths = aiFilePaths
   if (feedback.trim()) note.feedback = feedback
@@ -130,9 +157,9 @@ function normalizeStatusStyles(value: unknown): StatusStyles | undefined {
 
   const styles: StatusStyles = {}
 
-  for (const status of NOTE_STATUSES) {
+  for (const key of STYLE_KEYS) {
     // The old "issue" status became "changes-requested": keep its look.
-    const config = value[status] ?? (status === 'changes-requested' ? value.issue : undefined)
+    const config = value[key] ?? (key === 'changes-requested' ? value.issue : undefined)
 
     if (!isRecord(config)) continue
 
@@ -140,7 +167,7 @@ function normalizeStatusStyles(value: unknown): StatusStyles | undefined {
 
     if (isNoteColor(config.color)) entry.color = config.color
     if (isNotePattern(config.pattern)) entry.pattern = config.pattern
-    if (entry.color || entry.pattern) styles[status] = entry
+    if (entry.color || entry.pattern) styles[key] = entry
   }
 
   return Object.keys(styles).length > 0 ? styles : undefined
@@ -246,8 +273,10 @@ function looksLike(note: Pick<Note, 'colorTheme' | 'pattern'>, config: StatusSty
  */
 function restyleIfStale(note: Note, styles: StatusStyles): Note {
   const current = note.status ? styles[note.status] : undefined
+  const kindLook = note.kind ? styles[KIND_STYLE_KEY[note.kind]] : undefined
 
   if (!note.status || !current || looksLike(note, current)) return note
+  if (kindLook && looksLike(note, kindLook)) return note
 
   const automatic =
     (note.colorTheme === DEFAULT_LOOK.colorTheme && note.pattern === DEFAULT_LOOK.pattern) ||
@@ -318,6 +347,10 @@ export function nextZIndex(workspace: Workspace): number {
   return Math.max(0, ...workspace.notes.map((note) => note.zIndex)) + 1
 }
 
+/** A rule the AI applies on every task: of kind rule, and not retired by closing it. */
+export const isStandingRule = (note: Note) =>
+  note.kind === 'rule' && !(note.status && CLOSED_STATUSES.includes(note.status))
+
 export function findNote(workspace: Workspace, id: string | null | undefined): Note | undefined {
   return id ? workspace.notes.find((note) => note.id === id) : undefined
 }
@@ -344,8 +377,8 @@ export function getConnectedNoteIds(workspace: Workspace, startId: string): Set<
 // ---------------------------------------------------------------------------
 // Status styles
 
-function styleFor(status: NoteStatus, styles: StatusStyles | undefined): Partial<Note> {
-  const config = styles?.[status]
+function styleFor(key: StyleKey, styles: StatusStyles | undefined): Partial<Note> {
+  const config = styles?.[key]
   const patch: Partial<Note> = {}
 
   if (config?.color) patch.colorTheme = config.color
@@ -355,23 +388,33 @@ function styleFor(status: NoteStatus, styles: StatusStyles | undefined): Partial
 }
 
 /**
- * Applies the configured look of the new status to every note whose status
- * changed between `before` and `after`. Used both for edits in the app and for
- * status changes an AI wrote straight into the file.
+ * Applies the configured look of the new status, or of the new kind, to every
+ * note whose status or kind changed between `before` and `after`. Used both
+ * for edits in the app and for changes an AI wrote straight into the file.
  */
 export function applyStatusStylesToChangedNotes(before: Workspace, after: Workspace): Workspace {
   if (!after.statusStyles) {
     return after
   }
 
-  const previousStatus = new Map(before.notes.map((note) => [note.id, note.status]))
+  const previous = new Map(before.notes.map((note) => [note.id, note]))
   let changed = false
 
   const notes = after.notes.map((note) => {
-    if (!note.status || !previousStatus.has(note.id)) return note
-    if (previousStatus.get(note.id) === note.status) return note
+    const old = previous.get(note.id)
 
-    const patch = styleFor(note.status, after.statusStyles)
+    if (!old) return note
+
+    const key =
+      note.kind && note.kind !== old.kind
+        ? KIND_STYLE_KEY[note.kind]
+        : note.status && note.status !== old.status
+          ? note.status
+          : undefined
+
+    if (!key) return note
+
+    const patch = styleFor(key, after.statusStyles)
 
     if (Object.keys(patch).length === 0) return note
 
@@ -383,14 +426,18 @@ export function applyStatusStylesToChangedNotes(before: Workspace, after: Worksp
   return changed ? { ...after, notes } : after
 }
 
+/** Whether a note is of the status or kind a style key stands for. */
+const wears = (note: Note, key: StyleKey) =>
+  note.status === key || (note.kind !== undefined && KIND_STYLE_KEY[note.kind] === key)
+
 /**
- * Sets (or clears) the look of one status. Notes of that status that still use
+ * Sets (or clears) the look of one status or kind. Notes of it that still use
  * the previous automatic look follow the change; notes customised by hand keep
  * their own look.
  */
 export function setStatusStyle(
   workspace: Workspace,
-  status: NoteStatus,
+  status: StyleKey,
   config: StatusStyleConfig | undefined,
 ): Workspace {
   const previous = workspace.statusStyles?.[status]
@@ -406,7 +453,7 @@ export function setStatusStyle(
   }
 
   const notes = workspace.notes.map((note) => {
-    if (note.status !== status) return note
+    if (!wears(note, status)) return note
 
     const patch: Partial<Note> = {}
 
@@ -441,7 +488,7 @@ export function replaceStatusStyles(
   workspace: Workspace,
   styles: StatusStyles | undefined,
 ): Workspace {
-  return NOTE_STATUSES.reduce(
+  return STYLE_KEYS.reduce(
     (next, status) => setStatusStyle(next, status, styles?.[status]),
     workspace,
   )
@@ -494,13 +541,16 @@ export function updateNotes(workspace: Workspace, ids: string[], patch: NotePatc
       }
 
       if ('status' in patch && !patch.status) delete updated.status
+      if ('kind' in patch && !patch.kind) delete updated.kind
       if ('aiFilePaths' in patch && !updated.aiFilePaths?.length) delete updated.aiFilePaths
 
       return updated
     }),
   }
 
-  return 'status' in patch ? applyStatusStylesToChangedNotes(workspace, next) : next
+  return 'status' in patch || 'kind' in patch
+    ? applyStatusStylesToChangedNotes(workspace, next)
+    : next
 }
 
 export function deleteNotes(workspace: Workspace, ids: string[]): Workspace {

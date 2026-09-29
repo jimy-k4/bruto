@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { z } from 'zod'
 import type { NoteStatus } from '../../src/types'
 import { NOTE_STATUSES } from '../../src/domain/constants'
+import type { KindFilter } from '../../src/domain/search'
 import { BoardError, findProject } from './board'
 import {
   answerNote,
@@ -43,6 +44,31 @@ function projectRoot(given?: string, { mayCreate = false } = {}): string {
 }
 
 const status = z.enum(NOTE_STATUSES as [NoteStatus, ...NoteStatus[]])
+const kind = z.enum(['task', 'bug', 'rule'])
+/** Filters by status also take "bug" and "loop", which were statuses until v4: they mean kinds now. */
+const statusFilter = z
+  .array(z.union([status, z.enum(['bug', 'loop'])]))
+  .optional()
+  .describe('Only notes with one of these statuses.')
+const kindFilter = z
+  .array(kind)
+  .optional()
+  .describe('Only notes of one of these kinds: "task", "bug" or "rule" (standing rules).')
+
+/** Splits a status filter into statuses and the kinds its old words stand for. */
+function filters(args: { status?: string[]; kind?: KindFilter[] }) {
+  const statuses = (args.status ?? []).filter((item): item is NoteStatus =>
+    (NOTE_STATUSES as readonly string[]).includes(item),
+  )
+  const kinds = [
+    ...(args.kind ?? []),
+    ...(args.status ?? []).flatMap((item): KindFilter[] =>
+      item === 'bug' ? ['bug'] : item === 'loop' ? ['rule'] : [],
+    ),
+  ]
+
+  return { statuses, kinds }
+}
 const project = z
   .string()
   .optional()
@@ -71,10 +97,11 @@ server.registerTool(
   {
     title: 'List notes',
     description:
-      'Lists the notes (tasks) on the Bruto board of a project with their short id and status. By default the open ones; filter by status, e.g. ["todo"] or ["changes-requested"].',
+      'Lists the notes on the Bruto board of a project with their short id, status and kind (bug, rule; none for a task). By default the open ones; filter by status, e.g. ["todo"] or ["changes-requested"], or by kind, e.g. ["bug"].',
     inputSchema: {
       project,
-      status: z.array(status).optional().describe('Only notes with one of these statuses.'),
+      status: statusFilter,
+      kind: kindFilter,
       includeClosed: z.boolean().optional().describe('Also list done and won’t-fix notes.'),
     },
     annotations: READS,
@@ -82,7 +109,7 @@ server.registerTool(
   (args) =>
     run(() =>
       listNotes(projectRoot(args.project), {
-        statuses: args.status,
+        ...filters(args),
         includeClosed: args.includeClosed,
       }),
     ),
@@ -93,7 +120,7 @@ server.registerTool(
   {
     title: 'Get context',
     description:
-      'The project context for the AI, as Markdown: instructions, documentation, global context, notes with their files, answers and feedback, relationships and standing rules (notes with status "loop", to apply on every task). Without ids, the whole board.',
+      'The project context for the AI, as Markdown: instructions, documentation, global context, notes with their files, answers and feedback, relationships and standing rules (notes of kind "rule", to apply on every task). Without ids, the whole board.',
     inputSchema: {
       project,
       ids: z
@@ -127,7 +154,7 @@ server.registerTool(
   {
     title: 'Answer note',
     description:
-      'Writes what you did in a note, adds the files you created or changed, and sets its status ("review" by default) so the user can review it. On a note with status "changes-requested", fix what its feedback says first; the feedback is cleared. Put commands and code in Markdown code blocks (```): the note shows each one with a copy button. Never use it on standing rules (status "loop").',
+      'Writes what you did in a note, adds the files you created or changed, and sets its status ("review" by default) so the user can review it. On a note with status "changes-requested", fix what its feedback says first; the feedback is cleared. Put commands and code in Markdown code blocks (```): the note shows each one with a copy button. Never use it on standing rules (kind "rule").',
     inputSchema: {
       project,
       id: z.string().describe('Short id of the note.'),
@@ -152,12 +179,18 @@ server.registerTool(
   {
     title: 'Create note',
     description:
-      'Adds a note to the board: a task you propose or found while working. It starts as an "idea" unless you give another status, so the user decides what to do with it. Starts a board if the project has none.',
+      'Adds a note to the board: a task or a bug you propose or found while working. It starts as an "idea" unless you give another status, so the user decides what to do with it. Starts a board if the project has none.',
     inputSchema: {
       project,
       title: z.string().min(1),
       description: z.string().optional(),
       status: status.optional().describe('Defaults to "idea".'),
+      kind: z
+        .enum(['task', 'bug'])
+        .optional()
+        .describe(
+          '"bug" for something broken; a task by default. Standing rules are the user’s to write.',
+        ),
       files: z.array(z.string()).optional().describe('Files it is about, relative to the project.'),
       links: z.array(z.string()).optional().describe('Web links: docs, an issue, a design.'),
       after: z
@@ -177,16 +210,17 @@ server.registerTool(
   {
     title: 'Search notes',
     description:
-      'Finds notes by words in their title, text, files, links, answer or feedback, or by the start of their id; optionally only in some statuses.',
+      'Finds notes by words in their title, text, files, links, answer or feedback, or by the start of their id; optionally only in some statuses or kinds.',
     inputSchema: {
       project,
       query: z.string().optional().describe('Every word must appear, e.g. "login redirect".'),
-      status: z.array(status).optional().describe('Only notes with one of these statuses.'),
+      status: statusFilter,
+      kind: kindFilter,
     },
     annotations: READS,
   },
   (args) =>
-    run(() => searchNotes(projectRoot(args.project), { query: args.query, statuses: args.status })),
+    run(() => searchNotes(projectRoot(args.project), { query: args.query, ...filters(args) })),
 )
 
 server.registerTool(
@@ -194,7 +228,7 @@ server.registerTool(
   {
     title: 'Set status',
     description:
-      'Changes where a note stands without answering it. Set "in-progress" when you start on a note, so the user sees on the board what you are working on; use answer_note when you finish. Standing rules (status "loop") keep their status.',
+      'Changes where a note stands without answering it. Set "in-progress" when you start on a note, so the user sees on the board what you are working on; use answer_note when you finish. Standing rules (kind "rule") keep their status.',
     inputSchema: {
       project,
       id: z.string().describe('Short id of the note.'),
@@ -240,7 +274,7 @@ server.registerPrompt(
             `3. Then the notes with status "${status || 'todo'}", one by one.`,
             '4. Before starting a note, call set_status with "in-progress": the user sees it on the board.',
             '5. After each one, call answer_note with what you did and the files you touched.',
-            'Apply every standing rule (status "loop") on each task, and never answer them.',
+            'Apply every standing rule (kind "rule") on each task, and never answer them.',
           ].join('\n'),
         },
       },

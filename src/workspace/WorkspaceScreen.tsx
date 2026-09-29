@@ -7,7 +7,7 @@ import { EmptyBoard, NewNoteButton, SelectionBar, ZoomControls } from '../board/
 import { useBoardView } from '../board/useBoardView'
 import { useNoteSizes } from '../board/useNoteSizes'
 import { NOTE_STATUSES } from '../domain/constants'
-import { EMPTY_SEARCH, isSearchActive, searchNotes } from '../domain/search'
+import { EMPTY_SEARCH, isSearchActive, kindOf, searchNotes } from '../domain/search'
 import { useI18n } from '../i18n'
 import { ProjectSwitcher } from '../layout/ProjectSwitcher'
 import { Sidebar } from '../layout/Sidebar'
@@ -111,6 +111,13 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
     () => (search && isSearchActive(search) ? new Set(matches.map((note) => note.id)) : null),
     [search, matches],
   )
+  const usedKinds = useMemo(
+    () =>
+      (['task', 'bug', 'rule'] as const).filter((kind) =>
+        workspace.notes.some((note) => kindOf(note) === kind),
+      ),
+    [workspace.notes],
+  )
   const usedStatuses = useMemo(
     () => NOTE_STATUSES.filter((status) => workspace.notes.some((note) => note.status === status)),
     [workspace.notes],
@@ -195,6 +202,7 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
             }
             onRemoveDocumentation={actions.removeDocumentation}
             onSelectStatus={actions.selectStatus}
+            onSelectKind={actions.selectKind}
           />
 
           <main className="board-area" aria-label={t('board')}>
@@ -233,6 +241,7 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
                   search={search}
                   matches={matches}
                   statuses={usedStatuses}
+                  kinds={usedKinds}
                   currentId={singleSelected?.id ?? null}
                   onChange={ui.setSearch}
                   onShow={actions.showNote}

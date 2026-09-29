@@ -1,6 +1,15 @@
-import type { Language, NoteColorTheme, NotePattern, NoteStatus, Size } from '../types'
+import type {
+  Language,
+  NoteColorTheme,
+  NoteKind,
+  NotePattern,
+  NoteStatus,
+  Size,
+  StyleKey,
+} from '../types'
 
-export const WORKSPACE_VERSION = 3
+/** v4: "bug" and "loop" moved from `status` to `kind`. */
+export const WORKSPACE_VERSION = 4
 
 export const NOTE_COLORS: readonly NoteColorTheme[] = [
   'concrete',
@@ -40,9 +49,18 @@ export const NOTE_STATUSES: readonly NoteStatus[] = [
   'changes-requested',
   'done',
   'blocked',
-  'bug',
   'wontfix',
-  'loop',
+]
+
+export const NOTE_KINDS: readonly NoteKind[] = ['bug', 'rule']
+
+/** The key each kind's look is kept under: its name from when it was a status. */
+export const KIND_STYLE_KEY: Record<NoteKind, StyleKey> = { bug: 'bug', rule: 'loop' }
+
+/** Every look that can be configured: statuses first, then kinds. */
+export const STYLE_KEYS: readonly StyleKey[] = [
+  ...NOTE_STATUSES,
+  ...NOTE_KINDS.map((kind) => KIND_STYLE_KEY[kind]),
 ]
 
 /** Statuses that mean "nothing left to do". */
@@ -68,6 +86,10 @@ export const DUPLICATE_OFFSET = 36
 
 export const ZOOM_MIN = 0.25
 export const ZOOM_MAX = 2
+
+export function isNoteKind(value: unknown): value is NoteKind {
+  return typeof value === 'string' && (NOTE_KINDS as readonly string[]).includes(value)
+}
 
 export function isNoteStatus(value: unknown): value is NoteStatus {
   return typeof value === 'string' && (NOTE_STATUSES as readonly string[]).includes(value)

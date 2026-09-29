@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { Language, NoteStatus } from '../types'
+import type { Language, NoteKind, NoteStatus, StyleKey } from '../types'
 import { isLanguage } from '../domain/constants'
 import { es } from './locales/es'
 import { en } from './locales/en'
@@ -77,10 +77,18 @@ const STATUS_KEYS: Record<NoteStatus, TranslationKey> = {
   blocked: 'statusBlocked',
   review: 'statusReview',
   done: 'statusDone',
-  bug: 'statusBug',
   'changes-requested': 'statusChangesRequested',
   wontfix: 'statusWontfix',
-  loop: 'statusLoop',
 }
 
 export const statusLabel = (t: Translate, status: NoteStatus) => t(STATUS_KEYS[status])
+
+const KIND_KEYS: Record<NoteKind, TranslationKey> = { bug: 'kindBug', rule: 'kindRule' }
+
+/** The name of what a look is for: a status, or a kind kept under its old status key. */
+export const styleKeyLabel = (t: Translate, key: StyleKey) =>
+  key === 'bug' ? t('kindBug') : key === 'loop' ? t('kindRule') : statusLabel(t, key)
+
+/** A kind's name; without a kind, a note is a task. */
+export const kindLabel = (t: Translate, kind: NoteKind | undefined) =>
+  t(kind ? KIND_KEYS[kind] : 'kindTask')

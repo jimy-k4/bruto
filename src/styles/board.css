@@ -187,7 +187,9 @@
   text-align: center;
 }
 
+/* Always the last column: a note without a status (a rule, say) has nothing in the middle. */
 .note__id {
+  grid-column: 3;
   letter-spacing: 0.04em;
   text-transform: none;
 }
@@ -661,4 +663,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* A bug or a rule says so where a task says "note". */
+.note__header > .note__kind--bug {
+  background: var(--status-bug);
+  color: var(--bg);
+}
+
+.note__header > .note__kind--rule {
+  background: var(--status-loop);
+  color: var(--bg);
 }
