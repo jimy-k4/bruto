@@ -542,6 +542,12 @@ export const fr: Locale = {
     'Sur une note, commence ou termine un lien ; sur une flèche, la supprime ; sur le tableau, le déplace.',
   shortcutZoom: 'Zoom',
   shortcutZoomDescription: 'Zoome ou dézoome autour du pointeur.',
+  news: 'Nouveautés',
+  newsTitle: 'Du nouveau dans Bruto',
+  newsDescription: 'Chaque fonction, le jour où elle arrive.',
+  newsUnread: '{count} nouveautés non lues',
+  newsUnread_one: '{count} nouveauté non lue',
+  newsNew: 'Nouveau',
   formatHelp: 'Mise en forme',
   formatHelpTitle: 'Mettre en forme le texte',
   formatHelpDescription:

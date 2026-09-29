@@ -531,6 +531,11 @@ export const ja: Locale = {
     'ノート上ではつながりを始める・終える、矢印上では削除、ボード上ではボードを動かします。',
   shortcutZoom: 'ズーム',
   shortcutZoomDescription: 'ポインターの位置を中心に拡大・縮小します。',
+  news: '新着情報',
+  newsTitle: 'Bruto の新機能',
+  newsDescription: '新しい機能を、届いたその日に。',
+  newsUnread: '未読のお知らせ {count} 件',
+  newsNew: 'NEW',
   formatHelp: '書式',
   formatHelpTitle: 'テキストの書式',
   formatHelpDescription:

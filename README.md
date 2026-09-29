@@ -39,7 +39,15 @@ Prefer to run it yourself? See [Development](#development).
 ## Features
 
 - **Board.** Notes with a status, description, files, links and screenshots. Drag them, connect them
-  with arrows, select many at once and edit them together.
+  with arrows, select many at once and edit them together. Each project remembers where you left its
+  board: zoom and position survive switching projects and reloading.
+- **Notes across projects.** A note can block, be blocked by or relate to a note in another project
+  (Front, CMS, database…). Both boards show the link; the blocked note wears hazard tape until the
+  other one is closed, and one click opens the other project with that note in view.
+- **Formatting.** Notes show Markdown; the editor's **Formatting** link opens a cheat sheet with each
+  example next to how it looks.
+- **What's new.** Every feature gets an entry in the top bar's noticeboard the day it ships, with a
+  count of the ones you haven't read.
 - **Structure view.** The project's folders and files as blocks sized by how many files they hold,
   marked with the notes that point at them. It shows where the work is, and lists links to files
   that no longer exist. _Only with notes_ hides everything no note points at, here, in the lenses and

@@ -541,6 +541,12 @@ export const ca: Locale = {
     "Sobre una nota comença o acaba una connexió; sobre una fletxa l'esborra; sobre el tauler el desplaça.",
   shortcutZoom: 'Zoom',
   shortcutZoomDescription: 'Apropa o allunya des del punter.',
+  news: 'Novetats',
+  newsTitle: 'El que és nou a Bruto',
+  newsDescription: 'Cada funció que arriba, el dia que arriba.',
+  newsUnread: '{count} novetats sense llegir',
+  newsUnread_one: '{count} novetat sense llegir',
+  newsNew: 'Nou',
   formatHelp: 'Format',
   formatHelpTitle: 'Donar format al text',
   formatHelpDescription:

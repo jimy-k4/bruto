@@ -40,8 +40,10 @@
   letter-spacing: 0.02em;
 }
 
-/* In a narrow window the actions scroll instead of widening the whole app. */
+/* In a narrow window the actions scroll instead of widening the whole app. Positioned, so
+   hidden labels inside (absolutely placed) are clipped with the rest instead of widening the page. */
 .topbar__actions {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -662,4 +664,20 @@
   height: 12px;
   fill: currentColor;
   shape-rendering: crispEdges;
+}
+
+/* What's new: the count of unread entries sits on the button like a sticker. */
+.topbar__news {
+  gap: 6px;
+}
+
+.topbar__news-count {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: var(--signal);
+  color: var(--signal-ink);
+  font: 700 10px / 1 var(--font-mono);
 }

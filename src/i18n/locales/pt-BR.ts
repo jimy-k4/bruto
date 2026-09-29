@@ -536,6 +536,12 @@ export const ptBR: Locale = {
     'Sobre uma nota, inicia ou termina uma conexão; sobre uma seta, apaga-a; sobre o quadro, move-o.',
   shortcutZoom: 'Zoom',
   shortcutZoomDescription: 'Aproxima ou afasta a partir do ponteiro.',
+  news: 'Novidades',
+  newsTitle: 'O que há de novo no Bruto',
+  newsDescription: 'Cada recurso, no dia em que chega.',
+  newsUnread: '{count} novidades não lidas',
+  newsUnread_one: '{count} novidade não lida',
+  newsNew: 'Novo',
   formatHelp: 'Formatação',
   formatHelpTitle: 'Formatar o texto',
   formatHelpDescription:

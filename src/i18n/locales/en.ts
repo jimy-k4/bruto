@@ -534,6 +534,12 @@ export const en: Locale = {
     'On a note it starts or ends a connection; on an arrow it deletes it; on the board it pans.',
   shortcutZoom: 'Zoom',
   shortcutZoomDescription: 'Zooms in or out around the pointer.',
+  news: "What's new",
+  newsTitle: 'New in Bruto',
+  newsDescription: 'Every feature, the day it arrives.',
+  newsUnread: '{count} unread updates',
+  newsUnread_one: '{count} unread update',
+  newsNew: 'New',
   formatHelp: 'Formatting',
   formatHelpTitle: 'Formatting your text',
   formatHelpDescription:

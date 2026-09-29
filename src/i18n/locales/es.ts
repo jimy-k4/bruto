@@ -537,6 +537,12 @@ export const es = {
     'Sobre una nota empieza o termina una conexión; sobre una flecha la borra; sobre el tablero lo desplaza.',
   shortcutZoom: 'Zoom',
   shortcutZoomDescription: 'Acerca o aleja desde el puntero.',
+  news: 'Novedades',
+  newsTitle: 'Lo nuevo en Bruto',
+  newsDescription: 'Cada función que llega, el día que llega.',
+  newsUnread: '{count} novedades sin leer',
+  newsUnread_one: '{count} novedad sin leer',
+  newsNew: 'Nuevo',
   formatHelp: 'Formato',
   formatHelpTitle: 'Dar formato al texto',
   formatHelpDescription:

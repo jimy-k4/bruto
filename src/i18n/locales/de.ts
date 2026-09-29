@@ -546,6 +546,12 @@ export const de: Locale = {
     'Auf einer Notiz beginnt oder beendet sie eine Verbindung; auf einem Pfeil löscht sie ihn; auf dem Board verschiebt sie es.',
   shortcutZoom: 'Zoom',
   shortcutZoomDescription: 'Zoomt rund um den Mauszeiger hinein oder heraus.',
+  news: 'Neuigkeiten',
+  newsTitle: 'Neu in Bruto',
+  newsDescription: 'Jede Funktion an dem Tag, an dem sie kommt.',
+  newsUnread: '{count} ungelesene Neuigkeiten',
+  newsUnread_one: '{count} ungelesene Neuigkeit',
+  newsNew: 'Neu',
   formatHelp: 'Formatierung',
   formatHelpTitle: 'Text formatieren',
   formatHelpDescription:
