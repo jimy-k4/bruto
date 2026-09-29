@@ -5,6 +5,7 @@ import { codeBlocks } from '../domain/richText'
 import { shortId, type NotePatch } from '../domain/workspace'
 import { statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
+import { FormatHelp } from './FormatHelp'
 import { ProjectImage } from '../ui/ProjectImage'
 import { CodeBlock } from '../ui/RichText'
 import { SidePanel } from '../ui/SidePanel'
@@ -149,9 +150,12 @@ export function NoteEditor({
         </div>
 
         <div className="field">
-          <label className="field__label" htmlFor={ids.description}>
-            {t('description')}
-          </label>
+          <div className="field__label-row">
+            <label className="field__label" htmlFor={ids.description}>
+              {t('description')}
+            </label>
+            <FormatHelp />
+          </div>
           <textarea
             id={ids.description}
             className="textarea"
@@ -325,9 +329,12 @@ export function NoteEditor({
         </fieldset>
 
         <div className="field">
-          <label className="field__label" htmlFor={ids.feedback}>
-            {t('feedback')}
-          </label>
+          <div className="field__label-row">
+            <label className="field__label" htmlFor={ids.feedback}>
+              {t('feedback')}
+            </label>
+            <FormatHelp />
+          </div>
           <textarea
             id={ids.feedback}
             className="textarea"
