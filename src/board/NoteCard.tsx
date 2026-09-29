@@ -1,10 +1,12 @@
 import { memo, useCallback, useState } from 'react'
-import type { Note } from '../types'
+import type { CrossLink, Note } from '../types'
+import { blockState, linkKey, type LinkedNoteInfo } from '../domain/crossLinks'
 import { noteLinks, noteTitle, shortId } from '../domain/workspace'
 import { statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
 import { ProjectImage } from '../ui/ProjectImage'
 import { RichText } from '../ui/RichText'
+import { KIND_LABELS, linkedNote } from '../workspace/crossLinks'
 
 export type NoteFlash = 'copied' | 'pasted' | null
 
@@ -18,6 +20,7 @@ export interface NoteCardHandlers {
   onKeyDown: (event: React.KeyboardEvent<HTMLElement>, note: Note) => void
   onFocus: (note: Note) => void
   observe: (id: string, element: HTMLElement) => () => void
+  onOpenLink: (link: CrossLink) => void
 }
 
 interface NoteCardProps {
@@ -27,6 +30,8 @@ interface NoteCardProps {
   dragging: boolean
   flash: NoteFlash
   searchMark: SearchMark
+  /** Linked notes in other projects, as read from them. */
+  linkInfo: Map<string, LinkedNoteInfo>
   handlers: NoteCardHandlers
 }
 
@@ -57,6 +62,7 @@ export const NoteCard = memo(function NoteCard({
   dragging,
   flash,
   searchMark,
+  linkInfo,
   handlers,
 }: NoteCardProps) {
   const { t } = useI18n()
@@ -64,6 +70,8 @@ export const NoteCard = memo(function NoteCard({
   const title = noteTitle(note, t('untitled'))
   const links = noteLinks(note)
   const { observe } = handlers
+  const crossLinks = note.crossLinks ?? []
+  const { blockedBy, blocking } = blockState(note, linkInfo)
 
   const ref = useCallback(
     (element: HTMLElement | null) => {
@@ -81,6 +89,8 @@ export const NoteCard = memo(function NoteCard({
     dragging && 'is-dragging',
     flash && `is-${flash}`,
     searchMark && `is-${searchMark}`,
+    blockedBy.length > 0 && 'is-blocked',
+    blocking.length > 0 && 'is-blocking',
   ]
 
   // Clicks inside links and buttons must not start a drag.
@@ -114,6 +124,18 @@ export const NoteCard = memo(function NoteCard({
         <span className="note__id">{shortId(note.id)}</span>
       </header>
 
+      {/* Waiting on another project, or holding one up: the same note, taped. */}
+      {blockedBy.length > 0 && (
+        <p className="note__tape note__tape--blocked">
+          <span>{t('tapeBlocked')}</span>
+        </p>
+      )}
+      {blocking.length > 0 && (
+        <p className="note__tape note__tape--blocking">
+          <span>{t('tapeBlocking')}</span>
+        </p>
+      )}
+
       <div className="note__body">
         <h3 className={titleSizeClass(title)}>{title}</h3>
 
@@ -145,6 +167,37 @@ export const NoteCard = memo(function NoteCard({
             {links.length > MAX_LINKS && (
               <li className="note__more">+{links.length - MAX_LINKS}</li>
             )}
+          </ul>
+        )}
+
+        {crossLinks.length > 0 && (
+          <ul className="note__cross-links">
+            {crossLinks.map((link) => {
+              const other = linkedNote(link, linkInfo)
+              const title = other.title?.trim() || t('untitled')
+              const project = link.project.toUpperCase()
+
+              return (
+                <li key={linkKey(link)}>
+                  <button
+                    type="button"
+                    className={`note__cross-link note__cross-link--${link.kind}`}
+                    title={t('crossLinkOpen', { title, project })}
+                    onPointerDown={stop}
+                    onDoubleClick={stop}
+                    onClick={() => handlers.onOpenLink(link)}
+                  >
+                    <span className="note__cross-link-kind">{t(KIND_LABELS[link.kind])}</span>
+                    <span className="note__cross-link-text">
+                      {project} · {title}
+                      {other.missing
+                        ? ` · ${t('crossLinkMissing')}`
+                        : other.status && ` · ${statusLabel(t, other.status)}`}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         )}
 

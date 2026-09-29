@@ -1,4 +1,4 @@
-import type { ContextScope, Note, Workspace } from '../types'
+import type { ContextScope, CrossLinkKind, Note, Workspace } from '../types'
 import { CLOSED_STATUSES } from './constants'
 import { getConnectedNoteIds, noteLinks, noteTitle, shortId } from './workspace'
 
@@ -28,6 +28,12 @@ const DOCUMENTATION_LABELS = {
 } as const
 
 const ref = (note: Note) => `[${shortId(note.id)}] ${noteTitle(note)}`
+
+const CROSS_LINK_LABELS: Record<CrossLinkKind, string> = {
+  blocks: 'Blocks',
+  'blocked-by': 'Blocked by',
+  related: 'Related to',
+}
 
 const quote = (text: string) =>
   text
@@ -62,6 +68,17 @@ export function describeNote(note: Note): string[] {
     lines.push('', 'Files changed by the AI:', ...note.aiFilePaths.map((path) => `- ${path}`))
   }
   if (note.feedback?.trim()) lines.push('', 'Feedback:', quote(note.feedback))
+
+  if (note.crossLinks?.length) {
+    lines.push(
+      '',
+      'Linked notes in other projects:',
+      ...note.crossLinks.map(
+        (link) =>
+          `- ${CROSS_LINK_LABELS[link.kind]} [${shortId(link.noteId)}] ${link.title?.trim() || 'Untitled'} in project "${link.project}"${link.status ? ` (${link.status})` : ''}`,
+      ),
+    )
+  }
 
   return lines
 }

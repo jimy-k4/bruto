@@ -1,10 +1,13 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import type { Note, NoteStatus } from '../types'
+import type { CrossLink, Note, NoteStatus } from '../types'
+import type { LinkedNoteInfo } from '../domain/crossLinks'
+import type { ActiveProject } from '../state/useProjects'
 import { NOTE_STATUSES } from '../domain/constants'
 import { codeBlocks } from '../domain/richText'
 import { shortId, type NotePatch } from '../domain/workspace'
 import { statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
+import { CrossLinksField } from './CrossLinksField'
 import { FormatHelp } from './FormatHelp'
 import { ProjectImage } from '../ui/ProjectImage'
 import { CodeBlock } from '../ui/RichText'
@@ -22,6 +25,9 @@ interface NoteEditorProps {
   onOpenFile: (path: string) => void
   onAddImages: (images: File[]) => void
   onOpenStatusStyles: () => void
+  project: ActiveProject
+  linkInfo: Map<string, LinkedNoteInfo>
+  onOpenLink: (link: CrossLink) => void
 }
 
 export function NoteEditor({
@@ -34,6 +40,9 @@ export function NoteEditor({
   onOpenFile,
   onAddImages,
   onOpenStatusStyles,
+  project,
+  linkInfo,
+  onOpenLink,
 }: NoteEditorProps) {
   const { t } = useI18n()
   const [confirmingDelete, setConfirmingDelete] = useState(false)
@@ -214,6 +223,8 @@ export function NoteEditor({
             + {t('addLink')}
           </button>
         </fieldset>
+
+        <CrossLinksField project={project} note={note} info={linkInfo} onOpen={onOpenLink} />
 
         <fieldset className="field">
           <legend className="field__label">{t('files')}</legend>

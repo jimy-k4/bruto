@@ -338,3 +338,145 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* Links to other projects ------------------------------------------------------- */
+
+.cross-link-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.cross-link {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.cross-link__open {
+  display: grid;
+  flex: 1;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  border: var(--border) solid var(--line);
+  background: var(--input);
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cross-link__open:hover {
+  border-color: var(--signal);
+}
+
+.cross-link__kind {
+  grid-column: 1 / -1;
+  color: var(--ink-muted);
+  font: 600 var(--text-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cross-link--blocked-by .cross-link__kind {
+  color: var(--status-blocked);
+}
+
+.cross-link__project {
+  font-weight: 600;
+}
+
+.cross-link__title {
+  overflow-wrap: anywhere;
+}
+
+.cross-link__open .status-badge,
+.cross-link__missing {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.cross-link__missing {
+  color: var(--danger);
+  font-size: var(--text-xs);
+}
+
+/* One choice of a few, as a row of buttons. */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  border: var(--border) solid var(--line);
+}
+
+.segmented__option {
+  position: relative;
+  flex: 1;
+}
+
+.segmented__option input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.segmented__option span {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  font: 600 var(--text-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.segmented__option + .segmented__option span {
+  border-left: var(--border) solid var(--line);
+}
+
+.segmented__option input:checked + span {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.segmented__option input:focus-visible + span {
+  outline: 2px solid var(--signal);
+  outline-offset: -5px;
+}
+
+.link-picker {
+  display: grid;
+  max-height: 280px;
+  overflow-y: auto;
+  border: var(--border) solid var(--line);
+}
+
+.link-picker__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line-soft);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.link-picker__row.is-chosen {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.link-picker__row input {
+  margin: 0;
+}
+
+.link-picker__id {
+  font: 600 var(--text-xs) / 1 var(--font-mono);
+  opacity: 0.7;
+}
+
+.link-picker__title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

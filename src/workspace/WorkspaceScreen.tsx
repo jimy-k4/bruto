@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useMemo, useSyncExternalStore } from 'react'
 import { track } from '../ui/analytics'
-import type { AppTheme } from '../types'
+import type { AppTheme, CrossLink } from '../types'
 import { Board } from '../board/Board'
 import { BoardSearch } from '../board/BoardSearch'
 import { EmptyBoard, NewNoteButton, SelectionBar, ZoomControls } from '../board/BoardOverlays'
@@ -29,6 +29,7 @@ import { useToast } from '../ui/toasts'
 import { createWorkspaceActions } from './workspaceActions'
 import { useWorkspaceShortcuts } from './useWorkspaceShortcuts'
 import { useWorkspaceUi } from './useWorkspaceUi'
+import { useLinkSnapshotSync, useLinkedNotes } from './crossLinks'
 
 // The structure view and its lenses are the heaviest part of the app: loaded on demand.
 const loadStructureView = () => import('../structure/StructureView')
@@ -54,6 +55,32 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
   const actions = createWorkspaceActions({ project, ui, view, sizes, clipboard, toast, t })
 
   useWorkspaceShortcuts(actions, ui, projects)
+
+  const linkInfo = useLinkedNotes(project, workspace)
+  useLinkSnapshotSync(project, workspace)
+
+  const openLink = async (link: CrossLink) => {
+    if (!(await projects.openLinkedNote(link)))
+      toast({
+        tone: 'error',
+        message: t('crossLinkNotFound', { project: link.project.toUpperCase() }),
+      })
+  }
+
+  // Followed here from a link in another project: that note comes into view.
+  const { pendingNote, clearPendingNote } = projects
+  useEffect(() => {
+    if (pendingNote?.projectId !== project.id) return
+
+    // After the first paint, so the note's real size is known.
+    const frame = window.requestAnimationFrame(() => {
+      actions.showNote(pendingNote.noteId)
+      clearPendingNote()
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingNote, project.id])
 
   // Counted once per opening, whether by shortcut or button.
   const searchOpen = ui.search !== null
@@ -196,6 +223,8 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
                 onConnect={actions.connect}
                 onSelectConnection={ui.setSelectedConnectionId}
                 onDeleteConnection={actions.deleteConnection}
+                onOpenLink={(link) => void openLink(link)}
+                linkInfo={linkInfo}
               />
 
               {search && (
@@ -272,6 +301,9 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
               onOpenFile={(path) => void actions.openFile(path)}
               onAddImages={(images) => void actions.addImages(editingNote.id, images)}
               onOpenStatusStyles={() => ui.setModal('styles')}
+              project={project}
+              linkInfo={linkInfo}
+              onOpenLink={(link) => void openLink(link)}
             />
           )}
 

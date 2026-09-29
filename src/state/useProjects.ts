@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { track } from '../ui/analytics'
-import type { Workspace } from '../types'
+import type { CrossLink, Workspace } from '../types'
+import { findLinkedProject } from '../storage/linkedProjects'
 import {
   ensureReadWrite,
   forgetProject,
@@ -50,6 +51,8 @@ export function useProjects({ onExternalChange, onError }: Options) {
   const [recents, setRecents] = useState<RecentProject[]>([])
   const [loading, setLoading] = useState(false)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>({ kind: 'saved' })
+  /** A note to bring into view once its project is on screen (followed from a link). */
+  const [pendingNote, setPendingNote] = useState<{ projectId: string; noteId: string } | null>(null)
 
   const activeRef = useRef(active)
   const callbacks = useRef({ onExternalChange, onError })
@@ -181,6 +184,26 @@ export function useProjects({ onExternalChange, onError }: Options) {
     [tabs, leaveActive, load],
   )
 
+  /**
+   * Opens the project a link points at, with the linked note in view. False when
+   * that project isn't among the recent ones, so its folder has to be opened first.
+   */
+  const openLinkedNote = useCallback(
+    async (link: CrossLink) => {
+      const target = await findLinkedProject(link)
+
+      if (!target) return false
+
+      setPendingNote({ projectId: target.id, noteId: link.noteId })
+      await open(target.handle)
+
+      return true
+    },
+    [open],
+  )
+
+  const clearPendingNote = useCallback(() => setPendingNote(null), [])
+
   const forgetRecent = useCallback(
     async (id: string) => {
       await forgetProject(id)
@@ -269,6 +292,9 @@ export function useProjects({ onExternalChange, onError }: Options) {
     saveStatus,
     open,
     openPicker,
+    openLinkedNote,
+    pendingNote,
+    clearPendingNote,
     switchTo,
     close,
     forgetRecent,

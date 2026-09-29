@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Note, Workspace } from '../types'
-import { buildAiContext } from './aiContext'
+import { buildAiContext, describeNote } from './aiContext'
 import { addConnection, createEmptyWorkspace } from './workspace'
 
 const note = (id: string, patch: Partial<Note> = {}): Note => ({
@@ -131,5 +131,30 @@ describe('buildAiContext', () => {
         '- [dddddd] UPDATE THE DOCS -> [aaaaaa] AAAAAA-1',
       )
     })
+  })
+})
+
+describe('describeNote', () => {
+  it('lists the notes it is linked to in other projects', () => {
+    const lines = describeNote(
+      note('aaaaaa-1', {
+        crossLinks: [
+          {
+            kind: 'blocks',
+            project: 'cms',
+            noteId: 'f00baa-9',
+            title: 'Login API',
+            status: 'todo',
+          },
+          { kind: 'blocked-by', project: 'db', noteId: 'c0ffee-1' },
+        ],
+      }),
+    )
+
+    expect(lines.slice(-3)).toEqual([
+      'Linked notes in other projects:',
+      '- Blocks [f00baa] Login API in project "cms" (todo)',
+      '- Blocked by [c0ffee] Untitled in project "db"',
+    ])
   })
 })
