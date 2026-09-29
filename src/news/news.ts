@@ -21,6 +21,132 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'table-search',
+    date: '2026-09-29',
+    text: {
+      es: {
+        title: 'Buscador de tablas',
+        body: 'La vista de base de datos tiene buscador (**Ctrl+F**): encuentra una tabla por su nombre o por una columna entre cientos, te lleva a ella en el diagrama y copia su nombre para citarla en una nota.',
+      },
+      en: {
+        title: 'Table search',
+        body: 'The database lens has a search (**Ctrl+F**): it finds a table by name or by a column among hundreds, takes you to it on the diagram and copies its name to cite it in a note.',
+      },
+      ca: {
+        title: 'Cercador de taules',
+        body: 'La vista de base de dades té cercador (**Ctrl+F**): troba una taula pel nom o per una columna entre centenars, t’hi porta al diagrama i en copia el nom per citar-la en una nota.',
+      },
+      fr: {
+        title: 'Recherche de tables',
+        body: 'La vue base de données a une recherche (**Ctrl+F**) : elle trouve une table par son nom ou par une colonne parmi des centaines, vous y mène sur le diagramme et copie son nom pour la citer dans une note.',
+      },
+      de: {
+        title: 'Tabellensuche',
+        body: 'Die Datenbankansicht hat eine Suche (**Strg+F**): Sie findet eine Tabelle unter Hunderten nach Name oder Spalte, führt dich im Diagramm hin und kopiert ihren Namen, um sie in einer Notiz zu nennen.',
+      },
+      'pt-BR': {
+        title: 'Busca de tabelas',
+        body: 'A visão de banco de dados tem busca (**Ctrl+F**): encontra uma tabela pelo nome ou por uma coluna entre centenas, leva você até ela no diagrama e copia o nome para citá-la numa nota.',
+      },
+      ru: {
+        title: 'Поиск таблиц',
+        body: 'В виде базы данных есть поиск (**Ctrl+F**): он находит таблицу среди сотен по имени или столбцу, показывает её на диаграмме и копирует имя, чтобы упомянуть её в заметке.',
+      },
+      ja: {
+        title: 'テーブル検索',
+        body: 'データベースビューに検索（**Ctrl+F**）が付きました。数百のテーブルから名前や列で探し、図の上で移動し、ノートで引用できるよう名前をコピーします。',
+      },
+      zh: {
+        title: '表搜索',
+        body: '数据库视图新增搜索（**Ctrl+F**）：在数百张表中按表名或列名查找，在图中跳转到该表，并可复制表名以便在笔记中引用。',
+      },
+    },
+  },
+  {
+    id: 'note-kinds',
+    date: '2026-09-29',
+    text: {
+      es: {
+        title: 'Bug y Regla son tipos, no estados',
+        body: 'Cada nota tiene un **tipo** (tarea, bug o regla) además de su estado. Un bug avanza por los estados como cualquier tarea y su cabecera dice BUG. Una regla se aplica en cada tarea hasta que la cierras. Los tableros antiguos se convierten solos.',
+      },
+      en: {
+        title: 'Bug and Rule are kinds, not statuses',
+        body: 'Every note has a **kind** (task, bug or rule) besides its status. A bug moves through the statuses like any task and its header says BUG. A rule applies on every task until you close it. Older boards convert on their own.',
+      },
+      ca: {
+        title: 'Error i Regla són tipus, no estats',
+        body: 'Cada nota té un **tipus** (tasca, error o regla) a més del seu estat. Un error avança pels estats com qualsevol tasca i la capçalera ho diu. Una regla s’aplica a cada tasca fins que la tanques. Les pissarres antigues es converteixen soles.',
+      },
+      fr: {
+        title: 'Bogue et Règle sont des types, pas des statuts',
+        body: 'Chaque note a un **type** (tâche, bogue ou règle) en plus de son statut. Un bogue suit les statuts comme toute tâche et son en-tête l’indique. Une règle s’applique à chaque tâche jusqu’à ce que vous la fermiez. Les anciens tableaux se convertissent seuls.',
+      },
+      de: {
+        title: 'Fehler und Regel sind Arten, keine Status',
+        body: 'Jede Notiz hat neben ihrem Status eine **Art** (Aufgabe, Fehler oder Regel). Ein Fehler durchläuft die Status wie jede Aufgabe, und die Kopfzeile zeigt es an. Eine Regel gilt für jede Aufgabe, bis du sie schließt. Ältere Boards werden von selbst umgestellt.',
+      },
+      'pt-BR': {
+        title: 'Defeito e Regra são tipos, não status',
+        body: 'Cada nota tem um **tipo** (tarefa, defeito ou regra) além do status. Um defeito passa pelos status como qualquer tarefa e o cabeçalho mostra isso. Uma regra vale em cada tarefa até você fechá-la. Quadros antigos se convertem sozinhos.',
+      },
+      ru: {
+        title: 'Ошибка и Правило — это типы, а не статусы',
+        body: 'У каждой заметки есть **тип** (задача, ошибка или правило) помимо статуса. Ошибка проходит статусы как любая задача, и это видно в заголовке. Правило применяется в каждой задаче, пока вы его не закроете. Старые доски преобразуются сами.',
+      },
+      ja: {
+        title: 'バグとルールはステータスではなく種類に',
+        body: 'ノートにはステータスとは別に**種類**（タスク、バグ、ルール）があります。バグは通常のタスクと同じようにステータスを進み、見出しにバグと表示されます。ルールは閉じるまですべてのタスクで適用されます。古いボードは自動で変換されます。',
+      },
+      zh: {
+        title: '缺陷和规则变成了类型，而不是状态',
+        body: '每条笔记除了状态，还有**类型**（任务、缺陷或规则）。缺陷像普通任务一样流转状态，标题上会标明。规则会在每个任务中生效，直到你关闭它。旧白板会自动转换。',
+      },
+    },
+  },
+  {
+    id: 'alt-drag-duplicate',
+    date: '2026-09-29',
+    text: {
+      es: {
+        title: 'Alt + arrastrar duplica',
+        body: 'Arrastra una nota (o varias seleccionadas) con **Alt** pulsada: la original se queda en su sitio y te llevas la copia. Un solo Ctrl+Z lo deshace.',
+      },
+      en: {
+        title: 'Alt + drag duplicates',
+        body: 'Drag a note (or several selected ones) while holding **Alt**: the original stays put and you carry the copy. One Ctrl+Z undoes it.',
+      },
+      ca: {
+        title: 'Alt + arrossegar duplica',
+        body: 'Arrossega una nota (o diverses de seleccionades) amb **Alt** premuda: l’original es queda al seu lloc i t’emportes la còpia. Un sol Ctrl+Z ho desfà.',
+      },
+      fr: {
+        title: 'Alt + glisser duplique',
+        body: 'Faites glisser une note (ou plusieurs sélectionnées) avec **Alt** enfoncée : l’originale reste en place et vous emportez la copie. Un seul Ctrl+Z l’annule.',
+      },
+      de: {
+        title: 'Alt + Ziehen dupliziert',
+        body: 'Ziehe eine Notiz (oder mehrere ausgewählte) mit gedrückter **Alt**-Taste: Das Original bleibt, du trägst die Kopie. Ein einziges Strg+Z macht es rückgängig.',
+      },
+      'pt-BR': {
+        title: 'Alt + arrastar duplica',
+        body: 'Arraste uma nota (ou várias selecionadas) com **Alt** pressionada: a original fica no lugar e você leva a cópia. Um só Ctrl+Z desfaz.',
+      },
+      ru: {
+        title: 'Alt + перетаскивание дублирует',
+        body: 'Перетащите заметку (или несколько выделенных) с зажатой **Alt**: оригинал останется на месте, а вы перенесёте копию. Один Ctrl+Z всё отменит.',
+      },
+      ja: {
+        title: 'Alt + ドラッグで複製',
+        body: '**Alt** を押しながらノート（または選択した複数のノート）をドラッグすると、元はその場に残り、コピーを動かせます。Ctrl+Z 一回で元に戻せます。',
+      },
+      zh: {
+        title: 'Alt + 拖动即可复制',
+        body: '按住 **Alt** 拖动笔记（或多条已选笔记）：原笔记留在原处，你拖走的是副本。按一次 Ctrl+Z 即可撤销。',
+      },
+    },
+  },
+  {
     id: 'cross-project-links',
     date: '2026-09-29',
     text: {

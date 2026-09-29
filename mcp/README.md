@@ -94,7 +94,7 @@ And one prompt, `work_on_notes`: fix what was sent back, then do the `todo` note
 
 - A broken board is reported, never overwritten.
 - Every write goes to a temporary file first and replaces the board in one go.
-- Standing rules (notes with status `loop`) are never answered or changed.
+- Standing rules (notes of kind `rule`) are never answered or changed. Boards from before v4, where rules had the status `loop`, read the same.
 - Fields other tools added to the file are kept.
 
 ## License

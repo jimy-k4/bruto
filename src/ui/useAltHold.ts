@@ -13,6 +13,8 @@ export function useAltHold(delay = HOLD_DELAY): boolean {
   useEffect(() => {
     let timer: number | undefined
     let shown = false
+    /** Alt went with a click or a drag this time, not on its own. */
+    let usedWithPointer = false
 
     const reset = () => {
       window.clearTimeout(timer)
@@ -41,12 +43,24 @@ export function useAltHold(delay = HOLD_DELAY): boolean {
       if (event.key !== 'Alt') return
 
       // Releasing Alt alone would otherwise move focus to the browser's menu.
-      if (shown) event.preventDefault()
+      if (shown || usedWithPointer) event.preventDefault()
+      usedWithPointer = false
       reset()
+    }
+
+    // Alt+drag copies notes: the project list must not pop up over the drag.
+    const onPointerDown = (event: PointerEvent) => {
+      if (!event.altKey) return
+
+      usedWithPointer = true
+      reset()
+      // Keeps the wait from starting again while Alt is still held.
+      timer = -1
     }
 
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('pointerdown', onPointerDown, true)
     // Alt+Tab to another window: the key is released where we can't see it.
     window.addEventListener('blur', reset)
 
@@ -54,6 +68,7 @@ export function useAltHold(delay = HOLD_DELAY): boolean {
       window.clearTimeout(timer)
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
+      window.removeEventListener('pointerdown', onPointerDown, true)
       window.removeEventListener('blur', reset)
     }
   }, [delay])

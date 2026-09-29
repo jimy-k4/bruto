@@ -1,7 +1,14 @@
-import type { ContextScope, Note, NoteStatus, Workspace, WorkspaceDocumentation } from '../types'
-import { NOTE_STATUSES } from '../domain/constants'
+import type {
+  ContextScope,
+  Note,
+  NoteKind,
+  NoteStatus,
+  Workspace,
+  WorkspaceDocumentation,
+} from '../types'
+import { KIND_STYLE_KEY, NOTE_KINDS, NOTE_STATUSES } from '../domain/constants'
 import { getConnectedNoteIds, noteTitle } from '../domain/workspace'
-import { statusLabel, useI18n, type TranslationKey } from '../i18n'
+import { kindLabel, statusLabel, useI18n, type TranslationKey } from '../i18n'
 import { isBoolean, isNumberBetween, usePreference } from '../preferences'
 import { ContextStrips } from '../ui/ContextStrips'
 
@@ -16,6 +23,7 @@ interface SidebarProps {
   onEditDocumentation: (documentation: WorkspaceDocumentation) => void
   onRemoveDocumentation: (documentation: WorkspaceDocumentation) => void
   onSelectStatus: (status: NoteStatus) => void
+  onSelectKind: (kind: NoteKind) => void
 }
 
 const MIN_WIDTH = 200
@@ -246,11 +254,15 @@ function DocumentationSection({
 }
 
 /** Notes per status. Clicking a status selects its notes on the board. */
-function StatusSection({ workspace, onSelectStatus }: SidebarProps) {
+function StatusSection({ workspace, onSelectStatus, onSelectKind }: SidebarProps) {
   const { t } = useI18n()
   const counts = NOTE_STATUSES.map((status) => ({
     status,
     count: workspace.notes.filter((note) => note.status === status).length,
+  })).filter((item) => item.count > 0)
+  const kinds = NOTE_KINDS.map((kind) => ({
+    kind,
+    count: workspace.notes.filter((note) => note.kind === kind).length,
   })).filter((item) => item.count > 0)
 
   return (
@@ -274,6 +286,26 @@ function StatusSection({ workspace, onSelectStatus }: SidebarProps) {
               >
                 <span className={`status-badge status-badge--${status}`}>
                   {statusLabel(t, status)}
+                </span>
+                <span>{count}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {kinds.length > 0 && (
+        <ul className="status-list">
+          {kinds.map(({ kind, count }) => (
+            <li key={kind}>
+              <button
+                type="button"
+                className="status-list__item"
+                onClick={() => onSelectKind(kind)}
+                title={t('selectStatusNotes')}
+              >
+                <span className={`status-badge status-badge--${KIND_STYLE_KEY[kind]}`}>
+                  {kindLabel(t, kind)}
                 </span>
                 <span>{count}</span>
               </button>

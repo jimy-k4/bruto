@@ -131,6 +131,23 @@ describe('answering', () => {
   })
 })
 
+describe('kinds', () => {
+  it('lists and finds notes by kind, rules from old files included', () => {
+    board({
+      notes: [
+        note('aaaaaa-1', { status: 'todo' }),
+        note('bbbbbb-1', { status: 'bug' }),
+        note('cccccc-1', { status: 'loop' }),
+      ],
+    })
+
+    expect(listNotes(root)).toMatch(/[bbbbbb].*todo · bug/)
+    expect(listNotes(root, { kinds: ['bug'] })).not.toContain('aaaaaa')
+    expect(listNotes(root, { kinds: ['rule'] })).toMatch(/[cccccc].*no status · rule/)
+    expect(searchNotes(root, { kinds: ['task'] })).not.toMatch(/bbbbbb|cccccc/)
+  })
+})
+
 describe('searching and marking progress', () => {
   it('finds notes by words or id, like the board search', () => {
     board({
@@ -156,7 +173,6 @@ describe('searching and marking progress', () => {
     expect(setStatus(root, { id: 'aaaaaa', status: 'in-progress' })).toContain('in-progress')
     expect(saved().notes[0]).toMatchObject({ status: 'in-progress', colorTheme: 'ochre' })
     expect(() => setStatus(root, { id: 'bbbbbb', status: 'done' })).toThrow(/standing rules/i)
-    expect(() => setStatus(root, { id: 'aaaaaa', status: 'loop' })).toThrow(/standing rules/i)
   })
 })
 
@@ -184,6 +200,13 @@ describe('adding to the board', () => {
     expect(next.y).toBeGreaterThan(60)
     expect(later.y).toBeGreaterThan(60)
     expect(saved().connections).toMatchObject([{ from: 'aaaaaa-1', to: next.id }])
+  })
+
+  it('files a bug as a bug, but never a standing rule', () => {
+    createNoteTool(root, { title: 'Crash on save', kind: 'bug' })
+    createNoteTool(root, { title: 'Plain', kind: 'task' })
+
+    expect(saved().notes.map((item: { kind?: string }) => item.kind)).toEqual(['bug', undefined])
   })
 
   it('connects two notes, once', () => {

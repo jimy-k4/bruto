@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import type { NoteStatus, StatusStyleConfig, StatusStyles } from '../types'
-import { NOTE_STATUSES } from '../domain/constants'
-import { statusLabel, useI18n } from '../i18n'
+import type { StatusStyleConfig, StatusStyles, StyleKey } from '../types'
+import { STYLE_KEYS } from '../domain/constants'
+import { styleKeyLabel, useI18n } from '../i18n'
 import { useProjectRoot } from '../state/projectRoot'
 import { listRecentProjects, type RecentProject } from '../storage/recentProjects'
 import { Dialog } from '../ui/Dialog'
@@ -9,14 +9,14 @@ import { ColorPicker, PatternPicker } from '../ui/StylePicker'
 
 interface StatusStylesDialogProps {
   styles: StatusStyles | undefined
-  onChange: (status: NoteStatus, config: StatusStyleConfig | undefined) => void
+  onChange: (status: StyleKey, config: StatusStyleConfig | undefined) => void
   /** Copies every status look from the board of another folder. */
   onCopyFrom: (source: FileSystemDirectoryHandle) => void
   onPickSource: () => void
   onClose: () => void
 }
 
-/** The look a note takes when it changes to each status. */
+/** The look a note takes when it changes to each status, or to a bug or a rule. */
 export function StatusStylesDialog({
   styles,
   onChange,
@@ -78,7 +78,7 @@ export function StatusStylesDialog({
       </section>
 
       <ul className="status-styles">
-        {NOTE_STATUSES.map((status) => {
+        {STYLE_KEYS.map((status) => {
           const config = styles?.[status] ?? {}
           const preview = { color: config.color ?? 'concrete', pattern: config.pattern ?? 'raw' }
 
@@ -89,7 +89,9 @@ export function StatusStylesDialog({
                   className={`status-styles__preview note-color-${preview.color} note-pattern-${preview.pattern}`}
                   aria-hidden="true"
                 />
-                <h3 className={`status-badge status-badge--${status}`}>{statusLabel(t, status)}</h3>
+                <h3 className={`status-badge status-badge--${status}`}>
+                  {styleKeyLabel(t, status)}
+                </h3>
 
                 {(config.color || config.pattern) && (
                   <button

@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { TranslationKey } from '../i18n'
 import { useI18n } from '../i18n'
 import { CARD_HEADER, CARD_ROW, CARD_ROWS, layoutEr, type PlacedTable } from './erLayout'
@@ -5,6 +6,7 @@ import { LensIcon, type LensIconName } from './LensIcon'
 import { LensSection, LensTile, Marks } from './LensParts'
 import { elementClasses, type LensContext } from './lensContext'
 import type { DbModel, Program, ProgramKind, Relation } from './sql'
+import { findTables } from './tableSearch'
 
 const PROGRAM_GROUPS: {
   kind: Exclude<ProgramKind, 'package'>
@@ -23,6 +25,9 @@ const PROGRAM_GROUPS: {
 /** Policies share names across tables ("Users read their own rows"): they are told apart by table. */
 const programKey = (program: Program) =>
   program.kind === 'policy' ? `${program.name}@${program.on ?? ''}` : program.name
+
+/** Search results listed before "+N": the diagram shows the rest. */
+const MAX_RESULTS = 12
 
 /** Members listed per package half before "+N". */
 const MAX_MEMBERS = 8
@@ -90,6 +95,64 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
     if (table) context.onFocus({ key: tableKey(name), label: name, paths: [table.path] })
   }
 
+  // Finding one table among hundreds: by name or by a column, then straight to it.
+  const [query, setQuery] = useState('')
+  const [current, setCurrent] = useState(-1)
+  const matches = useMemo(() => findTables(model.tables, query), [model.tables, query])
+  const matched = new Set(matches.map((match) => match.table.name))
+  const searching = query.trim() !== ''
+  const tableElements = useRef(new Map<string, HTMLElement>())
+  const searchInput = useRef<HTMLInputElement>(null)
+  const diagramScroll = useRef<HTMLDivElement>(null)
+
+  const goTo = (name: string) => {
+    // Selected, not toggled: going to a table twice keeps it selected.
+    if (context.focusKey !== tableKey(name)) focusTable(name)
+
+    // Only the diagram scrolls: the search and its results stay where they are.
+    const element = tableElements.current.get(name)
+    const diagram = diagramScroll.current
+
+    if (element && diagram) {
+      // Centred in the part of the diagram on screen: it may run past the bottom of the window.
+      const box = diagram.getBoundingClientRect()
+      const visibleTop = Math.max(box.top, 0) - box.top
+      const visibleBottom = Math.min(box.bottom, window.innerHeight) - box.top
+      const middle = (visibleTop + visibleBottom) / 2
+
+      diagram.scrollTo({
+        left: element.offsetLeft - (diagram.clientWidth - element.offsetWidth) / 2,
+        top: element.offsetTop - middle + element.offsetHeight / 2,
+        behavior: 'smooth',
+      })
+    }
+  }
+
+  const step = (direction: 1 | -1) => {
+    if (matches.length === 0) return
+
+    const next = (current + direction + matches.length) % matches.length
+
+    setCurrent(next)
+    goTo(matches[next].table.name)
+  }
+
+  // Ctrl+F looks for a table here, not on the board behind.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'f') return
+
+      event.preventDefault()
+      event.stopPropagation()
+      searchInput.current?.focus()
+      searchInput.current?.select()
+    }
+
+    window.addEventListener('keydown', onKeyDown, true)
+
+    return () => window.removeEventListener('keydown', onKeyDown, true)
+  }, [])
+
   if (model.tables.length === 0 && model.programs.length === 0) {
     return <p className="structure__message">{t('lensEmpty')}</p>
   }
@@ -97,7 +160,72 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
   return (
     <div className="lens">
       <LensSection icon="table" title={t('lensTables')} count={model.tables.length} wide>
-        <div className="lens-er-scroll">
+        <div className="lens-search">
+          <input
+            ref={searchInput}
+            type="search"
+            className="input"
+            placeholder={t('tableSearch')}
+            aria-label={t('tableSearch')}
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value)
+              setCurrent(-1)
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault()
+                step(event.shiftKey ? -1 : 1)
+              } else if (event.key === 'Escape' && query) {
+                // Clears the search first; the next Escape leaves the view.
+                event.stopPropagation()
+                setQuery('')
+              }
+            }}
+          />
+          {searching && (
+            <span className="lens-search__count" aria-live="polite">
+              {t('tableSearchCount', { count: matches.length, total: model.tables.length })}
+            </span>
+          )}
+        </div>
+
+        {searching &&
+          (matches.length === 0 ? (
+            <p className="field__hint">{t('tableSearchNone')}</p>
+          ) : (
+            <ul className="lens-search__results">
+              {matches.slice(0, MAX_RESULTS).map(({ table, column }, index) => (
+                <li
+                  key={table.name}
+                  className={`lens-search__result ${index === current ? 'is-current' : ''}`}
+                >
+                  <button
+                    type="button"
+                    className="lens-search__go"
+                    onClick={() => {
+                      setCurrent(index)
+                      goTo(table.name)
+                    }}
+                  >
+                    <LensIcon name="table" />
+                    <span className="lens-search__name">{table.name}</span>
+                    {column && (
+                      <span className="lens-search__column">
+                        {t('tableSearchColumn', { name: column })}
+                      </span>
+                    )}
+                  </button>
+                  <CopyName name={table.name} />
+                </li>
+              ))}
+              {matches.length > MAX_RESULTS && (
+                <li className="lens-search__more">+{matches.length - MAX_RESULTS}</li>
+              )}
+            </ul>
+          ))}
+
+        <div ref={diagramScroll} className="lens-er-scroll">
           <div className="lens-er" style={{ width: layout.width + 8, height: layout.height + 8 }}>
             <svg
               className="lens-er__lines"
@@ -141,13 +269,18 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
                   !related.has(table.name) &&
                   focusedTable !== table.name &&
                   'is-dimmed',
+                searching && (matched.has(table.name) ? 'is-match' : 'is-dimmed'),
               ]
 
               return (
                 <button
                   key={table.name}
+                  ref={(element) => {
+                    if (element) tableElements.current.set(table.name, element)
+                    else tableElements.current.delete(table.name)
+                  }}
                   type="button"
-                  className={classes.filter(Boolean).join(' ')}
+                  className={[...new Set(classes.filter(Boolean))].join(' ')}
                   style={{ left: x, top: y, width, height }}
                   aria-pressed={context.focusKey === key}
                   title={`${table.name}
@@ -234,6 +367,37 @@ ${table.path}`}
         )
       })}
     </div>
+  )
+}
+
+/** Copies a table's name, to cite it in a note. */
+function CopyName({ name }: { name: string }) {
+  const { t } = useI18n()
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (!copied) return
+
+    const timer = window.setTimeout(() => setCopied(false), 1500)
+
+    return () => window.clearTimeout(timer)
+  }, [copied])
+
+  return (
+    <button
+      type="button"
+      className="button button--small"
+      aria-label={copied ? t('copied') : t('copyName', { name })}
+      onClick={() =>
+        void navigator.clipboard.writeText(name).then(
+          () => setCopied(true),
+          // Without clipboard access the name can still be read and typed.
+          () => undefined,
+        )
+      }
+    >
+      {copied ? t('copied') : t('copy')}
+    </button>
   )
 }
 

@@ -324,12 +324,10 @@ export const de: Locale = {
   statusBlocked: 'Blockiert',
   statusReview: 'Zu prüfen',
   statusDone: 'Erledigt',
-  statusBug: 'Fehler',
+  kindBug: 'Fehler',
   statusChangesRequested: 'Nachbessern',
   statusWontfix: 'Verworfen',
-  statusLoop: 'Schleife',
-
-  // Note editor
+  kindRule: 'Regel',
   editNote: 'Notiz bearbeiten',
   title: 'Titel',
   description: 'Beschreibung',
@@ -357,8 +355,8 @@ export const de: Locale = {
   feedbackPlaceholder: 'Nach dem Prüfen der Antwort: was noch falsch ist oder fehlt.',
   feedbackStatusHint:
     'Muss die KI etwas korrigieren? Setze die Notiz auf „{status}“, damit sie es weiß.',
-  loopStatusHint:
-    'Dauerregel: Die KI wendet sie bei jeder Aufgabe an, auch wenn sie nicht ausgewählt ist, und ändert nie ihren Status.',
+  ruleHint:
+    'Dauerregel: Die KI wendet sie bei jeder Aufgabe an, auch wenn sie nicht ausgewählt ist, und beantwortet sie nie. Zum Zurückziehen als „{done}“ oder „{wontfix}“ markieren.',
   markAsStatus: 'Auf „{status}“ setzen',
   color: 'Farbe',
   pattern: 'Muster',
@@ -598,4 +596,15 @@ export const de: Locale = {
   linkConfirm: 'Verknüpfen',
   tapeBlocked: 'Blockiert',
   tapeBlocking: 'Blockiert andere',
+  shortcutAltDrag: 'Durch Ziehen duplizieren',
+  shortcutAltDragDescription:
+    'Ziehe eine Notiz mit gedrückter Alt-Taste: Das Original bleibt, du trägst die Kopie.',
+  kind: 'Art',
+  kindTask: 'Aufgabe',
+  filterByKind: 'Nach Art filtern',
+  tableSearch: 'Tabelle oder Spalte suchen…',
+  tableSearchCount: '{count} von {total}',
+  tableSearchColumn: 'Spalte {name}',
+  tableSearchNone: 'Keine Tabelle passt.',
+  copyName: 'Namen {name} kopieren',
 }

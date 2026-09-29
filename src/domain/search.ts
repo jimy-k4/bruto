@@ -1,4 +1,4 @@
-import type { Note, NoteStatus } from '../types'
+import type { Note, NoteKind, NoteStatus } from '../types'
 import { hasCode } from './richText'
 import { noteLinks } from './workspace'
 
@@ -14,8 +14,14 @@ export interface NoteSearch {
   query: string
   /** Only notes with one of these statuses; empty means any status. */
   statuses: NoteStatus[]
+  /** Only notes of one of these kinds ("task" for notes without one); empty means any. */
+  kinds?: KindFilter[]
   traits?: TraitFilter
 }
+
+export type KindFilter = NoteKind | 'task'
+
+export const kindOf = (note: Note): KindFilter => note.kind ?? 'task'
 
 export const hasTrait: Record<NoteTrait, (note: Note) => boolean> = {
   // Linked by the user or touched by the AI: either way the note is about files.
@@ -46,7 +52,10 @@ export const normalizeText = (text: string) =>
     .toLowerCase()
 
 export const isSearchActive = (search: NoteSearch) =>
-  search.query.trim() !== '' || search.statuses.length > 0 || traitEntries(search).length > 0
+  search.query.trim() !== '' ||
+  search.statuses.length > 0 ||
+  (search.kinds?.length ?? 0) > 0 ||
+  traitEntries(search).length > 0
 
 const searchableText = (note: Note) =>
   normalizeText(
@@ -79,6 +88,8 @@ export function searchNotes(notes: Note[], search: NoteSearch): Note[] {
       if (search.statuses.length > 0 && !(note.status && search.statuses.includes(note.status))) {
         return false
       }
+
+      if (search.kinds?.length && !search.kinds.includes(kindOf(note))) return false
 
       if (traits.some(([trait, wanted]) => hasTrait[trait](note) !== wanted)) return false
 

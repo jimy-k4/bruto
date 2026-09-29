@@ -125,16 +125,18 @@ editor: a command the AI wants you to run is one click away.
 gave the note. Reviewing an old note, what you asked for and what the AI changed stay easy to tell
 apart; the structure view places both on the project map.
 
-**Standing rules.** A note with the status **Loop** is a rule, not a task: "update the README on every
-change", "run the tests before finishing". It goes into every copy under `## STANDING RULES`, even when
-it isn't selected, and the model is told to apply it on each task and leave it open.
+**Kinds and standing rules.** Besides its status, a note has a kind: a **task** (the default), a
+**bug**, or a **rule**. A bug still goes through the statuses like any task, and the header says it's
+a bug. A rule isn't a task: "update the README on every change", "run the tests before finishing". It
+goes into every copy under `## STANDING RULES`, even when it isn't selected, and the model is told to
+apply it on each task and never answer it. Closing a rule (done, won't fix) retires it.
 
 Coding agents that work in your repository can also be pointed at the file directly, for example with
 one line in `AGENTS.md` or `CLAUDE.md`:
 
 ```markdown
 Tasks for this project are in `.bruto/workspace.json`. Work on notes whose status is "todo", and
-always apply the notes whose status is "loop".
+always apply the notes whose kind is "rule".
 ```
 
 ### As an MCP server
@@ -157,7 +159,7 @@ fields it does not know about, and accepts common status words such as `"pending
 
 ```jsonc
 {
-  "version": 3,
+  "version": 4,
   "title": "ATLAS",
   "description": "What the project is. Heads every copy for the AI.",
   "aiContext": "Stack, decisions, conventions, current state.",
@@ -167,7 +169,8 @@ fields it does not know about, and accepts common status words such as `"pending
       "id": "b72f10aa-…",
       "title": "Cancel a booking",
       "description": "Users can cancel up to 2 hours before the session.",
-      "status": "review", // idea · todo · in-progress · review · changes-requested · done · blocked · bug · wontfix · loop
+      "status": "review", // idea · todo · in-progress · review · changes-requested · done · blocked · wontfix
+      "kind": "bug", // bug · rule; left out for a task. Up to v3, "bug" and "loop" were statuses: both still read.
       "filePaths": ["app/bookings/actions.ts"], // relative to the project
       "webUrls": ["https://…"], // docs, a ticket, a design…
       "images": [".bruto/images/b72f10-20260924-ab12.png"],

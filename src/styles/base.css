@@ -820,3 +820,6 @@ kbd {
   gap: var(--space-2);
   margin-top: var(--space-2);
 }
+.status-badge--task {
+  --status-color: var(--ink-muted);
+}
