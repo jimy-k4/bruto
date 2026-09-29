@@ -36,9 +36,9 @@ several projects.
 
 ## Tools
 
-| Tool            | What it does                                                                                                  |
-| --------------- | ------------------------------------------------------------------------------------------------------------- |
-| `list_notes`    | The notes with their short id and status: the open ones, or the statuses asked for.                           |
+| Tool            | What it does                                                                                                    |
+| --------------- | --------------------------------------------------------------------------------------------------------------- |
+| `list_notes`    | The notes with their short id and status: the open ones, or the statuses asked for.                             |
 | `get_context`   | The same Markdown Bruto copies for an AI, with instructions and standing rules: some notes, or the whole board. |
 | `get_note`      | One note in full, with the notes it connects with.                                                              |
 | `answer_note`   | Writes what the AI did, adds the files it touched and sends the note to review.                                 |
