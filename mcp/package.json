@@ -1,0 +1,36 @@
+{
+  "name": "bruto-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Bruto boards: AI agents read and answer the notes of a project, kept in .bruto/workspace.json.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "bruto",
+    "claude",
+    "ai",
+    "tasks",
+    "kanban",
+    "local-first"
+  ],
+  "homepage": "https://jimy-k4.github.io/bruto/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimy-k4/bruto.git",
+    "directory": "mcp"
+  },
+  "bugs": "https://github.com/jimy-k4/bruto/issues",
+  "license": "MIT",
+  "author": "jimy-k4",
+  "type": "module",
+  "bin": {
+    "bruto-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}

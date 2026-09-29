@@ -126,6 +126,18 @@ Tasks for this project are in `.bruto/workspace.json`. Work on notes whose statu
 always apply the notes whose status is "loop".
 ```
 
+### As an MCP server
+
+Agents that speak MCP (Claude Code, Claude Desktop, Cursor, Windsurf…) can use the board through
+tools instead of editing the file: list the notes, read the context, answer a note and send it to
+review, propose new ones. It runs on your machine, next to your project:
+
+```bash
+claude mcp add bruto -- npx -y bruto-mcp
+```
+
+Other clients and every tool: [mcp/README.md](mcp/README.md).
+
 ## The workspace file
 
 Plain JSON, meant to be read and edited by people and tools alike. Bruto fills in anything missing, keeps

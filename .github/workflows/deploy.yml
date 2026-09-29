@@ -29,6 +29,8 @@ jobs:
       - run: npm run lint
       - run: npx tsc -b
       - run: npm test
+      # The MCP server, built as npm will ship it and driven by a real MCP client.
+      - run: npm run test:mcp
       # Chrome is preinstalled on GitHub's Ubuntu runners.
       - run: npx playwright test
 

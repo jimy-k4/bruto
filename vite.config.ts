@@ -50,6 +50,6 @@ export default defineConfig({
   },
   test: {
     // Browser tests in e2e/ run with Playwright, not here.
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'mcp/src/**/*.test.ts'],
   },
 })

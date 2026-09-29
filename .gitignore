@@ -27,3 +27,4 @@ dist-ssr
 .bruto/
 test-results
 playwright-report
+mcp/dist

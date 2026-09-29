@@ -36,7 +36,8 @@ const quote = (text: string) =>
     .map((line) => `> ${line}`)
     .join('\n')
 
-function describeNote(note: Note): string[] {
+/** A note as the AI reads it: id and title, status, text, files, links, answer and feedback. */
+export function describeNote(note: Note): string[] {
   const lines = [`### ${ref(note)}`]
 
   if (note.status) lines.push(`Status: ${note.status}`)

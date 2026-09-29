@@ -15,6 +15,11 @@ export default defineConfig([
     },
   },
   {
+    // The MCP server runs in Node, not in a browser.
+    files: ['mcp/**/*.{ts,mjs}'],
+    languageOptions: { globals: globals.node },
+  },
+  {
     // React rules only for the app: Playwright fixtures also call a `use` function.
     files: ['src/**/*.{ts,tsx}'],
     extends: [reactHooks.configs.flat.recommended, reactRefresh.configs.vite],
