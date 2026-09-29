@@ -22,6 +22,9 @@
   "license": "MIT",
   "author": "jimy-k4",
   "type": "module",
+  "scripts": {
+    "prepublishOnly": "node build.mjs"
+  },
   "bin": {
     "bruto-mcp": "dist/index.js"
   },
