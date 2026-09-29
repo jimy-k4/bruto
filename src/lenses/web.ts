@@ -43,10 +43,10 @@ export const isWebFile = (path: string) => {
 const CONFIG_NAME =
   /^(vite|vitest|next|nuxt|tailwind|postcss|eslint|prettier|babel|jest|playwright|webpack|rollup|svelte|astro|vue)\.config$|^\.?(eslintrc|prettierrc|babelrc)$/
 
-const segmentsOf = (path: string) => path.toLowerCase().split('/').slice(0, -1)
+export const segmentsOf = (path: string) => path.toLowerCase().split('/').slice(0, -1)
 
 /** The folder after which Next's `app/` or `pages/` routing starts, or -1. */
-const routingRoot = (segments: string[], name: string) => {
+export const routingRoot = (segments: string[], name: string) => {
   const index = segments.indexOf(name)
 
   // Only at the top of the project or of src/: a components/pages folder isn't routing.
@@ -54,7 +54,7 @@ const routingRoot = (segments: string[], name: string) => {
 }
 
 /** `users/[id]/page` → `/users/:id`; route groups `(group)` and `@slots` are left out. */
-function fileRoute(parts: string[]): string {
+export function fileRoute(parts: string[]): string {
   const route = parts
     .filter((part) => !/^\(.*\)$/.test(part) && !part.startsWith('@'))
     .filter((part) => part !== 'index')

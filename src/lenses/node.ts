@@ -19,7 +19,7 @@ import {
 export const isNodeFile = (path: string) =>
   ['ts', 'js', 'mjs', 'cjs', 'mts', 'cts'].includes(extensionOf(path)) && !path.endsWith('.d.ts')
 
-const isTestPath = (path: string) =>
+export const isTestPath = (path: string) =>
   /\.(test|spec|e2e-spec)\.[a-z]+$/.test(path) || /(^|\/)(__tests__|test|tests|e2e)\//.test(path)
 
 const VERBS: Record<string, HttpVerb> = {
@@ -35,17 +35,35 @@ const VERBS: Record<string, HttpVerb> = {
 /** Middleware names that mean "only for signed-in users". */
 const AUTH = /\b\w*(auth|protect|requireUser|requireLogin|loggedIn|verifyToken|jwt|session)\w*\b/i
 
-const RESOLVE_SUFFIXES = ['', '.ts', '.js', '.mjs', '.cjs', '/index.ts', '/index.js']
+const RESOLVE_SUFFIXES = [
+  '',
+  '.ts',
+  '.tsx',
+  '.js',
+  '.mjs',
+  '.cjs',
+  '/index.ts',
+  '/index.tsx',
+  '/index.js',
+]
 
-/** The project file an import points at; TypeScript ESM often imports `./x.js` for `./x.ts`. */
+/**
+ * The project file an import points at; TypeScript ESM often imports `./x.js` for `./x.ts`.
+ * `@/lib/db` and `~/lib/db` are the usual tsconfig aliases for the root or `src/`.
+ */
 function resolveModule(from: string, specifier: string, known: Set<string>): string | null {
-  if (!specifier.startsWith('.')) return null
+  const alias = /^[@~]\//.test(specifier) ? specifier.slice(2) : null
+  const bases = specifier.startsWith('.')
+    ? [joinPath(dirName(from), specifier)]
+    : alias
+      ? [alias, `src/${alias}`]
+      : []
 
-  const base = joinPath(dirName(from), specifier)
-
-  for (const candidate of [base, base.replace(/\.(js|mjs|cjs)$/, '')]) {
-    for (const suffix of RESOLVE_SUFFIXES) {
-      if (known.has(candidate + suffix)) return candidate + suffix
+  for (const base of bases) {
+    for (const candidate of [base, base.replace(/\.(js|mjs|cjs)$/, '')]) {
+      for (const suffix of RESOLVE_SUFFIXES) {
+        if (known.has(candidate + suffix)) return candidate + suffix
+      }
     }
   }
 
@@ -53,12 +71,14 @@ function resolveModule(from: string, specifier: string, known: Set<string>): str
 }
 
 /** Local names a file imports, with the file each comes from. */
-function importsOf(file: SourceFile, code: string, known: Set<string>): Map<string, string> {
+export function importsOf(file: SourceFile, code: string, known: Set<string>): Map<string, string> {
   const names = new Map<string, string>()
   const add = (local: string | undefined, specifier: string) => {
     const target = resolveModule(file.path, specifier, known)
+    // `import { db, type Row }`: the name is Row.
+    const name = local?.trim().replace(/^type\s+/, '')
 
-    if (local && target) names.set(local.trim(), target)
+    if (name && target) names.set(name, target)
   }
 
   for (const match of code.matchAll(
@@ -312,7 +332,7 @@ const PART_FOLDERS: [RegExp, ApiPartKind][] = [
   [/(^|\/)(db|database|data|prisma|drizzle)\//, 'data'],
 ]
 
-function classifyNodePart(path: string): ApiPartKind | null {
+export function classifyNodePart(path: string): ApiPartKind | null {
   const stem = stemOf(path)
 
   if (/^(main|server|app)$/.test(stem) && path.split('/').length <= 3) return 'startup'
@@ -326,10 +346,10 @@ function classifyNodePart(path: string): ApiPartKind | null {
 /** Layers a router depends on, as .NET controllers depend on injected services. */
 const DEPENDENCY_LAYERS = new Set<ApiPartKind>(['service', 'repository', 'data'])
 
-const exportedNames = (code: string) =>
+export const exportedNames = (code: string) =>
   [
     ...code.matchAll(
-      /\bexport\s+(?:default\s+)?(?:abstract\s+)?(?:class|interface|function|const|let|type)\s+(\w+)/g,
+      /\bexport\s+(?:default\s+)?(?:async\s+)?(?:abstract\s+)?(?:class|interface|function\*?|const|let|type|enum)\s+(\w+)/g,
     ),
   ].map((match) => match[1])
 

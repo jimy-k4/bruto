@@ -129,3 +129,39 @@ test('only the lenses a project fits are offered', async ({ page }) => {
   // The demo project has src/App.tsx (React) and now a SQL script: no .NET.
   await expect(lenses.getByRole('button')).toHaveText([/Ficheros/, /Web/, /BBDD/])
 })
+
+test('a Next.js project shows its route handlers and server actions as its API', async ({
+  page,
+}) => {
+  await openProject(page, workspaceWith([]))
+  await page.evaluate(writeProjectFiles, {
+    'package.json': '{ "dependencies": { "next": "16.0.0", "react": "19.0.0" } }',
+    'app/page.tsx': 'export default function Home() {}',
+    'app/api/users/[id]/route.ts': `import { requireSession } from '@/lib/session'
+export async function GET() { await requireSession() }
+export async function DELETE() { await requireSession() }`,
+    'app/api/e/route.ts': 'export async function POST() {}',
+    'app/admin/actions.ts': `'use server'
+import { db } from '@/lib/db'
+export async function saveSite() { db.insert() }`,
+    'lib/session.ts': 'export async function requireSession() {}',
+    'lib/db.ts': 'export const db = {}',
+  })
+  await page.keyboard.press('m')
+
+  const lenses = page.getByRole('group', { name: 'Vistas del proyecto' })
+
+  await lenses.getByRole('button', { name: /API\s*Next\.js/ }).click()
+
+  const user = page.locator('.lens-resource', { hasText: '/api/users/:id' })
+  await expect(user.locator('.lens-verb')).toHaveText(['GET', 'DELETE'])
+  await expect(user.locator('.lens-endpoint__lock')).toHaveCount(2)
+  await expect(user).toContainText('requireSession')
+
+  const actions = page.locator('.lens-resource', { hasText: 'admin/actions' })
+  await expect(actions.locator('.lens-endpoint')).toHaveText(/ACTION\s*saveSite/)
+  await expect(actions).toContainText('db')
+  await expect(
+    page.locator('.lens-resource', { hasText: '/api/e' }).locator('.lens-verb'),
+  ).toHaveText('POST')
+})

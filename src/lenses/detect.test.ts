@@ -24,6 +24,20 @@ describe('detectLenses', () => {
     expect(stacks(['Api/Api.csproj', 'Api/Program.cs'])).toEqual(['api:.NET'])
     expect(stacks(['package.json'], [pkg('@nestjs/core', 'express')])).toEqual(['api:NestJS'])
     expect(stacks(['package.json'], [pkg('express')])).toEqual(['api:Express'])
+    expect(stacks(['package.json', 'app/api/users/route.ts'], [pkg('next', 'react')])).toEqual([
+      'web:Next.js',
+      'api:Next.js',
+    ])
+    expect(stacks(['package.json', 'src/app/admin/actions.ts'], [pkg('next')])).toEqual([
+      'web:Next.js',
+      'api:Next.js',
+    ])
+    expect(stacks(['package.json', 'pages/api/health.js'], [pkg('next')])).toEqual([
+      'web:Next.js',
+      'api:Next.js',
+    ])
+    // Only pages: no API.
+    expect(stacks(['package.json', 'app/page.tsx'], [pkg('next')])).toEqual(['web:Next.js'])
     expect(
       stacks(['requirements.txt'], [file('requirements.txt', 'fastapi==0.110\nuvicorn')]),
     ).toEqual(['api:FastAPI'])

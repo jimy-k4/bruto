@@ -2,6 +2,7 @@ import { readSources, type IndexedFile } from '../storage/projectFiles'
 import { WEB_CODE, type DetectedLens } from './detect'
 import { buildApiModel, isDotnetFile, type ApiModel } from './dotnet'
 import { buildDrizzleModel, isDrizzleCandidate } from './drizzle'
+import { buildNextApiModel, isNextFile } from './next'
 import { buildNodeApiModel, isNodeFile } from './node'
 import { buildPrismaModel, isPrismaFile } from './prisma'
 import { buildPythonApiModel, isPythonFile } from './python'
@@ -32,6 +33,8 @@ export async function loadLens(
       case 'express':
       case 'fastify':
         return buildNodeApiModel(await read(isNodeFile), lens.api)
+      case 'next':
+        return buildNextApiModel(await read(isNextFile))
       case 'fastapi':
       case 'flask':
         return buildPythonApiModel(await read(isPythonFile))

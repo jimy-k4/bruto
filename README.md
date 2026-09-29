@@ -51,9 +51,11 @@ Prefer to run it yourself? See [Development](#development).
   - **Web** (React, Vue, Svelte, Next.js, Nuxt, SvelteKit, Astro, Angular): pages as browser windows
     with their route and the components on them, a wall of components sized by use, then layouts,
     server routes, hooks, state and services.
-  - **API** (.NET, NestJS, Express, Fastify, FastAPI, Flask, Spring): controllers and routers as
-    resources listing their endpoints, verb, route and authorization, with the services they depend
-    on; then services, repositories, data, models and middleware.
+  - **API** (.NET, NestJS, Express, Fastify, Next.js, FastAPI, Flask, Spring): controllers and
+    routers as resources listing their endpoints, verb, route and authorization, with the services
+    they depend on; then services, repositories, data, models and middleware. In Next.js, route
+    handlers, `pages/api` and server actions, locked when they check the caller or a middleware
+    covering them does.
   - **Database** (Oracle PL/SQL, PostgreSQL and Supabase, plain SQL, Prisma, Drizzle): tables with their
     columns and keys as an entity-relationship diagram, following migrations in order; packages split
     into specification and body, row level security and its policies, then views, triggers,
@@ -103,12 +105,13 @@ these, so the model knows how to answer:
 - Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong
   in "Feedback": fix that first, say what you fixed in `aiResponse`, empty `feedback` and set the
   status back to "review".
-- Put commands and code the user has to run or paste in `aiResponse` inside Markdown code blocks
-  (```): the note shows each one with a copy button.
+- `aiResponse` shows Markdown: headings, lists, bold, links, tables. Put commands and code the user
+  has to run or paste inside code blocks (```): the note shows each one with a copy button.
 ````
 
-**Code in answers** shows in its own box with a copy button, in the note and in the editor: a command
-the AI wants you to run is one click away.
+**Answers read as written.** Notes show Markdown: headings, lists, **bold**, _italic_, links,
+tables, quotes. **Code in answers** shows in its own box with a copy button, in the note and in the
+editor: a command the AI wants you to run is one click away.
 
 **Files the AI touched** go in their own list, `aiFilePaths`, apart from the files and images you
 gave the note. Reviewing an old note, what you asked for and what the AI changed stay easy to tell

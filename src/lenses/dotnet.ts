@@ -1,7 +1,12 @@
 import type { SourceFile } from '../storage/projectFiles'
 import { balanced, baseName, extensionOf, splitTopLevel, stemOf, stripCComments } from './source'
 
-export type HttpVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS'
+/**
+ * ANY is a handler that answers every method; ACTION, a Next.js server action,
+ * which a page calls by name instead of by URL.
+ */
+export type HttpVerb =
+  'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'ANY' | 'ACTION'
 
 export interface Endpoint {
   verb: HttpVerb
