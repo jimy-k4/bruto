@@ -465,6 +465,54 @@ test('code in an AI answer shows in a box with a copy button', async ({ page }) 
   ).toContainText(command)
 })
 
+test('an AI answer written in Markdown shows formatted', async ({ page }) => {
+  await openProject(
+    page,
+    workspaceWith([
+      note('diagnosis', {
+        title: 'Custodia',
+        aiResponse: [
+          '## Diagnóstico',
+          '',
+          '**Causa: custodia**, no la vista. Ver [el ticket](https://example.com/SITN-1).',
+          '',
+          '### Flujo',
+          '1. `GET` de la URL.',
+          '2. `PUT` del fichero.',
+          '   - con reintentos',
+          '',
+          '| Paso | Estado |',
+          '| --- | :-: |',
+          '| 3 | 403 |',
+          '',
+          '> Sin cambios de código.',
+        ].join('\n'),
+      }),
+    ]),
+  )
+
+  const card = noteCard(page, 'Custodia')
+
+  await card.getByRole('button', { name: /respuesta de la ia/i }).click()
+
+  const answer = card.locator('.note__ai-text')
+
+  await expect(answer.getByRole('heading', { name: 'Diagnóstico', level: 5 })).toBeVisible()
+  await expect(answer.getByRole('heading', { name: 'Flujo', level: 6 })).toBeVisible()
+  await expect(answer.locator('strong')).toHaveText('Causa: custodia')
+  await expect(answer.locator('ol > li')).toHaveCount(2)
+  await expect(answer.locator('ol > li').first().locator('code')).toHaveText('GET')
+  await expect(answer.locator('ol ul > li')).toHaveText('con reintentos')
+  await expect(answer.getByRole('link', { name: 'el ticket' })).toHaveAttribute(
+    'href',
+    'https://example.com/SITN-1',
+  )
+  await expect(answer.getByRole('cell', { name: '403' })).toHaveCSS('text-align', 'center')
+  await expect(answer.locator('blockquote')).toHaveText('Sin cambios de código.')
+  await expect(answer).not.toContainText('**')
+  await expect(answer).not.toContainText('##')
+})
+
 test('search filters notes that contain code', async ({ page }) => {
   await openProject(
     page,

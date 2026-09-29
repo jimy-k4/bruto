@@ -643,24 +643,126 @@ kbd {
   font-size: var(--text-sm);
 }
 
-/* Text with code ------------------------------------------------------------------ */
+/* Text written in Markdown ------------------------------------------------------- */
 
-.rich-text {
+.rich-text,
+.rich-text blockquote {
   display: grid;
   gap: var(--space-2);
   min-width: 0;
 }
 
-.rich-text p {
+.rich-text p,
+.rich-text li,
+.rich-text th,
+.rich-text td {
   margin: 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.rich-text p code {
+.rich-text :not(pre) > code {
   padding: 0 4px;
   border: 1px solid currentColor;
   font: 500 0.92em / 1.4 var(--font-mono);
+}
+
+.rich-text strong {
+  font-weight: 600;
+}
+
+.rich-text a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.rich-text a:hover {
+  text-decoration-thickness: 3px;
+}
+
+/* Headings read like the app's labels; the first level like a small title. */
+.rich-text__heading {
+  margin: var(--space-1) 0 0;
+  font: 600 var(--text-xs) / 1.3 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.rich-text__heading:first-child {
+  margin-top: 0;
+}
+
+.rich-text__heading--1 {
+  font: 400 15px / 1.15 var(--font-display);
+  letter-spacing: 0;
+}
+
+.rich-text__heading--2 {
+  padding-bottom: 2px;
+  border-bottom: var(--border) solid currentColor;
+}
+
+.rich-text ul,
+.rich-text ol {
+  display: grid;
+  gap: 2px;
+  padding-left: 1.5em;
+}
+
+.rich-text ul {
+  list-style: square;
+}
+
+.rich-text ol {
+  list-style: decimal;
+}
+
+.rich-text li ul {
+  list-style: '– ';
+}
+
+.rich-text li::marker {
+  font-weight: 600;
+}
+
+.rich-text li > :is(ul, ol) {
+  margin-top: 2px;
+}
+
+.rich-text blockquote {
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: 4px solid currentColor;
+}
+
+.rich-text hr {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: var(--border) solid currentColor;
+}
+
+/* As wide as the text: cells wrap instead of widening the note. */
+.rich-text table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+
+.rich-text th,
+.rich-text td {
+  padding: 3px 6px;
+  border: 1px solid currentColor;
+  text-align: left;
+  vertical-align: top;
+}
+
+.rich-text th {
+  border-bottom-width: var(--border);
+  font-weight: 600;
 }
 
 /* A slab of code in the other colour, with a button that copies it exactly. */

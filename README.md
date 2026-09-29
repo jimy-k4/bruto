@@ -103,12 +103,13 @@ these, so the model knows how to answer:
 - Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong
   in "Feedback": fix that first, say what you fixed in `aiResponse`, empty `feedback` and set the
   status back to "review".
-- Put commands and code the user has to run or paste in `aiResponse` inside Markdown code blocks
-  (```): the note shows each one with a copy button.
+- `aiResponse` shows Markdown: headings, lists, bold, links, tables. Put commands and code the user
+  has to run or paste inside code blocks (```): the note shows each one with a copy button.
 ````
 
-**Code in answers** shows in its own box with a copy button, in the note and in the editor: a command
-the AI wants you to run is one click away.
+**Answers read as written.** Notes show Markdown: headings, lists, **bold**, _italic_, links,
+tables, quotes. **Code in answers** shows in its own box with a copy button, in the note and in the
+editor: a command the AI wants you to run is one click away.
 
 **Files the AI touched** go in their own list, `aiFilePaths`, apart from the files and images you
 gave the note. Reviewing an old note, what you asked for and what the AI changed stay easy to tell

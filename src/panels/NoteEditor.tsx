@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import type { Note, NoteStatus } from '../types'
 import { NOTE_STATUSES } from '../domain/constants'
-import { parseRichText, type Block } from '../domain/richText'
+import { codeBlocks } from '../domain/richText'
 import { shortId, type NotePatch } from '../domain/workspace'
 import { statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
@@ -61,9 +61,7 @@ export function NoteEditor({
     }
   }
 
-  const codeBlocks = parseRichText(note.aiResponse ?? '').filter(
-    (block): block is Extract<Block, { kind: 'code' }> => block.kind === 'code',
-  )
+  const responseCode = codeBlocks(note.aiResponse)
 
   // Always at least one field to type a link in; blank ones are dropped when the project loads.
   const links = note.webUrls.length > 0 ? note.webUrls : ['']
@@ -302,9 +300,9 @@ export function NoteEditor({
           />
 
           {/* Commands and code in the answer, one click from the clipboard. */}
-          {codeBlocks.length > 0 && (
+          {responseCode.length > 0 && (
             <div className="field__code" role="group" aria-label={t('codeInResponse')}>
-              {codeBlocks.map((block, index) => (
+              {responseCode.map((block, index) => (
                 <CodeBlock key={index} code={block.code} language={block.language} />
               ))}
             </div>
