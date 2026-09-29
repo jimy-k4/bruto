@@ -33,5 +33,6 @@ export function keepNotedModel<Model extends WebModel | ApiModel | DbModel>(
       (relation) => names.has(relation.from) && names.has(relation.to),
     ),
     programs: model.programs.filter((program) => noted(program.paths)),
+    undeclared: model.undeclared?.filter((table) => noted(table.paths)),
   }
 }

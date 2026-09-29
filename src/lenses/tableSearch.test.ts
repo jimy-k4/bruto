@@ -21,14 +21,24 @@ const tables = [
   table('SOLICITUDES', 'ID', 'NÚMERO_EXPEDIENTE'),
 ]
 
+const undeclared = [
+  { name: 'PRODUCT_TAGS', paths: ['db/pkg_products.pkb'] },
+  { name: 'TIED_TIPOS_ELEMENTOS_DOCU', paths: ['data/43_tied.sql', 'db/docs.pks'] },
+]
+
 const names = (query: string) =>
-  findTables(tables, query).map(({ table, column }) =>
-    column ? `${table.name}.${column}` : table.name,
+  findTables(tables, query, undeclared).map(({ name, column, usedIn }) =>
+    column ? `${name}.${column}` : usedIn ? `${name}?` : name,
   )
 
 describe('findTables', () => {
   it('ranks the exact name, then names starting with it, then containing it, then columns', () => {
-    expect(names('product')).toEqual(['PRODUCT_PRICES', 'PRODUCTS', 'ORDER_LINES.PRODUCT_ID'])
+    expect(names('product')).toEqual([
+      'PRODUCT_PRICES',
+      'PRODUCTS',
+      'PRODUCT_TAGS?',
+      'ORDER_LINES.PRODUCT_ID',
+    ])
     expect(names('products')).toEqual(['PRODUCTS'])
     expect(names('lines')).toEqual(['ORDER_LINES'])
   })
@@ -37,6 +47,14 @@ describe('findTables', () => {
     expect(names('customers')).toEqual(['CUSTOMERS'])
     expect(names('email')).toEqual(['CUSTOMERS.EMAIL'])
     expect(names('numero')).toEqual(['SOLICITUDES.NÚMERO_EXPEDIENTE'])
+  })
+
+  it('finds tables the code uses but never creates, with the files that use them', () => {
+    expect(names('tied')).toEqual(['TIED_TIPOS_ELEMENTOS_DOCU?'])
+    expect(findTables(tables, 'tied', undeclared)[0]).toEqual({
+      name: 'TIED_TIPOS_ELEMENTOS_DOCU',
+      usedIn: ['data/43_tied.sql', 'db/docs.pks'],
+    })
   })
 
   it('finds nothing for an empty query', () => {

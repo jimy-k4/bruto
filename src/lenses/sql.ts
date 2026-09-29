@@ -54,10 +54,19 @@ export interface Program {
   command?: string
 }
 
+/** A table the code uses that no script in the project creates: its DDL lives elsewhere. */
+export interface UndeclaredTable {
+  name: string
+  /** The files that use it. */
+  paths: string[]
+}
+
 export interface DbModel {
   tables: Table[]
   relations: Relation[]
   programs: Program[]
+  /** Tables the code uses but never creates: not drawn, but they can still be found. */
+  undeclared?: UndeclaredTable[]
 }
 
 /**
@@ -361,6 +370,246 @@ function tablesUsed(text: string, known: Set<string>, own: string, names: Names)
   return [...found].sort()
 }
 
+/** Keywords followed by a table's name: what code writes, keys, indexes, reads and triggers on. */
+const TABLE_MENTIONS = [
+  String.raw`\b(?:INSERT\s+(?:ALL\s+)?INTO|MERGE\s+INTO|TRUNCATE\s+TABLE|LOCK\s+TABLE|COMMENT\s+ON\s+TABLE|REFERENCES|INDEX\s+${NAME}\s+ON|FROM|JOIN)\s+(${NAME})`,
+  String.raw`\bALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?(?:ONLY\s+)?(${NAME})`,
+  String.raw`\bUPDATE\s+(${NAME})(?:\s+(?:AS\s+)?[\w$#]+)?\s+SET\b`,
+  // A trigger's table: BEFORE INSERT OR UPDATE OF status ON orders.
+  String.raw`\b(?:BEFORE|AFTER|INSTEAD\s+OF)\s[\w\s,]{1,200}?\bON\s+(${NAME})`,
+].map((source) => new RegExp(source, 'gi'))
+
+/** Words a mention can land on that aren't a table. */
+const NOT_TABLES = new Set([
+  'ALL',
+  'DATABASE',
+  'DISTINCT',
+  'DUAL',
+  'JSON_TABLE',
+  'LATERAL',
+  'ON',
+  'ONLY',
+  'PROGRAM',
+  'SCHEMA',
+  'SELECT',
+  'SET',
+  'STDIN',
+  'TABLE',
+  'THE',
+  'UNNEST',
+  'VALUES',
+  'WHERE',
+  'XMLTABLE',
+])
+
+/** The database's own catalogue: real tables, but not the project's. */
+function isCatalog(schema: string | undefined, name: string, dialect: SqlDialect): boolean {
+  const owner = schema?.toUpperCase()
+  const upper = name.toUpperCase()
+
+  if (owner && ['SYS', 'SYSTEM', 'INFORMATION_SCHEMA', 'PG_CATALOG'].includes(owner)) return true
+  if (dialect === 'oracle') return /^(?:USER|ALL|DBA|CDB)_/.test(upper) || /^G?V\$/.test(upper)
+  if (dialect === 'postgres') return upper.startsWith('PG_')
+
+  return false
+}
+
+/**
+ * EXTRACT(YEAR FROM x), TRIM(' ' FROM x), SUBSTRING(x FROM 2): a FROM that
+ * isn't followed by a table. REVOKE … FROM names a user. Blanked out.
+ */
+function withoutFalseFroms(code: string): string {
+  let out = ''
+  let last = 0
+
+  for (const match of code.matchAll(/\b(?:EXTRACT|TRIM|SUBSTRING|OVERLAY)\s*\(/gi)) {
+    const open = match.index + match[0].length - 1
+    const inner = open >= last ? balanced(code, open) : null
+
+    if (inner === null) continue
+
+    out += code.slice(last, open + 1) + ' '.repeat(inner.length)
+    last = open + 1 + inner.length
+  }
+
+  return (out + code.slice(last)).replace(/\bREVOKE\b[^;]*/gi, (revoke) =>
+    ' '.repeat(revoke.length),
+  )
+}
+
+const SPACE = /\s/
+const WORD_CHAR = /[\w$#]/
+
+/**
+ * The dotted name that ends right before `end`, read backwards: much cheaper
+ * than a pattern starting with a name, which is tried at every letter.
+ */
+function nameBefore(text: string, end: number): { parts: string[]; start: number } {
+  const parts: string[] = []
+  let start = end
+  let index = end
+
+  while (parts.length < 3) {
+    while (index > 0 && SPACE.test(text[index - 1])) index--
+
+    let from = index
+
+    if (text[index - 1] === '"') from = text.lastIndexOf('"', index - 2)
+    else while (from > 0 && WORD_CHAR.test(text[from - 1])) from--
+
+    if (from < 0 || from === index) break
+
+    parts.unshift(text.slice(from, index))
+    start = from
+    index = from
+    while (index > 0 && SPACE.test(text[index - 1])) index--
+
+    if (text[index - 1] !== '.') break
+
+    index--
+  }
+
+  return { parts, start }
+}
+
+/** Parameter modes between a record and its type: p_order IN OUT NOCOPY orders%ROWTYPE. */
+const MODES = new Set(['IN', 'OUT', 'NOCOPY'])
+
+const FROM_LIST_END =
+  /\b(?:WHERE|GROUP|ORDER|CONNECT|START|UNION|MINUS|INTERSECT|HAVING|FOR|RETURNING|INTO|USING|LIMIT|OFFSET|FETCH|LOOP|THEN|PIVOT|UNPIVOT)\b/i
+
+const PLAIN_FROM_ITEM = new RegExp(String.raw`^(${NAME})(?:\s+(?:AS\s+)?[\w$#]+)?$`, 'i')
+
+/** What one file says about tables, before knowing what the other files declare. */
+interface FileMentions {
+  path: string
+  /** Names as written: `sales.orders`, `"Orders"`. */
+  tables: string[]
+  /** WITH recent AS (SELECT …) SELECT … FROM recent: names that live for one query. */
+  queries: string[]
+  /** Cursors and records: v_order orders%ROWTYPE makes v_order.id%TYPE a variable's. */
+  variables: string[]
+}
+
+function mentionsIn(path: string, code: string): FileMentions {
+  const text = withoutFalseFroms(code)
+  const mentions: FileMentions = { path, tables: [], queries: [], variables: [] }
+
+  for (const pattern of TABLE_MENTIONS) {
+    for (const match of text.matchAll(pattern)) {
+      const end = match.index + match[0].length
+
+      // FROM TABLE(…), FROM generate_series(…): a function, not a table.
+      if (/^(?:FROM|JOIN)\b/i.test(match[0]) && /^\s*\(/.test(text.slice(end, end + 40))) continue
+      // a IS DISTINCT FROM b: a value.
+      if (/DISTINCT\s*$/i.test(text.slice(Math.max(0, match.index - 12), match.index))) continue
+
+      mentions.tables.push(match[1])
+    }
+  }
+
+  // FROM orders o, lines l WHERE: the tables after the first one, when the list is that plain.
+  for (const match of text.matchAll(/\bFROM\s+(?=([^;()]{1,400}))/gi)) {
+    const end = FROM_LIST_END.exec(match[1])?.index
+    const items = match[1].slice(0, end).split(',').slice(1)
+
+    // FROM orders o, comun.splittab(v_list) ids: the last one is a function.
+    if (end === undefined && text[match.index + match[0].length + match[1].length] === '(') {
+      items.pop()
+    }
+
+    for (const item of items) {
+      const table = PLAIN_FROM_ITEM.exec(item.trim())
+
+      if (table) mentions.tables.push(table[1])
+    }
+  }
+
+  // Anchored types: orders%ROWTYPE names a table, orders.id%TYPE the one before the column.
+  for (const match of text.matchAll(/%\s*(ROWTYPE|TYPE)\b/gi)) {
+    const { parts, start } = nameBefore(text, match.index)
+
+    if (match[1].toUpperCase() === 'ROWTYPE') {
+      if (parts.length === 0) continue
+
+      mentions.tables.push(parts.slice(-2).join('.'))
+
+      // The record declared with it, past any parameter mode.
+      let before = nameBefore(text, start)
+
+      while (before.parts.length === 1 && MODES.has(before.parts[0].toUpperCase())) {
+        before = nameBefore(text, before.start)
+      }
+      if (before.parts.length === 1) mentions.variables.push(before.parts[0])
+    } else if (parts.length > 1) {
+      mentions.tables.push(parts.slice(-3, -1).join('.'))
+    }
+  }
+
+  for (const match of text.matchAll(/\bCURSOR\s+("[^"]+"|[\w$#]+)/gi)) {
+    mentions.variables.push(match[1])
+  }
+  for (const match of text.matchAll(/\bAS\s*\(\s*SELECT\b/gi)) {
+    const { parts } = nameBefore(text, match.index)
+
+    if (parts.length === 1) mentions.queries.push(parts[0])
+  }
+
+  return mentions
+}
+
+/**
+ * Tables the code uses that no script creates, with the files that use them.
+ * Big schemas are often versioned as packages and data scripts only, their
+ * tables created long ago: this is how those tables can still be found.
+ */
+function undeclaredTables(
+  files: { source: SourceFile; code: string }[],
+  statements: Statement[],
+  known: Set<string>,
+  names: Names,
+  dialect: SqlDialect,
+): UndeclaredTable[] {
+  const mentions = files.map(({ source, code }) => mentionsIn(source.path, code))
+  const nameOf = (raw: string) => names.objectName(raw).name
+  // Views, packages, functions… are read FROM and anchored to too, and so are
+  // cursors and records, declared in one file and used in another.
+  const notTables = new Set([
+    ...statements.filter((statement) => statement.kind !== 'table').map(({ name }) => name),
+    ...mentions.flatMap((file) => file.variables.map(nameOf)),
+  ])
+  const found = new Map<string, Set<string>>()
+
+  for (const file of mentions) {
+    const queries = new Set(file.queries.map(nameOf))
+
+    for (const raw of file.tables) {
+      if (!/^["A-Za-z_]/.test(raw.trim())) continue
+
+      const { schema, name } = names.objectName(raw)
+
+      if (
+        known.has(name) ||
+        notTables.has(name) ||
+        queries.has(name) ||
+        NOT_TABLES.has(name.toUpperCase()) ||
+        isCatalog(schema, name, dialect)
+      ) {
+        continue
+      }
+
+      const paths = found.get(name) ?? new Set<string>()
+
+      paths.add(file.path)
+      found.set(name, paths)
+    }
+  }
+
+  return [...found]
+    .map(([name, paths]) => ({ name, paths: [...paths].sort() }))
+    .sort((a, b) => a.name.localeCompare(b.name))
+}
+
 /** Tables and what changes them, in the order the scripts run: file by file, top to bottom. */
 type TableEvent =
   | { at: [string, number]; kind: 'create'; statement: Statement }
@@ -525,6 +774,7 @@ export function buildDbModel(sources: SourceFile[], dialect: SqlDialect = 'oracl
         (a.on ?? '').localeCompare(b.on ?? '') ||
         a.name.localeCompare(b.name),
     ),
+    undeclared: undeclaredTables(files, statements, known, names, dialect),
   }
 }
 

@@ -598,4 +598,7 @@ export const ru: Locale = {
   tableSearchColumn: 'столбец {name}',
   tableSearchNone: 'Подходящих таблиц нет.',
   copyName: 'Скопировать имя {name}',
+  tableSearchUndeclared: 'без CREATE TABLE · файлов: {count}',
+  tableSearchUndeclaredHint:
+    'Ещё таблиц в коде без своего CREATE TABLE: {count}. Поиск их находит, но на диаграмме их нет.',
 }

@@ -6,7 +6,7 @@ import { LensIcon, type LensIconName } from './LensIcon'
 import { LensSection, LensTile, Marks } from './LensParts'
 import { elementClasses, type LensContext } from './lensContext'
 import type { DbModel, Program, ProgramKind, Relation } from './sql'
-import { findTables } from './tableSearch'
+import { findTables, type TableMatch } from './tableSearch'
 
 const PROGRAM_GROUPS: {
   kind: Exclude<ProgramKind, 'package'>
@@ -96,18 +96,31 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
   }
 
   // Finding one table among hundreds: by name or by a column, then straight to it.
+  // Tables the code uses but no script creates are found too, though not drawn.
+  const undeclared = useMemo(() => model.undeclared ?? [], [model.undeclared])
   const [query, setQuery] = useState('')
   const [current, setCurrent] = useState(-1)
-  const matches = useMemo(() => findTables(model.tables, query), [model.tables, query])
-  const matched = new Set(matches.map((match) => match.table.name))
+  const matches = useMemo(
+    () => findTables(model.tables, query, undeclared),
+    [model.tables, query, undeclared],
+  )
+  const matched = new Set(matches.filter((match) => match.table).map((match) => match.name))
   const searching = query.trim() !== ''
   const tableElements = useRef(new Map<string, HTMLElement>())
   const searchInput = useRef<HTMLInputElement>(null)
   const diagramScroll = useRef<HTMLDivElement>(null)
 
-  const goTo = (name: string) => {
+  const goTo = ({ name, usedIn }: TableMatch) => {
     // Selected, not toggled: going to a table twice keeps it selected.
-    if (context.focusKey !== tableKey(name)) focusTable(name)
+    const focused = context.focusKey === tableKey(name)
+
+    // Not on the diagram: the side list shows the notes on the files that use it.
+    if (usedIn) {
+      if (!focused) context.onFocus({ key: tableKey(name), label: name, paths: usedIn })
+      return
+    }
+
+    if (!focused) focusTable(name)
 
     // Only the diagram scrolls: the search and its results stay where they are.
     const element = tableElements.current.get(name)
@@ -134,7 +147,7 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
     const next = (current + direction + matches.length) % matches.length
 
     setCurrent(next)
-    goTo(matches[next].table.name)
+    goTo(matches[next])
   }
 
   // Ctrl+F looks for a table here, not on the board behind.
@@ -153,7 +166,7 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
     return () => window.removeEventListener('keydown', onKeyDown, true)
   }, [])
 
-  if (model.tables.length === 0 && model.programs.length === 0) {
+  if (model.tables.length === 0 && model.programs.length === 0 && undeclared.length === 0) {
     return <p className="structure__message">{t('lensEmpty')}</p>
   }
 
@@ -185,38 +198,59 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
           />
           {searching && (
             <span className="lens-search__count" aria-live="polite">
-              {t('tableSearchCount', { count: matches.length, total: model.tables.length })}
+              {t('tableSearchCount', {
+                count: matches.length,
+                total: model.tables.length + undeclared.length,
+              })}
             </span>
           )}
         </div>
+
+        {undeclared.length > 0 && (
+          <p className="field__hint">
+            {t('tableSearchUndeclaredHint', { count: undeclared.length })}
+          </p>
+        )}
 
         {searching &&
           (matches.length === 0 ? (
             <p className="field__hint">{t('tableSearchNone')}</p>
           ) : (
             <ul className="lens-search__results">
-              {matches.slice(0, MAX_RESULTS).map(({ table, column }, index) => (
+              {matches.slice(0, MAX_RESULTS).map((match, index) => (
                 <li
-                  key={table.name}
-                  className={`lens-search__result ${index === current ? 'is-current' : ''}`}
+                  key={match.name}
+                  className={[
+                    'lens-search__result',
+                    index === current && 'is-current',
+                    match.usedIn && 'is-undeclared',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
                 >
                   <button
                     type="button"
                     className="lens-search__go"
+                    title={match.usedIn?.join('\n')}
                     onClick={() => {
                       setCurrent(index)
-                      goTo(table.name)
+                      goTo(match)
                     }}
                   >
                     <LensIcon name="table" />
-                    <span className="lens-search__name">{table.name}</span>
-                    {column && (
+                    <span className="lens-search__name">{match.name}</span>
+                    {match.column && (
                       <span className="lens-search__column">
-                        {t('tableSearchColumn', { name: column })}
+                        {t('tableSearchColumn', { name: match.column })}
+                      </span>
+                    )}
+                    {match.usedIn && (
+                      <span className="lens-search__column">
+                        {t('tableSearchUndeclared', { count: match.usedIn.length })}
                       </span>
                     )}
                   </button>
-                  <CopyName name={table.name} />
+                  <CopyName name={match.name} />
                 </li>
               ))}
               {matches.length > MAX_RESULTS && (
@@ -266,6 +300,7 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
               const classes = [
                 elementClasses('lens-table', context, key, [table.path], notes),
                 focusedTable &&
+                  placed.has(focusedTable) &&
                   !related.has(table.name) &&
                   focusedTable !== table.name &&
                   'is-dimmed',

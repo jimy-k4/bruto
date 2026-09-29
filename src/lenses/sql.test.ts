@@ -138,6 +138,92 @@ describe('buildDbModel', () => {
     expect(find('trigger')).toMatchObject({ name: 'TRG_ORDERS_AUDIT', on: 'Orders' })
     expect(find('sequence')).toMatchObject({ name: 'ORDERS_SEQ', paths: ['db/tables.sql'] })
   })
+
+  it('has no undeclared tables when every table used is created', () => {
+    expect(model.undeclared).toEqual([])
+  })
+})
+
+describe('buildDbModel for tables the code uses but never creates', () => {
+  const model = buildDbModel([
+    {
+      path: 'data/43_tied.sql',
+      text: `
+Insert into TIED_TIPOS_ELEMENTOS_DOCU
+   (COD_TIED, DESCR_TIED)
+ Values
+   ('DAAG', 'Documentos adjuntos agrupacion');
+`,
+    },
+    {
+      path: 'db/docs_adjuntos.pks',
+      text: `
+CREATE OR REPLACE PACKAGE docs_adjuntos AS
+  CURSOR c_docs IS SELECT * FROM documentos;
+  PROCEDURE cambiar(p_codtied IN tied_tipos_elementos_docu.cod_tied%type,
+                    p_doc IN OUT NOCOPY documentos%ROWTYPE);
+END;
+/
+`,
+    },
+    {
+      path: 'db/docs_adjuntos.pkb',
+      text: `
+CREATE OR REPLACE PACKAGE BODY docs_adjuntos AS
+  PROCEDURE cambiar(p_codtied IN tied_tipos_elementos_docu.cod_tied%type,
+                    p_doc IN OUT NOCOPY documentos%ROWTYPE) IS
+    v_doc c_docs%ROWTYPE;
+    v_anio NUMBER := EXTRACT(YEAR FROM SYSDATE);
+    v_id p_doc.id%TYPE;
+  BEGIN
+    UPDATE documentos d SET d.cod_tied = p_codtied WHERE d.id = p_doc.id;
+    DELETE FROM sys.aud_log;
+    SELECT COUNT(*) INTO v_anio FROM documentos d, historico_docs h, TABLE(split(p_codtied)) t
+      WHERE h.id = d.id;
+    FOR r IN (WITH recientes AS (SELECT * FROM documentos) SELECT * FROM recientes, user_tables)
+    LOOP NULL; END LOOP;
+    SELECT 1 INTO v_anio FROM dual;
+    SELECT 1 INTO v_anio FROM documentos d, comun.splittab(p_codtied) ids;
+  END;
+END;
+/
+`,
+    },
+    {
+      // TOAD saves a table's DDL as SCHEMA.TABLE.TBL.
+      path: 'db/OPS$APP.DOCUMENTOS.TBL',
+      text: `
+DROP TABLE OPS$APP.DOCUMENTOS CASCADE CONSTRAINTS;
+
+CREATE TABLE OPS$APP.DOCUMENTOS
+(
+  ID        NUMBER      NOT NULL,
+  COD_TIED  VARCHAR2(4) REFERENCES tied_tipos_elementos_docu (cod_tied)
+);
+`,
+    },
+  ])
+
+  it('reads the tables TOAD saves as .TBL', () => {
+    expect(model.tables).toMatchObject([
+      { name: 'DOCUMENTOS', schema: 'OPS$APP', path: 'db/OPS$APP.DOCUMENTOS.TBL' },
+    ])
+  })
+
+  it('lists the tables written, read, anchored to and pointed at, with the files that use them', () => {
+    expect(model.undeclared).toEqual([
+      { name: 'HISTORICO_DOCS', paths: ['db/docs_adjuntos.pkb'] },
+      {
+        name: 'TIED_TIPOS_ELEMENTOS_DOCU',
+        paths: [
+          'data/43_tied.sql',
+          'db/OPS$APP.DOCUMENTOS.TBL',
+          'db/docs_adjuntos.pkb',
+          'db/docs_adjuntos.pks',
+        ],
+      },
+    ])
+  })
 })
 
 describe('buildDbModel for PostgreSQL migrations', () => {
@@ -221,5 +307,14 @@ create trigger on_auth_user_created after insert on auth.users
 
     expect(find('function')).toMatchObject({ name: 'handle_new_user', tables: ['profiles'] })
     expect(find('trigger')).toMatchObject({ name: 'on_auth_user_created', on: 'users' })
+  })
+
+  it('finds the Supabase tables the migrations point at without creating them', () => {
+    expect(model.undeclared).toEqual([
+      {
+        name: 'users',
+        paths: ['supabase/migrations/20260101_init.sql', 'supabase/migrations/20260201_more.sql'],
+      },
+    ])
   })
 })

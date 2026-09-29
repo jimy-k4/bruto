@@ -720,6 +720,11 @@
   white-space: nowrap;
 }
 
+/* Used by the code but created by no script: dashed, like something drawn in pencil. */
+.lens-search__result.is-undeclared .lens-search__go {
+  border-style: dashed;
+}
+
 .lens-search__more {
   align-self: center;
   color: var(--ink-muted);

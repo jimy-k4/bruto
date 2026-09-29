@@ -600,4 +600,10 @@ export const ca: Locale = {
   tableSearchColumn: 'columna {name}',
   tableSearchNone: 'Cap taula no coincideix.',
   copyName: 'Copiar el nom {name}',
+  tableSearchUndeclared: 'sense CREATE TABLE · {count} fitxers',
+  tableSearchUndeclared_one: 'sense CREATE TABLE · {count} fitxer',
+  tableSearchUndeclaredHint:
+    '{count} taules més surten al codi sense el seu CREATE TABLE: el cercador les troba, però no surten al diagrama.',
+  tableSearchUndeclaredHint_one:
+    '{count} taula més surt al codi sense el seu CREATE TABLE: el cercador la troba, però no surt al diagrama.',
 }

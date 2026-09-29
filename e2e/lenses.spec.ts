@@ -207,3 +207,43 @@ test('the database lens finds a table by name or column, goes to it and copies i
   await expect(page.locator('.lens-table.is-dimmed')).toHaveText([/CUSTOMERS/, /ORDERS/])
   await expect(lenses).toBeVisible()
 })
+
+test('the database lens also finds the tables the code uses but no script creates', async ({
+  page,
+}) => {
+  await openProject(page, workspaceWith([]))
+  await page.evaluate(writeProjectFiles, {
+    ...LENS_PROJECT,
+    'db/data/43_product_tags.sql': "INSERT INTO product_tags (product_id, tag) VALUES (1, 'new');",
+  })
+  await page.keyboard.press('m')
+
+  const lenses = page.getByRole('group', { name: 'Vistas del proyecto' })
+  await lenses.getByRole('button', { name: /BBDD\s*PL\/SQL/ }).click()
+
+  await expect(
+    page.getByText('1 tabla más aparece en el código sin su CREATE TABLE', { exact: false }),
+  ).toBeVisible()
+
+  await page.keyboard.press('Control+f')
+  const search = page.getByRole('searchbox', { name: 'Buscar tabla o columna…' })
+  await search.fill('product')
+
+  const results = page.locator('.lens-search__result')
+  await expect(page.locator('.lens-search__count')).toHaveText('3 de 5')
+  await expect(results).toHaveText([
+    /^PRODUCTS/,
+    /^PRODUCT_TAGS\s*sin CREATE TABLE · 1 fichero/,
+    /^ORDER_LINES\s*columna PRODUCT_ID/,
+  ])
+  await expect(results.nth(1)).toHaveClass(/is-undeclared/)
+  // Found, not drawn: the diagram still has the four tables the scripts create.
+  await expect(page.locator('.lens-table')).toHaveCount(4)
+
+  // Enter walks through it like any other match, and its name can be copied.
+  await search.press('Enter')
+  await search.press('Enter')
+  await expect(results.nth(1)).toHaveClass(/is-current/)
+  await results.nth(1).getByRole('button', { name: 'Copiar el nombre PRODUCT_TAGS' }).click()
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('PRODUCT_TAGS')
+})

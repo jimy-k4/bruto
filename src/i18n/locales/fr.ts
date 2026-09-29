@@ -602,4 +602,10 @@ export const fr: Locale = {
   tableSearchColumn: 'colonne {name}',
   tableSearchNone: 'Aucune table ne correspond.',
   copyName: 'Copier le nom {name}',
+  tableSearchUndeclared: 'sans CREATE TABLE · {count} fichiers',
+  tableSearchUndeclared_one: 'sans CREATE TABLE · {count} fichier',
+  tableSearchUndeclaredHint:
+    '{count} autres tables apparaissent dans le code sans leur CREATE TABLE : la recherche les trouve, mais elles ne sont pas sur le diagramme.',
+  tableSearchUndeclaredHint_one:
+    '{count} autre table apparaît dans le code sans son CREATE TABLE : la recherche la trouve, mais elle n’est pas sur le diagramme.',
 }

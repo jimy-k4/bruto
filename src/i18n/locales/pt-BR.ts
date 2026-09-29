@@ -595,4 +595,10 @@ export const ptBR: Locale = {
   tableSearchColumn: 'coluna {name}',
   tableSearchNone: 'Nenhuma tabela corresponde.',
   copyName: 'Copiar o nome {name}',
+  tableSearchUndeclared: 'sem CREATE TABLE · {count} arquivos',
+  tableSearchUndeclared_one: 'sem CREATE TABLE · {count} arquivo',
+  tableSearchUndeclaredHint:
+    'Mais {count} tabelas aparecem no código sem o seu CREATE TABLE: a busca as encontra, mas elas não estão no diagrama.',
+  tableSearchUndeclaredHint_one:
+    'Mais {count} tabela aparece no código sem o seu CREATE TABLE: a busca a encontra, mas ela não está no diagrama.',
 }

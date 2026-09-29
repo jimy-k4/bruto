@@ -596,4 +596,10 @@ export const es = {
   tableSearchColumn: 'columna {name}',
   tableSearchNone: 'Ninguna tabla coincide.',
   copyName: 'Copiar el nombre {name}',
+  tableSearchUndeclared: 'sin CREATE TABLE · {count} ficheros',
+  tableSearchUndeclared_one: 'sin CREATE TABLE · {count} fichero',
+  tableSearchUndeclaredHint:
+    '{count} tablas más aparecen en el código sin su CREATE TABLE: el buscador las encuentra, pero no salen en el diagrama.',
+  tableSearchUndeclaredHint_one:
+    '{count} tabla más aparece en el código sin su CREATE TABLE: el buscador la encuentra, pero no sale en el diagrama.',
 }

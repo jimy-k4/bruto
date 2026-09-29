@@ -555,4 +555,7 @@ export const zh: Locale = {
   tableSearchColumn: '列 {name}',
   tableSearchNone: '没有匹配的表。',
   copyName: '复制名称 {name}',
+  tableSearchUndeclared: '无 CREATE TABLE · {count} 个文件',
+  tableSearchUndeclaredHint:
+    '代码中还有 {count} 个表没有 CREATE TABLE：搜索可以找到它们，但图中不显示。',
 }

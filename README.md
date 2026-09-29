@@ -67,7 +67,10 @@ Prefer to run it yourself? See [Development](#development).
   - **Database** (Oracle PL/SQL, PostgreSQL and Supabase, plain SQL, Prisma, Drizzle): tables with their
     columns and keys as an entity-relationship diagram, following migrations in order; packages split
     into specification and body, row level security and its policies, then views, triggers,
-    procedures, functions and sequences.
+    procedures, functions and sequences. `Ctrl F` finds a table by name or column among hundreds and
+    copies its name to cite it in a note; it also finds the tables the code writes, reads or anchors
+    types to when no script creates them (a schema versioned as packages and data scripts only).
+    Reads `.sql`, `.ddl` and the files Oracle tools save, TOAD's `.TBL` included.
 - **AI context.** Copy the selection, the selection plus everything it points to, or the whole
   project, as clean Markdown with short instructions for the model. A preview shows exactly what gets
   copied and roughly how many tokens it is.
