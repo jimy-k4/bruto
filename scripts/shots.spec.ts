@@ -54,6 +54,21 @@ const shots = {
     await page.keyboard.press('m')
     await page.locator('.structure-block', { hasText: /^DIR\s*app/i }).click()
   },
+  /**
+   * The database lens: tables, keys and policies, and the table search finding
+   * one by a column and one no migration creates (Supabase's auth.users).
+   */
+  async database(page: Page) {
+    await page.keyboard.press('m')
+    await page.locator('.structure__lens').last().click()
+    await page.locator('.lens-search input').fill('user')
+    await page.mouse.move(10, 890)
+  },
+  /** What's new: every feature with its entry. */
+  async news(page: Page) {
+    await page.locator('.topbar__news').click()
+    await page.mouse.move(10, 890)
+  },
   /** Search with a content filter on. */
   async search(page: Page) {
     // An empty spot of the board, so no note is selected.
@@ -78,6 +93,8 @@ const README: [keyof typeof shots, 'dark' | 'light', string][] = [
   ['lenses', 'light', 'lens-web-light'],
   ['structure', 'dark', 'structure-dark'],
   ['search', 'dark', 'search-dark'],
+  ['database', 'dark', 'lens-db-dark'],
+  ['news', 'light', 'news-light'],
 ]
 
 for (const { value: language } of LANGUAGES) {

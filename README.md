@@ -97,6 +97,10 @@ Prefer to run it yourself? See [Development](#development).
   <img src="docs/ai-context-light.png" alt="The AI context window with the global context and a preview of the copy" width="49%" />
   <img src="docs/search-dark.png" alt="Search over the board with the content and status filters, matches standing out" width="49%" />
 </p>
+<p>
+  <img src="docs/lens-db-dark.png" alt="The database lens: tables and their keys as a diagram, and the table search finding one by a column and one no migration creates" width="49%" />
+  <img src="docs/news-light.png" alt="The What's new board: every feature with its entry, newest first" width="49%" />
+</p>
 
 ## Working with an AI
 
