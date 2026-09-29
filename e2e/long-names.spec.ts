@@ -105,8 +105,9 @@ test('a long link or file path never pushes the text out of its note', async ({ 
       note('a', {
         title: 'Actualizar README.md de mi perfil de GitHub',
         description: 'Quiero algo acorde a lo que llevamos construyendo estos días.',
-        webUrl:
+        webUrls: [
           'https://github.com/jimy-k4/.github/edit/main/profile/README.md?plain=1&version=latest',
+        ],
         filePaths: [`src/${LONG}/${LONG}/${LONG}.tsx`],
       }),
     ]),

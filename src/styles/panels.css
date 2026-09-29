@@ -277,3 +277,19 @@
   font-size: var(--text-sm);
   line-height: 1.6;
 }
+
+/* Links of a note: one field each, removed one by one. */
+.link-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.link-list__row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.link-list__row .icon-button {
+  height: auto;
+  min-height: 40px;
+}

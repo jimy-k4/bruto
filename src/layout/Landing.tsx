@@ -41,7 +41,7 @@ const FEATURES: [TranslationKey, TranslationKey][] = [
 const STACKS: [TranslationKey, string][] = [
   ['lensWeb', 'React · Vue · Svelte · Next.js · Nuxt · SvelteKit · Astro · Angular'],
   ['lensApi', '.NET · NestJS · Express · Fastify · FastAPI · Flask · Spring'],
-  ['lensDb', 'Oracle PL/SQL · PostgreSQL · Supabase · SQL · Prisma'],
+  ['lensDb', 'Oracle PL/SQL · PostgreSQL · Supabase · SQL · Prisma · Drizzle'],
 ]
 
 const AGENTS_LINE =

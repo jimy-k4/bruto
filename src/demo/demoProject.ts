@@ -359,7 +359,7 @@ const NOTES: {
   pattern: string
   filePaths?: string[]
   aiFilePaths?: string[]
-  webUrl?: string
+  webUrls?: string[]
 }[] = [
   {
     key: 'calendar',
@@ -414,7 +414,7 @@ const NOTES: {
     status: 'todo',
     colorTheme: 'sand',
     pattern: 'grid',
-    webUrl: 'https://resend.com/docs',
+    webUrls: ['https://resend.com/docs', 'https://react.email/docs'],
   },
   {
     key: 'tests',
@@ -455,7 +455,7 @@ export function demoWorkspace(language: Language) {
     },
     notes: NOTES.map(({ key, ...note }, index) => ({
       filePaths: [],
-      webUrl: '',
+      webUrls: [],
       images: [],
       zIndex: index + 1,
       ...note,

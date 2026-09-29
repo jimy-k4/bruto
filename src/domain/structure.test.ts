@@ -7,7 +7,7 @@ const note = (id: string, filePaths: string[]): Note => ({
   title: id,
   description: '',
   filePaths,
-  webUrl: '',
+  webUrls: [],
   images: [],
   x: 0,
   y: 0,

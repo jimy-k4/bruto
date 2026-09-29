@@ -228,6 +228,20 @@
   font-style: italic;
 }
 
+/* As wide as the note, like its body: long links are cut, not widening it. */
+.note__links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+
+.note__links .note__more {
+  justify-self: start;
+  width: auto;
+  padding: 1px 6px;
+  font-size: var(--text-xs);
+}
+
 .note__link {
   display: flex;
   gap: var(--space-2);

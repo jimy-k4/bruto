@@ -1,6 +1,6 @@
 import { memo, useCallback, useState } from 'react'
 import type { Note } from '../types'
-import { noteTitle, shortId } from '../domain/workspace'
+import { noteLinks, noteTitle, shortId } from '../domain/workspace'
 import { statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
 import { ProjectImage } from '../ui/ProjectImage'
@@ -31,6 +31,8 @@ interface NoteCardProps {
 }
 
 const MAX_THUMBNAILS = 3
+/** Links shown on the card; the editor has them all. */
+const MAX_LINKS = 3
 
 /** An open AI response can reach the note below: while open, its note goes on top of the rest. */
 const OPEN_ABOVE = 1_000_000
@@ -60,6 +62,7 @@ export const NoteCard = memo(function NoteCard({
   const { t } = useI18n()
   const [aiOpen, setAiOpen] = useState(false)
   const title = noteTitle(note, t('untitled'))
+  const links = noteLinks(note)
   const { observe } = handlers
 
   const ref = useCallback(
@@ -122,18 +125,27 @@ export const NoteCard = memo(function NoteCard({
 
         {note.filePaths.length > 0 && <FileTable paths={note.filePaths} limit={4} compact />}
 
-        {note.webUrl.trim() && (
-          <a
-            className="note__link"
-            href={note.webUrl}
-            title={note.webUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onPointerDown={stop}
-          >
-            <span aria-hidden="true">↗</span>
-            <span className="note__link-text">{note.webUrl}</span>
-          </a>
+        {links.length > 0 && (
+          <ul className="note__links">
+            {links.slice(0, MAX_LINKS).map((link) => (
+              <li key={link}>
+                <a
+                  className="note__link"
+                  href={link}
+                  title={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onPointerDown={stop}
+                >
+                  <span aria-hidden="true">↗</span>
+                  <span className="note__link-text">{link}</span>
+                </a>
+              </li>
+            ))}
+            {links.length > MAX_LINKS && (
+              <li className="note__more">+{links.length - MAX_LINKS}</li>
+            )}
+          </ul>
         )}
 
         {note.images.length > 0 && (

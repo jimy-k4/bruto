@@ -8,7 +8,7 @@ const note = (id: string, x: number, y: number): Note => ({
   title: id,
   description: '',
   filePaths: [],
-  webUrl: '',
+  webUrls: [],
   images: [],
   x,
   y,

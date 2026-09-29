@@ -210,7 +210,7 @@ export const ptBR: Locale = {
   landingFeaturesTitle: 'E mais',
   featureBoardTitle: 'Um quadro de verdade',
   featureBoardText:
-    'Notas com status, arquivos, link e capturas. Arraste, conecte com setas e edite várias de uma vez.',
+    'Notas com status, arquivos, links e capturas. Arraste, conecte com setas e edite várias de uma vez.',
   featureSearchTitle: 'Encontre qualquer coisa',
   featureSearchText:
     'Ctrl+F busca por texto, caminho ou id, e filtra por status e pelo que cada nota tem: arquivos, resposta da IA, imagens ou link.',
@@ -333,7 +333,9 @@ export const ptBR: Locale = {
   title: 'Título',
   description: 'Descrição',
   customizeStatuses: 'Personalizar a aparência de cada status',
-  webLink: 'Link da web',
+  webLinks: 'Links web',
+  addLink: 'Adicionar link',
+  linkNumber: 'Link nº {number}',
   file: 'Arquivo',
   size: 'Tamanho',
   modified: 'Modificado',

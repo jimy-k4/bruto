@@ -51,7 +51,8 @@ export interface Note {
   description: string
   /** Paths relative to the project root. */
   filePaths: string[]
-  webUrl: string
+  /** Web links: docs, a ticket, a design, the page that fails. */
+  webUrls: string[]
   /** Image paths relative to the project root (usually `.bruto/images/…`). */
   images: string[]
   x: number

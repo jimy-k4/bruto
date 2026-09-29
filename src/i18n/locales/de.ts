@@ -211,7 +211,7 @@ export const de: Locale = {
   landingFeaturesTitle: 'Außerdem',
   featureBoardTitle: 'Ein echtes Board',
   featureBoardText:
-    'Notizen mit Status, Dateien, Link und Screenshots. Verschiebe sie, verbinde sie mit Pfeilen und bearbeite viele auf einmal.',
+    'Notizen mit Status, Dateien, Links und Screenshots. Verschiebe sie, verbinde sie mit Pfeilen und bearbeite viele auf einmal.',
   featureSearchTitle: 'Alles finden',
   featureSearchText:
     'Strg+F sucht nach Text, Pfad oder ID und filtert nach Status und danach, was eine Notiz hat: Dateien, KI-Antwort, Bilder oder Link.',
@@ -334,7 +334,9 @@ export const de: Locale = {
   title: 'Titel',
   description: 'Beschreibung',
   customizeStatuses: 'Aussehen jedes Status anpassen',
-  webLink: 'Weblink',
+  webLinks: 'Weblinks',
+  addLink: 'Link hinzufügen',
+  linkNumber: 'Link Nr. {number}',
   file: 'Datei',
   size: 'Größe',
   modified: 'Geändert',

@@ -42,7 +42,6 @@ export function NoteEditor({
     title: useId(),
     status: useId(),
     description: useId(),
-    url: useId(),
     ai: useId(),
     feedback: useId(),
   }
@@ -65,6 +64,31 @@ export function NoteEditor({
   const codeBlocks = parseRichText(note.aiResponse ?? '').filter(
     (block): block is Extract<Block, { kind: 'code' }> => block.kind === 'code',
   )
+
+  // Always at least one field to type a link in; blank ones are dropped when the project loads.
+  const links = note.webUrls.length > 0 ? note.webUrls : ['']
+  const focusLink = useRef<number | null>(null)
+  const setLinks = (next: string[]) => onChange({ webUrls: next })
+  const setLink = (index: number, value: string) =>
+    setLinks(links.map((link, position) => (position === index ? value : link)))
+  const addLink = () => {
+    focusLink.current = links.length
+    setLinks([...links, ''])
+  }
+  const removeLink = (index: number) => setLinks(links.filter((_, position) => position !== index))
+
+  // Several links pasted at once (one per line, or separated by spaces) fill several fields.
+  const pasteLinks = (event: React.ClipboardEvent<HTMLInputElement>, index: number) => {
+    const pasted = event.clipboardData
+      .getData('text')
+      .split(/\s+/)
+      .filter((part) => /^https?:\/\//i.test(part))
+
+    if (pasted.length < 2) return
+
+    event.preventDefault()
+    setLinks([...links.slice(0, index), ...pasted, ...links.slice(index + 1)].filter(Boolean))
+  }
 
   const removeFrom = (key: 'filePaths' | 'images' | 'aiFilePaths', path: string) =>
     onChange({ [key]: (note[key] ?? []).filter((item) => item !== path) })
@@ -139,20 +163,55 @@ export function NoteEditor({
           />
         </div>
 
-        <div className="field">
-          <label className="field__label" htmlFor={ids.url}>
-            {t('webLink')}
-          </label>
-          <input
-            id={ids.url}
-            className="input"
-            type="url"
-            inputMode="url"
-            placeholder="https://…"
-            value={note.webUrl}
-            onChange={(event) => onChange({ webUrl: event.target.value })}
-          />
-        </div>
+        <fieldset className="field">
+          <legend className="field__label">{t('webLinks')}</legend>
+
+          <ul className="link-list">
+            {links.map((link, index) => (
+              <li key={index} className="link-list__row">
+                <input
+                  ref={(element) => {
+                    // A link just added gets the focus as soon as its field exists.
+                    if (element && focusLink.current === index) {
+                      element.focus()
+                      focusLink.current = null
+                    }
+                  }}
+                  className="input"
+                  type="url"
+                  inputMode="url"
+                  placeholder="https://…"
+                  aria-label={t('linkNumber', { number: index + 1 })}
+                  value={link}
+                  onChange={(event) => setLink(index, event.target.value)}
+                  onPaste={(event) => pasteLinks(event, index)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey && link.trim()) {
+                      event.preventDefault()
+                      addLink()
+                    }
+                  }}
+                />
+                {(links.length > 1 || link) && (
+                  <button
+                    type="button"
+                    className="icon-button"
+                    aria-label={t('removeItem', {
+                      name: link || t('linkNumber', { number: index + 1 }),
+                    })}
+                    onClick={() => removeLink(index)}
+                  >
+                    ×
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          <button type="button" className="button button--small" onClick={addLink}>
+            + {t('addLink')}
+          </button>
+        </fieldset>
 
         <fieldset className="field">
           <legend className="field__label">{t('files')}</legend>

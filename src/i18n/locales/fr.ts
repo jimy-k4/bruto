@@ -211,7 +211,7 @@ export const fr: Locale = {
   landingFeaturesTitle: 'Et aussi',
   featureBoardTitle: 'Un vrai tableau',
   featureBoardText:
-    'Des notes avec statut, fichiers, lien et captures. Déplacez-les, reliez-les par des flèches et modifiez-en plusieurs à la fois.',
+    'Des notes avec statut, fichiers, liens et captures. Déplacez-les, reliez-les par des flèches et modifiez-en plusieurs à la fois.',
   featureSearchTitle: 'Tout retrouver',
   featureSearchText:
     'Ctrl+F cherche par texte, chemin ou id, et filtre par statut et par ce que contient chaque note : fichiers, réponse de l’IA, images ou lien.',
@@ -334,7 +334,9 @@ export const fr: Locale = {
   title: 'Titre',
   description: 'Description',
   customizeStatuses: 'Personnaliser l’apparence de chaque statut',
-  webLink: 'Lien web',
+  webLinks: 'Liens web',
+  addLink: 'Ajouter un lien',
+  linkNumber: 'Lien {number}',
   file: 'Fichier',
   size: 'Taille',
   modified: 'Modifié',

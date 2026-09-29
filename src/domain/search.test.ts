@@ -7,7 +7,7 @@ const note = (id: string, patch: Partial<Note> = {}): Note => ({
   title: '',
   description: '',
   filePaths: [],
-  webUrl: '',
+  webUrls: [],
   images: [],
   x: 0,
   y: 0,
@@ -37,7 +37,7 @@ describe('searchNotes', () => {
       note('b', { filePaths: ['src/auth/token.ts'] }),
       note('c', { aiResponse: 'renovado el token' }),
       note('d', { feedback: 'el token sigue caducando' }),
-      note('e', { webUrl: 'https://example.com/token' }),
+      note('e', { webUrls: ['https://example.com/token'] }),
       note('g', { aiFilePaths: ['src/token/refresh.ts'] }),
       note('f', { title: 'nada' }),
     ]
@@ -83,7 +83,7 @@ describe('searchNotes', () => {
   it('filters by what notes have or lack, alone or with the rest', () => {
     const notes = [
       note('files', { filePaths: ['src/a.ts'], status: 'todo' }),
-      note('answered', { aiResponse: 'Done', webUrl: 'https://x.dev' }),
+      note('answered', { aiResponse: 'Done', webUrls: ['https://x.dev'] }),
       note('blank', { aiResponse: '   ', status: 'todo' }),
       note('image', { images: ['.bruto/images/a.png'], x: 10 }),
       note('aiFiles', { aiResponse: 'Done', aiFilePaths: ['src/b.ts'], y: 10 }),

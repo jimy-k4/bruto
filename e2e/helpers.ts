@@ -88,7 +88,7 @@ export const note = (id: string, extra: Record<string, unknown> = {}) => ({
   title: id.toUpperCase(),
   description: '',
   filePaths: [],
-  webUrl: '',
+  webUrls: [],
   images: [],
   x: 100,
   y: 100,

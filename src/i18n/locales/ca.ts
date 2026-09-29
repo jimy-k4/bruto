@@ -211,7 +211,7 @@ export const ca: Locale = {
   landingFeaturesTitle: 'I a més',
   featureBoardTitle: 'Un tauler de debò',
   featureBoardText:
-    'Notes amb estat, fitxers, enllaç i captures. Arrossega-les, connecta-les amb fletxes i edita’n moltes alhora.',
+    'Notes amb estat, fitxers, enllaços i captures. Arrossega-les, connecta-les amb fletxes i edita’n moltes alhora.',
   featureSearchTitle: 'Troba qualsevol cosa',
   featureSearchText:
     'Ctrl+F cerca per text, ruta o id, i filtra per estat i pel que té cada nota: fitxers, resposta de la IA, imatges o enllaç.',
@@ -335,7 +335,9 @@ export const ca: Locale = {
   title: 'Títol',
   description: 'Descripció',
   customizeStatuses: "Personalitzar l'aspecte de cada estat",
-  webLink: 'Enllaç web',
+  webLinks: 'Enllaços web',
+  addLink: 'Afegir enllaç',
+  linkNumber: 'Enllaç {number}',
   file: 'Fitxer',
   size: 'Mida',
   modified: 'Modificat',

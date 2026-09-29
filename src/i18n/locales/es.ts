@@ -209,7 +209,7 @@ export const es = {
   landingFeaturesTitle: 'Y además',
   featureBoardTitle: 'Un tablero de verdad',
   featureBoardText:
-    'Notas con estado, ficheros, enlace y capturas. Arrástralas, conéctalas con flechas y edita muchas a la vez.',
+    'Notas con estado, ficheros, enlaces y capturas. Arrástralas, conéctalas con flechas y edita muchas a la vez.',
   featureSearchTitle: 'Encuentra cualquier cosa',
   featureSearchText:
     'Ctrl+F busca por texto, ruta o id, y filtra por estado y por lo que tiene cada nota: ficheros, respuesta de la IA, imágenes o enlace.',
@@ -331,7 +331,9 @@ export const es = {
   title: 'Título',
   description: 'Descripción',
   customizeStatuses: 'Personalizar el aspecto de cada estado',
-  webLink: 'Enlace web',
+  webLinks: 'Enlaces web',
+  addLink: 'Añadir enlace',
+  linkNumber: 'Enlace {number}',
   file: 'Fichero',
   size: 'Tamaño',
   modified: 'Modificado',

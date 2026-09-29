@@ -21,7 +21,7 @@ const note = (id: string, patch: Partial<Note> = {}): Note => ({
   title: id.toUpperCase(),
   description: '',
   filePaths: [],
-  webUrl: '',
+  webUrls: [],
   images: [],
   x: 0,
   y: 0,
@@ -65,6 +65,23 @@ describe('parseWorkspace', () => {
 
     expect(workspace.notes[0].id).toMatch(/[0-9a-f-]{36}/)
     expect(workspace.notes[0].status).toBe('todo')
+  })
+
+  it('reads the older single webUrl as the first link, without blanks or repeats', () => {
+    const workspace = parseWorkspace(
+      JSON.stringify({
+        notes: [
+          { id: 'old', webUrl: 'https://a.dev' },
+          { id: 'new', webUrls: ['https://a.dev', '', ' https://b.dev ', 'https://a.dev'] },
+        ],
+      }),
+    )
+
+    expect(workspace.notes.map((item) => item.webUrls)).toEqual([
+      ['https://a.dev'],
+      ['https://a.dev', 'https://b.dev'],
+    ])
+    expect(workspace.notes[0]).not.toHaveProperty('webUrl')
   })
 
   it('keeps fields it does not know about', () => {

@@ -1,5 +1,6 @@
 import type { Note, NoteStatus } from '../types'
 import { hasCode } from './richText'
+import { noteLinks } from './workspace'
 
 /** Things a note can have or lack, to filter by. */
 export type NoteTrait = 'files' | 'aiResponse' | 'code' | 'images' | 'webUrl'
@@ -23,7 +24,7 @@ export const hasTrait: Record<NoteTrait, (note: Note) => boolean> = {
   // Code written by either side: in the description, the AI's answer or the feedback.
   code: (note) => [note.description, note.aiResponse, note.feedback].some(hasCode),
   images: (note) => note.images.length > 0,
-  webUrl: (note) => Boolean(note.webUrl.trim()),
+  webUrl: (note) => noteLinks(note).length > 0,
 }
 
 /** Any → with → without → any: the order a trait filter button goes through. */
@@ -52,7 +53,7 @@ const searchableText = (note: Note) =>
     [
       note.title,
       note.description,
-      note.webUrl,
+      ...note.webUrls,
       note.aiResponse ?? '',
       note.feedback ?? '',
       ...note.filePaths,

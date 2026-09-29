@@ -38,7 +38,7 @@ Prefer to run it yourself? See [Development](#development).
 
 ## Features
 
-- **Board.** Notes with a status, description, files, a link and screenshots. Drag them, connect them
+- **Board.** Notes with a status, description, files, links and screenshots. Drag them, connect them
   with arrows, select many at once and edit them together.
 - **Structure view.** The project's folders and files as blocks sized by how many files they hold,
   marked with the notes that point at them. It shows where the work is, and lists links to files
@@ -54,7 +54,7 @@ Prefer to run it yourself? See [Development](#development).
   - **API** (.NET, NestJS, Express, Fastify, FastAPI, Flask, Spring): controllers and routers as
     resources listing their endpoints, verb, route and authorization, with the services they depend
     on; then services, repositories, data, models and middleware.
-  - **Database** (Oracle PL/SQL, PostgreSQL and Supabase, plain SQL, Prisma): tables with their
+  - **Database** (Oracle PL/SQL, PostgreSQL and Supabase, plain SQL, Prisma, Drizzle): tables with their
     columns and keys as an entity-relationship diagram, following migrations in order; packages split
     into specification and body, row level security and its policies, then views, triggers,
     procedures, functions and sequences.
@@ -145,7 +145,7 @@ fields it does not know about, and accepts common status words such as `"pending
       "description": "Users can cancel up to 2 hours before the session.",
       "status": "review", // idea · todo · in-progress · review · changes-requested · done · blocked · bug · wontfix · loop
       "filePaths": ["app/bookings/actions.ts"], // relative to the project
-      "webUrl": "",
+      "webUrls": ["https://…"], // docs, a ticket, a design…
       "images": [".bruto/images/b72f10-20260924-ab12.png"],
       "aiResponse": "Added cancelBooking() with the 2h rule.",
       "aiFilePaths": ["app/bookings/cancel.ts"], // what the AI created or changed

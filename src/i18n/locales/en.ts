@@ -209,7 +209,7 @@ export const en: Locale = {
   landingFeaturesTitle: 'And also',
   featureBoardTitle: 'A real board',
   featureBoardText:
-    'Notes with a status, files, a link and screenshots. Drag them, connect them with arrows and edit many at once.',
+    'Notes with a status, files, links and screenshots. Drag them, connect them with arrows and edit many at once.',
   featureSearchTitle: 'Find anything',
   featureSearchText:
     'Ctrl+F searches by text, path or id, and filters by status and by what a note has: files, an AI response, images or a link.',
@@ -331,7 +331,9 @@ export const en: Locale = {
   title: 'Title',
   description: 'Description',
   customizeStatuses: 'Customise how each status looks',
-  webLink: 'Web link',
+  webLinks: 'Web links',
+  addLink: 'Add link',
+  linkNumber: 'Link {number}',
   file: 'File',
   size: 'Size',
   modified: 'Modified',

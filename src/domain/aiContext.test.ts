@@ -8,7 +8,7 @@ const note = (id: string, patch: Partial<Note> = {}): Note => ({
   title: id.toUpperCase(),
   description: '',
   filePaths: [],
-  webUrl: '',
+  webUrls: [],
   images: [],
   x: 0,
   y: 0,
@@ -55,6 +55,21 @@ describe('buildAiContext', () => {
     expect(text).toContain('Files:\n- app/login.tsx')
     expect(text).toContain('Files changed by the AI:\n- app/session.ts')
     expect(text).toContain('`aiFilePaths`')
+  })
+
+  it('gives one link on its line and several as a list, leaving blanks out', () => {
+    const workspace = {
+      ...createEmptyWorkspace('LINKS'),
+      notes: [
+        note('one', { webUrls: ['https://a.dev'] }),
+        note('many', { webUrls: ['https://a.dev', ' ', 'https://b.dev'] }),
+      ],
+    }
+
+    expect(buildAiContext(workspace, 'current', ['one'])).toContain('Web: https://a.dev')
+    expect(buildAiContext(workspace, 'current', ['many'])).toContain(
+      'Web:\n- https://a.dev\n- https://b.dev',
+    )
   })
 
   it('always explains how to answer', () => {

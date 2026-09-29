@@ -489,3 +489,39 @@ test('search filters notes that contain code', async ({ page }) => {
   await expect(noteCard(page, 'GAMMA')).toHaveClass(/is-match/)
   await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-dimmed/)
 })
+
+test('a note holds several links, added, pasted and removed in the editor', async ({ page }) => {
+  await openProject(page, workspaceWith([note('links', { title: 'Enlaces' })]))
+  await noteCard(page, 'Enlaces').click()
+
+  await page.getByLabel('Enlace 1', { exact: true }).fill('https://a.dev')
+  // Enter in a filled link adds the next one, ready to type.
+  await page.getByLabel('Enlace 1', { exact: true }).press('Enter')
+  await expect(page.getByLabel('Enlace 2', { exact: true })).toBeFocused()
+  await page.keyboard.type('https://b.dev')
+
+  const card = noteCard(page, 'Enlaces')
+  await expect(card.locator('.note__link')).toHaveText([/a\.dev/, /b\.dev/])
+  await waitForSaved(page)
+  expect((await readDisk(page)).notes[0]).toMatchObject({
+    webUrls: ['https://a.dev', 'https://b.dev'],
+  })
+
+  // Several links pasted at once fill several fields.
+  await page.getByRole('button', { name: '+ Añadir enlace' }).click()
+  await page.getByLabel('Enlace 3', { exact: true }).evaluate((input) => {
+    const data = new DataTransfer()
+    data.setData('text/plain', 'https://c.dev\nhttps://d.dev')
+    input.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true }))
+  })
+  await expect(page.getByLabel('Enlace 4', { exact: true })).toHaveValue('https://d.dev')
+  await expect(card.locator('.note__links')).toContainText('+1')
+
+  await page.getByRole('button', { name: 'Quitar https://a.dev' }).click()
+  await waitForSaved(page)
+  expect((await readDisk(page)).notes[0].webUrls).toEqual([
+    'https://b.dev',
+    'https://c.dev',
+    'https://d.dev',
+  ])
+})

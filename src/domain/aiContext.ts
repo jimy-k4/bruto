@@ -1,6 +1,6 @@
 import type { ContextScope, Note, Workspace } from '../types'
 import { CLOSED_STATUSES } from './constants'
-import { getConnectedNoteIds, noteTitle, shortId } from './workspace'
+import { getConnectedNoteIds, noteLinks, noteTitle, shortId } from './workspace'
 
 /**
  * How an AI should work with what it receives. Kept short: it is prepended to
@@ -46,7 +46,10 @@ function describeNote(note: Note): string[] {
     lines.push('', 'Files:', ...note.filePaths.map((path) => `- ${path}`))
   }
 
-  if (note.webUrl.trim()) lines.push('', `Web: ${note.webUrl.trim()}`)
+  const links = noteLinks(note)
+
+  if (links.length === 1) lines.push('', `Web: ${links[0]}`)
+  if (links.length > 1) lines.push('', 'Web:', ...links.map((link) => `- ${link}`))
 
   if (note.images.length > 0) {
     lines.push('', 'Images:', ...note.images.map((path) => `- ${path}`))

@@ -37,6 +37,13 @@ const asNumber = (value: unknown, fallback: number): number =>
 const asStringList = (value: unknown): string[] =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
 
+/** Links from `webUrls` and the older single `webUrl`, without blanks or repeats. */
+const normalizeLinks = (raw: UnknownRecord) => [
+  ...new Set(
+    [...asStringList(raw.webUrls), asString(raw.webUrl)].map((link) => link.trim()).filter(Boolean),
+  ),
+]
+
 /** Words other tools (or people) write for a status, mapped to Bruto's statuses. */
 const STATUS_ALIASES: Record<string, NoteStatus> = {
   pending: 'todo',
@@ -88,7 +95,7 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
     title: asString(raw.title),
     description: asString(raw.description),
     filePaths: asStringList(raw.filePaths),
-    webUrl: asString(raw.webUrl),
+    webUrls: normalizeLinks(raw),
     images: asStringList(raw.images),
     x: asNumber(raw.x, 200 + index * 25),
     y: asNumber(raw.y, 150 + index * 25),
@@ -97,6 +104,8 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
     pattern: isNotePattern(raw.pattern) ? raw.pattern : 'raw',
   }
 
+  // One link used to be `webUrl`: it becomes the first of the list.
+  Reflect.deleteProperty(note, 'webUrl')
   delete note.status
   delete note.aiResponse
   delete note.feedback
@@ -294,6 +303,10 @@ function dedupeConnections(connections: Connection[]): Connection[] {
 
 export const shortId = (id: string) => id.slice(0, 6)
 
+/** The links of a note that have something in them: the editor keeps blank ones while typing. */
+export const noteLinks = (note: Pick<Note, 'webUrls'>) =>
+  (note.webUrls ?? []).map((link) => link.trim()).filter(Boolean)
+
 export const noteTitle = (note: Pick<Note, 'title'>, untitled = 'Untitled') =>
   note.title.trim() || untitled
 
@@ -446,7 +459,7 @@ export function createNote(
     title,
     description: '',
     filePaths: [],
-    webUrl: '',
+    webUrls: [],
     images: [],
     x: Math.round(position.x),
     y: Math.round(position.y),

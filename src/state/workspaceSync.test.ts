@@ -16,7 +16,7 @@ const note = (id: string, patch: Partial<Note> = {}): Note => ({
   title: id,
   description: '',
   filePaths: [],
-  webUrl: '',
+  webUrls: [],
   images: [],
   x: 0,
   y: 0,
