@@ -325,12 +325,10 @@ export const ru: Locale = {
   statusBlocked: 'Заблокирована',
   statusReview: 'На проверке',
   statusDone: 'Готово',
-  statusBug: 'Ошибка',
+  kindBug: 'Ошибка',
   statusChangesRequested: 'На доработку',
   statusWontfix: 'Отклонена',
-  statusLoop: 'Цикл',
-
-  // Note editor
+  kindRule: 'Правило',
   editNote: 'Изменить заметку',
   title: 'Название',
   description: 'Описание',
@@ -358,8 +356,8 @@ export const ru: Locale = {
   feedbackPlaceholder: 'После проверки ответа: что всё ещё не так или чего не хватает.',
   feedbackStatusHint:
     'ИИ нужно что-то исправить? Переведите заметку в статус «{status}», чтобы он это увидел.',
-  loopStatusHint:
-    'Постоянное правило: ИИ применяет его в каждой задаче, даже если оно не выбрано, и никогда не меняет его статус.',
+  ruleHint:
+    'Постоянное правило: ИИ применяет его в каждой задаче, даже если оно не выбрано, и никогда на него не отвечает. Чтобы отменить правило, отметьте его «{done}» или «{wontfix}».',
   markAsStatus: 'Перевести в «{status}»',
   color: 'Цвет',
   pattern: 'Узор',
@@ -589,4 +587,10 @@ export const ru: Locale = {
   linkConfirm: 'Связать',
   tapeBlocked: 'Заблокирована',
   tapeBlocking: 'Блокирует',
+  shortcutAltDrag: 'Дублировать перетаскиванием',
+  shortcutAltDragDescription:
+    'Перетащите заметку с зажатой Alt: оригинал останется на месте, а вы перенесёте копию.',
+  kind: 'Тип',
+  kindTask: 'Задача',
+  filterByKind: 'Фильтр по типу',
 }

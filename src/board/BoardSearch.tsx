@@ -3,16 +3,20 @@ import {
   NOTE_TRAITS,
   isSearchActive,
   nextTraitFilter,
+  type KindFilter,
   type NoteSearch,
   type NoteTrait,
 } from '../domain/search'
-import { statusLabel, useI18n, type TranslationKey } from '../i18n'
+import { KIND_STYLE_KEY } from '../domain/constants'
+import { kindLabel, statusLabel, useI18n, type TranslationKey } from '../i18n'
 
 interface BoardSearchProps {
   search: NoteSearch
   matches: Note[]
   /** Statuses that some note has: the only ones worth offering as filters. */
   statuses: NoteStatus[]
+  /** Kinds that some note has, likewise. */
+  kinds: KindFilter[]
   /** The selected note, when there's exactly one. */
   currentId: string | null
   onChange: (search: NoteSearch) => void
@@ -36,6 +40,7 @@ export function BoardSearch({
   search,
   matches,
   statuses,
+  kinds,
   currentId,
   onChange,
   onShow,
@@ -54,6 +59,14 @@ export function BoardSearch({
 
     onShow(matches[next].id)
   }
+
+  const toggleKind = (kind: KindFilter) =>
+    onChange({
+      ...search,
+      kinds: search.kinds?.includes(kind)
+        ? search.kinds.filter((item) => item !== kind)
+        : [...(search.kinds ?? []), kind],
+    })
 
   const toggleStatus = (status: NoteStatus) =>
     onChange({
@@ -179,6 +192,22 @@ export function BoardSearch({
               onClick={() => toggleStatus(status)}
             >
               {statusLabel(t, status)}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {kinds.length > 1 && (
+        <div className="board-search__statuses" role="group" aria-label={t('filterByKind')}>
+          {kinds.map((kind) => (
+            <button
+              key={kind}
+              type="button"
+              className={`status-badge status-badge--${kind === 'task' ? 'task' : KIND_STYLE_KEY[kind]} board-search__status`}
+              aria-pressed={search.kinds?.includes(kind) ?? false}
+              onClick={() => toggleKind(kind)}
+            >
+              {kindLabel(t, kind === 'task' ? undefined : kind)}
             </button>
           ))}
         </div>

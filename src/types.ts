@@ -30,20 +30,26 @@ export type NotePattern =
   | 'weave'
   | 'triangle'
 
+/** Where a note stands. Up to v3 "bug" and "loop" were statuses too; they are kinds now. */
 export type NoteStatus =
   | 'idea'
   | 'todo'
   | 'in-progress'
+  /** Waiting on something outside the board: a person, a vendor, an access. */
   | 'blocked'
   /** The AI finished: waiting for the user to check it. */
   | 'review'
   /** The user checked it and found problems (see `feedback`): back to the AI. */
   | 'changes-requested'
   | 'done'
-  | 'bug'
   | 'wontfix'
-  /** A standing rule: the AI applies it on every task and never closes it. */
-  | 'loop'
+
+/**
+ * What a note is, apart from where it stands. A note without a kind is a task.
+ * A rule is a standing rule: the AI applies it on every task and never answers
+ * it; closing it (done, won't fix) retires it.
+ */
+export type NoteKind = 'bug' | 'rule'
 
 export interface Note {
   id: string
@@ -61,6 +67,8 @@ export interface Note {
   colorTheme: NoteColorTheme
   pattern: NotePattern
   status?: NoteStatus
+  /** Absent for a plain task. */
+  kind?: NoteKind
   /** What an AI model answered after working on the note. */
   aiResponse?: string
   /**
@@ -110,7 +118,14 @@ export interface StatusStyleConfig {
   pattern?: NotePattern
 }
 
-export type StatusStyles = Partial<Record<NoteStatus, StatusStyleConfig>>
+/**
+ * The look for each status, and for each kind. Kinds keep the keys they had as
+ * statuses ("bug", and "loop" for rules), so older tools reading the file keep
+ * them too.
+ */
+export type StyleKey = NoteStatus | 'bug' | 'loop'
+
+export type StatusStyles = Partial<Record<StyleKey, StatusStyleConfig>>
 
 export interface Workspace {
   version: number

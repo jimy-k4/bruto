@@ -2,7 +2,7 @@ import { memo, useCallback, useState } from 'react'
 import type { CrossLink, Note } from '../types'
 import { blockState, linkKey, type LinkedNoteInfo } from '../domain/crossLinks'
 import { noteLinks, noteTitle, shortId } from '../domain/workspace'
-import { statusLabel, useI18n } from '../i18n'
+import { kindLabel, statusLabel, useI18n } from '../i18n'
 import { FileTable } from '../ui/FileTable'
 import { ProjectImage } from '../ui/ProjectImage'
 import { RichText } from '../ui/RichText'
@@ -104,7 +104,12 @@ export const NoteCard = memo(function NoteCard({
       data-note-id={note.id}
       tabIndex={0}
       aria-roledescription={t('note')}
-      aria-label={[title, note.status && statusLabel(t, note.status), selected && t('selected')]
+      aria-label={[
+        title,
+        note.kind && kindLabel(t, note.kind),
+        note.status && statusLabel(t, note.status),
+        selected && t('selected'),
+      ]
         .filter(Boolean)
         .join(', ')}
       onPointerDown={(event) => handlers.onPointerDown(event, note)}
@@ -113,7 +118,9 @@ export const NoteCard = memo(function NoteCard({
       onFocus={(event) => event.target === event.currentTarget && handlers.onFocus(note)}
     >
       <header className="note__header">
-        <span className="note__kind">{t('note')}</span>
+        <span className={note.kind ? `note__kind note__kind--${note.kind}` : 'note__kind'}>
+          {note.kind ? kindLabel(t, note.kind) : t('note')}
+        </span>
 
         {note.status && (
           <span className={`status-badge status-badge--${note.status}`}>

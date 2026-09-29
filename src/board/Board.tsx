@@ -17,6 +17,8 @@ export interface BoardCallbacks {
   onMove: (positions: Map<string, Point>) => void
   onMoveEnd: () => void
   onMoveBy: (ids: string[], delta: Point) => void
+  /** Copies notes in place for an Alt+drag; returns each original's copy. */
+  onDuplicateForDrag: (ids: string[]) => Map<string, string>
   onConnectingChange: (id: string | null) => void
   onConnect: (from: string, to: string) => void
   onSelectConnection: (id: string | null) => void
@@ -154,7 +156,7 @@ export function Board(props: BoardProps) {
           : [note.id]
 
       const start = { x: event.clientX, y: event.clientY }
-      const origins = new Map(
+      let origins = new Map(
         current.workspace.notes
           .filter((item) => group.includes(item.id))
           .map((item) => [item.id, { x: item.x, y: item.y }]),
@@ -173,8 +175,17 @@ export function Board(props: BoardProps) {
           if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return
 
           moved = true
-          current.onRaise(group)
-          setDraggingId(note.id)
+
+          // Alt as the drag starts: the drag carries copies, and the originals stay where they were.
+          if (moveEvent.altKey || event.altKey) {
+            const copies = latest.current.onDuplicateForDrag(group)
+
+            origins = new Map([...origins].map(([id, origin]) => [copies.get(id) ?? id, origin]))
+            setDraggingId(copies.get(note.id) ?? note.id)
+          } else {
+            current.onRaise(group)
+            setDraggingId(note.id)
+          }
         }
 
         const zoom = view.zoom

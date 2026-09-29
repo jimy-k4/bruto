@@ -591,3 +591,82 @@ test('the editor explains how to format a note, with each example rendered', asy
   await expect(help).toBeHidden()
   await expect(page.getByLabel('Título', { exact: true })).toBeVisible()
 })
+
+test('Alt+drag leaves the note where it was and carries a copy, undone in one step', async ({
+  page,
+}) => {
+  await openProject(page, workspaceWith([note('alpha', { x: 100, y: 100 })]))
+
+  const original = noteCard(page, 'ALPHA')
+  const box = (await original.boundingBox())!
+
+  await page.keyboard.down('Alt')
+  await page.mouse.move(box.x + 40, box.y + 60)
+  await page.mouse.down()
+  // Held longer than it takes the open projects to show: they must not, mid-drag.
+  await page.waitForTimeout(600)
+  await page.mouse.move(box.x + 240, box.y + 160, { steps: 8 })
+  await expect(page.locator('.project-switcher__menu')).toBeHidden()
+  await page.mouse.up()
+  await page.keyboard.up('Alt')
+  // Away from both notes, so neither is lifted by the hover.
+  await page.mouse.move(box.x + 700, box.y + 500)
+
+  const copy = noteCard(page, 'ALPHA (copia)')
+  await expect(copy).toHaveClass(/is-selected/)
+  await expect.poll(() => original.boundingBox()).toEqual(box)
+  expect((await copy.boundingBox())!.x).toBeCloseTo(box.x + 200, 0)
+  await waitForSaved(page)
+  expect((await readDisk(page)).notes).toHaveLength(2)
+
+  await page.keyboard.press('Control+z')
+  await expect(copy).toBeHidden()
+  await expect.poll(() => original.boundingBox()).toEqual(box)
+})
+
+test('bugs and rules are kinds: old boards read as such, and the editor sets them', async ({
+  page,
+}) => {
+  await openProject(
+    page,
+    workspaceWith(
+      [
+        note('alpha', { x: 80, y: 80, status: 'bug', colorTheme: 'wine', pattern: 'cross' }),
+        note('beta', { x: 480, y: 80, status: 'loop' }),
+        note('gamma', { x: 880, y: 80, status: 'todo' }),
+      ],
+      { version: 3, statusStyles: { bug: { color: 'wine', pattern: 'cross' } } },
+    ),
+  )
+
+  // A bug from before v4 is a bug still to do, with its look; a loop is a rule.
+  const alpha = noteCard(page, 'ALPHA')
+  await expect(alpha.locator('.note__kind')).toHaveText('Bug')
+  await expect(alpha.locator('.status-badge')).toHaveText('Por hacer')
+  await expect(alpha).toHaveClass(/note-color-wine/)
+  await expect(noteCard(page, 'BETA').locator('.note__kind')).toHaveText('Regla')
+  await expect(noteCard(page, 'BETA').locator('.status-badge')).toHaveCount(0)
+  await waitForSaved(page)
+  expect((await readDisk(page)).notes.map((item) => [item.kind, item.status])).toEqual([
+    ['bug', 'todo'],
+    ['rule', undefined],
+    [undefined, 'todo'],
+  ])
+
+  // The editor turns a task into a bug, with the bug's look.
+  await noteCard(page, 'GAMMA').click()
+  await page.getByRole('radio', { name: 'Bug' }).check()
+  await expect(noteCard(page, 'GAMMA').locator('.note__kind')).toHaveText('Bug')
+  await expect(noteCard(page, 'GAMMA')).toHaveClass(/note-color-wine/)
+  await page.keyboard.press('Escape')
+
+  // And search filters by kind.
+  await page.locator('.board').click({ position: { x: 700, y: 700 } })
+  await page.keyboard.press('Control+f')
+  await page
+    .getByRole('group', { name: 'Filtrar por tipo' })
+    .getByRole('button', { name: 'Regla' })
+    .click()
+  await expect(noteCard(page, 'BETA')).toHaveClass(/is-match/)
+  await expect(noteCard(page, 'ALPHA')).toHaveClass(/is-dimmed/)
+})

@@ -354,7 +354,8 @@ const NOTES: {
   id: string
   x: number
   y: number
-  status: string
+  status?: string
+  kind?: string
   colorTheme: string
   pattern: string
   filePaths?: string[]
@@ -421,7 +422,7 @@ const NOTES: {
     id: 'f0e1d2c3-0000-4000-8000-000000000006',
     x: 780,
     y: 560,
-    status: 'loop',
+    kind: 'rule',
     colorTheme: 'concrete',
     pattern: 'raw',
   },
@@ -434,7 +435,7 @@ export function demoWorkspace(language: Language) {
   const text = DEMO_TEXTS[language]
 
   return {
-    version: 3,
+    version: 4,
     title: 'ATLAS',
     description: text.description,
     aiContext: text.aiContext,

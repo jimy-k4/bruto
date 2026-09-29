@@ -1,8 +1,8 @@
 import { isAbsolute, relative } from 'node:path'
-import type { Note, NoteStatus, Point, Workspace } from '../../src/types'
+import type { Note, NoteKind, NoteStatus, Point, Workspace } from '../../src/types'
 import { buildAiContext, describeNote } from '../../src/domain/aiContext'
 import { CLOSED_STATUSES, NOTE_MIN_SIZE } from '../../src/domain/constants'
-import { searchNotes as findNotes } from '../../src/domain/search'
+import { kindOf, searchNotes as findNotes, type KindFilter } from '../../src/domain/search'
 import {
   addConnection,
   createNote,
@@ -20,6 +20,8 @@ import { BoardError, changeBoard, readBoard, resolveNote } from './board'
 
 const ref = (note: Note) => `[${shortId(note.id)}] ${noteTitle(note)}`
 const isClosed = (note: Note) => Boolean(note.status && CLOSED_STATUSES.includes(note.status))
+/** How a note reads in a list: its status, and its kind when it isn't a plain task. */
+const standing = (note: Note) => [note.status ?? 'no status', note.kind].filter(Boolean).join(' · ')
 const byReadingOrder = (a: Note, b: Note) => a.y - b.y || a.x - b.x
 
 /** Paths as the board keeps them: relative to the project, with forward slashes. */
@@ -33,7 +35,11 @@ const unique = (items: string[]) => [...new Set(items.filter(Boolean))]
 
 export function listNotes(
   root: string,
-  { statuses, includeClosed = false }: { statuses?: NoteStatus[]; includeClosed?: boolean } = {},
+  {
+    statuses,
+    kinds,
+    includeClosed = false,
+  }: { statuses?: NoteStatus[]; kinds?: KindFilter[]; includeClosed?: boolean } = {},
 ): string {
   const workspace = readBoard(root)
   const notes = workspace.notes
@@ -42,6 +48,7 @@ export function listNotes(
         ? Boolean(note.status && statuses.includes(note.status))
         : includeClosed || !isClosed(note),
     )
+    .filter((note) => !kinds?.length || kinds.includes(kindOf(note)))
     .sort(byReadingOrder)
   const header = [`# ${workspace.title}`, workspace.description.trim()].filter(Boolean)
 
@@ -50,7 +57,7 @@ export function listNotes(
   return [
     ...header,
     '',
-    ...notes.map((note) => `- ${ref(note)} — ${note.status ?? 'no status'}`),
+    ...notes.map((note) => `- ${ref(note)} — ${standing(note)}`),
     '',
     'Read one with get_note, or everything the AI needs with get_context.',
   ].join('\n')
@@ -58,14 +65,18 @@ export function listNotes(
 
 export function searchNotes(
   root: string,
-  { query = '', statuses = [] }: { query?: string; statuses?: NoteStatus[] },
+  {
+    query = '',
+    statuses = [],
+    kinds = [],
+  }: { query?: string; statuses?: NoteStatus[]; kinds?: KindFilter[] },
 ): string {
   const workspace = readBoard(root)
-  const found = findNotes(workspace.notes, { query, statuses })
+  const found = findNotes(workspace.notes, { query, statuses, kinds })
 
   if (found.length === 0) return 'No notes match.'
 
-  return found.map((note) => `- ${ref(note)} — ${note.status ?? 'no status'}`).join('\n')
+  return found.map((note) => `- ${ref(note)} — ${standing(note)}`).join('\n')
 }
 
 /**
@@ -81,9 +92,9 @@ export function setStatus(
   changeBoard(root, (workspace) => {
     const note = resolveNote(workspace, id)
 
-    if (note.status === 'loop' || status === 'loop') {
+    if (note.kind === 'rule') {
       throw new BoardError(
-        `Standing rules (status "loop") are set by the user only: ${ref(note)} keeps its status.`,
+        `Standing rules (kind "rule") are set by the user only: ${ref(note)} keeps its status.`,
       )
     }
 
@@ -145,9 +156,9 @@ export function answerNote(
   changeBoard(root, (workspace) => {
     const note = resolveNote(workspace, id)
 
-    if (note.status === 'loop') {
+    if (note.kind === 'rule') {
       throw new BoardError(
-        `${ref(note)} is a standing rule (status "loop"): apply it on every task, but never answer it or change its status.`,
+        `${ref(note)} is a standing rule (kind "rule"): apply it on every task, but never answer it or change it.`,
       )
     }
 
@@ -200,6 +211,7 @@ export function createNoteTool(
     title,
     description = '',
     status = 'idea',
+    kind,
     files = [],
     links = [],
     after,
@@ -207,6 +219,8 @@ export function createNoteTool(
     title: string
     description?: string
     status?: NoteStatus
+    /** A task or a bug: standing rules are the user's to write. */
+    kind?: Exclude<NoteKind, 'rule'> | 'task'
     files?: string[]
     links?: string[]
     after?: string
@@ -223,6 +237,7 @@ export function createNoteTool(
         description,
         filePaths: unique(files.map((path) => projectPath(root, path))),
         webUrls: unique(links.map((link) => link.trim())),
+        ...(kind === 'bug' && { kind }),
       })
 
       if (previous) next = addConnection(next, previous.id, result.note.id)
@@ -234,7 +249,7 @@ export function createNoteTool(
     { createIfMissing: true },
   )
 
-  return `Created ${ref(created!)} as "${status}"${after ? `, connected from [${after.replace(/^\[|\]$/g, '')}]` : ''}.`
+  return `Created ${ref(created!)} as "${status}"${kind === 'bug' ? ' (a bug)' : ''}${after ? `, connected from [${after.replace(/^\[|\]$/g, '')}]` : ''}.`
 }
 
 export function connectNotes(root: string, { from, to }: { from: string; to: string }): string {

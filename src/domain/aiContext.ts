@@ -1,6 +1,6 @@
 import type { ContextScope, CrossLinkKind, Note, Workspace } from '../types'
 import { CLOSED_STATUSES } from './constants'
-import { getConnectedNoteIds, noteLinks, noteTitle, shortId } from './workspace'
+import { getConnectedNoteIds, isStandingRule, noteLinks, noteTitle, shortId } from './workspace'
 
 /**
  * How an AI should work with what it receives. Kept short: it is prepended to
@@ -18,7 +18,7 @@ const INSTRUCTIONS = [
 
 /** Only added when the project has rules, so other copies stay short. */
 const RULES_INSTRUCTION =
-  '- "STANDING RULES" are notes with status "loop": apply every one of them on each task, every time, even when no note asks for it. Never change their status or answer them in `aiResponse`.'
+  '- "STANDING RULES" are notes with `kind: "rule"`: apply every one of them on each task, every time, even when no note asks for it. Never answer them in `aiResponse` or change them. Notes with `kind: "bug"` are bugs; a note without a kind is a task.'
 
 const DOCUMENTATION_LABELS = {
   obsidian: 'OBSIDIAN',
@@ -46,6 +46,7 @@ const quote = (text: string) =>
 export function describeNote(note: Note): string[] {
   const lines = [`### ${ref(note)}`]
 
+  if (note.kind) lines.push(`Kind: ${note.kind}`)
   if (note.status) lines.push(`Status: ${note.status}`)
   if (note.description.trim()) lines.push('', note.description.trim())
 
@@ -116,10 +117,10 @@ export function buildAiContext(
   selectedIds: string[],
 ): string {
   // Rules go in every copy, whatever is selected: that's what makes them rules.
-  const rules = workspace.notes.filter((note) => note.status === 'loop')
+  const rules = workspace.notes.filter(isStandingRule)
   const includedIds = getContextNoteIds(workspace, scope, selectedIds)
   const included = workspace.notes.filter(
-    (note) => includedIds.has(note.id) && note.status !== 'loop',
+    (note) => includedIds.has(note.id) && !isStandingRule(note),
   )
   const isClosed = (note: Note) => Boolean(note.status && CLOSED_STATUSES.includes(note.status))
 

@@ -3,12 +3,14 @@ import type {
   NoteStatus,
   Point,
   StatusStyleConfig,
+  StyleKey,
   Workspace,
   WorkspaceDocumentation,
 } from '../types'
 import { track } from '../ui/analytics'
 import { buildAiContext, estimateTokens, getContextNoteIds } from '../domain/aiContext'
 import { copyNotes, pasteNotes } from '../domain/clipboard'
+import { kindOf, type KindFilter } from '../domain/search'
 import { NOTE_MIN_SIZE } from '../domain/constants'
 import {
   addConnection,
@@ -164,6 +166,22 @@ export function createWorkspaceActions({
 
       store.update(() => result.workspace)
       ui.select(result.ids)
+    },
+
+    /**
+     * Alt+drag: copies right on top of the notes, which the drag then moves.
+     * Copying and moving are one undo step. Returns each original's copy.
+     */
+    duplicateForDrag(ids: string[]): Map<string, string> {
+      const originals = current()
+        .notes.filter((note) => ids.includes(note.id))
+        .map((note) => note.id)
+      const result = duplicateNotes(current(), ids, t('copySuffix'), { x: 0, y: 0 })
+
+      store.update(() => result.workspace, { group: 'drag' })
+      ui.select(result.ids)
+
+      return new Map(originals.map((id, index) => [id, result.ids[index]]))
     },
 
     raise(ids: string[]) {
@@ -365,6 +383,15 @@ export function createWorkspaceActions({
       ui.select(current().notes.map((note) => note.id))
     },
 
+    /** Selects the notes of a kind ("task" for those without one) and brings them into view. */
+    selectKind(kind: KindFilter) {
+      const notes = current().notes.filter((note) => kindOf(note) === kind)
+      const box = boundingRect(notes.map((note) => noteRect(note, sizes)))
+
+      ui.select(notes.map((note) => note.id))
+      if (box) view.centerOn(box)
+    },
+
     selectStatus(status: NoteStatus) {
       const notes = current().notes.filter((note) => note.status === status)
       const box = boundingRect(notes.map((note) => noteRect(note, sizes)))
@@ -441,7 +468,7 @@ export function createWorkspaceActions({
       await actions.copyStatusStylesFrom(source)
     },
 
-    setStatusStyle(status: NoteStatus, config: StatusStyleConfig | undefined) {
+    setStatusStyle(status: StyleKey, config: StatusStyleConfig | undefined) {
       store.update((workspace) => setStatusStyle(workspace, status, config))
     },
 

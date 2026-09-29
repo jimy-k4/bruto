@@ -321,12 +321,10 @@ export const es = {
   statusBlocked: 'Bloqueada',
   statusReview: 'Por revisar',
   statusDone: 'Hecha',
-  statusBug: 'Bug',
+  kindBug: 'Bug',
   statusChangesRequested: 'A corregir',
   statusWontfix: 'Descartada',
-  statusLoop: 'Bucle',
-
-  // Note editor
+  kindRule: 'Regla',
   editNote: 'Editar nota',
   title: 'Título',
   description: 'Descripción',
@@ -353,8 +351,8 @@ export const es = {
   feedback: 'Qué falla',
   feedbackPlaceholder: 'Tras revisar la respuesta: qué sigue mal o qué falta.',
   feedbackStatusHint: '¿La IA tiene que corregir algo? Pasa la nota a «{status}» para que lo sepa.',
-  loopStatusHint:
-    'Regla permanente: la IA la aplica en cada tarea, aunque no la selecciones, y nunca cambia su estado.',
+  ruleHint:
+    'Regla permanente: la IA la aplica en cada tarea, aunque no la selecciones, y nunca la contesta. Para retirarla, márcala como «{done}» o «{wontfix}».',
   markAsStatus: 'Marcar como «{status}»',
   color: 'Color',
   pattern: 'Patrón',
@@ -587,4 +585,10 @@ export const es = {
   linkConfirm: 'Vincular',
   tapeBlocked: 'Bloqueada',
   tapeBlocking: 'Bloquea',
+  shortcutAltDrag: 'Duplicar arrastrando',
+  shortcutAltDragDescription:
+    'Arrastra una nota con Alt pulsada: se queda la original y te llevas la copia.',
+  kind: 'Tipo',
+  kindTask: 'Tarea',
+  filterByKind: 'Filtrar por tipo',
 }

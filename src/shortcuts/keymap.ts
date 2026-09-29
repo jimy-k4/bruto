@@ -215,6 +215,11 @@ export const SHORTCUTS: ShortcutDefinition[] = [
     description: 'shortcutMultiSelectDescription',
   },
   {
+    keys: ['Alt', '+', { label: 'keyDrag' }],
+    title: 'shortcutAltDrag',
+    description: 'shortcutAltDragDescription',
+  },
+  {
     keys: [{ label: 'keyDrag' }],
     title: 'shortcutAreaSelect',
     description: 'shortcutAreaSelectDescription',

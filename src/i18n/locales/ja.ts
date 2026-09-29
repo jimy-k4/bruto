@@ -315,12 +315,10 @@ export const ja: Locale = {
   statusBlocked: 'ブロック',
   statusReview: 'レビュー待ち',
   statusDone: '完了',
-  statusBug: 'バグ',
+  kindBug: 'バグ',
   statusChangesRequested: '要修正',
   statusWontfix: '対応しない',
-  statusLoop: 'ループ',
-
-  // Note editor
+  kindRule: 'ルール',
   editNote: 'ノートを編集',
   title: 'タイトル',
   description: '説明',
@@ -347,8 +345,8 @@ export const ja: Locale = {
   feedbackPlaceholder: '返答を確認したうえで、まだ直っていない点や足りない点。',
   feedbackStatusHint:
     'AI に直してほしい点がありますか?ノートを「{status}」にすると AI に伝わります。',
-  loopStatusHint:
-    '常設ルール：選択していなくても、AI はすべてのタスクで適用し、ステータスを変更しません。',
+  ruleHint:
+    '常設ルール：選択していなくても、AI はすべてのタスクで適用し、回答しません。取り下げるには「{done}」か「{wontfix}」にしてください。',
   markAsStatus: '「{status}」にする',
   color: '色',
   pattern: '模様',
@@ -581,4 +579,10 @@ export const ja: Locale = {
   linkConfirm: 'リンク',
   tapeBlocked: 'ブロック中',
   tapeBlocking: '他をブロック',
+  shortcutAltDrag: 'ドラッグで複製',
+  shortcutAltDragDescription:
+    'Alt を押しながらノートをドラッグすると、元のノートは残り、コピーを動かせます。',
+  kind: '種類',
+  kindTask: 'タスク',
+  filterByKind: '種類で絞り込み',
 }

@@ -14,6 +14,7 @@ import {
   serializeWorkspace,
   setStatusStyle,
   updateNotes,
+  isStandingRule,
 } from './workspace'
 
 const note = (id: string, patch: Partial<Note> = {}): Note => ({
@@ -115,7 +116,7 @@ describe('parseWorkspace', () => {
       }),
     )
 
-    expect(workspace.version).toBe(3)
+    expect(workspace.version).toBe(4)
     expect(workspace.notes[0]).toMatchObject({ colorTheme: 'moss', pattern: 'bands' })
   })
 
@@ -150,18 +151,52 @@ describe('parseWorkspace', () => {
     )
   })
 
-  it('understands "bucle" or "always" written by hand as the loop status', () => {
+  it('turns the v3 "bug" and "loop" statuses into kinds, rules without a status', () => {
     const workspace = parseWorkspace(
       JSON.stringify({
         version: 3,
         notes: [
-          { id: 'a', status: 'Bucle' },
-          { id: 'b', status: 'always' },
+          { id: 'a', status: 'bug', colorTheme: 'wine', pattern: 'cross' },
+          { id: 'b', status: 'loop' },
+          { id: 'c', status: 'Bucle' },
+          { id: 'd', status: 'always' },
+          { id: 'e', status: 'in-progress', kind: 'Regla' },
+          { id: 'f', status: 'todo', kind: 'something else' },
         ],
+        statusStyles: {
+          todo: { color: 'sand' },
+          bug: { color: 'wine', pattern: 'cross' },
+          loop: { color: 'bark', pattern: 'pinstripe' },
+        },
       }),
     )
 
-    expect(workspace.notes.map((item) => item.status)).toEqual(['loop', 'loop'])
+    expect(workspace.version).toBe(4)
+    expect(workspace.notes.map((item) => [item.kind, item.status])).toEqual([
+      ['bug', 'todo'],
+      ['rule', undefined],
+      ['rule', undefined],
+      ['rule', undefined],
+      ['rule', 'in-progress'],
+      [undefined, 'todo'],
+    ])
+    // A bug keeps the look of its kind even though "todo" has another one.
+    expect(workspace.notes[0]).toMatchObject({ colorTheme: 'wine', pattern: 'cross' })
+    // The kinds' looks stay under the keys they had as statuses.
+    expect(workspace.statusStyles).toMatchObject({
+      bug: { color: 'wine', pattern: 'cross' },
+      loop: { color: 'bark', pattern: 'pinstripe' },
+    })
+  })
+
+  it('tells a standing rule from a retired one', () => {
+    const [active, retired, task] = workspaceWith([
+      note('a', { kind: 'rule' }),
+      note('b', { kind: 'rule', status: 'done' }),
+      note('c', { status: 'todo' }),
+    ]).notes
+
+    expect([active, retired, task].map(isStandingRule)).toEqual([true, false, false])
   })
 
   it('restyles notes whose status changed while Bruto was closed', () => {
@@ -262,6 +297,21 @@ describe('status styles', () => {
       ['teal', 'dots'],
       ['wine', 'dots'],
     ])
+  })
+
+  it('applies the look of a kind when a note becomes a bug or a rule', () => {
+    const workspace = workspaceWith(
+      [note('a', { status: 'todo' }), note('b', { kind: 'rule', colorTheme: 'bark' })],
+      {
+        statusStyles: { bug: { color: 'wine', pattern: 'cross' }, loop: { color: 'bark' } },
+      },
+    )
+
+    const next = updateNotes(workspace, ['a'], { kind: 'bug' })
+
+    expect(next.notes[0]).toMatchObject({ kind: 'bug', colorTheme: 'wine', pattern: 'cross' })
+    // Restyling rules reaches the notes of that kind.
+    expect(setStatusStyle(next, 'loop', { color: 'teal' }).notes[1].colorTheme).toBe('teal')
   })
 
   it('removes the configuration when cleared', () => {

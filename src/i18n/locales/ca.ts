@@ -325,12 +325,10 @@ export const ca: Locale = {
   statusBlocked: 'Bloquejada',
   statusReview: 'Per revisar',
   statusDone: 'Feta',
-  statusBug: 'Error',
+  kindBug: 'Error',
   statusChangesRequested: 'A corregir',
   statusWontfix: 'Descartada',
-  statusLoop: 'Bucle',
-
-  // Note editor
+  kindRule: 'Regla',
   editNote: 'Editar nota',
   title: 'Títol',
   description: 'Descripció',
@@ -358,8 +356,8 @@ export const ca: Locale = {
   feedbackPlaceholder: 'Després de revisar la resposta: què continua malament o què falta.',
   feedbackStatusHint:
     'La IA ha de corregir alguna cosa? Passa la nota a «{status}» perquè ho sàpiga.',
-  loopStatusHint:
-    "Regla permanent: la IA l'aplica a cada tasca, encara que no la seleccionis, i mai no en canvia l'estat.",
+  ruleHint:
+    "Regla permanent: la IA l'aplica a cada tasca, encara que no la seleccionis, i mai no la contesta. Per retirar-la, marca-la com a «{done}» o «{wontfix}».",
   markAsStatus: 'Marcar com a «{status}»',
   color: 'Color',
   pattern: 'Patró',
@@ -591,4 +589,10 @@ export const ca: Locale = {
   linkConfirm: 'Vincular',
   tapeBlocked: 'Bloquejada',
   tapeBlocking: 'Bloqueja',
+  shortcutAltDrag: 'Duplicar arrossegant',
+  shortcutAltDragDescription:
+    'Arrossega una nota amb Alt premuda: l’original es queda i t’emportes la còpia.',
+  kind: 'Tipus',
+  kindTask: 'Tasca',
+  filterByKind: 'Filtrar per tipus',
 }

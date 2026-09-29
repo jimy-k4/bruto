@@ -94,13 +94,13 @@ describe('buildAiContext', () => {
     expect(text).toContain('## GLOBAL AI CONTEXT\n\nNext.js + Supabase')
   })
 
-  describe('standing rules (status "loop")', () => {
+  describe('standing rules (kind "rule")', () => {
     const withRule = (): Workspace => ({
       ...sample(),
       notes: [
         ...sample().notes,
         note('dddddd-4', {
-          status: 'loop',
+          kind: 'rule',
           title: 'UPDATE THE DOCS',
           description: 'On every change',
         }),
@@ -120,8 +120,18 @@ describe('buildAiContext', () => {
     })
 
     it('are explained only when the project has some', () => {
-      expect(buildAiContext(withRule(), 'current', ['aaaaaa-1'])).toContain('status "loop"')
+      expect(buildAiContext(withRule(), 'current', ['aaaaaa-1'])).toContain('kind: "rule"')
       expect(buildAiContext(sample(), 'current', ['aaaaaa-1'])).not.toContain('STANDING RULES')
+    })
+
+    it('stop being rules once closed: a retired rule is just a closed note', () => {
+      const retired: Workspace = {
+        ...sample(),
+        notes: [...sample().notes, note('dddddd-4', { kind: 'rule', status: 'wontfix' })],
+      }
+
+      expect(buildAiContext(retired, 'current', ['aaaaaa-1'])).not.toContain('STANDING RULES')
+      expect(buildAiContext(retired, 'entire', [])).toMatch(/CLOSED NOTES[\s\S]*\[dddddd\]/)
     })
 
     it('keep their connections to the notes being copied', () => {
