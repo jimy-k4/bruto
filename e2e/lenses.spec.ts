@@ -165,3 +165,45 @@ export async function saveSite() { db.insert() }`,
     page.locator('.lens-resource', { hasText: '/api/e' }).locator('.lens-verb'),
   ).toHaveText('POST')
 })
+
+test('the database lens finds a table by name or column, goes to it and copies its name', async ({
+  page,
+}) => {
+  await openProject(page, workspaceWith([]))
+  await page.evaluate(writeProjectFiles, LENS_PROJECT)
+  await page.keyboard.press('m')
+
+  const lenses = page.getByRole('group', { name: 'Vistas del proyecto' })
+  await lenses.getByRole('button', { name: /BBDD\s*PL\/SQL/ }).click()
+
+  await expect(page.locator('.lens-table').first()).toBeVisible()
+
+  // Ctrl+F searches the tables here, not the board behind.
+  await page.keyboard.press('Control+f')
+  const search = page.getByRole('searchbox', { name: 'Buscar tabla o columna…' })
+  await expect(search).toBeFocused()
+  await search.fill('product')
+
+  const results = page.locator('.lens-search__result')
+  await expect(page.locator('.lens-search__count')).toHaveText('2 de 4')
+  await expect(results).toHaveText([/^PRODUCTS/, /^ORDER_LINES\s*columna PRODUCT_ID/])
+  await expect(page.locator('.lens-table', { hasText: 'CUSTOMERS' })).toHaveClass(/is-dimmed/)
+  await expect(page.locator('.lens-table', { hasText: 'PRODUCTS' }).first()).toHaveClass(/is-match/)
+
+  // Enter goes to the first match: selected, with its notes on the side.
+  await search.press('Enter')
+  await expect(page.locator('.lens-table', { hasText: 'PRODUCTS' }).first()).toHaveClass(
+    /is-focused/,
+  )
+  await expect(results.first()).toHaveClass(/is-current/)
+
+  await results.first().getByRole('button', { name: 'Copiar el nombre PRODUCTS' }).click()
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('PRODUCTS')
+
+  // Escape clears the search and stays in the view.
+  await search.press('Escape')
+  await expect(search).toHaveValue('')
+  // The table stays selected: only what isn't related to it is dimmed.
+  await expect(page.locator('.lens-table.is-dimmed')).toHaveText([/CUSTOMERS/, /ORDERS/])
+  await expect(lenses).toBeVisible()
+})

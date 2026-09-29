@@ -550,4 +550,9 @@ export const zh: Locale = {
   kind: '类型',
   kindTask: '任务',
   filterByKind: '按类型筛选',
+  tableSearch: '搜索表或列…',
+  tableSearchCount: '{count} / {total}',
+  tableSearchColumn: '列 {name}',
+  tableSearchNone: '没有匹配的表。',
+  copyName: '复制名称 {name}',
 }

@@ -590,4 +590,9 @@ export const ptBR: Locale = {
   kind: 'Tipo',
   kindTask: 'Tarefa',
   filterByKind: 'Filtrar por tipo',
+  tableSearch: 'Buscar tabela ou coluna…',
+  tableSearchCount: '{count} de {total}',
+  tableSearchColumn: 'coluna {name}',
+  tableSearchNone: 'Nenhuma tabela corresponde.',
+  copyName: 'Copiar o nome {name}',
 }

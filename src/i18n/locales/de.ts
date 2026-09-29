@@ -602,4 +602,9 @@ export const de: Locale = {
   kind: 'Art',
   kindTask: 'Aufgabe',
   filterByKind: 'Nach Art filtern',
+  tableSearch: 'Tabelle oder Spalte suchen…',
+  tableSearchCount: '{count} von {total}',
+  tableSearchColumn: 'Spalte {name}',
+  tableSearchNone: 'Keine Tabelle passt.',
+  copyName: 'Namen {name} kopieren',
 }

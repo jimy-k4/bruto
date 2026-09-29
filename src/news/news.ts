@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'table-search',
+    date: '2026-09-29',
+    text: {
+      es: {
+        title: 'Buscador de tablas',
+        body: 'La vista de base de datos tiene buscador (**Ctrl+F**): encuentra una tabla por su nombre o por una columna entre cientos, te lleva a ella en el diagrama y copia su nombre para citarla en una nota.',
+      },
+      en: {
+        title: 'Table search',
+        body: 'The database lens has a search (**Ctrl+F**): it finds a table by name or by a column among hundreds, takes you to it on the diagram and copies its name to cite it in a note.',
+      },
+      ca: {
+        title: 'Cercador de taules',
+        body: 'La vista de base de dades té cercador (**Ctrl+F**): troba una taula pel nom o per una columna entre centenars, t’hi porta al diagrama i en copia el nom per citar-la en una nota.',
+      },
+      fr: {
+        title: 'Recherche de tables',
+        body: 'La vue base de données a une recherche (**Ctrl+F**) : elle trouve une table par son nom ou par une colonne parmi des centaines, vous y mène sur le diagramme et copie son nom pour la citer dans une note.',
+      },
+      de: {
+        title: 'Tabellensuche',
+        body: 'Die Datenbankansicht hat eine Suche (**Strg+F**): Sie findet eine Tabelle unter Hunderten nach Name oder Spalte, führt dich im Diagramm hin und kopiert ihren Namen, um sie in einer Notiz zu nennen.',
+      },
+      'pt-BR': {
+        title: 'Busca de tabelas',
+        body: 'A visão de banco de dados tem busca (**Ctrl+F**): encontra uma tabela pelo nome ou por uma coluna entre centenas, leva você até ela no diagrama e copia o nome para citá-la numa nota.',
+      },
+      ru: {
+        title: 'Поиск таблиц',
+        body: 'В виде базы данных есть поиск (**Ctrl+F**): он находит таблицу среди сотен по имени или столбцу, показывает её на диаграмме и копирует имя, чтобы упомянуть её в заметке.',
+      },
+      ja: {
+        title: 'テーブル検索',
+        body: 'データベースビューに検索（**Ctrl+F**）が付きました。数百のテーブルから名前や列で探し、図の上で移動し、ノートで引用できるよう名前をコピーします。',
+      },
+      zh: {
+        title: '表搜索',
+        body: '数据库视图新增搜索（**Ctrl+F**）：在数百张表中按表名或列名查找，在图中跳转到该表，并可复制表名以便在笔记中引用。',
+      },
+    },
+  },
+  {
     id: 'note-kinds',
     date: '2026-09-29',
     text: {

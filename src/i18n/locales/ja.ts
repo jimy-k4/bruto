@@ -585,4 +585,9 @@ export const ja: Locale = {
   kind: '種類',
   kindTask: 'タスク',
   filterByKind: '種類で絞り込み',
+  tableSearch: 'テーブルまたは列を検索…',
+  tableSearchCount: '{total} 件中 {count} 件',
+  tableSearchColumn: '列 {name}',
+  tableSearchNone: '一致するテーブルはありません。',
+  copyName: '名前 {name} をコピー',
 }

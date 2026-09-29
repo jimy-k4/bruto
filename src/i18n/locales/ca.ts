@@ -595,4 +595,9 @@ export const ca: Locale = {
   kind: 'Tipus',
   kindTask: 'Tasca',
   filterByKind: 'Filtrar per tipus',
+  tableSearch: 'Cerca una taula o columna…',
+  tableSearchCount: '{count} de {total}',
+  tableSearchColumn: 'columna {name}',
+  tableSearchNone: 'Cap taula no coincideix.',
+  copyName: 'Copiar el nom {name}',
 }

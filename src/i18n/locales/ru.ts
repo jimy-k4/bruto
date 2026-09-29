@@ -593,4 +593,9 @@ export const ru: Locale = {
   kind: 'Тип',
   kindTask: 'Задача',
   filterByKind: 'Фильтр по типу',
+  tableSearch: 'Найти таблицу или столбец…',
+  tableSearchCount: '{count} из {total}',
+  tableSearchColumn: 'столбец {name}',
+  tableSearchNone: 'Подходящих таблиц нет.',
+  copyName: 'Скопировать имя {name}',
 }

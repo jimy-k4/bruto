@@ -597,4 +597,9 @@ export const fr: Locale = {
   kind: 'Type',
   kindTask: 'Tâche',
   filterByKind: 'Filtrer par type',
+  tableSearch: 'Chercher une table ou une colonne…',
+  tableSearchCount: '{count} sur {total}',
+  tableSearchColumn: 'colonne {name}',
+  tableSearchNone: 'Aucune table ne correspond.',
+  copyName: 'Copier le nom {name}',
 }

@@ -587,4 +587,9 @@ export const en: Locale = {
   kind: 'Kind',
   kindTask: 'Task',
   filterByKind: 'Filter by kind',
+  tableSearch: 'Search tables or columns…',
+  tableSearchCount: '{count} of {total}',
+  tableSearchColumn: 'column {name}',
+  tableSearchNone: 'No table matches.',
+  copyName: 'Copy the name {name}',
 }

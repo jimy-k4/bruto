@@ -591,4 +591,9 @@ export const es = {
   kind: 'Tipo',
   kindTask: 'Tarea',
   filterByKind: 'Filtrar por tipo',
+  tableSearch: 'Buscar tabla o columna…',
+  tableSearchCount: '{count} de {total}',
+  tableSearchColumn: 'columna {name}',
+  tableSearchNone: 'Ninguna tabla coincide.',
+  copyName: 'Copiar el nombre {name}',
 }
