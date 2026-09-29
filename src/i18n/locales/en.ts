@@ -225,6 +225,15 @@ export const en: Locale = {
   featureLocalTitle: 'Local only',
   featureLocalText:
     'No server, no accounts: just anonymous usage stats, no cookies. Your notes never leave your folders.',
+  featureRulesTitle: 'Standing rules',
+  featureRulesText:
+    'A note can be a rule instead of a task: “run the tests before finishing”. It goes into every copy, and the AI applies it on each task until you close it.',
+  featureLinksTitle: 'Across projects',
+  featureLinksText:
+    'A note can block, or wait on, a note in another project: front end, API, database. Both boards show it, and one click takes you to the other.',
+  featureAgentsTitle: 'Agents on the board',
+  featureAgentsText:
+    'With the MCP server, Claude Code and other agents list and read notes, mark the one they are on and answer it, without touching the JSON.',
   landingAnyAiTitle: 'With any AI',
   landingAnyAiText:
     'Paste the copy into Claude, ChatGPT, Gemini or DeepSeek, or let an agent with access to your files work on the board directly: one line in AGENTS.md or CLAUDE.md is enough. If your agent speaks MCP, add Bruto as a server: it lists, reads and answers notes with tools, without editing the file by hand.',

@@ -225,6 +225,15 @@ export const ptBR: Locale = {
   featureLocalTitle: 'Só local',
   featureLocalText:
     'Sem servidor nem contas: só estatísticas de uso anônimas, sem cookies. Suas notas nunca saem das suas pastas.',
+  featureRulesTitle: 'Regras permanentes',
+  featureRulesText:
+    'Uma nota pode ser uma regra em vez de uma tarefa: “rode os testes antes de terminar”. Ela vai em cada cópia e a IA a aplica em cada tarefa até você fechá-la.',
+  featureLinksTitle: 'Entre projetos',
+  featureLinksText:
+    'Uma nota pode bloquear, ou esperar, uma nota de outro projeto: front, API, banco de dados. Os dois quadros mostram isso e um clique leva você ao outro.',
+  featureAgentsTitle: 'Agentes no quadro',
+  featureAgentsText:
+    'Com o servidor MCP, o Claude Code e outros agentes listam e leem as notas, marcam aquela em que trabalham e a respondem sem mexer no JSON.',
   landingAnyAiTitle: 'Com qualquer IA',
   landingAnyAiText:
     'Cole a cópia no Claude, ChatGPT, Gemini ou DeepSeek, ou deixe um agente com acesso aos seus arquivos trabalhar direto no quadro: basta uma linha no AGENTS.md ou CLAUDE.md. Se o seu agente fala MCP, adicione o Bruto como servidor: ele lista, lê e responde às notas com ferramentas, sem mexer no arquivo à mão.',
