@@ -607,4 +607,10 @@ export const de: Locale = {
   tableSearchColumn: 'Spalte {name}',
   tableSearchNone: 'Keine Tabelle passt.',
   copyName: 'Namen {name} kopieren',
+  tableSearchUndeclared: 'ohne CREATE TABLE · {count} Dateien',
+  tableSearchUndeclared_one: 'ohne CREATE TABLE · {count} Datei',
+  tableSearchUndeclaredHint:
+    '{count} weitere Tabellen kommen im Code ohne ihr CREATE TABLE vor: Die Suche findet sie, im Diagramm sind sie aber nicht.',
+  tableSearchUndeclaredHint_one:
+    '{count} weitere Tabelle kommt im Code ohne ihr CREATE TABLE vor: Die Suche findet sie, im Diagramm ist sie aber nicht.',
 }

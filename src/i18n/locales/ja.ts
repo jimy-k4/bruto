@@ -590,4 +590,7 @@ export const ja: Locale = {
   tableSearchColumn: '列 {name}',
   tableSearchNone: '一致するテーブルはありません。',
   copyName: '名前 {name} をコピー',
+  tableSearchUndeclared: 'CREATE TABLE なし · ファイル {count} 件',
+  tableSearchUndeclaredHint:
+    'CREATE TABLE のないテーブルがコード内にあと {count} 件あります。検索では見つかりますが、図には表示されません。',
 }

@@ -592,4 +592,10 @@ export const en: Locale = {
   tableSearchColumn: 'column {name}',
   tableSearchNone: 'No table matches.',
   copyName: 'Copy the name {name}',
+  tableSearchUndeclared: 'no CREATE TABLE · {count} files',
+  tableSearchUndeclared_one: 'no CREATE TABLE · {count} file',
+  tableSearchUndeclaredHint:
+    '{count} more tables appear in the code without their CREATE TABLE: search finds them, but they aren’t on the diagram.',
+  tableSearchUndeclaredHint_one:
+    '{count} more table appears in the code without its CREATE TABLE: search finds it, but it isn’t on the diagram.',
 }

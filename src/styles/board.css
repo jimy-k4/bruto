@@ -134,8 +134,9 @@
   animation: copied 900ms steps(4);
 }
 
+/* Smooth, unlike the blinks: a pasted note grows into place. */
 .note.is-pasted {
-  animation: pasted 400ms steps(4);
+  animation: pasted 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
 @keyframes connecting {

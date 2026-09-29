@@ -50,6 +50,8 @@ const ORACLE_EXTENSIONS = new Set([
   'trg',
   'vw',
   'tab',
+  // TOAD saves each table's DDL as SCHEMA.TABLE.TBL.
+  'tbl',
   'seq',
   'typ',
   'tps',

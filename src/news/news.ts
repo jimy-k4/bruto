@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'undeclared-tables',
+    date: '2026-09-29',
+    text: {
+      es: {
+        title: 'También las tablas sin CREATE TABLE',
+        body: 'El buscador de tablas encuentra también las que tu código usa (`INSERT`, `UPDATE`, `FROM`, `%TYPE`…) aunque ningún script las cree, con los ficheros que las usan. Y la vista de base de datos lee los `.TBL` de TOAD.',
+      },
+      en: {
+        title: 'Tables with no CREATE TABLE, found too',
+        body: 'Table search also finds the tables your code uses (`INSERT`, `UPDATE`, `FROM`, `%TYPE`…) even when no script creates them, with the files that use them. And the database lens reads TOAD’s `.TBL` files.',
+      },
+      ca: {
+        title: 'També les taules sense CREATE TABLE',
+        body: 'El cercador de taules també troba les que el teu codi fa servir (`INSERT`, `UPDATE`, `FROM`, `%TYPE`…) encara que cap script no les creï, amb els fitxers que les fan servir. I la vista de base de dades llegeix els `.TBL` de TOAD.',
+      },
+      fr: {
+        title: 'Les tables sans CREATE TABLE aussi',
+        body: 'La recherche de tables trouve aussi celles que votre code utilise (`INSERT`, `UPDATE`, `FROM`, `%TYPE`…) même si aucun script ne les crée, avec les fichiers qui les utilisent. Et la vue base de données lit les `.TBL` de TOAD.',
+      },
+      de: {
+        title: 'Auch Tabellen ohne CREATE TABLE',
+        body: 'Die Tabellensuche findet auch die Tabellen, die dein Code benutzt (`INSERT`, `UPDATE`, `FROM`, `%TYPE`…), selbst wenn kein Skript sie anlegt, samt den Dateien, die sie benutzen. Und die Datenbankansicht liest die `.TBL`-Dateien von TOAD.',
+      },
+      'pt-BR': {
+        title: 'Tabelas sem CREATE TABLE também',
+        body: 'A busca de tabelas também encontra as que seu código usa (`INSERT`, `UPDATE`, `FROM`, `%TYPE`…) mesmo que nenhum script as crie, com os arquivos que as usam. E a visão de banco de dados lê os `.TBL` do TOAD.',
+      },
+      ru: {
+        title: 'И таблицы без CREATE TABLE',
+        body: 'Поиск таблиц находит и те, что использует ваш код (`INSERT`, `UPDATE`, `FROM`, `%TYPE`…), даже если ни один скрипт их не создаёт, вместе с файлами, где они используются. А вид базы данных читает файлы `.TBL` из TOAD.',
+      },
+      ja: {
+        title: 'CREATE TABLE のないテーブルも',
+        body: 'テーブル検索は、どのスクリプトも作成していなくても、コードが使っているテーブル（`INSERT`、`UPDATE`、`FROM`、`%TYPE`…）を、使っているファイルと一緒に見つけます。データベースビューは TOAD の `.TBL` ファイルも読み込みます。',
+      },
+      zh: {
+        title: '没有 CREATE TABLE 的表也能找到',
+        body: '表搜索现在也能找到代码中用到（`INSERT`、`UPDATE`、`FROM`、`%TYPE`…）但没有任何脚本创建的表，并列出使用它们的文件。数据库视图也会读取 TOAD 的 `.TBL` 文件。',
+      },
+    },
+  },
+  {
     id: 'table-search',
     date: '2026-09-29',
     text: {
