@@ -593,4 +593,7 @@ export const fr: Locale = {
   linkConfirm: 'Lier',
   tapeBlocked: 'Bloquée',
   tapeBlocking: 'Bloque',
+  shortcutAltDrag: 'Dupliquer en glissant',
+  shortcutAltDragDescription:
+    'Faites glisser une note avec Alt enfoncée : l’originale reste et vous emportez la copie.',
 }

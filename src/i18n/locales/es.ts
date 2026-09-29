@@ -587,4 +587,7 @@ export const es = {
   linkConfirm: 'Vincular',
   tapeBlocked: 'Bloqueada',
   tapeBlocking: 'Bloquea',
+  shortcutAltDrag: 'Duplicar arrastrando',
+  shortcutAltDragDescription:
+    'Arrastra una nota con Alt pulsada: se queda la original y te llevas la copia.',
 }

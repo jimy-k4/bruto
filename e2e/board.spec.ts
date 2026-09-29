@@ -591,3 +591,35 @@ test('the editor explains how to format a note, with each example rendered', asy
   await expect(help).toBeHidden()
   await expect(page.getByLabel('Título', { exact: true })).toBeVisible()
 })
+
+test('Alt+drag leaves the note where it was and carries a copy, undone in one step', async ({
+  page,
+}) => {
+  await openProject(page, workspaceWith([note('alpha', { x: 100, y: 100 })]))
+
+  const original = noteCard(page, 'ALPHA')
+  const box = (await original.boundingBox())!
+
+  await page.keyboard.down('Alt')
+  await page.mouse.move(box.x + 40, box.y + 60)
+  await page.mouse.down()
+  // Held longer than it takes the open projects to show: they must not, mid-drag.
+  await page.waitForTimeout(600)
+  await page.mouse.move(box.x + 240, box.y + 160, { steps: 8 })
+  await expect(page.locator('.project-switcher__menu')).toBeHidden()
+  await page.mouse.up()
+  await page.keyboard.up('Alt')
+  // Away from both notes, so neither is lifted by the hover.
+  await page.mouse.move(box.x + 700, box.y + 500)
+
+  const copy = noteCard(page, 'ALPHA (copia)')
+  await expect(copy).toHaveClass(/is-selected/)
+  await expect.poll(() => original.boundingBox()).toEqual(box)
+  expect((await copy.boundingBox())!.x).toBeCloseTo(box.x + 200, 0)
+  await waitForSaved(page)
+  expect((await readDisk(page)).notes).toHaveLength(2)
+
+  await page.keyboard.press('Control+z')
+  await expect(copy).toBeHidden()
+  await expect.poll(() => original.boundingBox()).toEqual(box)
+})

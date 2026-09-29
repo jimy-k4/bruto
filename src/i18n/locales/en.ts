@@ -583,4 +583,7 @@ export const en: Locale = {
   linkConfirm: 'Link',
   tapeBlocked: 'Blocked',
   tapeBlocking: 'Blocking',
+  shortcutAltDrag: 'Duplicate by dragging',
+  shortcutAltDragDescription:
+    'Drag a note while holding Alt: the original stays and you carry the copy.',
 }

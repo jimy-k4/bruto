@@ -598,4 +598,7 @@ export const de: Locale = {
   linkConfirm: 'Verknüpfen',
   tapeBlocked: 'Blockiert',
   tapeBlocking: 'Blockiert andere',
+  shortcutAltDrag: 'Durch Ziehen duplizieren',
+  shortcutAltDragDescription:
+    'Ziehe eine Notiz mit gedrückter Alt-Taste: Das Original bleibt, du trägst die Kopie.',
 }

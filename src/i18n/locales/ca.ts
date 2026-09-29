@@ -591,4 +591,7 @@ export const ca: Locale = {
   linkConfirm: 'Vincular',
   tapeBlocked: 'Bloquejada',
   tapeBlocking: 'Bloqueja',
+  shortcutAltDrag: 'Duplicar arrossegant',
+  shortcutAltDragDescription:
+    'Arrossega una nota amb Alt premuda: l’original es queda i t’emportes la còpia.',
 }

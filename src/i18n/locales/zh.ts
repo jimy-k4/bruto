@@ -546,4 +546,6 @@ export const zh: Locale = {
   linkConfirm: '关联',
   tapeBlocked: '被阻塞',
   tapeBlocking: '阻塞他项',
+  shortcutAltDrag: '拖动复制',
+  shortcutAltDragDescription: '按住 Alt 拖动笔记：原笔记留在原处，你拖走的是副本。',
 }

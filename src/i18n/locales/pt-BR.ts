@@ -586,4 +586,7 @@ export const ptBR: Locale = {
   linkConfirm: 'Vincular',
   tapeBlocked: 'Bloqueada',
   tapeBlocking: 'Bloqueia',
+  shortcutAltDrag: 'Duplicar arrastando',
+  shortcutAltDragDescription:
+    'Arraste uma nota com Alt pressionada: a original fica e você leva a cópia.',
 }

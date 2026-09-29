@@ -515,11 +515,16 @@ export function deleteNotes(workspace: Workspace, ids: string[]): Workspace {
   }
 }
 
-/** Duplicates notes (and the connections between them) next to the originals. */
+/**
+ * Duplicates notes (and the connections between them) next to the originals,
+ * or right on top of them with a zero offset. The new ids follow the order of
+ * the originals on the board.
+ */
 export function duplicateNotes(
   workspace: Workspace,
   ids: string[],
   titleSuffix: string,
+  offset: Point = { x: DUPLICATE_OFFSET, y: DUPLICATE_OFFSET },
 ): { workspace: Workspace; ids: string[] } {
   const sources = workspace.notes.filter((note) => ids.includes(note.id))
 
@@ -527,7 +532,7 @@ export function duplicateNotes(
     workspace,
     sources.map((note) => ({ ...note, title: `${note.title.trim()} (${titleSuffix})`.trim() })),
     workspace.connections,
-    { x: DUPLICATE_OFFSET, y: DUPLICATE_OFFSET },
+    offset,
   )
 }
 

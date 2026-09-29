@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'alt-drag-duplicate',
+    date: '2026-09-29',
+    text: {
+      es: {
+        title: 'Alt + arrastrar duplica',
+        body: 'Arrastra una nota (o varias seleccionadas) con **Alt** pulsada: la original se queda en su sitio y te llevas la copia. Un solo Ctrl+Z lo deshace.',
+      },
+      en: {
+        title: 'Alt + drag duplicates',
+        body: 'Drag a note (or several selected ones) while holding **Alt**: the original stays put and you carry the copy. One Ctrl+Z undoes it.',
+      },
+      ca: {
+        title: 'Alt + arrossegar duplica',
+        body: 'Arrossega una nota (o diverses de seleccionades) amb **Alt** premuda: l’original es queda al seu lloc i t’emportes la còpia. Un sol Ctrl+Z ho desfà.',
+      },
+      fr: {
+        title: 'Alt + glisser duplique',
+        body: 'Faites glisser une note (ou plusieurs sélectionnées) avec **Alt** enfoncée : l’originale reste en place et vous emportez la copie. Un seul Ctrl+Z l’annule.',
+      },
+      de: {
+        title: 'Alt + Ziehen dupliziert',
+        body: 'Ziehe eine Notiz (oder mehrere ausgewählte) mit gedrückter **Alt**-Taste: Das Original bleibt, du trägst die Kopie. Ein einziges Strg+Z macht es rückgängig.',
+      },
+      'pt-BR': {
+        title: 'Alt + arrastar duplica',
+        body: 'Arraste uma nota (ou várias selecionadas) com **Alt** pressionada: a original fica no lugar e você leva a cópia. Um só Ctrl+Z desfaz.',
+      },
+      ru: {
+        title: 'Alt + перетаскивание дублирует',
+        body: 'Перетащите заметку (или несколько выделенных) с зажатой **Alt**: оригинал останется на месте, а вы перенесёте копию. Один Ctrl+Z всё отменит.',
+      },
+      ja: {
+        title: 'Alt + ドラッグで複製',
+        body: '**Alt** を押しながらノート（または選択した複数のノート）をドラッグすると、元はその場に残り、コピーを動かせます。Ctrl+Z 一回で元に戻せます。',
+      },
+      zh: {
+        title: 'Alt + 拖动即可复制',
+        body: '按住 **Alt** 拖动笔记（或多条已选笔记）：原笔记留在原处，你拖走的是副本。按一次 Ctrl+Z 即可撤销。',
+      },
+    },
+  },
+  {
     id: 'cross-project-links',
     date: '2026-09-29',
     text: {

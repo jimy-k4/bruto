@@ -223,6 +223,7 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
                 onConnect={actions.connect}
                 onSelectConnection={ui.setSelectedConnectionId}
                 onDeleteConnection={actions.deleteConnection}
+                onDuplicateForDrag={actions.duplicateForDrag}
                 onOpenLink={(link) => void openLink(link)}
                 linkInfo={linkInfo}
               />

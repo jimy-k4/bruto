@@ -589,4 +589,7 @@ export const ru: Locale = {
   linkConfirm: 'Связать',
   tapeBlocked: 'Заблокирована',
   tapeBlocking: 'Блокирует',
+  shortcutAltDrag: 'Дублировать перетаскиванием',
+  shortcutAltDragDescription:
+    'Перетащите заметку с зажатой Alt: оригинал останется на месте, а вы перенесёте копию.',
 }

@@ -581,4 +581,7 @@ export const ja: Locale = {
   linkConfirm: 'リンク',
   tapeBlocked: 'ブロック中',
   tapeBlocking: '他をブロック',
+  shortcutAltDrag: 'ドラッグで複製',
+  shortcutAltDragDescription:
+    'Alt を押しながらノートをドラッグすると、元のノートは残り、コピーを動かせます。',
 }

@@ -166,6 +166,22 @@ export function createWorkspaceActions({
       ui.select(result.ids)
     },
 
+    /**
+     * Alt+drag: copies right on top of the notes, which the drag then moves.
+     * Copying and moving are one undo step. Returns each original's copy.
+     */
+    duplicateForDrag(ids: string[]): Map<string, string> {
+      const originals = current()
+        .notes.filter((note) => ids.includes(note.id))
+        .map((note) => note.id)
+      const result = duplicateNotes(current(), ids, t('copySuffix'), { x: 0, y: 0 })
+
+      store.update(() => result.workspace, { group: 'drag' })
+      ui.select(result.ids)
+
+      return new Map(originals.map((id, index) => [id, result.ids[index]]))
+    },
+
     raise(ids: string[]) {
       store.update((workspace) => raiseNotes(workspace, ids), { history: false })
     },
