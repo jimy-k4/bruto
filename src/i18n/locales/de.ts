@@ -227,6 +227,15 @@ export const de: Locale = {
   featureLocalTitle: 'Nur lokal',
   featureLocalText:
     'Kein Server, keine Konten: nur anonyme Nutzungsstatistik, ohne Cookies. Deine Notizen verlassen nie deine Ordner.',
+  featureRulesTitle: 'Dauerhafte Regeln',
+  featureRulesText:
+    'Eine Notiz kann statt einer Aufgabe eine Regel sein: „Vor dem Abschluss die Tests laufen lassen“. Sie steckt in jeder Kopie, und die KI wendet sie bei jeder Aufgabe an, bis du sie schließt.',
+  featureLinksTitle: 'Über Projekte hinweg',
+  featureLinksText:
+    'Eine Notiz kann eine Notiz in einem anderen Projekt blockieren oder auf sie warten: Frontend, API, Datenbank. Beide Boards zeigen es, und ein Klick bringt dich zum anderen.',
+  featureAgentsTitle: 'Agenten am Board',
+  featureAgentsText:
+    'Mit dem MCP-Server listen und lesen Claude Code und andere Agenten die Notizen, markieren die, an der sie arbeiten, und beantworten sie, ohne das JSON anzufassen.',
   landingAnyAiTitle: 'Mit jeder KI',
   landingAnyAiText:
     'Füg die Kopie in Claude, ChatGPT, Gemini oder DeepSeek ein, oder lass einen Agenten mit Zugriff auf deine Dateien direkt am Board arbeiten: Eine Zeile in AGENTS.md oder CLAUDE.md reicht. Spricht dein Agent MCP, füg Bruto als Server hinzu: Er listet, liest und beantwortet Notizen mit Werkzeugen, ohne die Datei von Hand zu bearbeiten.',

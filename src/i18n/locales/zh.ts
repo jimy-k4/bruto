@@ -213,6 +213,15 @@ export const zh: Locale = {
   featureLocalTitle: '仅限本地',
   featureLocalText:
     '没有服务器，没有账户：只有匿名的使用统计，不用 Cookie。你的笔记从不离开你的文件夹。',
+  featureRulesTitle: '常驻规则',
+  featureRulesText:
+    '笔记可以是规则而不是任务：“完成前先跑测试”。它会进入每次复制，AI 在每个任务中都会遵守，直到你关闭它。',
+  featureLinksTitle: '跨项目',
+  featureLinksText:
+    '笔记可以阻塞另一个项目中的笔记，或等待它：前端、API、数据库。两个看板都会显示，一键即可跳到另一个。',
+  featureAgentsTitle: '看板上的智能体',
+  featureAgentsText:
+    '通过 MCP 服务器，Claude Code 等智能体可以列出并读取笔记，标记正在处理的那条，并直接作答，无需改动 JSON。',
   landingAnyAiTitle: '适用于任何 AI',
   landingAnyAiText:
     '把复制的内容粘贴到 Claude、ChatGPT、Gemini 或 DeepSeek，或者让能访问你文件的智能体直接在看板上工作：在 AGENTS.md 或 CLAUDE.md 里加一行就够了。如果你的智能体支持 MCP，就把 Bruto 添加为服务器：用工具列出、阅读和回复笔记，无需手动编辑文件。',

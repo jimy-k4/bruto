@@ -222,6 +222,15 @@ export const ja: Locale = {
   featureLocalTitle: 'ローカルのみ',
   featureLocalText:
     'サーバーもアカウントもなし。Cookie を使わない匿名の利用統計だけです。ノートはあなたのフォルダーから出ません。',
+  featureRulesTitle: '常設ルール',
+  featureRulesText:
+    'ノートはタスクではなくルールにもできます（「終える前にテストを実行する」）。すべてのコピーに含まれ、閉じるまで AI がすべてのタスクで守ります。',
+  featureLinksTitle: 'プロジェクトをまたいで',
+  featureLinksText:
+    'ノートは別のプロジェクトのノートをブロックしたり、その完了を待ったりできます（フロント、API、データベース）。両方のボードに表示され、ワンクリックで相手に移動できます。',
+  featureAgentsTitle: 'ボード上のエージェント',
+  featureAgentsText:
+    'MCP サーバーを使えば、Claude Code などのエージェントがノートを一覧して読み、作業中のノートに印を付け、JSON に触れずに回答します。',
   landingAnyAiTitle: 'どの AI とも',
   landingAnyAiText:
     'コピーを Claude、ChatGPT、Gemini、DeepSeek に貼り付けるか、ファイルにアクセスできるエージェントにボードで直接作業させましょう。AGENTS.md か CLAUDE.md に 1 行書くだけです。エージェントが MCP に対応していれば、Bruto をサーバーとして追加しましょう。ファイルを手で編集せずに、ツールでノートを一覧・閲覧・回答できます。',

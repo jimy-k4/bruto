@@ -30,6 +30,9 @@ const STEPS: [TranslationKey, TranslationKey][] = [
 
 const FEATURES: [TranslationKey, TranslationKey][] = [
   ['featureBoardTitle', 'featureBoardText'],
+  ['featureRulesTitle', 'featureRulesText'],
+  ['featureLinksTitle', 'featureLinksText'],
+  ['featureAgentsTitle', 'featureAgentsText'],
   ['featureSearchTitle', 'featureSearchText'],
   ['featureSafeTitle', 'featureSafeText'],
   ['featureKeyboardTitle', 'featureKeyboardText'],

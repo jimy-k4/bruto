@@ -227,6 +227,15 @@ export const ca: Locale = {
   featureLocalTitle: 'Només local',
   featureLocalText:
     "Sense servidor ni comptes: només estadístiques d'ús anònimes, sense galetes. Les teves notes no surten de les teves carpetes.",
+  featureRulesTitle: 'Regles permanents',
+  featureRulesText:
+    'Una nota pot ser una regla en lloc d’una tasca: «passa els tests abans d’acabar». Va a cada còpia i la IA l’aplica a cada tasca fins que la tanques.',
+  featureLinksTitle: 'Entre projectes',
+  featureLinksText:
+    'Una nota pot bloquejar-ne una d’un altre projecte, o esperar-la: front, API, base de dades. Els dos taulers ho mostren i un clic et porta a l’altre.',
+  featureAgentsTitle: 'Agents al tauler',
+  featureAgentsText:
+    'Amb el servidor MCP, Claude Code i altres agents llisten i llegeixen les notes, marquen en quina treballen i la contesten sense tocar el JSON.',
   landingAnyAiTitle: 'Amb qualsevol IA',
   landingAnyAiText:
     'Enganxa la còpia a Claude, ChatGPT, Gemini o DeepSeek, o deixa que un agent amb accés als teus fitxers treballi directament al tauler: n’hi ha prou amb una línia a AGENTS.md o CLAUDE.md. Si el teu agent parla MCP, afegeix Bruto com a servidor: llista, llegeix i respon les notes amb eines, sense tocar el fitxer a mà.',
