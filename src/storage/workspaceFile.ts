@@ -12,6 +12,26 @@ export type DiskState =
   | { kind: 'invalid'; text: string; error: string }
   | { kind: 'ok'; text: string; workspace: Workspace }
 
+const queues = new Map<string, Promise<unknown>>()
+
+/**
+ * Runs file work on one project's board after any other in this page is done.
+ * Two writers swapping the same file in at once make the browser fail one of
+ * them, and a read in between can find no file at all. Keyed by folder name:
+ * two folders with the same name only wait for each other, which is harmless.
+ */
+export function exclusive<T>(root: FileSystemDirectoryHandle, run: () => Promise<T>): Promise<T> {
+  const previous = queues.get(root.name) ?? Promise.resolve()
+  const next = previous.then(run, run)
+
+  queues.set(
+    root.name,
+    next.catch(() => undefined),
+  )
+
+  return next
+}
+
 export function getBrutoDirectory(root: FileSystemDirectoryHandle) {
   return root.getDirectoryHandle(BRUTO_DIRECTORY, { create: true })
 }
@@ -46,8 +66,10 @@ export async function readWorkspaceFile(
   for (let attempt = 1; attempt <= READ_ATTEMPTS; attempt += 1) {
     state = await readOnce(root, fallbackTitle)
 
-    // Only a broken file is worth a second look: it may be mid-write.
-    if (state.kind !== 'invalid') return state
+    // A broken or missing file is worth a second look: it may be mid-write, or
+    // being swapped in by another writer. Taking it as missing too soon would
+    // start an empty board over a real one.
+    if (state.kind === 'ok') return state
 
     await wait(RETRY_DELAY)
   }
