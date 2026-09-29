@@ -248,7 +248,8 @@ e2e/          browser tests against a real (private) file system
 ## Support
 
 Bruto is free, with no ads, no accounts and no personal tracking. If it saves you time, you can
-[buy me a coffee on Ko-fi](https://ko-fi.com/jimy_k4): it's also the heart in the top bar.
+[buy me a coffee on Ko-fi](https://ko-fi.com/jimy_k4): it's also the heart in the top bar. What's new
+goes out on X too: [@brutoboard](https://x.com/brutoboard).
 
 ## Privacy
 
