@@ -90,7 +90,7 @@ export function useWorkspaceUi(workspace: Workspace, store: WorkspaceStore) {
     setFlashState({ ids, kind })
     timers.current.flash = window.setTimeout(
       () => setFlashState(null),
-      kind === 'copied' ? 900 : 500,
+      kind === 'copied' ? 900 : 300,
     )
   }, [])
 
