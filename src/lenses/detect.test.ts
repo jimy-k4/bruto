@@ -56,6 +56,9 @@ describe('detectLenses', () => {
     expect(stacks(['prisma/schema.prisma', 'prisma/migrations/1/migration.sql'])).toEqual([
       'db:Prisma',
     ])
+    expect(stacks(['package.json', 'drizzle/0000_init.sql'], [pkg('drizzle-orm', 'pg')])).toEqual([
+      'db:Drizzle',
+    ])
     expect(stacks(['README.md'])).toEqual([])
   })
 

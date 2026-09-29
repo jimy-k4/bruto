@@ -5,7 +5,7 @@ export type LensKind = 'web' | 'api' | 'db'
 export type WebFramework =
   'next' | 'nuxt' | 'sveltekit' | 'astro' | 'angular' | 'vue' | 'svelte' | 'react'
 export type ApiStack = 'dotnet' | 'nest' | 'express' | 'fastify' | 'fastapi' | 'flask' | 'spring'
-export type DbStack = 'oracle' | 'postgres' | 'sql' | 'prisma'
+export type DbStack = 'oracle' | 'postgres' | 'sql' | 'prisma' | 'drizzle'
 
 export interface DetectedLens {
   kind: LensKind
@@ -108,6 +108,7 @@ const DB_LABELS: Record<DbStack, string> = {
   postgres: 'PostgreSQL',
   sql: 'SQL',
   prisma: 'Prisma',
+  drizzle: 'Drizzle',
 }
 
 /** A dependency named in a package.json. */
@@ -129,7 +130,12 @@ const count = (texts: string[], pattern: RegExp) =>
 function detectDb(paths: string[], samples: SourceFile[]): DbStack | null {
   const extensions = new Set(paths.map(extensionOf))
 
+  // A schema in code says more than the SQL it generates: it wins over migrations.
   if (extensions.has('prisma')) return 'prisma'
+  if (
+    samples.some((file) => baseName(file.path) === 'package.json' && npm(file.text, 'drizzle-orm'))
+  )
+    return 'drizzle'
   if ([...ORACLE_EXTENSIONS].some((extension) => extensions.has(extension))) return 'oracle'
   if (!paths.some((path) => SQL_EXTENSIONS.has(extensionOf(path)))) return null
 

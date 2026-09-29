@@ -1,6 +1,7 @@
 import { readSources, type IndexedFile } from '../storage/projectFiles'
 import { WEB_CODE, type DetectedLens } from './detect'
 import { buildApiModel, isDotnetFile, type ApiModel } from './dotnet'
+import { buildDrizzleModel, isDrizzleCandidate } from './drizzle'
 import { buildNodeApiModel, isNodeFile } from './node'
 import { buildPrismaModel, isPrismaFile } from './prisma'
 import { buildPythonApiModel, isPythonFile } from './python'
@@ -44,6 +45,7 @@ export async function loadLens(
   const dialect = lens.db
 
   if (dialect === 'prisma') return buildPrismaModel(await read(isPrismaFile))
+  if (dialect === 'drizzle') return buildDrizzleModel(await read(isDrizzleCandidate))
 
   return buildDbModel(await read(isSqlFile), dialect ?? 'sql')
 }
