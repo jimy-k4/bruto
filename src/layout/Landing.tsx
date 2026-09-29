@@ -40,7 +40,7 @@ const FEATURES: [TranslationKey, TranslationKey][] = [
 /** What the lenses can read. Product names, the same in every language. */
 const STACKS: [TranslationKey, string][] = [
   ['lensWeb', 'React · Vue · Svelte · Next.js · Nuxt · SvelteKit · Astro · Angular'],
-  ['lensApi', '.NET · NestJS · Express · Fastify · FastAPI · Flask · Spring'],
+  ['lensApi', '.NET · NestJS · Express · Fastify · Next.js · FastAPI · Flask · Spring'],
   ['lensDb', 'Oracle PL/SQL · PostgreSQL · Supabase · SQL · Prisma · Drizzle'],
 ]
 

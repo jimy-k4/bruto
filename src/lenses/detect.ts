@@ -4,7 +4,8 @@ import { baseName, extensionOf } from './source'
 export type LensKind = 'web' | 'api' | 'db'
 export type WebFramework =
   'next' | 'nuxt' | 'sveltekit' | 'astro' | 'angular' | 'vue' | 'svelte' | 'react'
-export type ApiStack = 'dotnet' | 'nest' | 'express' | 'fastify' | 'fastapi' | 'flask' | 'spring'
+export type ApiStack =
+  'dotnet' | 'nest' | 'express' | 'fastify' | 'next' | 'fastapi' | 'flask' | 'spring'
 export type DbStack = 'oracle' | 'postgres' | 'sql' | 'prisma' | 'drizzle'
 
 export interface DetectedLens {
@@ -69,6 +70,10 @@ const MANIFESTS = new Set([
   'build.gradle.kts',
 ])
 
+/** Route handlers, API routes and server action files: what makes a Next.js project an API too. */
+const NEXT_SERVER_FILE =
+  /^(?:src\/)?(?:app\/(?:.+\/)?(?:route|actions?)\.[cm]?[jt]sx?|pages\/api\/.+\.[cm]?[jt]sx?)$/
+
 /** SQL scripts read to tell Oracle from PostgreSQL. */
 const SQL_SAMPLES = 12
 
@@ -98,6 +103,7 @@ const API_LABELS: Record<ApiStack, string> = {
   nest: 'NestJS',
   express: 'Express',
   fastify: 'Fastify',
+  next: 'Next.js',
   fastapi: 'FastAPI',
   flask: 'Flask',
   spring: 'Spring',
@@ -192,6 +198,8 @@ function detectApi(paths: string[], samples: SourceFile[]): ApiStack | null {
   if (uses('@nestjs/core')) return 'nest'
   if (uses('express')) return 'express'
   if (uses('fastify')) return 'fastify'
+  // A server of its own wins; without one, Next.js route handlers and server actions are the API.
+  if (uses('next') && paths.some((path) => NEXT_SERVER_FILE.test(path))) return 'next'
   if (python.some((file) => mentions(file.text, 'fastapi'))) return 'fastapi'
   if (python.some((file) => mentions(file.text, 'flask'))) return 'flask'
   if (java.some((file) => /spring-boot|org\.springframework/.test(file.text))) return 'spring'

@@ -51,7 +51,11 @@ export function ApiLens({ model, context }: { model: ApiModel; context: LensCont
                   aria-pressed={context.focusKey === key}
                   title={resource.path}
                   onClick={() =>
-                    context.onFocus({ key, label: resource.route, paths: [resource.path] })
+                    context.onFocus({
+                      key,
+                      label: resource.route || resource.name,
+                      paths: [resource.path],
+                    })
                   }
                 >
                   <LensIcon name={resource.kind === 'controller' ? 'controller' : 'server'} />
@@ -74,10 +78,17 @@ export function ApiLens({ model, context }: { model: ApiModel; context: LensCont
                       <span className={`lens-verb lens-verb--${endpoint.verb.toLowerCase()}`}>
                         {endpoint.verb}
                       </span>
-                      <span className="lens-endpoint__route" title={endpoint.route}>
-                        {relative(endpoint.route, resource.route)}
-                      </span>
-                      {endpoint.action && (
+                      {/* A server action has no URL of its own: its name takes the route's place. */}
+                      {endpoint.verb === 'ACTION' ? (
+                        <span className="lens-endpoint__route" title={endpoint.action}>
+                          {endpoint.action}
+                        </span>
+                      ) : (
+                        <span className="lens-endpoint__route" title={endpoint.route}>
+                          {relative(endpoint.route, resource.route)}
+                        </span>
+                      )}
+                      {endpoint.action && endpoint.verb !== 'ACTION' && (
                         <span className="lens-endpoint__action" title={endpoint.action}>
                           {endpoint.action}
                         </span>

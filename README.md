@@ -51,9 +51,11 @@ Prefer to run it yourself? See [Development](#development).
   - **Web** (React, Vue, Svelte, Next.js, Nuxt, SvelteKit, Astro, Angular): pages as browser windows
     with their route and the components on them, a wall of components sized by use, then layouts,
     server routes, hooks, state and services.
-  - **API** (.NET, NestJS, Express, Fastify, FastAPI, Flask, Spring): controllers and routers as
-    resources listing their endpoints, verb, route and authorization, with the services they depend
-    on; then services, repositories, data, models and middleware.
+  - **API** (.NET, NestJS, Express, Fastify, Next.js, FastAPI, Flask, Spring): controllers and
+    routers as resources listing their endpoints, verb, route and authorization, with the services
+    they depend on; then services, repositories, data, models and middleware. In Next.js, route
+    handlers, `pages/api` and server actions, locked when they check the caller or a middleware
+    covering them does.
   - **Database** (Oracle PL/SQL, PostgreSQL and Supabase, plain SQL, Prisma, Drizzle): tables with their
     columns and keys as an entity-relationship diagram, following migrations in order; packages split
     into specification and body, row level security and its policies, then views, triggers,
