@@ -227,7 +227,7 @@ export const es = {
     'Sin servidor ni cuentas: solo estadísticas de uso anónimas, sin cookies. Tus notas no salen de tus carpetas.',
   landingAnyAiTitle: 'Con cualquier IA',
   landingAnyAiText:
-    'Pega la copia en Claude, ChatGPT, Gemini o DeepSeek, o deja que un agente con acceso a tus ficheros trabaje directamente en el tablero: basta una línea en AGENTS.md o CLAUDE.md.',
+    'Pega la copia en Claude, ChatGPT, Gemini o DeepSeek, o deja que un agente con acceso a tus ficheros trabaje directamente en el tablero: basta una línea en AGENTS.md o CLAUDE.md. Si tu agente habla MCP, añade Bruto como servidor: lista, lee y contesta las notas con herramientas, sin tocar el fichero a mano.',
   landingCtaTitle: 'Pruébalo con tu proyecto',
   landingCtaText:
     'Gratis y de código abierto. Para abrir tus carpetas necesitas Chrome, Edge, Brave u Opera en un ordenador.',

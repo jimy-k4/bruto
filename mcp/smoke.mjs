@@ -50,10 +50,20 @@ try {
     'get_context',
     'get_note',
     'list_notes',
+    'search_notes',
+    'set_status',
   ])
+
+  // Reads are marked as such, so clients can run them without asking.
+  assert.equal(tools.find((tool) => tool.name === 'get_context').annotations.readOnlyHint, true)
 
   assert.match((await text('list_notes')).text, /\[a1b2c3\] Fix login — todo/)
   assert.match((await text('get_context')).text, /## STANDING RULES/)
+  assert.match((await text('search_notes', { query: 'login' })).text, /\[a1b2c3\]/)
+  assert.match(
+    (await text('set_status', { id: 'a1b2c3', status: 'in-progress' })).text,
+    /in-progress/,
+  )
 
   const answered = await text('answer_note', {
     id: 'a1b2c3',

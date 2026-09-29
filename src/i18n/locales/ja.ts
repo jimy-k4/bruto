@@ -224,7 +224,7 @@ export const ja: Locale = {
     'サーバーもアカウントもなし。Cookie を使わない匿名の利用統計だけです。ノートはあなたのフォルダーから出ません。',
   landingAnyAiTitle: 'どの AI とも',
   landingAnyAiText:
-    'コピーを Claude、ChatGPT、Gemini、DeepSeek に貼り付けるか、ファイルにアクセスできるエージェントにボードで直接作業させましょう。AGENTS.md か CLAUDE.md に 1 行書くだけです。',
+    'コピーを Claude、ChatGPT、Gemini、DeepSeek に貼り付けるか、ファイルにアクセスできるエージェントにボードで直接作業させましょう。AGENTS.md か CLAUDE.md に 1 行書くだけです。エージェントが MCP に対応していれば、Bruto をサーバーとして追加しましょう。ファイルを手で編集せずに、ツールでノートを一覧・閲覧・回答できます。',
   landingCtaTitle: '自分のプロジェクトで試す',
   landingCtaText:
     '無料でオープンソース。フォルダーを開くには、パソコンの Chrome、Edge、Brave、Opera が必要です。',

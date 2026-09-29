@@ -16,6 +16,17 @@ It needs Node.js 20 or newer.
 claude mcp add bruto -- npx -y bruto-mcp
 ```
 
+Or, to share it with everyone who opens the project (Claude Code in the terminal, the desktop app or
+an IDE), a `.mcp.json` file at its root:
+
+```json
+{
+  "mcpServers": {
+    "bruto": { "command": "npx", "args": ["-y", "bruto-mcp"] }
+  }
+}
+```
+
 **Claude Desktop, Cursor, Windsurf and other clients**: add it to the client's MCP settings. Most
 clients start servers outside your project, so give it the folder:
 
@@ -34,16 +45,38 @@ Without `--project` (or `BRUTO_PROJECT`), the server uses the closest folder wit
 from where it was started. Every tool also takes a `project` argument, so one server can work across
 several projects.
 
+### On Windows
+
+Clients can't start `npx` directly: run it through `cmd`. Behind a company proxy that inspects HTTPS,
+Node also needs the system's certificates to download the package:
+
+```json
+{
+  "mcpServers": {
+    "bruto": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "bruto-mcp"],
+      "env": { "NODE_OPTIONS": "--use-system-ca" }
+    }
+  }
+}
+```
+
 ## Tools
 
-| Tool            | What it does                                                                                                    |
-| --------------- | --------------------------------------------------------------------------------------------------------------- |
-| `list_notes`    | The notes with their short id and status: the open ones, or the statuses asked for.                             |
-| `get_context`   | The same Markdown Bruto copies for an AI, with instructions and standing rules: some notes, or the whole board. |
-| `get_note`      | One note in full, with the notes it connects with.                                                              |
-| `answer_note`   | Writes what the AI did, adds the files it touched and sends the note to review.                                 |
-| `create_note`   | Adds a note, as an idea unless told otherwise, next to the one it follows from.                                 |
-| `connect_notes` | Draws an arrow between two notes.                                                                               |
+| Tool            | What it does                                                                        |
+| --------------- | ----------------------------------------------------------------------------------- |
+| `list_notes`    | The notes with their short id and status: the open ones, or the statuses asked for. |
+| `search_notes`  | Notes by words in any of their texts, files or links, or by the start of their id.  |
+| `get_context`   | The Markdown Bruto copies for an AI, with instructions and standing rules.          |
+| `get_note`      | One note in full, with the notes it connects with.                                  |
+| `set_status`    | Marks a note "in-progress" when the AI starts on it, so it shows on the board.      |
+| `answer_note`   | Writes what the AI did, adds the files it touched and sends the note to review.     |
+| `create_note`   | Adds a note, as an idea unless told otherwise, next to the one it follows from.     |
+| `connect_notes` | Draws an arrow between two notes.                                                   |
+
+Reading tools are marked read-only, so clients can let them run without asking. None of the tools
+deletes anything.
 
 And one prompt, `work_on_notes`: fix what was sent back, then do the `todo` notes one by one.
 

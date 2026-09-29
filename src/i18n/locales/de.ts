@@ -229,7 +229,7 @@ export const de: Locale = {
     'Kein Server, keine Konten: nur anonyme Nutzungsstatistik, ohne Cookies. Deine Notizen verlassen nie deine Ordner.',
   landingAnyAiTitle: 'Mit jeder KI',
   landingAnyAiText:
-    'Füg die Kopie in Claude, ChatGPT, Gemini oder DeepSeek ein, oder lass einen Agenten mit Zugriff auf deine Dateien direkt am Board arbeiten: Eine Zeile in AGENTS.md oder CLAUDE.md reicht.',
+    'Füg die Kopie in Claude, ChatGPT, Gemini oder DeepSeek ein, oder lass einen Agenten mit Zugriff auf deine Dateien direkt am Board arbeiten: Eine Zeile in AGENTS.md oder CLAUDE.md reicht. Spricht dein Agent MCP, füg Bruto als Server hinzu: Er listet, liest und beantwortet Notizen mit Werkzeugen, ohne die Datei von Hand zu bearbeiten.',
   landingCtaTitle: 'Probier es mit deinem Projekt',
   landingCtaText:
     'Kostenlos und Open Source. Zum Öffnen deiner Ordner brauchst du Chrome, Edge, Brave oder Opera auf einem Computer.',

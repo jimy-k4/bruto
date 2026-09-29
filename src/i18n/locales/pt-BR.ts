@@ -227,7 +227,7 @@ export const ptBR: Locale = {
     'Sem servidor nem contas: só estatísticas de uso anônimas, sem cookies. Suas notas nunca saem das suas pastas.',
   landingAnyAiTitle: 'Com qualquer IA',
   landingAnyAiText:
-    'Cole a cópia no Claude, ChatGPT, Gemini ou DeepSeek, ou deixe um agente com acesso aos seus arquivos trabalhar direto no quadro: basta uma linha no AGENTS.md ou CLAUDE.md.',
+    'Cole a cópia no Claude, ChatGPT, Gemini ou DeepSeek, ou deixe um agente com acesso aos seus arquivos trabalhar direto no quadro: basta uma linha no AGENTS.md ou CLAUDE.md. Se o seu agente fala MCP, adicione o Bruto como servidor: ele lista, lê e responde às notas com ferramentas, sem mexer no arquivo à mão.',
   landingCtaTitle: 'Experimente no seu projeto',
   landingCtaText:
     'Grátis e de código aberto. Para abrir suas pastas você precisa do Chrome, Edge, Brave ou Opera num computador.',

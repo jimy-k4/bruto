@@ -229,7 +229,7 @@ export const ca: Locale = {
     "Sense servidor ni comptes: només estadístiques d'ús anònimes, sense galetes. Les teves notes no surten de les teves carpetes.",
   landingAnyAiTitle: 'Amb qualsevol IA',
   landingAnyAiText:
-    'Enganxa la còpia a Claude, ChatGPT, Gemini o DeepSeek, o deixa que un agent amb accés als teus fitxers treballi directament al tauler: n’hi ha prou amb una línia a AGENTS.md o CLAUDE.md.',
+    'Enganxa la còpia a Claude, ChatGPT, Gemini o DeepSeek, o deixa que un agent amb accés als teus fitxers treballi directament al tauler: n’hi ha prou amb una línia a AGENTS.md o CLAUDE.md. Si el teu agent parla MCP, afegeix Bruto com a servidor: llista, llegeix i respon les notes amb eines, sense tocar el fitxer a mà.',
   landingCtaTitle: 'Prova-ho amb el teu projecte',
   landingCtaText:
     'Gratuït i de codi obert. Per obrir les teves carpetes necessites Chrome, Edge, Brave o Opera en un ordinador.',

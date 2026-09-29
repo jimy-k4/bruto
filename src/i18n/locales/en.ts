@@ -227,7 +227,7 @@ export const en: Locale = {
     'No server, no accounts: just anonymous usage stats, no cookies. Your notes never leave your folders.',
   landingAnyAiTitle: 'With any AI',
   landingAnyAiText:
-    'Paste the copy into Claude, ChatGPT, Gemini or DeepSeek, or let an agent with access to your files work on the board directly: one line in AGENTS.md or CLAUDE.md is enough.',
+    'Paste the copy into Claude, ChatGPT, Gemini or DeepSeek, or let an agent with access to your files work on the board directly: one line in AGENTS.md or CLAUDE.md is enough. If your agent speaks MCP, add Bruto as a server: it lists, reads and answers notes with tools, without editing the file by hand.',
   landingCtaTitle: 'Try it on your project',
   landingCtaText:
     'Free and open source. Opening your folders needs Chrome, Edge, Brave or Opera on a computer.',

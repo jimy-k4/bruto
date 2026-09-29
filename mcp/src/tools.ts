@@ -2,6 +2,7 @@ import { isAbsolute, relative } from 'node:path'
 import type { Note, NoteStatus, Point, Workspace } from '../../src/types'
 import { buildAiContext, describeNote } from '../../src/domain/aiContext'
 import { CLOSED_STATUSES, NOTE_MIN_SIZE } from '../../src/domain/constants'
+import { searchNotes as findNotes } from '../../src/domain/search'
 import {
   addConnection,
   createNote,
@@ -53,6 +54,45 @@ export function listNotes(
     '',
     'Read one with get_note, or everything the AI needs with get_context.',
   ].join('\n')
+}
+
+export function searchNotes(
+  root: string,
+  { query = '', statuses = [] }: { query?: string; statuses?: NoteStatus[] },
+): string {
+  const workspace = readBoard(root)
+  const found = findNotes(workspace.notes, { query, statuses })
+
+  if (found.length === 0) return 'No notes match.'
+
+  return found.map((note) => `- ${ref(note)} — ${note.status ?? 'no status'}`).join('\n')
+}
+
+/**
+ * Marks where a note stands, without answering it: "in-progress" when you
+ * start on it, so the user sees on the board what is being worked on.
+ */
+export function setStatus(
+  root: string,
+  { id, status }: { id: string; status: NoteStatus },
+): string {
+  let changed: Note | undefined
+
+  changeBoard(root, (workspace) => {
+    const note = resolveNote(workspace, id)
+
+    if (note.status === 'loop' || status === 'loop') {
+      throw new BoardError(
+        `Standing rules (status "loop") are set by the user only: ${ref(note)} keeps its status.`,
+      )
+    }
+
+    changed = note
+
+    return updateNotes(workspace, [note.id], { status })
+  })
+
+  return `${ref(changed!)} is now "${status}".`
 }
 
 export function getContext(

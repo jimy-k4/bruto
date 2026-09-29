@@ -5,7 +5,16 @@ import { z } from 'zod'
 import type { NoteStatus } from '../../src/types'
 import { NOTE_STATUSES } from '../../src/domain/constants'
 import { BoardError, findProject } from './board'
-import { answerNote, connectNotes, createNoteTool, getContext, getNote, listNotes } from './tools'
+import {
+  answerNote,
+  connectNotes,
+  createNoteTool,
+  getContext,
+  getNote,
+  listNotes,
+  searchNotes,
+  setStatus,
+} from './tools'
 
 declare const __VERSION__: string
 
@@ -39,6 +48,11 @@ const project = z
   .optional()
   .describe('Absolute path of the project folder. Defaults to the one the server was started in.')
 
+/** Tools that only read: clients may run them without asking. */
+const READS = { readOnlyHint: true, openWorldHint: false } as const
+/** Tools that write to the board, but never delete anything from it. */
+const WRITES = { readOnlyHint: false, destructiveHint: false, openWorldHint: false } as const
+
 /** Runs a tool and turns a board problem into a message the model can act on. */
 function run(action: () => string) {
   try {
@@ -63,6 +77,7 @@ server.registerTool(
       status: z.array(status).optional().describe('Only notes with one of these statuses.'),
       includeClosed: z.boolean().optional().describe('Also list done and won’t-fix notes.'),
     },
+    annotations: READS,
   },
   (args) =>
     run(() =>
@@ -90,6 +105,7 @@ server.registerTool(
         .optional()
         .describe('Also include every note the given ones point to.'),
     },
+    annotations: READS,
   },
   (args) => run(() => getContext(projectRoot(args.project), args)),
 )
@@ -101,6 +117,7 @@ server.registerTool(
     description:
       'One note in full: status, description, files, links, images, AI response, feedback and the notes it connects with.',
     inputSchema: { project, id: z.string().describe('Short id, e.g. "a1b2c3".') },
+    annotations: READS,
   },
   (args) => run(() => getNote(projectRoot(args.project), args.id)),
 )
@@ -125,6 +142,7 @@ server.registerTool(
         .optional()
         .describe('Add to the previous answer instead of replacing it.'),
     },
+    annotations: WRITES,
   },
   (args) => run(() => answerNote(projectRoot(args.project), args)),
 )
@@ -149,8 +167,42 @@ server.registerTool(
           'Short id of a note this one follows from: it is placed next to it and connected.',
         ),
     },
+    annotations: WRITES,
   },
   (args) => run(() => createNoteTool(projectRoot(args.project, { mayCreate: true }), args)),
+)
+
+server.registerTool(
+  'search_notes',
+  {
+    title: 'Search notes',
+    description:
+      'Finds notes by words in their title, text, files, links, answer or feedback, or by the start of their id; optionally only in some statuses.',
+    inputSchema: {
+      project,
+      query: z.string().optional().describe('Every word must appear, e.g. "login redirect".'),
+      status: z.array(status).optional().describe('Only notes with one of these statuses.'),
+    },
+    annotations: READS,
+  },
+  (args) =>
+    run(() => searchNotes(projectRoot(args.project), { query: args.query, statuses: args.status })),
+)
+
+server.registerTool(
+  'set_status',
+  {
+    title: 'Set status',
+    description:
+      'Changes where a note stands without answering it. Set "in-progress" when you start on a note, so the user sees on the board what you are working on; use answer_note when you finish. Standing rules (status "loop") keep their status.',
+    inputSchema: {
+      project,
+      id: z.string().describe('Short id of the note.'),
+      status: status.describe('Usually "in-progress" or "blocked".'),
+    },
+    annotations: { ...WRITES, idempotentHint: true },
+  },
+  (args) => run(() => setStatus(projectRoot(args.project), args)),
 )
 
 server.registerTool(
@@ -163,6 +215,7 @@ server.registerTool(
       from: z.string().describe('Short id of the note the arrow starts at.'),
       to: z.string().describe('Short id of the note it points to.'),
     },
+    annotations: { ...WRITES, idempotentHint: true },
   },
   (args) => run(() => connectNotes(projectRoot(args.project), args)),
 )
@@ -185,7 +238,8 @@ server.registerPrompt(
             '1. Call get_context to read the project, its rules and its notes.',
             '2. First the notes with status "changes-requested": fix what their feedback says.',
             `3. Then the notes with status "${status || 'todo'}", one by one.`,
-            '4. After each one, call answer_note with what you did and the files you touched.',
+            '4. Before starting a note, call set_status with "in-progress": the user sees it on the board.',
+            '5. After each one, call answer_note with what you did and the files you touched.',
             'Apply every standing rule (status "loop") on each task, and never answer them.',
           ].join('\n'),
         },

@@ -215,7 +215,7 @@ export const zh: Locale = {
     '没有服务器，没有账户：只有匿名的使用统计，不用 Cookie。你的笔记从不离开你的文件夹。',
   landingAnyAiTitle: '适用于任何 AI',
   landingAnyAiText:
-    '把复制的内容粘贴到 Claude、ChatGPT、Gemini 或 DeepSeek，或者让能访问你文件的智能体直接在看板上工作：在 AGENTS.md 或 CLAUDE.md 里加一行就够了。',
+    '把复制的内容粘贴到 Claude、ChatGPT、Gemini 或 DeepSeek，或者让能访问你文件的智能体直接在看板上工作：在 AGENTS.md 或 CLAUDE.md 里加一行就够了。如果你的智能体支持 MCP，就把 Bruto 添加为服务器：用工具列出、阅读和回复笔记，无需手动编辑文件。',
   landingCtaTitle: '用你的项目试试',
   landingCtaText: '免费且开源。要打开你的文件夹，需要在电脑上使用 Chrome、Edge、Brave 或 Opera。',
   localFirst: '本地',

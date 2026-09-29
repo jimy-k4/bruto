@@ -156,6 +156,11 @@
   line-height: 1.55;
 }
 
+.landing__codes {
+  display: grid;
+  gap: calc(var(--space-5) + 14px);
+}
+
 .landing__code {
   display: grid;
   margin: 0;

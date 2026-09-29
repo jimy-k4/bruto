@@ -3,7 +3,16 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { BOARD_FILE, findProject } from './board'
-import { answerNote, connectNotes, createNoteTool, getContext, getNote, listNotes } from './tools'
+import {
+  answerNote,
+  connectNotes,
+  createNoteTool,
+  getContext,
+  getNote,
+  listNotes,
+  searchNotes,
+  setStatus,
+} from './tools'
 
 let root: string
 
@@ -119,6 +128,35 @@ describe('answering', () => {
 
     expect(() => answerNote(root, { id: 'aaaaaa', response: 'x' })).toThrow(/standing rule/)
     expect(saved().notes[0].status).toBe('loop')
+  })
+})
+
+describe('searching and marking progress', () => {
+  it('finds notes by words or id, like the board search', () => {
+    board({
+      notes: [
+        note('aaaaaa-1', { title: 'Login redirect', status: 'todo' }),
+        note('bbbbbb-1', { description: 'The login page is slow', status: 'done' }),
+        note('cccccc-1', { title: 'Payments' }),
+      ],
+    })
+
+    expect(searchNotes(root, { query: 'login' })).toMatch(/aaaaaa[\s\S]*bbbbbb/)
+    expect(searchNotes(root, { query: 'login', statuses: ['todo'] })).not.toContain('bbbbbb')
+    expect(searchNotes(root, { query: '[cccccc]' })).toContain('Payments')
+    expect(searchNotes(root, { query: 'nothing' })).toBe('No notes match.')
+  })
+
+  it('marks a note as started with its look, but never a standing rule', () => {
+    board({
+      notes: [note('aaaaaa-1', { status: 'todo' }), note('bbbbbb-1', { status: 'loop' })],
+      statusStyles: { 'in-progress': { color: 'ochre', pattern: 'hatch' } },
+    })
+
+    expect(setStatus(root, { id: 'aaaaaa', status: 'in-progress' })).toContain('in-progress')
+    expect(saved().notes[0]).toMatchObject({ status: 'in-progress', colorTheme: 'ochre' })
+    expect(() => setStatus(root, { id: 'bbbbbb', status: 'done' })).toThrow(/standing rules/i)
+    expect(() => setStatus(root, { id: 'aaaaaa', status: 'loop' })).toThrow(/standing rules/i)
   })
 })
 

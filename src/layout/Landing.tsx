@@ -47,6 +47,9 @@ const STACKS: [TranslationKey, string][] = [
 const AGENTS_LINE =
   'Tasks for this project are in `.bruto/workspace.json`. Work on notes whose status is "todo".'
 
+/** The MCP server (mcp/ in the repository), as Claude Code adds it. */
+const MCP_LINE = 'claude mcp add bruto -- npx -y bruto-mcp'
+
 /** Screenshots of the example project, taken in every language (`npm run shots`). */
 const shot = (language: string, name: string) =>
   `${import.meta.env.BASE_URL}landing/${language}/${name}.jpg`
@@ -250,10 +253,16 @@ export function Landing({
             <p>{t('landingAnyAiText')}</p>
           </div>
 
-          <pre className="landing__code">
-            <span className="landing__code-file">AGENTS.md</span>
-            <code>{AGENTS_LINE}</code>
-          </pre>
+          <div className="landing__codes">
+            <pre className="landing__code">
+              <span className="landing__code-file">AGENTS.md</span>
+              <code>{AGENTS_LINE}</code>
+            </pre>
+            <pre className="landing__code">
+              <span className="landing__code-file">MCP</span>
+              <code>{MCP_LINE}</code>
+            </pre>
+          </div>
         </section>
 
         <section className="landing__cta" aria-labelledby="cta-title">

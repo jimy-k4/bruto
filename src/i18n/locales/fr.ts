@@ -229,7 +229,7 @@ export const fr: Locale = {
     "Pas de serveur, pas de compte : juste des statistiques d'usage anonymes, sans cookies. Vos notes ne quittent jamais vos dossiers.",
   landingAnyAiTitle: 'Avec n’importe quelle IA',
   landingAnyAiText:
-    'Collez la copie dans Claude, ChatGPT, Gemini ou DeepSeek, ou laissez un agent qui a accès à vos fichiers travailler directement sur le tableau : une ligne dans AGENTS.md ou CLAUDE.md suffit.',
+    'Collez la copie dans Claude, ChatGPT, Gemini ou DeepSeek, ou laissez un agent qui a accès à vos fichiers travailler directement sur le tableau : une ligne dans AGENTS.md ou CLAUDE.md suffit. Si votre agent parle MCP, ajoutez Bruto comme serveur : il liste, lit et répond aux notes avec des outils, sans toucher au fichier à la main.',
   landingCtaTitle: 'Essayez-le sur votre projet',
   landingCtaText:
     'Gratuit et open source. Pour ouvrir vos dossiers, il faut Chrome, Edge, Brave ou Opera sur un ordinateur.',
