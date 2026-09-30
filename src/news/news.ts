@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'mcp-worktrees',
+    date: '2026-09-30',
+    text: {
+      es: {
+        title: 'Los agentes en worktrees contestan en tu tablero',
+        body: 'Si un agente trabaja en un `git worktree`, el MCP usa el tablero del checkout principal, el que tienes abierto, tanto si `.bruto/` está en git como si no. Sus respuestas ya no acaban en una copia que no ves. Con `--worktree-board`, cada worktree usa el suyo.',
+      },
+      en: {
+        title: 'Agents in worktrees answer on your board',
+        body: 'When an agent works in a `git worktree`, the MCP server uses the main checkout’s board, the one you have open, whether `.bruto/` is committed or not. Its answers no longer land on a copy you never see. With `--worktree-board`, each worktree keeps its own.',
+      },
+      ca: {
+        title: 'Els agents en worktrees contesten al teu tauler',
+        body: 'Si un agent treballa en un `git worktree`, el MCP fa servir el tauler del checkout principal, el que tens obert, tant si `.bruto/` és a git com si no. Les seves respostes ja no acaben en una còpia que no veus. Amb `--worktree-board`, cada worktree fa servir el seu.',
+      },
+      fr: {
+        title: 'Les agents dans des worktrees répondent sur votre tableau',
+        body: 'Quand un agent travaille dans un `git worktree`, le serveur MCP utilise le tableau du checkout principal, celui que vous avez ouvert, que `.bruto/` soit dans git ou non. Ses réponses n’atterrissent plus sur une copie que vous ne voyez pas. Avec `--worktree-board`, chaque worktree garde le sien.',
+      },
+      de: {
+        title: 'Agenten in Worktrees antworten auf deinem Board',
+        body: 'Arbeitet ein Agent in einem `git worktree`, nutzt der MCP-Server das Board des Haupt-Checkouts, das du offen hast, egal ob `.bruto/` in Git liegt oder nicht. Seine Antworten landen nicht mehr in einer Kopie, die du nie siehst. Mit `--worktree-board` behält jeder Worktree sein eigenes.',
+      },
+      'pt-BR': {
+        title: 'Agentes em worktrees respondem no seu quadro',
+        body: 'Quando um agente trabalha num `git worktree`, o servidor MCP usa o quadro do checkout principal, o que você tem aberto, esteja o `.bruto/` no git ou não. As respostas dele não caem mais numa cópia que você não vê. Com `--worktree-board`, cada worktree usa o seu.',
+      },
+      ru: {
+        title: 'Агенты в worktree отвечают на твоей доске',
+        body: 'Если агент работает в `git worktree`, MCP-сервер использует доску основного checkout — ту, что у тебя открыта, — неважно, лежит ли `.bruto/` в git. Его ответы больше не попадают в копию, которую ты не видишь. С `--worktree-board` у каждого worktree своя доска.',
+      },
+      ja: {
+        title: 'worktree のエージェントもあなたのボードに回答',
+        body: 'エージェントが `git worktree` で作業していても、MCP サーバーはメインのチェックアウト、つまりあなたが開いているボードを使います。`.bruto/` を git に入れていてもいなくても同じです。回答が見えないコピーに入ることはもうありません。`--worktree-board` を付けると各 worktree が自分のボードを使います。',
+      },
+      zh: {
+        title: 'worktree 中的智能体也在你的看板上作答',
+        body: '当智能体在 `git worktree` 中工作时，MCP 服务器会使用主检出目录的看板，也就是你打开的那个，无论 `.bruto/` 是否提交到 git。它的回答不会再落到你看不到的副本上。加上 `--worktree-board`，每个 worktree 使用自己的看板。',
+      },
+    },
+  },
+  {
     id: 'note-age',
     date: '2026-09-30',
     text: {

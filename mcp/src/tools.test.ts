@@ -1,9 +1,18 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { LOG_FILE, appendLog, type WriteContext } from './audit'
-import { BOARD_FILE, changeBoard, findProject } from './board'
+import { BOARD_FILE, boardFolder, changeBoard, findProject, linkedWorktree } from './board'
 import { updateNotes } from '../../src/domain/workspace'
 import {
   answerNote,
@@ -304,6 +313,67 @@ describe('who changed what', () => {
     expect(lines[0].files['src/login.ts']).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(lines[1]).toMatchObject({ tool: 'set_status', ok: false })
     expect(lines[1].files).toBeUndefined()
+  })
+})
+
+describe('git worktrees', () => {
+  const git = (cwd: string, ...args: string[]) =>
+    execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...args], {
+      cwd,
+      stdio: 'ignore',
+    })
+
+  /** A repository at root/main with a board, and a linked worktree at root/wt. */
+  function repository({ committed }: { committed: boolean }) {
+    const main = join(root, 'main')
+    const worktree = join(root, 'wt')
+
+    mkdirSync(join(main, 'src'), { recursive: true })
+    writeFileSync(join(main, 'src', 'app.ts'), 'export {}\n')
+    mkdirSync(join(main, '.bruto'))
+    writeFileSync(
+      join(main, BOARD_FILE),
+      JSON.stringify({ version: 4, title: 'MAIN', notes: [note('aaaaaa-1', { status: 'todo' })] }),
+    )
+    if (!committed) writeFileSync(join(main, '.gitignore'), '.bruto/\n')
+
+    git(main, 'init', '-q')
+    git(main, 'add', '.')
+    // Forced: a global gitignore often leaves .bruto/ out.
+    if (committed) git(main, 'add', '-f', '.bruto')
+    git(main, 'commit', '-q', '-m', 'init')
+    git(main, 'worktree', 'add', '-q', worktree)
+
+    return { main: realpathSync.native(main), worktree }
+  }
+
+  it('answers on the main checkout’s board when the board is committed', () => {
+    const { main, worktree } = repository({ committed: true })
+
+    expect(linkedWorktree(main)).toBeNull()
+    expect(findProject(join(worktree, 'src'))).toBe(main)
+    // Opting out keeps the worktree's own copy.
+    expect(realpathSync.native(findProject(worktree, { ownWorktree: true })!)).toBe(
+      realpathSync.native(worktree),
+    )
+
+    answerNote(findProject(worktree)!, { id: 'aaaaaa', response: 'From the worktree.' })
+
+    const board = (folder: string) => JSON.parse(readFileSync(join(folder, BOARD_FILE), 'utf8'))
+
+    expect(board(main).notes[0]).toMatchObject({
+      status: 'review',
+      aiResponse: 'From the worktree.',
+    })
+    expect(board(worktree).notes[0].status).toBe('todo')
+  })
+
+  it('finds the main checkout’s board when .bruto/ is ignored, and the same folder there', () => {
+    const { main, worktree } = repository({ committed: false })
+
+    expect(existsSync(join(worktree, BOARD_FILE))).toBe(false)
+    expect(findProject(worktree)).toBe(main)
+    expect(boardFolder(join(worktree, 'src'))).toBe(join(main, 'src'))
   })
 })
 
