@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bruto · YouTube banner</title>
+    <!--
+      The channel banner on YouTube: 2560×1440. Rendered to PNG with
+      npx playwright screenshot --channel=chrome --viewport-size=2560,1440 docs/social/youtube-banner.html docs/social/youtube-banner.png
+      TVs show all of it, computers the band in the middle (2560×423) and
+      phones only its centre (1546×423): the name and the claim live there.
+    -->
+    <style>
+      @font-face {
+        font-family: 'Archivo Black';
+        src: url('../../node_modules/@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'IBM Plex Mono';
+        font-weight: 400;
+        src: url('../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'IBM Plex Mono';
+        font-weight: 600;
+        src: url('../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-600-normal.woff2')
+          format('woff2');
+      }
+
+      /* The app's dark theme tokens (src/styles/tokens.css). */
+      :root {
+        --bg: #1a1a19;
+        --surface: #232322;
+        --ink: #edece5;
+        --ink-muted: #b7b6ae;
+        --line: #edece5;
+        --signal: #ff6b2c;
+        --note-ink: #f2f1ea;
+        --pattern-line: rgba(242, 241, 234, 0.16);
+        --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+        --font-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      html,
+      body {
+        width: 2560px;
+        height: 1440px;
+        overflow: hidden;
+      }
+
+      body {
+        position: relative;
+        background-color: var(--bg);
+        background-image:
+          linear-gradient(rgba(237, 236, 229, 0.085) 3px, transparent 3px),
+          linear-gradient(90deg, rgba(237, 236, 229, 0.085) 3px, transparent 3px),
+          linear-gradient(rgba(237, 236, 229, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(237, 236, 229, 0.045) 1px, transparent 1px);
+        background-size:
+          240px 240px,
+          240px 240px,
+          48px 48px,
+          48px 48px;
+        background-position: 0 28px;
+        color: var(--ink);
+        font-family: var(--font-mono);
+      }
+
+      body::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        opacity: 0.12;
+        pointer-events: none;
+      }
+
+      /* The name and the claim: inside the phones' safe area (x 507–2053, y 508–931). */
+      .brand {
+        position: absolute;
+        top: 552px;
+        left: 560px;
+      }
+
+      .eyebrow {
+        color: var(--ink-muted);
+        font: 600 26px / 1 var(--font-mono);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .wordmark {
+        margin: 20px 0 0 -8px;
+        font: 400 210px / 0.86 var(--font-display);
+        text-shadow: 11px 11px 0 var(--signal);
+      }
+
+      .claim {
+        margin-top: 34px;
+        font: 400 34px / 1.3 var(--font-mono);
+      }
+
+      .claim b {
+        padding: 0 10px;
+        background: var(--ink);
+        color: var(--bg);
+        font-weight: 600;
+      }
+
+      /* Notes, as the board draws them. */
+      .note {
+        position: absolute;
+        width: 420px;
+        border: 4px solid var(--line);
+        background-color: var(--note-bg);
+        color: var(--note-ink);
+        box-shadow: 9px 9px 0 var(--line);
+      }
+
+      .note.is-selected {
+        outline: 4px solid var(--signal);
+        outline-offset: 7px;
+      }
+
+      .note.is-faded {
+        opacity: 0.45;
+      }
+
+      .note__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 4px solid var(--line);
+        background-image: var(--pattern);
+        background-size: var(--pattern-size, auto);
+      }
+
+      .note__header span {
+        padding: 3px 9px;
+        background: var(--surface);
+        color: var(--ink);
+        font: 600 16px / 1.3 var(--font-mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .note__header .status::before {
+        content: '';
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        margin-right: 8px;
+        background: var(--status);
+      }
+
+      .note__body {
+        display: grid;
+        gap: 14px;
+        padding: 20px 22px 24px;
+      }
+
+      .note__title {
+        font: 400 31px / 1.06 var(--font-display);
+        text-transform: uppercase;
+      }
+
+      .note__text {
+        font-size: 19px;
+        line-height: 1.5;
+      }
+
+      .note__ai {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-top: 12px;
+        border-top: 3px solid currentColor;
+        font: 600 16px / 1.2 var(--font-mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .note__ai i {
+        padding: 2px 7px;
+        background: var(--note-ink);
+        color: var(--note-bg);
+        font-style: normal;
+      }
+
+      .tape {
+        display: flex;
+        justify-content: center;
+        padding: 6px 12px;
+        border-bottom: 4px solid var(--line);
+        background: repeating-linear-gradient(-45deg, var(--signal) 0 14px, var(--bg) 14px 28px);
+      }
+
+      .tape span {
+        padding: 3px 10px;
+        border: 2px solid var(--line);
+        background: var(--surface);
+        font: 700 15px / 1 var(--font-mono);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .grid {
+        --pattern:
+          linear-gradient(var(--pattern-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--pattern-line) 1px, transparent 1px);
+        --pattern-size: 18px 18px;
+      }
+
+      .hatch {
+        --pattern: repeating-linear-gradient(
+          135deg,
+          var(--pattern-line) 0 3px,
+          transparent 3px 15px
+        );
+      }
+
+      .dots {
+        --pattern: radial-gradient(var(--pattern-line) 2px, transparent 2.2px);
+        --pattern-size: 16px 16px;
+      }
+
+      .pinstripe {
+        --pattern: repeating-linear-gradient(
+          90deg,
+          var(--pattern-line) 0 1px,
+          transparent 1px 11px
+        );
+      }
+
+      svg {
+        position: absolute;
+        inset: 0;
+      }
+
+      .line {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 4;
+      }
+
+      .line.is-faded {
+        opacity: 0.45;
+      }
+
+      /* The key that copies a note for the AI. */
+      .step {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 10px 8px 8px;
+        border: 4px solid var(--line);
+        background: var(--bg);
+        box-shadow: 6px 6px 0 var(--signal);
+        font: 600 16px / 1.25 var(--font-mono);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .key {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--line);
+        background: var(--ink);
+        color: var(--bg);
+        font: 400 22px / 1 var(--font-display);
+      }
+
+      /* The app's status bar, along the bottom of the band every screen shows. */
+      .statusbar {
+        position: absolute;
+        top: 885px;
+        right: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 44px;
+        height: 46px;
+        border-top: 4px solid var(--line);
+        border-bottom: 4px solid var(--line);
+        background: var(--bg);
+        font: 600 18px / 1 var(--font-mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .statusbar .link {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+
+      .edge {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 16px;
+        background: var(--signal);
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="2560" height="1440" aria-hidden="true">
+      <defs>
+        <marker
+          id="arrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="4.5"
+          markerHeight="4.5"
+          orient="auto"
+        >
+          <path d="M0,0 L10,5 L0,10 z" fill="#edece5" />
+        </marker>
+      </defs>
+      <!-- In the band: the answered note on to done. -->
+      <path class="line" d="M1994,640 H2040 V680 H2092" marker-end="url(#arrow)" />
+      <!-- Above and below, for TVs only. -->
+      <path class="line is-faded" d="M1210,320 H1296" marker-end="url(#arrow)" />
+      <path class="line is-faded" d="M1500,1200 H1586" marker-end="url(#arrow)" />
+    </svg>
+
+    <!-- The band: what computers show. -->
+    <article class="note pinstripe" style="--note-bg: #44625f; left: 64px; top: 560px">
+      <header class="note__header"><span>Rule</span><span>5cc8bd</span></header>
+      <div class="tape"><span>Every task</span></div>
+      <div class="note__body">
+        <h2 class="note__title">Run the tests before finishing</h2>
+      </div>
+    </article>
+
+    <div class="brand">
+      <p class="eyebrow">Project notes for coding with AI</p>
+      <p class="wordmark">BRUTO</p>
+      <p class="claim">Tasks in <b>your repo</b>, for you and your AI.</p>
+    </div>
+
+    <article
+      class="note hatch is-selected"
+      style="--note-bg: #57506b; --status: #b3a4ff; left: 1570px; top: 560px"
+    >
+      <header class="note__header">
+        <span>Note</span><span class="status">To review</span><span>842b74</span>
+      </header>
+      <div class="note__body">
+        <h2 class="note__title">Waitlist for full slots</h2>
+        <p class="note__text">Climbers join a waitlist when a slot is full.</p>
+        <p class="note__ai"><i>AI</i> Response · 3 files</p>
+      </div>
+    </article>
+
+    <article
+      class="note dots"
+      style="--note-bg: #4e6047; --status: #7fc98a; left: 2096px; top: 600px"
+    >
+      <header class="note__header">
+        <span>Note</span><span class="status">Done</span><span>e3d41a</span>
+      </header>
+      <div class="note__body">
+        <h2 class="note__title">Dark theme</h2>
+      </div>
+    </article>
+
+    <p class="step" style="left: 1398px; top: 680px"><span class="key">Q</span>Copy<br />context</p>
+
+    <footer class="statusbar">
+      <span>No cloud · No accounts · Works offline</span>
+      <span class="link">jimy-k4.github.io/bruto</span>
+    </footer>
+
+    <!-- Above and below: the rest of the board, for TVs. -->
+    <article
+      class="note grid is-faded"
+      style="--note-bg: #454f5c; --status: #edece5; left: 790px; top: 190px"
+    >
+      <header class="note__header">
+        <span>Note</span><span class="status">To do</span><span>a11c9e</span>
+      </header>
+      <div class="note__body">
+        <h2 class="note__title">Fix the login redirect</h2>
+        <p class="note__text">Deep links land on /home after signing in.</p>
+      </div>
+    </article>
+
+    <article
+      class="note hatch is-faded"
+      style="--note-bg: #796a35; --status: #f0a64a; left: 1300px; top: 250px"
+    >
+      <header class="note__header">
+        <span>Note</span><span class="status">In progress</span><span>b91c02</span>
+      </header>
+      <div class="note__body">
+        <h2 class="note__title">Weekly calendar</h2>
+      </div>
+    </article>
+
+    <article
+      class="note grid is-faded"
+      style="--note-bg: #63353b; --status: #f27ab6; left: 1080px; top: 1060px"
+    >
+      <header class="note__header">
+        <span>Note</span><span class="status">Changes requested</span>
+      </header>
+      <div class="note__body">
+        <h2 class="note__title">Double booking on refresh</h2>
+      </div>
+    </article>
+
+    <article
+      class="note dots is-faded"
+      style="--note-bg: #44576d; --status: #edece5; left: 1590px; top: 1110px"
+    >
+      <header class="note__header">
+        <span>Note</span><span class="status">To do</span><span>d9e8f7</span>
+      </header>
+      <div class="note__body">
+        <h2 class="note__title">Email reminders</h2>
+      </div>
+    </article>
+
+    <div class="edge"></div>
+  </body>
+</html>
