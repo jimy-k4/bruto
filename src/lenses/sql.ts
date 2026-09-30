@@ -347,13 +347,15 @@ function tablesUsed(text: string, known: Set<string>, own: string, names: Names)
     add(match[1])
   }
 
-  // Anchored types: orders%ROWTYPE, orders.id%TYPE.
-  for (const match of text.matchAll(new RegExp(String.raw`(${NAME})\s*%\s*ROWTYPE`, 'gi')))
-    add(match[1])
-  for (const match of text.matchAll(
-    /("[^"]+"|[\w$#]+)\s*\.\s*(?:"[^"]+"|[\w$#]+)\s*%\s*TYPE\b/gi,
-  )) {
-    add(match[1])
+  // Anchored types: orders%ROWTYPE, orders.id%TYPE. The name is read backwards from the %.
+  for (const match of text.matchAll(/%\s*(ROWTYPE|TYPE)\b/gi)) {
+    const { parts } = nameBefore(text, match.index)
+
+    if (match[1].toUpperCase() === 'ROWTYPE') {
+      if (parts.length > 0) add(parts.slice(-2).join('.'))
+    } else if (parts.length > 1) {
+      add(parts.slice(-3, -1).join('.'))
+    }
   }
 
   // FROM a, b JOIN … : the other tables of a comma list.

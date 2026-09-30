@@ -92,41 +92,45 @@ export function stripCComments(code: string): string {
   return out
 }
 
-/** Removes `--` and `/* *\/` comments from SQL, keeping 'strings' as they are. */
+/**
+ * Removes `--` and `/* *\/` comments from SQL, keeping 'strings' as they are.
+ * Copies the text between them in whole pieces: schemas run to tens of megabytes.
+ */
 export function stripSqlComments(sql: string): string {
-  let out = ''
-  let index = 0
+  const pieces: string[] = []
+  const special = /--|\/\*|'/g
+  let copied = 0
 
-  while (index < sql.length) {
-    const char = sql[index]
-    const next = sql[index + 1]
+  for (let match = special.exec(sql); match; match = special.exec(sql)) {
+    const index = match.index
 
-    if (char === '-' && next === '-') {
-      while (index < sql.length && sql[index] !== '\n') index++
-    } else if (char === '/' && next === '*') {
+    pieces.push(sql.slice(copied, index))
+
+    if (match[0] === '--') {
+      const end = sql.indexOf('\n', index)
+
+      copied = end === -1 ? sql.length : end
+    } else if (match[0] === '/*') {
       const end = sql.indexOf('*/', index + 2)
-      const stop = end === -1 ? sql.length : end + 2
 
-      out += sql.slice(index, stop).replace(/[^\n]/g, ' ')
-      index = stop
-    } else if (char === "'") {
-      let end = index + 1
-
-      while (end < sql.length) {
-        if (sql[end] === "'" && sql[end + 1] === "'") end += 2
-        else if (sql[end] === "'") break
-        else end++
-      }
-
-      out += sql.slice(index, end + 1)
-      index = end + 1
+      copied = end === -1 ? sql.length : end + 2
+      pieces.push(sql.slice(index, copied).replace(/[^\n]/g, ' '))
     } else {
-      out += char
-      index++
+      // 'It''s': a doubled quote stays inside the string.
+      let end = sql.indexOf("'", index + 1)
+
+      while (end !== -1 && sql[end + 1] === "'") end = sql.indexOf("'", end + 2)
+
+      copied = end === -1 ? sql.length : end + 1
+      pieces.push(sql.slice(index, copied))
     }
+
+    special.lastIndex = copied
   }
 
-  return out
+  pieces.push(sql.slice(copied))
+
+  return pieces.join('')
 }
 
 /** The text between the bracket at `open` and its matching closing bracket. */

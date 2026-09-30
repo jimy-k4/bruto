@@ -139,6 +139,30 @@ describe('buildDbModel', () => {
     expect(find('sequence')).toMatchObject({ name: 'ORDERS_SEQ', paths: ['db/tables.sql'] })
   })
 
+  it('finds the tables a program only anchors types to, however their names are written', () => {
+    const anchored = buildDbModel([
+      { path: 'db/tables.sql', text: TABLES },
+      {
+        path: 'db/pkg_anchors.pkb',
+        text: `
+CREATE OR REPLACE PACKAGE BODY pkg_anchors AS
+  PROCEDURE copy_line(p_line IN OUT NOCOPY sales . order_lines%ROWTYPE) IS
+    v_order "Orders"%ROWTYPE;
+    v_customer sales.customers.id%TYPE;
+    v_name products . name %TYPE;
+    v_total v_order.total%TYPE;
+  BEGIN NULL; END;
+END;
+/
+`,
+      },
+    ])
+
+    expect(anchored.programs.find((program) => program.name === 'PKG_ANCHORS')).toMatchObject({
+      tables: ['CUSTOMERS', 'ORDER_LINES', 'Orders', 'PRODUCTS'],
+    })
+  })
+
   it('has no undeclared tables when every table used is created', () => {
     expect(model.undeclared).toEqual([])
   })
