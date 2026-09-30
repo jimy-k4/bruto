@@ -350,6 +350,14 @@ export const ja: Locale = {
   imageSaveFailed: '画像を保存できませんでした。',
   aiResponse: 'AI の返答',
   aiResponsePlaceholder: 'AI がこのノートで行ったこと。',
+  agents: 'エージェント',
+  agentReadOnly: 'エージェントは閲覧のみ',
+  agentReadOnlyHint:
+    'MCP を使うエージェントは読めますが、回答やステータスの変更はできません。エージェントの変更はすべて .bruto/log.jsonl に記録されます。',
+  agentStamp: 'エージェント: {agent} が {when} に{action}。',
+  agentActionAnswer: '回答しました',
+  agentActionStatus: 'ステータスを変更しました',
+  agentActionCreate: '作成しました',
   feedback: 'うまくいかない点',
   feedbackPlaceholder: '返答を確認したうえで、まだ直っていない点や足りない点。',
   feedbackStatusHint:

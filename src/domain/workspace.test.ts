@@ -151,6 +151,42 @@ describe('parseWorkspace', () => {
     )
   })
 
+  it('reads who changed a note over MCP and whether agents may only read it', () => {
+    const at = '2026-09-30T09:14:00.000Z'
+    const workspace = parseWorkspace(
+      JSON.stringify({
+        version: 4,
+        notes: [
+          {
+            id: 'a',
+            agentAccess: 'read',
+            agent: {
+              client: 'claude-code',
+              version: '2.1.0',
+              id: 'reviewer',
+              action: 'answer',
+              at,
+            },
+          },
+          { id: 'b', agentAccess: 'write', agent: { client: 'x', action: 'delete', at } },
+          { id: 'c', agent: { client: '', action: 'answer', at } },
+        ],
+      }),
+    )
+
+    expect(workspace.notes[0]).toMatchObject({
+      agentAccess: 'read',
+      agent: { client: 'claude-code', version: '2.1.0', id: 'reviewer', action: 'answer', at },
+    })
+    // Only "read" limits agents; a stamp Bruto doesn't understand is dropped, not guessed.
+    expect(workspace.notes[1]).not.toHaveProperty('agentAccess')
+    expect(workspace.notes[1]).not.toHaveProperty('agent')
+    expect(workspace.notes[2]).not.toHaveProperty('agent')
+    expect(updateNotes(workspace, ['a'], { agentAccess: undefined }).notes[0]).not.toHaveProperty(
+      'agentAccess',
+    )
+  })
+
   it('turns the v3 "bug" and "loop" statuses into kinds, rules without a status', () => {
     const workspace = parseWorkspace(
       JSON.stringify({

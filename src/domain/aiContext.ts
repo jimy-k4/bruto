@@ -20,6 +20,10 @@ const INSTRUCTIONS = [
 const RULES_INSTRUCTION =
   '- "STANDING RULES" are notes with `kind: "rule"`: apply every one of them on each task, every time, even when no note asks for it. Never answer them in `aiResponse` or change them. Notes with `kind: "bug"` are bugs; a note without a kind is a task.'
 
+/** Only added when some note is read-only for agents. */
+const READ_ONLY_INSTRUCTION =
+  '- Notes marked "Agents: read only" (`agentAccess: "read"`) are there to read: never answer them or change their status.'
+
 const DOCUMENTATION_LABELS = {
   obsidian: 'OBSIDIAN',
   notion: 'NOTION',
@@ -48,6 +52,7 @@ export function describeNote(note: Note): string[] {
 
   if (note.kind) lines.push(`Kind: ${note.kind}`)
   if (note.status) lines.push(`Status: ${note.status}`)
+  if (note.agentAccess === 'read') lines.push('Agents: read only')
   if (note.description.trim()) lines.push('', note.description.trim())
 
   if (note.filePaths.length > 0) {
@@ -134,6 +139,9 @@ export function buildAiContext(
 
   lines.push('', ...INSTRUCTIONS)
   if (rules.length > 0) lines.push(RULES_INSTRUCTION)
+  if (workspace.notes.some((note) => note.agentAccess === 'read')) {
+    lines.push(READ_ONLY_INSTRUCTION)
+  }
 
   if (workspace.documentation.length > 0) {
     lines.push(

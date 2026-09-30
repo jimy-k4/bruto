@@ -90,6 +90,44 @@ deletes anything.
 
 And one prompt, `work_on_notes`: fix what was sent back, then do the `todo` notes one by one.
 
+## Who did what
+
+Every write tool takes an optional `agent`: the agent or subagent making the call, e.g. `"reviewer"`.
+Start the server with `BRUTO_AGENT=<id>` to give one to every call that doesn't.
+
+- **On the note.** A note an agent answers, moves or creates is stamped with the client from the MCP
+  handshake (e.g. `claude-code` and its version), the agent id and the time. Bruto shows it under the
+  AI response, and `get_note` reads it back.
+- **In the log.** Every write, refused ones included, is appended to `.bruto/log.jsonl`, one JSON line
+  each and never rewritten:
+
+  ```json
+  {
+    "at": "2026-09-30T09:14:02.118Z",
+    "tool": "answer_note",
+    "client": "claude-code",
+    "version": "2.1.0",
+    "agent": "reviewer",
+    "note": "842b74aa-…",
+    "args": {
+      "id": "842b74",
+      "response": "Added a waitlist…",
+      "files": ["app/calendar/Waitlist.tsx"]
+    },
+    "ok": true,
+    "result": "[842b74] Waitlist for full slots is now \"review\"…",
+    "commit": "3b3266e…",
+    "files": { "app/calendar/Waitlist.tsx": "sha256:9f2c…" }
+  }
+  ```
+
+  `commit` is the commit the project was on (when it is a git repository) and `files` the SHA-256 of
+  each file the agent says it touched, as it was then: the answer stays tied to the exact code it
+  describes.
+
+- **Read only for agents.** A note the user marks so in Bruto (`"agentAccess": "read"`) can be read but
+  never answered or moved: the tools refuse, and the refusal is logged.
+
 ## Safe with the app and your file
 
 - A broken board is reported, never overwritten.

@@ -3,6 +3,8 @@ import type { CrossLink, Note } from '../types'
 import { blockState, linkKey, type LinkedNoteInfo } from '../domain/crossLinks'
 import { noteLinks, noteTitle, shortId } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
+import { LensIcon } from '../lenses/LensIcon'
+import { describeAgentStamp } from '../ui/agentStamp'
 import { FileTable } from '../ui/FileTable'
 import { ProjectImage } from '../ui/ProjectImage'
 import { RichText } from '../ui/RichText'
@@ -65,8 +67,9 @@ export const NoteCard = memo(function NoteCard({
   linkInfo,
   handlers,
 }: NoteCardProps) {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const [aiOpen, setAiOpen] = useState(false)
+  const readOnly = note.agentAccess === 'read'
   const title = noteTitle(note, t('untitled'))
   const links = noteLinks(note)
   const { observe } = handlers
@@ -108,6 +111,7 @@ export const NoteCard = memo(function NoteCard({
         title,
         note.kind && kindLabel(t, note.kind),
         note.status && statusLabel(t, note.status),
+        readOnly && t('agentReadOnly'),
         selected && t('selected'),
       ]
         .filter(Boolean)
@@ -128,7 +132,14 @@ export const NoteCard = memo(function NoteCard({
           </span>
         )}
 
-        <span className="note__id">{shortId(note.id)}</span>
+        <span className="note__id">
+          {shortId(note.id)}
+          {readOnly && (
+            <abbr className="note__lock" title={t('agentReadOnly')}>
+              <LensIcon name="lock" />
+            </abbr>
+          )}
+        </span>
       </header>
 
       {/* Waiting on another project, or holding one up: the same note, taped. */}
@@ -226,6 +237,7 @@ export const NoteCard = memo(function NoteCard({
               type="button"
               className="note__ai-toggle"
               aria-expanded={aiOpen}
+              title={note.agent ? describeAgentStamp(t, language, note.agent) : undefined}
               onPointerDown={stop}
               onDoubleClick={stop}
               onClick={() => setAiOpen(!aiOpen)}

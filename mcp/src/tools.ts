@@ -11,21 +11,35 @@ import {
   updateNotes,
   type NotePatch,
 } from '../../src/domain/workspace'
+import { stamp, type WriteContext } from './audit'
 import { BoardError, changeBoard, readBoard, resolveNote } from './board'
 
 /**
  * What the MCP tools do, as plain functions over a project folder. Each one
- * returns the text the model reads back.
+ * returns the text the model reads back. Write tools take who is calling:
+ * they stamp the note with it and leave its id for the audit log.
  */
 
 const ref = (note: Note) => `[${shortId(note.id)}] ${noteTitle(note)}`
 const isClosed = (note: Note) => Boolean(note.status && CLOSED_STATUSES.includes(note.status))
-/** How a note reads in a list: its status, and its kind when it isn't a plain task. */
-const standing = (note: Note) => [note.status ?? 'no status', note.kind].filter(Boolean).join(' · ')
+/** How a note reads in a list: its status, its kind when it isn't a plain task, and if agents may only read it. */
+const standing = (note: Note) =>
+  [note.status ?? 'no status', note.kind, note.agentAccess === 'read' && 'read only']
+    .filter(Boolean)
+    .join(' · ')
 const byReadingOrder = (a: Note, b: Note) => a.y - b.y || a.x - b.x
 
+/** The user set this note to be read, not answered or moved. */
+function refuseReadOnly(note: Note) {
+  if (note.agentAccess === 'read') {
+    throw new BoardError(
+      `${ref(note)} is read-only for agents: the user wants it read, not answered or moved. Tell them what you found instead, or create a note of your own.`,
+    )
+  }
+}
+
 /** Paths as the board keeps them: relative to the project, with forward slashes. */
-function projectPath(root: string, path: string): string {
+export function projectPath(root: string, path: string): string {
   const inside = isAbsolute(path) ? relative(root, path) : path
 
   return inside.replace(/\\/g, '/').replace(/^\.\//, '')
@@ -86,21 +100,28 @@ export function searchNotes(
 export function setStatus(
   root: string,
   { id, status }: { id: string; status: NoteStatus },
+  by?: WriteContext,
 ): string {
   let changed: Note | undefined
 
   changeBoard(root, (workspace) => {
     const note = resolveNote(workspace, id)
 
+    if (by) by.note = note.id
+
     if (note.kind === 'rule') {
       throw new BoardError(
         `Standing rules (kind "rule") are set by the user only: ${ref(note)} keeps its status.`,
       )
     }
+    refuseReadOnly(note)
 
     changed = note
 
-    return updateNotes(workspace, [note.id], { status })
+    return updateNotes(workspace, [note.id], {
+      status,
+      ...(by && { agent: stamp(by.caller, 'status') }),
+    })
   })
 
   return `${ref(changed!)} is now "${status}".`
@@ -134,8 +155,21 @@ export function getNote(root: string, id: string): string {
     workspace.connections.filter((link) => link.to === note.id).map((link) => link.from),
   )
 
+  const agent = note.agent
+    ? [
+        '',
+        `Last changed by an agent: ${[
+          `${note.agent.client}${note.agent.version ? ` ${note.agent.version}` : ''}`,
+          note.agent.id && `(${note.agent.id})`,
+        ]
+          .filter(Boolean)
+          .join(' ')}, ${note.agent.action}, ${note.agent.at}`,
+      ]
+    : []
+
   return [
     ...describeNote(note),
+    ...agent,
     ...(pointsTo.length ? ['', `Points to: ${pointsTo.join(', ')}`] : []),
     ...(pointedFrom.length ? ['', `Pointed from: ${pointedFrom.join(', ')}`] : []),
   ].join('\n')
@@ -150,19 +184,24 @@ export function answerNote(
     status = 'review',
     append = false,
   }: { id: string; response: string; files?: string[]; status?: NoteStatus; append?: boolean },
+  by?: WriteContext,
 ): string {
   let answered: Note | undefined
 
   changeBoard(root, (workspace) => {
     const note = resolveNote(workspace, id)
 
+    if (by) by.note = note.id
+
     if (note.kind === 'rule') {
       throw new BoardError(
         `${ref(note)} is a standing rule (kind "rule"): apply it on every task, but never answer it or change it.`,
       )
     }
+    refuseReadOnly(note)
 
     const patch: NotePatch = {
+      ...(by && { agent: stamp(by.caller, 'answer') }),
       aiResponse:
         append && note.aiResponse?.trim() ? `${note.aiResponse.trim()}\n\n${response}` : response,
       aiFilePaths: unique([
@@ -225,6 +264,7 @@ export function createNoteTool(
     links?: string[]
     after?: string
   },
+  by?: WriteContext,
 ): string {
   let created: Note | undefined
 
@@ -238,11 +278,13 @@ export function createNoteTool(
         filePaths: unique(files.map((path) => projectPath(root, path))),
         webUrls: unique(links.map((link) => link.trim())),
         ...(kind === 'bug' && { kind }),
+        ...(by && { agent: stamp(by.caller, 'create') }),
       })
 
       if (previous) next = addConnection(next, previous.id, result.note.id)
 
       created = result.note
+      if (by) by.note = result.note.id
 
       return next
     },
@@ -252,12 +294,19 @@ export function createNoteTool(
   return `Created ${ref(created!)} as "${status}"${kind === 'bug' ? ' (a bug)' : ''}${after ? `, connected from [${after.replace(/^\[|\]$/g, '')}]` : ''}.`
 }
 
-export function connectNotes(root: string, { from, to }: { from: string; to: string }): string {
+export function connectNotes(
+  root: string,
+  { from, to }: { from: string; to: string },
+  by?: WriteContext,
+): string {
   let message = ''
 
   changeBoard(root, (workspace) => {
     const source = resolveNote(workspace, from)
     const target = resolveNote(workspace, to)
+
+    // An arrow changes neither note: the log keeps where it starts.
+    if (by) by.note = source.id
 
     if (source.id === target.id) throw new BoardError('A note cannot point at itself.')
 

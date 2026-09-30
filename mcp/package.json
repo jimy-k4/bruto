@@ -1,6 +1,6 @@
 {
   "name": "bruto-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "MCP server for Bruto boards: AI agents read and answer the notes of a project, kept in .bruto/workspace.json.",
   "keywords": [
     "mcp",

@@ -360,6 +360,14 @@ export const de: Locale = {
   imageSaveFailed: 'Das Bild konnte nicht gespeichert werden.',
   aiResponse: 'Antwort der KI',
   aiResponsePlaceholder: 'Was die KI mit dieser Notiz gemacht hat.',
+  agents: 'Agenten',
+  agentReadOnly: 'Für Agenten nur lesbar',
+  agentReadOnlyHint:
+    'Agenten über den MCP-Server können sie lesen, aber nicht beantworten oder ihren Status ändern. Jede Änderung, die sie machen, steht in .bruto/log.jsonl.',
+  agentStamp: 'Agent: {agent} {action}, {when}.',
+  agentActionAnswer: 'hat sie beantwortet',
+  agentActionStatus: 'hat ihren Status geändert',
+  agentActionCreate: 'hat sie angelegt',
   feedback: 'Was nicht stimmt',
   feedbackPlaceholder: 'Nach dem Prüfen der Antwort: was noch falsch ist oder fehlt.',
   feedbackStatusHint:

@@ -80,6 +80,27 @@ export interface Note {
   feedback?: string
   /** Notes in other projects this one blocks, waits on or relates to. */
   crossLinks?: CrossLink[]
+  /** The agent that last changed the note through the MCP server. */
+  agent?: AgentStamp
+  /** "read": agents may read the note but never answer it or change its status. Set by the user. */
+  agentAccess?: AgentAccess
+}
+
+export type AgentAccess = 'read'
+
+/** What an agent did to a note through the MCP server. */
+export type AgentAction = 'answer' | 'status' | 'create'
+
+/** Who changed a note through the MCP server, and when: the audit log has the rest. */
+export interface AgentStamp {
+  /** The MCP client as it introduced itself, e.g. "claude-code". */
+  client: string
+  version?: string
+  /** The agent or subagent that made the call, when it said. */
+  id?: string
+  action: AgentAction
+  /** ISO 8601. */
+  at: string
 }
 
 /** How a note relates to one in another project, seen from this note. */

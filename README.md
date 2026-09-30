@@ -157,6 +157,14 @@ every project with a board:
 claude mcp add --scope user bruto -- npx -y bruto-mcp
 ```
 
+**Every change is on record.** The server only ever touches the board: it has no tool that deletes,
+and agents can't write, answer or change standing rules. Each note an agent answers, moves or creates
+is stamped with who did it: the client from the MCP handshake (`claude-code`), the agent or subagent id
+it passes, if any, and when. Every write, refused ones included, is also appended to
+`.bruto/log.jsonl`: the tool, the note, the arguments, the result, the commit the project was on and
+a SHA-256 of each file the agent says it touched, so an answer stays tied to the exact code it
+describes. A note marked **Read only for agents** can be read but never answered or moved.
+
 Other clients, Windows and every tool: [mcp/README.md](mcp/README.md).
 
 ## The workspace file
@@ -184,6 +192,14 @@ fields it does not know about, and accepts common status words such as `"pending
       "aiResponse": "Added cancelBooking() with the 2h rule.",
       "aiFilePaths": ["app/bookings/cancel.ts"], // what the AI created or changed
       "feedback": "Still possible after the deadline on mobile.",
+      // Who last changed it through the MCP server: answer · status · create.
+      "agent": {
+        "client": "claude-code",
+        "id": "reviewer",
+        "action": "answer",
+        "at": "2026-09-30T09:14:00Z",
+      },
+      "agentAccess": "read", // agents may read it, never answer or move it; left out otherwise
       "x": 420,
       "y": 60,
       "zIndex": 2,

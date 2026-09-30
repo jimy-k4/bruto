@@ -5,6 +5,7 @@ import { z } from 'zod'
 import type { NoteStatus } from '../../src/types'
 import { NOTE_STATUSES } from '../../src/domain/constants'
 import type { KindFilter } from '../../src/domain/search'
+import { appendLog, type Caller, type WriteContext } from './audit'
 import { BoardError, findProject } from './board'
 import {
   answerNote,
@@ -13,6 +14,7 @@ import {
   getContext,
   getNote,
   listNotes,
+  projectPath,
   searchNotes,
   setStatus,
 } from './tools'
@@ -79,14 +81,84 @@ const READS = { readOnlyHint: true, openWorldHint: false } as const
 /** Tools that write to the board, but never delete anything from it. */
 const WRITES = { readOnlyHint: false, destructiveHint: false, openWorldHint: false } as const
 
+const messageOf = (error: unknown) => (error instanceof Error ? error.message : String(error))
+
 /** Runs a tool and turns a board problem into a message the model can act on. */
 function run(action: () => string) {
   try {
     return { content: [{ type: 'text' as const, text: action() }] }
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
+    return { content: [{ type: 'text' as const, text: messageOf(error) }], isError: true }
+  }
+}
 
-    return { content: [{ type: 'text' as const, text: message }], isError: true }
+const agent = z
+  .string()
+  .optional()
+  .describe(
+    'Your agent or subagent id, e.g. "reviewer". Recorded on the note and in the board’s audit log.',
+  )
+
+/** Who is calling: the client from the MCP handshake, and the agent id it gives or the server was started with. */
+function callerOf(agentId?: string): Caller {
+  const client = server.server.getClientVersion()
+  const id = agentId?.trim() || process.env.BRUTO_AGENT?.trim()
+
+  return {
+    client: client?.name || 'unknown',
+    ...(client?.version && { version: client.version }),
+    ...(id && { agent: id }),
+  }
+}
+
+/**
+ * Runs a write tool and adds the call to `.bruto/log.jsonl`, whether it went
+ * through or was refused: who asked, for which note, with what, and the files
+ * it says it touched as they are now.
+ */
+function audited<Args extends { project?: string; agent?: string; files?: string[] }>(
+  tool: string,
+  args: Args,
+  where: () => string,
+  action: (root: string, by: WriteContext) => string,
+) {
+  const by: WriteContext = { caller: callerOf(args.agent) }
+  // The project is where the log lives, and the agent has its own column.
+  const logged = Object.fromEntries(
+    Object.entries(args).filter(([key]) => key !== 'project' && key !== 'agent'),
+  )
+  let root: string | undefined
+
+  const log = (ok: boolean, result: string) => {
+    if (!root) return
+
+    try {
+      appendLog(root, by.caller, {
+        tool,
+        note: by.note,
+        args: logged,
+        ok,
+        result,
+        files:
+          tool === 'answer_note' ? (args.files ?? []).map((path) => projectPath(root!, path)) : [],
+      })
+    } catch {
+      // A log that can't be written never blocks the change itself.
+    }
+  }
+
+  try {
+    root = where()
+
+    const text = action(root, by)
+
+    log(true, text)
+
+    return { content: [{ type: 'text' as const, text }] }
+  } catch (error) {
+    log(false, messageOf(error))
+
+    return { content: [{ type: 'text' as const, text: messageOf(error) }], isError: true }
   }
 }
 
@@ -154,7 +226,7 @@ server.registerTool(
   {
     title: 'Answer note',
     description:
-      'Writes what you did in a note, adds the files you created or changed, and sets its status ("review" by default) so the user can review it. On a note with status "changes-requested", fix what its feedback says first; the feedback is cleared. Put commands and code in Markdown code blocks (```): the note shows each one with a copy button. Never use it on standing rules (kind "rule").',
+      'Writes what you did in a note, adds the files you created or changed, and sets its status ("review" by default) so the user can review it. On a note with status "changes-requested", fix what its feedback says first; the feedback is cleared. Put commands and code in Markdown code blocks (```): the note shows each one with a copy button. Never use it on standing rules (kind "rule") or on notes marked read only.',
     inputSchema: {
       project,
       id: z.string().describe('Short id of the note.'),
@@ -168,10 +240,17 @@ server.registerTool(
         .boolean()
         .optional()
         .describe('Add to the previous answer instead of replacing it.'),
+      agent,
     },
     annotations: WRITES,
   },
-  (args) => run(() => answerNote(projectRoot(args.project), args)),
+  (args) =>
+    audited(
+      'answer_note',
+      args,
+      () => projectRoot(args.project),
+      (root, by) => answerNote(root, args, by),
+    ),
 )
 
 server.registerTool(
@@ -199,10 +278,17 @@ server.registerTool(
         .describe(
           'Short id of a note this one follows from: it is placed next to it and connected.',
         ),
+      agent,
     },
     annotations: WRITES,
   },
-  (args) => run(() => createNoteTool(projectRoot(args.project, { mayCreate: true }), args)),
+  (args) =>
+    audited(
+      'create_note',
+      args,
+      () => projectRoot(args.project, { mayCreate: true }),
+      (root, by) => createNoteTool(root, args, by),
+    ),
 )
 
 server.registerTool(
@@ -228,15 +314,22 @@ server.registerTool(
   {
     title: 'Set status',
     description:
-      'Changes where a note stands without answering it. Set "in-progress" when you start on a note, so the user sees on the board what you are working on; use answer_note when you finish. Standing rules (kind "rule") keep their status.',
+      'Changes where a note stands without answering it. Set "in-progress" when you start on a note, so the user sees on the board what you are working on; use answer_note when you finish. Standing rules (kind "rule") and notes marked read only keep their status.',
     inputSchema: {
       project,
       id: z.string().describe('Short id of the note.'),
       status: status.describe('Usually "in-progress" or "blocked".'),
+      agent,
     },
     annotations: { ...WRITES, idempotentHint: true },
   },
-  (args) => run(() => setStatus(projectRoot(args.project), args)),
+  (args) =>
+    audited(
+      'set_status',
+      args,
+      () => projectRoot(args.project),
+      (root, by) => setStatus(root, args, by),
+    ),
 )
 
 server.registerTool(
@@ -248,10 +341,17 @@ server.registerTool(
       project,
       from: z.string().describe('Short id of the note the arrow starts at.'),
       to: z.string().describe('Short id of the note it points to.'),
+      agent,
     },
     annotations: { ...WRITES, idempotentHint: true },
   },
-  (args) => run(() => connectNotes(projectRoot(args.project), args)),
+  (args) =>
+    audited(
+      'connect_notes',
+      args,
+      () => projectRoot(args.project),
+      (root, by) => connectNotes(root, args, by),
+    ),
 )
 
 server.registerPrompt(
