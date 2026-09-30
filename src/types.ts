@@ -80,6 +80,10 @@ export interface Note {
   feedback?: string
   /** Notes in other projects this one blocks, waits on or relates to. */
   crossLinks?: CrossLink[]
+  /** When the note was made (ISO 8601). Its age runs from here, whoever it passes to. */
+  createdAt?: string
+  /** Times the user sent it back to the AI ("changes requested"): the review round trips. */
+  sentBack?: number
   /** The agent that last changed the note through the MCP server. */
   agent?: AgentStamp
   /** "read": agents may read the note but never answer it or change its status. Set by the user. */

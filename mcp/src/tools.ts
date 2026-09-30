@@ -28,6 +28,7 @@ const standing = (note: Note) =>
     note.status ?? 'no status',
     note.kind,
     note.agentAccess === 'read' && 'read only',
+    note.sentBack && `sent back ${note.sentBack}×`,
     note.agent?.reverted?.length && 'agent change reverted',
   ]
     .filter(Boolean)

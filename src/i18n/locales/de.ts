@@ -269,6 +269,9 @@ export const de: Locale = {
     '{count} Änderungen außerhalb von Bruto kollidierten mit deinen: Deine bleiben.',
   keepTheirs: 'Ihre übernehmen',
   anotherTool: 'ein anderes Tool',
+  createdOn: 'Erstellt am {date}',
+  sentBackTimes: '{count}-mal zurückgeschickt',
+  sentBackTimes_one: 'Einmal zurückgeschickt',
   agentReverted: 'Seine Änderung wurde rückgängig gemacht ({fields}).',
 
   // Sidebar

@@ -167,4 +167,14 @@ describe('describeNote', () => {
       '- Blocked by [c0ffee] Untitled in project "db"',
     ])
   })
+
+  it('says how old a note is and how often review sent it back', () => {
+    const history = (extra: Partial<Note>) => describeNote(note('aaaaaa-1', extra)).slice(1)
+
+    expect(
+      history({ status: 'changes-requested', createdAt: '2026-09-24T10:00:00Z', sentBack: 3 }),
+    ).toEqual(['Status: changes-requested', 'Created: 2026-09-24 · sent back 3 times'])
+    expect(history({ sentBack: 1 })).toEqual(['Sent back once'])
+    expect(history({})).toEqual([])
+  })
 })

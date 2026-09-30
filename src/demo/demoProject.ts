@@ -430,6 +430,18 @@ const NOTES: {
 
 const id = (key: DemoNoteKey) => NOTES.find((note) => note.key === key)!.id
 
+/** How long ago each note was made, in days, and how often review sent it back: a lived-in board. */
+const HISTORY: Record<DemoNoteKey, { days: number; sentBack?: number }> = {
+  calendar: { days: 3 },
+  cancel: { days: 6, sentBack: 1 },
+  double: { days: 9, sentBack: 2 },
+  payments: { days: 12 },
+  reminders: { days: 1 },
+  tests: { days: 12 },
+}
+
+const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString()
+
 /** The board of the example project, in the reader's language. */
 export function demoWorkspace(language: Language) {
   const text = DEMO_TEXTS[language]
@@ -459,6 +471,8 @@ export function demoWorkspace(language: Language) {
       webUrls: [],
       images: [],
       zIndex: index + 1,
+      createdAt: daysAgo(HISTORY[key].days),
+      ...(HISTORY[key].sentBack && { sentBack: HISTORY[key].sentBack }),
       ...note,
       ...text.notes[key],
     })),

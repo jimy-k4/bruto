@@ -268,6 +268,9 @@ export const ca: Locale = {
     '{count} canvis fets fora de Bruto xocaven amb els teus: s’han quedat els teus.',
   keepTheirs: 'Fes servir el seu',
   anotherTool: 'una altra eina',
+  createdOn: 'Creada el {date}',
+  sentBackTimes: 'Retornada {count} vegades',
+  sentBackTimes_one: 'Retornada {count} vegada',
   agentReverted: 'Se’n va desfer el canvi ({fields}).',
 
   // Sidebar

@@ -342,6 +342,26 @@
   border: var(--border) dashed currentColor;
 }
 
+/* Bottom left, across from the brand: how old the note is and how often it came back. */
+.note__meta {
+  position: absolute;
+  left: 16px;
+  bottom: 10px;
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  font: 600 var(--text-xs) / 1 var(--font-mono);
+  letter-spacing: 0.06em;
+  opacity: 0.8;
+}
+
+.note__sent-back {
+  padding: 2px 5px;
+  background: var(--note-ink);
+  color: var(--note-bg);
+  opacity: 1;
+}
+
 .note__brand {
   position: absolute;
   right: 8px;

@@ -6,6 +6,8 @@ import { kindLabel, statusLabel, useI18n } from '../i18n'
 import { LensIcon } from '../lenses/LensIcon'
 import { describeAgentStamp } from '../ui/agentStamp'
 import { FileTable } from '../ui/FileTable'
+import { formatDate } from '../ui/format'
+import { formatAge } from '../ui/noteAge'
 import { ProjectImage } from '../ui/ProjectImage'
 import { RichText } from '../ui/RichText'
 import { KIND_LABELS, linkedNote } from '../workspace/crossLinks'
@@ -112,6 +114,7 @@ export const NoteCard = memo(function NoteCard({
         note.kind && kindLabel(t, note.kind),
         note.status && statusLabel(t, note.status),
         readOnly && t('agentReadOnly'),
+        note.sentBack && t('sentBackTimes', { count: note.sentBack }),
         selected && t('selected'),
       ]
         .filter(Boolean)
@@ -270,6 +273,26 @@ export const NoteCard = memo(function NoteCard({
           </div>
         )}
       </div>
+
+      {/* Its age, which never resets, and its trips back from review. */}
+      {Boolean(note.createdAt || note.sentBack) && (
+        <p className="note__meta">
+          {note.createdAt && (
+            <span
+              title={t('createdOn', {
+                date: formatDate(language, Date.parse(note.createdAt), true),
+              })}
+            >
+              {formatAge(language, note.createdAt)}
+            </span>
+          )}
+          {note.sentBack ? (
+            <span className="note__sent-back" title={t('sentBackTimes', { count: note.sentBack })}>
+              ↩ {note.sentBack}
+            </span>
+          ) : null}
+        </p>
+      )}
 
       <span className="note__brand" aria-hidden="true">
         B

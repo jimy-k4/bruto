@@ -75,7 +75,8 @@ Prefer to run it yourself? See [Development](#development).
   project, as clean Markdown with short instructions for the model. A preview shows exactly what gets
   copied and roughly how many tokens it is.
 - **Answers in the note.** Each note has an _AI response_, the files the AI touched and a _What's
-  wrong_ field, so review loops stay attached to the task.
+  wrong_ field, so review loops stay attached to the task. A note keeps its age whoever it passes to,
+  and counts every time review sent it back (↩ 3), so a task that bounced for a week never looks new.
 - **Safe with other tools.** Every save reads the file first and merges changes made elsewhere, note by
   note and field by field. When you and an agent change the same field at the same moment, your value
   stays and nobody is left in the dark: you get a notice with the option to take theirs, the note tells
@@ -204,6 +205,8 @@ fields it does not know about, and accepts common status words such as `"pending
         "at": "2026-09-30T09:14:00Z",
       },
       "agentAccess": "read", // agents may read it, never answer or move it; left out otherwise
+      "createdAt": "2026-09-24T10:00:00Z", // its age runs from here, whatever its status
+      "sentBack": 2, // times it went to "changes-requested": the review round trips
       "x": 420,
       "y": 60,
       "zIndex": 2,

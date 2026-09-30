@@ -8,6 +8,7 @@ import { shortId, type NotePatch } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
 import { describeAgentStamp } from '../ui/agentStamp'
 import { FileTable } from '../ui/FileTable'
+import { formatDate } from '../ui/format'
 import { CrossLinksField } from './CrossLinksField'
 import { FormatHelp } from './FormatHelp'
 import { ProjectImage } from '../ui/ProjectImage'
@@ -179,6 +180,17 @@ export function NoteEditor({
           <button type="button" className="link-button" onClick={onOpenStatusStyles}>
             {t('customizeStatuses')} →
           </button>
+          {Boolean(note.createdAt || note.sentBack) && (
+            <p className="field__hint">
+              {[
+                note.createdAt &&
+                  t('createdOn', { date: formatDate(language, Date.parse(note.createdAt), true) }),
+                note.sentBack && t('sentBackTimes', { count: note.sentBack }),
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+          )}
         </div>
 
         <div className="field">

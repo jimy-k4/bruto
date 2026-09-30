@@ -123,6 +123,27 @@ test('when an agent changes what the user is changing, the user’s value stays 
   expect((await readDisk(page)).notes[0].status).toBe('review')
 })
 
+test('a note keeps its age and counts each time review sends it back', async ({ page }) => {
+  const createdAt = new Date(Date.now() - 6 * 86_400_000).toISOString()
+
+  await openProject(page, workspaceWith([note('a', { status: 'review', createdAt, sentBack: 2 })]))
+
+  // Six days old, sent back twice, whatever its status says now.
+  const meta = noteCard(page, 'A').locator('.note__meta')
+
+  await expect(meta).toContainText('6')
+  await expect(meta.locator('.note__sent-back')).toHaveText('↩ 2')
+
+  await noteCard(page, 'A').click()
+  await expect(page.getByText(/Creada el .* · Devuelta 2 veces/)).toBeVisible()
+
+  // One more round trip.
+  await page.getByLabel('Estado').selectOption('changes-requested')
+  await waitForSaved(page)
+  await expect(meta.locator('.note__sent-back')).toHaveText('↩ 3')
+  expect((await readDisk(page)).notes[0]).toMatchObject({ createdAt, sentBack: 3 })
+})
+
 test('never replaces a broken workspace file with an empty one', async ({ page }) => {
   const broken = '{ "notes": [ { "id": "a", "title": "Importante" } '
 

@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'note-age',
+    date: '2026-09-30',
+    text: {
+      es: {
+        title: 'Cada nota lleva su edad y sus idas y vueltas',
+        body: 'Una nota guarda cuándo se creó, pase por quien pase, y cuenta cada vez que la devuelves a la IA: **↩ 3** en la tarjeta. Una tarea que lleva una semana rebotando ya no parece nueva, y la IA sabe cuántas veces ha vuelto.',
+      },
+      en: {
+        title: 'Every note keeps its age and its round trips',
+        body: 'A note remembers when it was made, whoever it passes to, and counts each time you send it back to the AI: **↩ 3** on the card. A task that has bounced for a week no longer looks new, and the AI knows how often it came back.',
+      },
+      ca: {
+        title: 'Cada nota porta la seva edat i les seves anades i tornades',
+        body: 'Una nota guarda quan es va crear, passi per qui passi, i compta cada cop que la tornes a la IA: **↩ 3** a la targeta. Una tasca que fa una setmana que rebota ja no sembla nova, i la IA sap quantes vegades ha tornat.',
+      },
+      fr: {
+        title: 'Chaque note garde son âge et ses allers-retours',
+        body: 'Une note se souvient de sa création, quelles que soient les mains par lesquelles elle passe, et compte chaque renvoi à l’IA : **↩ 3** sur la carte. Une tâche qui rebondit depuis une semaine n’a plus l’air neuve, et l’IA sait combien de fois elle est revenue.',
+      },
+      de: {
+        title: 'Jede Notiz behält ihr Alter und ihre Runden',
+        body: 'Eine Notiz merkt sich, wann sie entstanden ist, egal wer sie gerade hat, und zählt jedes Mal, wenn du sie an die KI zurückschickst: **↩ 3** auf der Karte. Eine Aufgabe, die seit einer Woche hin und her geht, sieht nicht mehr neu aus, und die KI weiß, wie oft sie zurückkam.',
+      },
+      'pt-BR': {
+        title: 'Cada nota guarda a idade e as idas e voltas',
+        body: 'Uma nota lembra quando foi criada, passe por quem passar, e conta cada vez que você a devolve à IA: **↩ 3** no cartão. Uma tarefa que vai e volta há uma semana não parece mais nova, e a IA sabe quantas vezes ela voltou.',
+      },
+      ru: {
+        title: 'Заметка помнит свой возраст и возвраты',
+        body: 'Заметка помнит, когда её создали, у кого бы она ни была, и считает каждый возврат ИИ на доработку: **↩ 3** на карточке. Задача, которая неделю ходит туда-сюда, больше не выглядит новой, а ИИ знает, сколько раз она возвращалась.',
+      },
+      ja: {
+        title: 'ノートが作成日と差し戻し回数を保持',
+        body: 'ノートは誰の手に渡っても作成日時を保ち、AI に差し戻すたびに回数を数えます（カードに **↩ 3**）。1 週間行き来しているタスクが新しく見えることはもうなく、AI も何回戻ってきたかを把握できます。',
+      },
+      zh: {
+        title: '每条笔记都记着年龄和往返次数',
+        body: '笔记会记住创建时间，无论经过谁手，并统计每次退回给 AI 的次数：卡片上显示 **↩ 3**。来回折腾了一周的任务不再看起来像新的，AI 也知道它回来了几次。',
+      },
+    },
+  },
+  {
     id: 'sync-conflicts',
     date: '2026-09-30',
     text: {
