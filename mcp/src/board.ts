@@ -1,5 +1,13 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
-import { basename, dirname, join, resolve } from 'node:path'
+import { execFileSync } from 'node:child_process'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  realpathSync,
+  renameSync,
+  writeFileSync,
+} from 'node:fs'
+import { basename, dirname, join, relative, resolve } from 'node:path'
 import type { Note, Workspace } from '../../src/types'
 import {
   WorkspaceFormatError,
@@ -14,8 +22,8 @@ export const BOARD_FILE = join('.bruto', 'workspace.json')
 /** An error meant for the model: it says what went wrong and what to do about it. */
 export class BoardError extends Error {}
 
-/** The project that holds `start`: the closest folder, going up, with a Bruto board. */
-export function findProject(start: string): string | null {
+/** The closest folder with a board, going up from `start`, never above `top` when given. */
+function closestBoard(start: string, top?: string): string | null {
   let folder = resolve(start)
 
   for (;;) {
@@ -23,9 +31,84 @@ export function findProject(start: string): string | null {
 
     const parent = dirname(folder)
 
-    if (parent === folder) return null
+    if (parent === folder || (top && folder === resolve(top))) return null
     folder = parent
   }
+}
+
+/**
+ * When `folder` is inside a linked git worktree (`git worktree add`), its
+ * root and the main checkout's. Null in the main checkout itself, in a bare
+ * repository, outside git, or when git isn't there to ask.
+ */
+export function linkedWorktree(folder: string): { worktree: string; main: string } | null {
+  try {
+    const [gitDir, commonDir, top] = execFileSync(
+      'git',
+      ['rev-parse', '--path-format=absolute', '--git-dir', '--git-common-dir', '--show-toplevel'],
+      { cwd: folder, stdio: ['ignore', 'pipe', 'ignore'], timeout: 2000 },
+    )
+      .toString()
+      .trim()
+      .split(/\r?\n/)
+
+    // Git before 2.31 echoes an option it doesn't know: then it can't say, and nothing changes.
+    if (!gitDir || !commonDir || !top || gitDir.startsWith('-')) return null
+
+    // The main checkout's .git is shared: a linked worktree's own lives in .git/worktrees/<name>.
+    if (resolve(gitDir) === resolve(commonDir)) return null
+    if (basename(commonDir) !== '.git') return null
+
+    return { worktree: real(top), main: dirname(real(commonDir)) }
+  } catch {
+    return null
+  }
+}
+
+/** A path as the file system spells it: git and a Windows short name (JLLINA~1) must agree. */
+function real(path: string): string {
+  try {
+    return realpathSync.native(path)
+  } catch {
+    return resolve(path)
+  }
+}
+
+export interface ProjectOptions {
+  /** Use a worktree's own board, not the main checkout's. */
+  ownWorktree?: boolean
+}
+
+/**
+ * The folder whose board a tool started in `start` works on. Agents often run
+ * in git worktrees: there, the same place in the main checkout comes first,
+ * so answers land on the board the user has open rather than on a copy.
+ */
+export function boardFolder(start: string, { ownWorktree = false }: ProjectOptions = {}): string {
+  const tree = ownWorktree ? null : linkedWorktree(start)
+
+  return tree ? inMainCheckout(start, tree) : resolve(start)
+}
+
+/** The same place as `start`, in the main checkout. */
+const inMainCheckout = (start: string, tree: { worktree: string; main: string }) =>
+  join(tree.main, relative(tree.worktree, real(start)))
+
+/**
+ * The project that holds `start`: the closest folder, going up, with a Bruto
+ * board. Inside a linked worktree, the main checkout's board comes first (up
+ * to its root), then the worktree's own, as outside one.
+ */
+export function findProject(start: string, options: ProjectOptions = {}): string | null {
+  const tree = options.ownWorktree ? null : linkedWorktree(start)
+
+  if (tree) {
+    const found = closestBoard(inMainCheckout(start, tree), tree.main)
+
+    if (found) return found
+  }
+
+  return closestBoard(start)
 }
 
 const titleOf = (root: string) => basename(root).toUpperCase() || 'BRUTO'

@@ -3,6 +3,7 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import assert from 'node:assert/strict'
+import { execFileSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -117,8 +118,68 @@ try {
   assert.equal(log[1].agent, 'fixer')
   assert.match(log[1].files['src/login.ts'], /^sha256:[0-9a-f]{64}$/)
 
+  await worktreeAnswersOnMainBoard()
+
   console.log('bruto-mcp smoke test passed')
 } finally {
   await client.close()
   rmSync(project, { recursive: true, force: true })
+}
+
+/**
+ * The board is committed, an agent starts in a linked worktree and answers a
+ * note: the answer lands on the main checkout's board, not the worktree's copy.
+ */
+async function worktreeAnswersOnMainBoard() {
+  const root = mkdtempSync(join(tmpdir(), 'bruto-mcp-wt-'))
+  const main = join(root, 'main')
+  const worktree = join(root, 'wt')
+  const git = (cwd, ...args) =>
+    execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', ...args], {
+      cwd,
+      stdio: 'ignore',
+    })
+  const boardOf = (folder) =>
+    JSON.parse(readFileSync(join(folder, '.bruto', 'workspace.json'), 'utf8'))
+
+  mkdirSync(join(main, '.bruto'), { recursive: true })
+  writeFileSync(
+    join(main, '.bruto', 'workspace.json'),
+    JSON.stringify({
+      version: 4,
+      title: 'WT',
+      notes: [{ id: 'f00baa11-0000', title: 'From a worktree', status: 'todo', x: 60, y: 60 }],
+      connections: [],
+    }),
+  )
+  git(main, 'init', '-q')
+  // Forced: a global gitignore often leaves .bruto/ out.
+  git(main, 'add', '-f', '.')
+  git(main, 'commit', '-q', '-m', 'board')
+  git(main, 'worktree', 'add', '-q', worktree)
+
+  // Started where the agent works, as a client does: no --project.
+  const agent = new Client({ name: 'smoke-worktree', version: '1.0.0' })
+
+  await agent.connect(
+    new StdioClientTransport({
+      command: process.execPath,
+      args: [fileURLToPath(new URL('./dist/index.js', import.meta.url))],
+      cwd: worktree,
+    }),
+  )
+
+  try {
+    const result = await agent.callTool({
+      name: 'answer_note',
+      arguments: { id: 'f00baa', response: 'Done in the worktree.' },
+    })
+
+    assert.equal(result.isError, undefined, result.content[0].text)
+    assert.equal(boardOf(main).notes[0].status, 'review')
+    assert.equal(boardOf(worktree).notes[0].status, 'todo')
+  } finally {
+    await agent.close()
+    rmSync(root, { recursive: true, force: true })
+  }
 }

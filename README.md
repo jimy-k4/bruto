@@ -170,7 +170,10 @@ describes. If the user was changing the same field at that moment, their value s
 starts with a line telling the agent its change was undone. A note marked **Read only for agents** can
 be read but never answered or moved.
 
-Other clients, Windows and every tool: [mcp/README.md](mcp/README.md).
+**Worktrees.** An agent working in a `git worktree` answers on the main checkout's board, the one you
+have open, whether `.bruto/` is committed or ignored. `--worktree-board` keeps each worktree on its own.
+
+Other clients, Windows, worktrees and every tool: [mcp/README.md](mcp/README.md).
 
 ## The workspace file
 

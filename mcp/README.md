@@ -48,6 +48,16 @@ Without `--project` (or `BRUTO_PROJECT`), the server uses the closest folder wit
 from where it was started. Every tool also takes a `project` argument, so one server can work across
 several projects.
 
+### Git worktrees
+
+Agents often work in a `git worktree`. There, the server uses the **main checkout's board**, in the
+same folder of the repository, so answers land on the board you have open, not on a copy that
+diverges from it. It works whether `.bruto/` is committed (each worktree has a copy) or ignored (it
+has none). If the main checkout has no board there, the worktree's own is used, as before.
+
+To keep each worktree on its own board, start the server with `--worktree-board` (or
+`BRUTO_WORKTREE_BOARD=1`).
+
 ### On Windows
 
 Clients can't start `npx` directly: run it through `cmd`. Behind a company proxy that inspects HTTPS,

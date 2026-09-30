@@ -1,12 +1,13 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { z } from 'zod'
 import type { NoteStatus } from '../../src/types'
 import { NOTE_STATUSES } from '../../src/domain/constants'
 import type { KindFilter } from '../../src/domain/search'
 import { appendLog, type Caller, type WriteContext } from './audit'
-import { BoardError, findProject } from './board'
+import { BoardError, boardFolder, findProject, type ProjectOptions } from './board'
 import {
   answerNote,
   connectNotes,
@@ -28,17 +29,29 @@ declare const __VERSION__: string
  *
  * The project is the `project` argument of each tool, else `--project <folder>`
  * or BRUTO_PROJECT, else the closest folder with a board above the working directory.
+ * Inside a git worktree, the main checkout's board comes first, unless the
+ * server was started with `--worktree-board` or BRUTO_WORKTREE_BOARD=1.
  */
 const flag = process.argv.indexOf('--project')
 const defaultProject = flag !== -1 ? process.argv[flag + 1] : process.env.BRUTO_PROJECT
+const projectOptions: ProjectOptions = {
+  ownWorktree:
+    process.argv.includes('--worktree-board') ||
+    ['1', 'true', 'yes'].includes(process.env.BRUTO_WORKTREE_BOARD?.toLowerCase() ?? ''),
+}
 
 function projectRoot(given?: string, { mayCreate = false } = {}): string {
   const start = given ?? defaultProject ?? process.cwd()
-  const found = findProject(start)
+  const found = findProject(start, projectOptions)
 
   if (found) return found
-  // Creating the first note starts a board in the folder asked for.
-  if (mayCreate) return resolve(start)
+
+  // Creating the first note starts a board in the folder asked for: the main checkout's, from a worktree.
+  if (mayCreate) {
+    const home = boardFolder(start, projectOptions)
+
+    return existsSync(home) ? home : resolve(start)
+  }
 
   throw new BoardError(
     `No Bruto board found in ${resolve(start)} or above. Pass "project" with the project folder, or open it in Bruto first.`,
