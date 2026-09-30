@@ -6,6 +6,7 @@ import { NOTE_KINDS, NOTE_STATUSES } from '../domain/constants'
 import { codeBlocks } from '../domain/richText'
 import { shortId, type NotePatch } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
+import { describeAgentStamp } from '../ui/agentStamp'
 import { FileTable } from '../ui/FileTable'
 import { CrossLinksField } from './CrossLinksField'
 import { FormatHelp } from './FormatHelp'
@@ -44,7 +45,7 @@ export function NoteEditor({
   linkInfo,
   onOpenLink,
 }: NoteEditorProps) {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const titleRef = useRef<HTMLInputElement>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
@@ -323,6 +324,22 @@ export function NoteEditor({
           />
         </fieldset>
 
+        {/* What agents working over MCP may do with it: every note is theirs to answer, unless locked. */}
+        <fieldset className="field">
+          <legend className="field__label">{t('agents')}</legend>
+          <button
+            type="button"
+            className="button button--small button--toggle"
+            aria-pressed={note.agentAccess === 'read'}
+            onClick={() =>
+              onChange({ agentAccess: note.agentAccess === 'read' ? undefined : 'read' })
+            }
+          >
+            {t('agentReadOnly')}
+          </button>
+          <p className="field__hint">{t('agentReadOnlyHint')}</p>
+        </fieldset>
+
         <div className="field">
           <label className="field__label" htmlFor={ids.ai}>
             {t('aiResponse')}
@@ -335,6 +352,9 @@ export function NoteEditor({
             value={note.aiResponse ?? ''}
             onChange={(event) => onChange({ aiResponse: event.target.value })}
           />
+          {note.agent && (
+            <p className="field__hint">{describeAgentStamp(t, language, note.agent)}</p>
+          )}
 
           {/* Commands and code in the answer, one click from the clipboard. */}
           {responseCode.length > 0 && (

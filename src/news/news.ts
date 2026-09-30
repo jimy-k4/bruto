@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'agent-audit',
+    date: '2026-09-30',
+    text: {
+      es: {
+        title: 'Quién hizo qué: registro de los agentes',
+        body: 'Cada nota que un agente contesta, mueve o crea por MCP dice quién fue y cuándo, y cada cambio queda en `.bruto/log.jsonl` con el commit y la huella de los ficheros. Y puedes marcar una nota como **solo lectura para agentes**.',
+      },
+      en: {
+        title: 'Who did what: an audit log for agents',
+        body: 'Every note an agent answers, moves or creates over MCP says who did it and when, and every change is logged in `.bruto/log.jsonl` with the commit and a fingerprint of the files. You can also mark a note **read only for agents**.',
+      },
+      ca: {
+        title: 'Qui ha fet què: registre dels agents',
+        body: 'Cada nota que un agent contesta, mou o crea per MCP diu qui ha estat i quan, i cada canvi queda a `.bruto/log.jsonl` amb el commit i l’empremta dels fitxers. I pots marcar una nota com a **només lectura per als agents**.',
+      },
+      fr: {
+        title: 'Qui a fait quoi : le journal des agents',
+        body: 'Chaque note qu’un agent traite, déplace ou crée via MCP indique qui l’a fait et quand, et chaque changement est consigné dans `.bruto/log.jsonl` avec le commit et l’empreinte des fichiers. Vous pouvez aussi mettre une note en **lecture seule pour les agents**.',
+      },
+      de: {
+        title: 'Wer hat was gemacht: das Agenten-Protokoll',
+        body: 'Jede Notiz, die ein Agent über MCP beantwortet, verschiebt oder anlegt, zeigt, wer es war und wann, und jede Änderung steht in `.bruto/log.jsonl` mit dem Commit und einem Fingerabdruck der Dateien. Außerdem kannst du eine Notiz **für Agenten nur lesbar** machen.',
+      },
+      'pt-BR': {
+        title: 'Quem fez o quê: registro dos agentes',
+        body: 'Cada nota que um agente responde, move ou cria via MCP diz quem foi e quando, e cada mudança fica em `.bruto/log.jsonl` com o commit e a impressão digital dos arquivos. E você pode marcar uma nota como **somente leitura para agentes**.',
+      },
+      ru: {
+        title: 'Кто что сделал: журнал агентов',
+        body: 'Каждая заметка, на которую агент ответил через MCP, которую перенёс или создал, показывает, кто это был и когда, а каждое изменение записывается в `.bruto/log.jsonl` с коммитом и отпечатком файлов. А ещё заметку можно сделать **только для чтения агентами**.',
+      },
+      ja: {
+        title: '誰が何をしたか：エージェントの記録',
+        body: 'エージェントが MCP 経由で回答・移動・作成したノートには、誰がいつ行ったかが表示され、すべての変更がコミットとファイルの指紋付きで `.bruto/log.jsonl` に記録されます。ノートを**エージェントは閲覧のみ**にすることもできます。',
+      },
+      zh: {
+        title: '谁做了什么：智能体日志',
+        body: '智能体通过 MCP 作答、移动或创建的每条笔记都会显示是谁、何时做的，每次更改都会连同提交和文件指纹记录在 `.bruto/log.jsonl` 中。你还可以把笔记设为**智能体仅可读**。',
+      },
+    },
+  },
+  {
     id: 'undeclared-tables',
     date: '2026-09-29',
     text: {

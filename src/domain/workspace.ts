@@ -1,4 +1,6 @@
 import type {
+  AgentAction,
+  AgentStamp,
   Connection,
   DocumentationType,
   Note,
@@ -42,6 +44,28 @@ const asNumber = (value: unknown, fallback: number): number =>
 
 const asStringList = (value: unknown): string[] =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
+
+const AGENT_ACTIONS: readonly AgentAction[] = ['answer', 'status', 'create']
+
+/** Who changed a note through MCP, if the file says so in a shape Bruto understands. */
+function normalizeAgentStamp(value: unknown): AgentStamp | undefined {
+  if (!isRecord(value)) return undefined
+
+  const client = asString(value.client).trim()
+  const at = asString(value.at)
+  const action = AGENT_ACTIONS.find((item) => item === value.action)
+
+  if (!client || !action || Number.isNaN(Date.parse(at))) return undefined
+
+  const stamp: AgentStamp = { client, action, at }
+  const version = asString(value.version).trim()
+  const id = asString(value.id).trim()
+
+  if (version) stamp.version = version
+  if (id) stamp.id = id
+
+  return stamp
+}
 
 /** Links from `webUrls` and the older single `webUrl`, without blanks or repeats. */
 const normalizeLinks = (raw: UnknownRecord) => [
@@ -114,6 +138,7 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   const feedback = asString(raw.feedback)
   const aiFilePaths = asStringList(raw.aiFilePaths)
   const crossLinks = normalizeCrossLinks(raw.crossLinks)
+  const agent = normalizeAgentStamp(raw.agent)
 
   // Unknown fields are kept so other tools never lose data through Bruto.
   const note: Note = {
@@ -139,6 +164,8 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   delete note.feedback
   delete note.aiFilePaths
   delete note.crossLinks
+  delete note.agent
+  delete note.agentAccess
 
   if (status) note.status = status
   if (kind) note.kind = kind
@@ -146,6 +173,8 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   if (aiFilePaths.length > 0) note.aiFilePaths = aiFilePaths
   if (feedback.trim()) note.feedback = feedback
   if (crossLinks.length > 0) note.crossLinks = crossLinks
+  if (agent) note.agent = agent
+  if (raw.agentAccess === 'read') note.agentAccess = 'read'
 
   return note
 }
@@ -543,6 +572,7 @@ export function updateNotes(workspace: Workspace, ids: string[], patch: NotePatc
       if ('status' in patch && !patch.status) delete updated.status
       if ('kind' in patch && !patch.kind) delete updated.kind
       if ('aiFilePaths' in patch && !updated.aiFilePaths?.length) delete updated.aiFilePaths
+      if ('agentAccess' in patch && !patch.agentAccess) delete updated.agentAccess
 
       return updated
     }),

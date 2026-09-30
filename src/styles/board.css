@@ -191,8 +191,22 @@
 /* Always the last column: a note without a status (a rule, say) has nothing in the middle. */
 .note__id {
   grid-column: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   letter-spacing: 0.04em;
   text-transform: none;
+}
+
+/* Read-only for agents: a lock next to the id. */
+.note__lock {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.note__lock .lens-icon {
+  width: 11px;
+  height: 11px;
 }
 
 /* One column as wide as the note: a long link or path is cut, it never widens the text. */

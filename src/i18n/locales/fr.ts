@@ -360,6 +360,14 @@ export const fr: Locale = {
   imageSaveFailed: 'Impossible d’enregistrer l’image.',
   aiResponse: 'Réponse de l’IA',
   aiResponsePlaceholder: 'Ce que l’IA a fait de cette note.',
+  agents: 'Agents',
+  agentReadOnly: 'Lecture seule pour les agents',
+  agentReadOnlyHint:
+    'Les agents qui passent par le MCP peuvent la lire, mais pas y répondre ni changer son statut. Chaque changement qu’ils font est consigné dans .bruto/log.jsonl.',
+  agentStamp: 'Agent : {agent} {action} le {when}.',
+  agentActionAnswer: 'y a répondu',
+  agentActionStatus: 'a changé son statut',
+  agentActionCreate: 'l’a créée',
   feedback: 'Ce qui ne va pas',
   feedbackPlaceholder:
     'Après relecture de la réponse : ce qui ne va toujours pas ou ce qui manque.',

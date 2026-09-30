@@ -361,6 +361,14 @@ export const ca: Locale = {
   imageSaveFailed: "No s'ha pogut desar la imatge.",
   aiResponse: 'Resposta de la IA',
   aiResponsePlaceholder: 'El que la IA ha fet amb aquesta nota.',
+  agents: 'Agents',
+  agentReadOnly: 'Només lectura per als agents',
+  agentReadOnlyHint:
+    'Els agents que fan servir el MCP la poden llegir, però no contestar-la ni canviar-ne l’estat. Cada canvi que fan queda a .bruto/log.jsonl.',
+  agentStamp: 'Agent: {agent} {action} el {when}.',
+  agentActionAnswer: 'la va contestar',
+  agentActionStatus: 'en va canviar l’estat',
+  agentActionCreate: 'la va crear',
   feedback: 'Què falla',
   feedbackPlaceholder: 'Després de revisar la resposta: què continua malament o què falta.',
   feedbackStatusHint:

@@ -65,10 +65,14 @@ try {
     /in-progress/,
   )
 
+  mkdirSync(join(project, 'src'))
+  writeFileSync(join(project, 'src', 'login.ts'), 'export const login = true\n')
+
   const answered = await text('answer_note', {
     id: 'a1b2c3',
     response: 'Fixed the redirect.',
     files: ['src/login.ts'],
+    agent: 'fixer',
   })
   assert.equal(answered.isError, false, answered.text)
 
@@ -87,6 +91,31 @@ try {
   assert.deepEqual(login.aiFilePaths, ['src/login.ts'])
   assert.equal(saved.notes.length, 3)
   assert.equal(saved.connections.length, 1)
+
+  // The note says who answered it: the client from the handshake and the agent id it gave.
+  assert.deepEqual(
+    { client: login.agent.client, version: login.agent.version, id: login.agent.id },
+    { client: 'smoke', version: '1.0.0', id: 'fixer' },
+  )
+
+  // Every write is in the log, the refused one too, with the answered file's fingerprint.
+  const log = readFileSync(join(project, '.bruto', 'log.jsonl'), 'utf8')
+    .trim()
+    .split('\n')
+    .map((line) => JSON.parse(line))
+
+  assert.deepEqual(
+    log.map((entry) => [entry.tool, entry.ok]),
+    [
+      ['set_status', true],
+      ['answer_note', true],
+      ['answer_note', false],
+      ['create_note', true],
+    ],
+  )
+  assert.equal(log[1].note, login.id)
+  assert.equal(log[1].agent, 'fixer')
+  assert.match(log[1].files['src/login.ts'], /^sha256:[0-9a-f]{64}$/)
 
   console.log('bruto-mcp smoke test passed')
 } finally {

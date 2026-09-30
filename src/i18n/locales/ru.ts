@@ -361,6 +361,14 @@ export const ru: Locale = {
   imageSaveFailed: 'Не удалось сохранить изображение.',
   aiResponse: 'Ответ ИИ',
   aiResponsePlaceholder: 'Что ИИ сделал с этой заметкой.',
+  agents: 'Агенты',
+  agentReadOnly: 'Агентам только чтение',
+  agentReadOnlyHint:
+    'Агенты через MCP-сервер могут её читать, но не отвечать на неё и не менять статус. Каждое их изменение записывается в .bruto/log.jsonl.',
+  agentStamp: 'Агент: {agent} — {action}, {when}.',
+  agentActionAnswer: 'ответил',
+  agentActionStatus: 'сменил статус',
+  agentActionCreate: 'создал',
   feedback: 'Что не так',
   feedbackPlaceholder: 'После проверки ответа: что всё ещё не так или чего не хватает.',
   feedbackStatusHint:

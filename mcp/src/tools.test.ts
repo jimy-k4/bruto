@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { LOG_FILE, appendLog, type WriteContext } from './audit'
 import { BOARD_FILE, findProject } from './board'
 import {
   answerNote,
@@ -217,5 +218,90 @@ describe('adding to the board', () => {
 
     expect(saved().connections).toHaveLength(1)
     expect(() => connectNotes(root, { from: 'aaaaaa', to: 'aaaaaa' })).toThrow(/itself/)
+  })
+})
+
+describe('who changed what', () => {
+  const by = (): WriteContext => ({
+    caller: { client: 'claude-code', version: '2.1.0', agent: 'reviewer' },
+  })
+
+  it('stamps the note with the client, the agent and what it did', () => {
+    board({ notes: [note('aaaaaa-1', { status: 'todo' })] })
+
+    const context = by()
+
+    answerNote(root, { id: 'aaaaaa', response: 'Done.' }, context)
+
+    expect(context.note).toBe('aaaaaa-1')
+    expect(saved().notes[0].agent).toMatchObject({
+      client: 'claude-code',
+      version: '2.1.0',
+      id: 'reviewer',
+      action: 'answer',
+    })
+    expect(Date.parse(saved().notes[0].agent.at)).not.toBeNaN()
+
+    setStatus(root, { id: 'aaaaaa', status: 'in-progress' }, by())
+    expect(saved().notes[0].agent.action).toBe('status')
+    expect(getNote(root, 'aaaaaa')).toMatch(
+      /Last changed by an agent: claude-code 2\.1\.0 \(reviewer\), status, \d{4}-/,
+    )
+
+    createNoteTool(root, { title: 'Found this' }, by())
+    expect(saved().notes[1].agent.action).toBe('create')
+  })
+
+  it('never answers or moves a note the user made read-only for agents', () => {
+    board({ notes: [note('aaaaaa-1', { status: 'todo', agentAccess: 'read' })] })
+
+    expect(() => answerNote(root, { id: 'aaaaaa', response: 'x' }, by())).toThrow(/read-only/)
+    expect(() => setStatus(root, { id: 'aaaaaa', status: 'done' }, by())).toThrow(/read-only/)
+    expect(saved().notes[0]).toMatchObject({ status: 'todo', agentAccess: 'read' })
+    expect(saved().notes[0].agent).toBeUndefined()
+    expect(listNotes(root)).toMatch(/\[aaaaaa\] AAAAAA-1 — todo · read only/)
+    expect(getContext(root)).toMatch(/Agents: read only/)
+  })
+
+  it('logs every call as a line, with the commit and what each file held', () => {
+    board({ notes: [] })
+    mkdirSync(join(root, 'src'))
+    writeFileSync(join(root, 'src', 'login.ts'), 'export {}\n')
+
+    const caller = by().caller
+
+    appendLog(root, caller, {
+      tool: 'answer_note',
+      note: 'aaaaaa-1',
+      args: { id: 'aaaaaa', response: 'Done.' },
+      ok: true,
+      result: 'is now "review"',
+      files: ['src/login.ts', 'src/gone.ts'],
+    })
+    appendLog(root, caller, {
+      tool: 'set_status',
+      args: { id: 'zzzzzz', status: 'done' },
+      ok: false,
+      result: 'No note has an id starting with "zzzzzz".',
+    })
+
+    const lines = readFileSync(join(root, LOG_FILE), 'utf8')
+      .trim()
+      .split('\n')
+      .map((line) => JSON.parse(line))
+
+    expect(lines).toHaveLength(2)
+    expect(lines[0]).toMatchObject({
+      tool: 'answer_note',
+      client: 'claude-code',
+      version: '2.1.0',
+      agent: 'reviewer',
+      note: 'aaaaaa-1',
+      ok: true,
+      files: { 'src/gone.ts': null },
+    })
+    expect(lines[0].files['src/login.ts']).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(lines[1]).toMatchObject({ tool: 'set_status', ok: false })
+    expect(lines[1].files).toBeUndefined()
   })
 })

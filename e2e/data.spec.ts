@@ -52,6 +52,43 @@ test('merges what an AI writes into the file while the app is open', async ({ pa
   expect(saved.notes[1]).toMatchObject({ description: 'Escrito por mí' })
 })
 
+test('shows which agent answered a note, and locks a note for agents', async ({ page }) => {
+  await openProject(
+    page,
+    workspaceWith([
+      note('a', {
+        status: 'review',
+        aiResponse: 'Hecho.',
+        agent: {
+          client: 'claude-code',
+          id: 'reviewer',
+          action: 'answer',
+          at: '2026-09-30T09:14:00.000Z',
+        },
+      }),
+      note('b', { x: 500, agentAccess: 'read' }),
+    ]),
+  )
+
+  // A locked note wears a lock by its id.
+  await expect(noteCard(page, 'B').locator('.note__lock')).toBeVisible()
+  await expect(noteCard(page, 'A').locator('.note__lock')).toHaveCount(0)
+
+  // The editor says which agent answered, and when.
+  await noteCard(page, 'A').click()
+  await expect(page.getByText(/Agente: claude-code · reviewer la contestó el/)).toBeVisible()
+
+  // Locking it for agents is saved in the file.
+  const toggle = page.getByRole('button', { name: 'Solo lectura para agentes' })
+
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  await toggle.click()
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  await waitForSaved(page)
+  expect((await readDisk(page)).notes[0]).toMatchObject({ agentAccess: 'read' })
+  await expect(noteCard(page, 'A').locator('.note__lock')).toBeVisible()
+})
+
 test('never replaces a broken workspace file with an empty one', async ({ page }) => {
   const broken = '{ "notes": [ { "id": "a", "title": "Importante" } '
 

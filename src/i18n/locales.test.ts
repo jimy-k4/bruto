@@ -22,6 +22,7 @@ const SHARED_WORDS = new Set([
   'Documentation',
   'Description',
   'Actions',
+  'Agents',
   'Images',
   'Styles',
   'Note',
