@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Note, Workspace } from '../types'
-import { mergeWorkspaces } from './merge'
+import { mergeWorkspaces, type MergeConflict } from './merge'
 import { createEmptyWorkspace } from './workspace'
 
 const note = (id: string, patch: Partial<Note> = {}): Note => ({
@@ -22,6 +22,23 @@ const ws = (notes: Note[], extra: Partial<Workspace> = {}): Workspace => ({
   ...createEmptyWorkspace('T'),
   notes,
   ...extra,
+})
+
+describe('merge conflicts', () => {
+  it('lists the note fields both sides changed, where local won, but not where notes sit', () => {
+    const base = ws([note('a', { status: 'todo', x: 0 }), note('b', { status: 'todo' })])
+    const local = ws([note('a', { status: 'in-progress', x: 40 }), note('b', { status: 'done' })])
+    const remote = ws([note('a', { status: 'review', x: 90 }), note('b', { status: 'done' })])
+    const conflicts: MergeConflict[] = []
+
+    const merged = mergeWorkspaces(base, local, remote, conflicts)
+
+    expect(merged.notes[0]).toMatchObject({ status: 'in-progress', x: 40 })
+    // b: both sides agree, so nothing to tell.
+    expect(conflicts).toEqual([
+      { noteId: 'a', field: 'status', kept: 'in-progress', replaced: 'review' },
+    ])
+  })
 })
 
 describe('mergeWorkspaces', () => {

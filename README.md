@@ -77,8 +77,10 @@ Prefer to run it yourself? See [Development](#development).
 - **Answers in the note.** Each note has an _AI response_, the files the AI touched and a _What's
   wrong_ field, so review loops stay attached to the task.
 - **Safe with other tools.** Every save reads the file first and merges changes made elsewhere, note by
-  note and field by field. A broken file is never overwritten: Bruto shows what is wrong and offers the
-  latest backup (one is kept each time a project is opened).
+  note and field by field. When you and an agent change the same field at the same moment, your value
+  stays and nobody is left in the dark: you get a notice with the option to take theirs, the note tells
+  the agent its change was undone, and the audit log says so. A broken file is never overwritten: Bruto
+  shows what is wrong and offers the latest backup (one is kept each time a project is opened).
 - **Keyboard first and accessible.** Every action has a shortcut, notes are reachable with Tab, dialogs
   trap focus and everything has a readable name for screen readers.
 - **Nine languages**, light and dark themes, a colour and pattern per status, installable, works
@@ -163,7 +165,9 @@ is stamped with who did it: the client from the MCP handshake (`claude-code`), t
 it passes, if any, and when. Every write, refused ones included, is also appended to
 `.bruto/log.jsonl`: the tool, the note, the arguments, the result, the commit the project was on and
 a SHA-256 of each file the agent says it touched, so an answer stays tied to the exact code it
-describes. A note marked **Read only for agents** can be read but never answered or moved.
+describes. If the user was changing the same field at that moment, their value stays, and the note
+starts with a line telling the agent its change was undone. A note marked **Read only for agents** can
+be read but never answered or moved.
 
 Other clients, Windows and every tool: [mcp/README.md](mcp/README.md).
 

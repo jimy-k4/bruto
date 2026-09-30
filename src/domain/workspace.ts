@@ -64,7 +64,69 @@ function normalizeAgentStamp(value: unknown): AgentStamp | undefined {
   if (version) stamp.version = version
   if (id) stamp.id = id
 
+  const reverted = Array.isArray(value.reverted)
+    ? value.reverted.filter(isRecord).flatMap((item) => {
+        const field = asString(item.field).trim()
+        const replaced = asString(item.value)
+
+        return field ? [replaced ? { field, value: replaced } : { field }] : []
+      })
+    : []
+
+  if (reverted.length > 0) {
+    stamp.reverted = reverted
+    if (!Number.isNaN(Date.parse(asString(value.revertedAt)))) {
+      stamp.revertedAt = asString(value.revertedAt)
+    }
+  }
+
   return stamp
+}
+
+/** How much of a replaced value is worth repeating to the agent. */
+const REVERTED_VALUE_LENGTH = 120
+
+/**
+ * Marks, on the agent's stamp, the fields of its change that the user's edit
+ * replaced: the agent reads it next time, instead of believing it went through.
+ * Only when the other side of the conflict was that agent's own write.
+ */
+export function markReverted(
+  workspace: Workspace,
+  base: Workspace,
+  conflicts: { noteId: string; field: string; replaced: unknown }[],
+  at = new Date().toISOString(),
+): Workspace {
+  const byNote = new Map<string, typeof conflicts>()
+
+  for (const conflict of conflicts) {
+    byNote.set(conflict.noteId, [...(byNote.get(conflict.noteId) ?? []), conflict])
+  }
+
+  return {
+    ...workspace,
+    notes: workspace.notes.map((note) => {
+      const found = byNote.get(note.id)
+      const before = base.notes.find((item) => item.id === note.id)
+
+      // A stamp that was already there wasn't this change's: another tool wrote it.
+      if (!found || !note.agent || JSON.stringify(note.agent) === JSON.stringify(before?.agent)) {
+        return note
+      }
+
+      const reverted = found
+        .filter((conflict) => conflict.field !== 'agent')
+        .map(({ field, replaced }) =>
+          typeof replaced === 'string' && replaced.length <= REVERTED_VALUE_LENGTH
+            ? { field, value: replaced }
+            : { field },
+        )
+
+      return reverted.length > 0
+        ? { ...note, agent: { ...note.agent, reverted, revertedAt: at } }
+        : note
+    }),
+  }
 }
 
 /** Links from `webUrls` and the older single `webUrl`, without blanks or repeats. */

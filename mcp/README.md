@@ -131,7 +131,8 @@ Start the server with `BRUTO_AGENT=<id>` to give one to every call that doesn't.
 ## Safe with the app and your file
 
 - A broken board is reported, never overwritten.
-- Every write goes to a temporary file first and replaces the board in one go.
+- Every write goes to a temporary file first and replaces the board in one go. If the app saved the board between the tool's read and its write, the tool starts over on what's there, instead of writing over it.
+- If the user was editing the same field of the note when the agent wrote it, the user's value stays. The note then says so first thing (`Reverted: …` in `get_note` and `get_context`, `agent change reverted` in lists), and the app adds it to the log: the agent is never left believing a change went through.
 - Standing rules (notes of kind `rule`) are never answered or changed. Boards from before v4, where rules had the status `loop`, read the same.
 - Fields other tools added to the file are kept.
 

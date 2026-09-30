@@ -24,7 +24,12 @@ const ref = (note: Note) => `[${shortId(note.id)}] ${noteTitle(note)}`
 const isClosed = (note: Note) => Boolean(note.status && CLOSED_STATUSES.includes(note.status))
 /** How a note reads in a list: its status, its kind when it isn't a plain task, and if agents may only read it. */
 const standing = (note: Note) =>
-  [note.status ?? 'no status', note.kind, note.agentAccess === 'read' && 'read only']
+  [
+    note.status ?? 'no status',
+    note.kind,
+    note.agentAccess === 'read' && 'read only',
+    note.agent?.reverted?.length && 'agent change reverted',
+  ]
     .filter(Boolean)
     .join(' · ')
 const byReadingOrder = (a: Note, b: Note) => a.y - b.y || a.x - b.x

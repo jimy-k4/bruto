@@ -1,6 +1,11 @@
-import type { Workspace } from '../types'
-import { isEqual, mergeWorkspaces } from '../domain/merge'
-import { applyStatusStylesToChangedNotes, serializeWorkspace } from '../domain/workspace'
+import type { AgentStamp, Workspace } from '../types'
+import { isEqual, mergeWorkspaces, type MergeConflict } from '../domain/merge'
+import {
+  applyStatusStylesToChangedNotes,
+  markReverted,
+  serializeWorkspace,
+  updateNotes,
+} from '../domain/workspace'
 import type { DiskState } from '../storage/workspaceFile'
 import type { WorkspaceStore } from './workspaceStore'
 
@@ -18,6 +23,18 @@ export interface WorkspaceIO {
   write(text: string): Promise<void>
   /** Changes whenever the file changes. */
   stamp(): Promise<string>
+  /** Adds lines to `.bruto/log.jsonl`, the agents' audit log. */
+  appendLog?(lines: string): Promise<void>
+}
+
+/** Changes made by someone else, merged in. */
+export interface ExternalChange {
+  /** Note fields both sides changed: the user's values were kept over these. */
+  conflicts: MergeConflict[]
+  /** The board as saved, to name the notes. */
+  workspace: Workspace
+  /** Puts the other side's values back instead. */
+  keepTheirs(): void
 }
 
 interface SyncOptions {
@@ -27,8 +44,23 @@ interface SyncOptions {
   diskText: string
   onStatus: (status: SaveStatus) => void
   /** Called after changes made by someone else were merged in. */
-  onExternalChange: () => void
+  onExternalChange: (change: ExternalChange) => void
   saveDelay?: number
+}
+
+/** Times a save starts over when the file changes under it, before writing anyway. */
+const RACE_RETRIES = 3
+
+/** An agent's stamp once nothing of its change is undone any more. */
+function withoutReverted(agent: AgentStamp | undefined): AgentStamp | undefined {
+  if (!agent) return undefined
+
+  const rest = { ...agent }
+
+  delete rest.reverted
+  delete rest.revertedAt
+
+  return rest
 }
 
 export type WorkspaceSync = ReturnType<typeof createWorkspaceSync>
@@ -71,10 +103,11 @@ export function createWorkspaceSync({
     return queue
   }
 
-  async function sync(force = false) {
+  async function sync(force = false, attempt = 0): Promise<void> {
     if (disposed) return
 
     const local = store.getWorkspace()
+    const readStamp = await io.stamp()
     const disk = await io.read()
 
     if (disk.kind === 'invalid' && !force) {
@@ -86,20 +119,27 @@ export function createWorkspaceSync({
 
     let next: Workspace = local
     let external = false
+    const conflicts: MergeConflict[] = []
 
     if (disk.kind === 'ok' && disk.text !== diskText) {
       const merged = applyStatusStylesToChangedNotes(
         local,
-        mergeWorkspaces(base, local, disk.workspace),
+        mergeWorkspaces(base, local, disk.workspace, conflicts),
       )
 
       external = !isEqual(merged, local)
-      next = external ? merged : local
+      // An agent's change the user's edit replaced says so on the note, for the agent to read.
+      next = external ? markReverted(merged, base, conflicts) : local
     }
 
     const text = serializeWorkspace(next)
 
     if (disk.kind !== 'ok' || disk.text !== text) {
+      // Someone wrote the file since we read it (an agent, say): start over with what's there.
+      if (attempt < RACE_RETRIES && (await io.stamp()) !== readStamp) {
+        return sync(force, attempt + 1)
+      }
+
       setStatus({ kind: 'saving' })
       await io.write(text)
     }
@@ -116,7 +156,28 @@ export function createWorkspaceSync({
         resetHistory: true,
       })
 
-      onExternalChange()
+      if (conflicts.length > 0) await logReverted(next, conflicts)
+
+      onExternalChange({
+        conflicts,
+        workspace: next,
+        keepTheirs: () =>
+          store.update((workspace) =>
+            conflicts.reduce(
+              (result, conflict) =>
+                updateNotes(result, [conflict.noteId], {
+                  [conflict.field]: conflict.replaced,
+                  // Nothing of the agent's change is left undone.
+                  ...(conflict.field !== 'agent' && {
+                    agent: withoutReverted(
+                      result.notes.find((note) => note.id === conflict.noteId)?.agent,
+                    ),
+                  }),
+                }),
+              workspace,
+            ),
+          ),
+      })
     }
 
     store.markSaved(next)
@@ -126,6 +187,37 @@ export function createWorkspaceSync({
       scheduleSave()
     } else {
       setStatus({ kind: 'saved' })
+    }
+  }
+
+  /**
+   * The audit log says it too: what was written outside Bruto, by whom when an
+   * agent's stamp tells, and that the user's edit replaced it. Never blocks a save.
+   */
+  async function logReverted(saved: Workspace, conflicts: MergeConflict[]) {
+    if (!io.appendLog) return
+
+    const at = new Date().toISOString()
+    const lines = [...new Set(conflicts.map((conflict) => conflict.noteId))].map((noteId) => {
+      const fields = conflicts.filter((conflict) => conflict.noteId === noteId)
+      const agent = saved.notes.find((note) => note.id === noteId)?.agent
+      const by = agent ? ` by ${agent.client}${agent.id ? ` (${agent.id})` : ''}` : ''
+
+      return JSON.stringify({
+        at,
+        tool: 'merge',
+        client: 'bruto',
+        note: noteId,
+        ok: true,
+        result: `The user's edit replaced what was written outside Bruto${by}: ${fields.map((conflict) => conflict.field).join(', ')}.`,
+        reverted: fields.map(({ field, replaced }) => ({ field, value: replaced })),
+      })
+    })
+
+    try {
+      await io.appendLog(`${lines.join('\n')}\n`)
+    } catch {
+      // The board is saved either way.
     }
   }
 

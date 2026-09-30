@@ -122,6 +122,19 @@ export async function writeWorkspaceFile(root: FileSystemDirectoryHandle, text: 
   await writeText(await getBrutoDirectory(root), WORKSPACE_FILE, text)
 }
 
+/** The agents' audit log, next to the board: only ever added to (the MCP server writes it too). */
+const LOG_FILE = 'log.jsonl'
+
+export async function appendLogLines(root: FileSystemDirectoryHandle, lines: string) {
+  const handle = await (await getBrutoDirectory(root)).getFileHandle(LOG_FILE, { create: true })
+  const size = (await handle.getFile()).size
+  const writable = await handle.createWritable({ keepExistingData: true })
+
+  await writable.seek(size)
+  await writable.write(lines)
+  await writable.close()
+}
+
 /** Keeps a timestamped copy in `.bruto/backups`, pruning the oldest ones. */
 export async function writeBackup(root: FileSystemDirectoryHandle, text: string) {
   const backups = await (

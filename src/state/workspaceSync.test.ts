@@ -30,18 +30,29 @@ const note = (id: string, patch: Partial<Note> = {}): Note => ({
 function fakeDisk(initial: Workspace) {
   let text = serializeWorkspace(initial)
   let version = 0
+  let log = ''
+  /** Another tool writing right after the app reads, before it writes back. */
+  let afterRead: (() => void) | null = null
 
   const io: WorkspaceIO = {
     async read(): Promise<DiskState> {
+      const read = text
+
+      afterRead?.()
+      afterRead = null
+
       try {
-        return { kind: 'ok', text, workspace: parseWorkspace(text) }
+        return { kind: 'ok', text: read, workspace: parseWorkspace(read) }
       } catch (error) {
         if (error instanceof WorkspaceFormatError) {
-          return { kind: 'invalid', text, error: error.message }
+          return { kind: 'invalid', text: read, error: error.message }
         }
 
         throw error
       }
+    },
+    async appendLog(lines: string) {
+      log += lines
     },
     write: vi.fn(async (next: string) => {
       text = next
@@ -60,10 +71,24 @@ function fakeDisk(initial: Workspace) {
     get workspace() {
       return parseWorkspace(text)
     },
+    get log() {
+      return log
+        .trim()
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line))
+    },
     /** Another tool writes the file. */
     externalWrite(next: string) {
       text = next
       version += 1
+    },
+    /** Another tool writes the file between the app's read and its write. */
+    writeAfterNextRead(next: () => string) {
+      afterRead = () => {
+        text = next()
+        version += 1
+      }
     },
   }
 }
@@ -188,6 +213,62 @@ describe('workspace sync', () => {
 
     expect(store.getWorkspace().notes[0].colorTheme).toBe('plum')
     expect(disk.workspace.notes[0].colorTheme).toBe('plum')
+  })
+
+  it('keeps the user’s value when an agent changed the same field, and tells everyone', async () => {
+    const { disk, store, sync, onExternalChange } = setup(initial())
+    const agent = {
+      client: 'claude-code',
+      id: 'reviewer',
+      action: 'status' as const,
+      at: '2026-09-30T09:14:00.000Z',
+    }
+
+    // The user moves note a on; an agent sends it to review at the same moment.
+    store.update((workspace) => updateNotes(workspace, ['a'], { status: 'in-progress' }))
+    disk.externalWrite(
+      serializeWorkspace(updateNotes(disk.workspace, ['a'], { status: 'review', agent })),
+    )
+    await sync.saveNow()
+
+    // The user's value stays, and the note tells the agent its change was undone.
+    expect(disk.workspace.notes[0]).toMatchObject({
+      status: 'in-progress',
+      agent: { client: 'claude-code', reverted: [{ field: 'status', value: 'review' }] },
+    })
+    // So does the log.
+    expect(disk.log).toMatchObject([
+      { tool: 'merge', note: 'a', reverted: [{ field: 'status', value: 'review' }] },
+    ])
+
+    // And the user hears about it, and can take the agent's value instead.
+    const [[change]] = onExternalChange.mock.calls
+
+    expect(change.conflicts).toEqual([
+      { noteId: 'a', field: 'status', kept: 'in-progress', replaced: 'review' },
+    ])
+    change.keepTheirs()
+    await sync.saveNow()
+
+    expect(store.getWorkspace().notes[0].status).toBe('review')
+    expect(disk.workspace.notes[0].status).toBe('review')
+    expect(disk.workspace.notes[0].agent).not.toHaveProperty('reverted')
+  })
+
+  it('reads again when the file changes between reading and writing it', async () => {
+    const { disk, store, sync } = setup(initial())
+
+    store.update((workspace) => updateNotes(workspace, ['a'], { description: 'typed' }))
+    // An agent answers note b just after the app read the file.
+    disk.writeAfterNextRead(() =>
+      serializeWorkspace(
+        updateNotes(disk.workspace, ['b'], { status: 'review', aiResponse: 'Fixed it' }),
+      ),
+    )
+    await sync.saveNow()
+
+    expect(disk.workspace.notes[0].description).toBe('typed')
+    expect(disk.workspace.notes[1]).toMatchObject({ status: 'review', aiResponse: 'Fixed it' })
   })
 
   it('writes ids for notes an AI added without one, so they stay stable', async () => {

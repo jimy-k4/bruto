@@ -263,6 +263,12 @@ export const ca: Locale = {
   saveStatusDiskInvalid: 'El fitxer del disc té un error',
   overwriteWithMine: 'Sobreescriure amb la meva versió',
   externalChangesMerged: 'Canvis fets fora de Bruto carregats.',
+  externalConflict: 'Tu i {who} heu canviat «{note}» alhora ({field}): s’ha quedat el teu.',
+  externalConflicts:
+    '{count} canvis fets fora de Bruto xocaven amb els teus: s’han quedat els teus.',
+  keepTheirs: 'Fes servir el seu',
+  anotherTool: 'una altra eina',
+  agentReverted: 'Se’n va desfer el canvi ({fields}).',
 
   // Sidebar
   project: 'Projecte',

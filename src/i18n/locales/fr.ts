@@ -263,6 +263,13 @@ export const fr: Locale = {
   saveStatusDiskInvalid: 'Le fichier sur le disque contient une erreur',
   overwriteWithMine: 'Écraser avec ma version',
   externalChangesMerged: 'Modifications faites hors de Bruto chargées.',
+  externalConflict:
+    'Vous et {who} avez modifié « {note} » en même temps ({field}) : votre version a été gardée.',
+  externalConflicts:
+    '{count} changements faits hors de Bruto entraient en conflit avec les vôtres : les vôtres ont été gardés.',
+  keepTheirs: 'Garder le leur',
+  anotherTool: 'un autre outil',
+  agentReverted: 'Son changement a été annulé ({fields}).',
 
   // Sidebar
   project: 'Projet',

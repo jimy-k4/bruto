@@ -1,6 +1,7 @@
 import type { Workspace } from '../types'
 import { createEmptyWorkspace, serializeWorkspace } from '../domain/workspace'
 import {
+  appendLogLines,
   exclusive,
   getWorkspaceFileStamp,
   readLatestValidBackup,
@@ -27,6 +28,7 @@ export function createWorkspaceIO(handle: FileSystemDirectoryHandle): WorkspaceI
     read: () => exclusive(handle, () => readWorkspaceFile(handle, title)),
     write: (text) => exclusive(handle, () => writeWorkspaceFile(handle, text)),
     stamp: () => getWorkspaceFileStamp(handle),
+    appendLog: (lines) => exclusive(handle, () => appendLogLines(handle, lines)),
   }
 }
 

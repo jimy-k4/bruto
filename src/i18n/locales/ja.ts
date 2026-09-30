@@ -258,6 +258,13 @@ export const ja: Locale = {
   saveStatusDiskInvalid: 'ディスク上のファイルにエラーがあります',
   overwriteWithMine: '自分の版で上書き',
   externalChangesMerged: 'Bruto の外で行われた変更を読み込みました。',
+  externalConflict:
+    'あなたと {who} が同時に「{note}」を変更しました（{field}）。あなたの変更を残しました。',
+  externalConflicts:
+    'Bruto の外で行われた {count} 件の変更があなたの変更と衝突しました。あなたの変更を残しました。',
+  keepTheirs: '相手の変更を使う',
+  anotherTool: '別のツール',
+  agentReverted: 'その変更は取り消されました（{fields}）。',
 
   // Sidebar
   project: 'プロジェクト',

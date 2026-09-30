@@ -1,5 +1,16 @@
 import type { Workspace } from '../types'
 
+/** A note field both sides changed differently: the local value was kept over the one on disk. */
+export interface MergeConflict {
+  noteId: string
+  field: string
+  kept: unknown
+  replaced: unknown
+}
+
+/** Where a note sits on the board: moving it is never worth a word. */
+const LAYOUT_FIELDS = new Set(['x', 'y', 'zIndex'])
+
 /**
  * Three-way merge of a workspace, used when the file on disk changed while the
  * app also had unsaved changes (an AI or another tool edited `workspace.json`).
@@ -10,10 +21,17 @@ import type { Workspace } from '../types'
  *
  * Notes, connections and documentation are merged item by item (by id), and
  * items field by field. When both sides changed the same field differently,
- * the local value wins: it is what the user is looking at. An item edited on
- * one side and deleted on the other is kept, so nothing is ever lost silently.
+ * the local value wins: it is what the user is looking at. Those note fields
+ * are listed in `conflicts`, when given, so the other side can be told. An
+ * item edited on one side and deleted on the other is kept, so nothing is ever
+ * lost silently.
  */
-export function mergeWorkspaces(base: Workspace, local: Workspace, remote: Workspace): Workspace {
+export function mergeWorkspaces(
+  base: Workspace,
+  local: Workspace,
+  remote: Workspace,
+  conflicts?: MergeConflict[],
+): Workspace {
   const merged = mergeRecords(
     base as unknown as Record<string, unknown>,
     local as unknown as Record<string, unknown>,
@@ -21,7 +39,9 @@ export function mergeWorkspaces(base: Workspace, local: Workspace, remote: Works
     new Set(['notes', 'connections', 'documentation', 'statusStyles']),
   ) as unknown as Workspace
 
-  merged.notes = mergeLists(base.notes, local.notes, remote.notes)
+  merged.notes = mergeLists(base.notes, local.notes, remote.notes, (id, field, kept, replaced) => {
+    if (!LAYOUT_FIELDS.has(field)) conflicts?.push({ noteId: id, field, kept, replaced })
+  })
   merged.documentation = mergeLists(base.documentation, local.documentation, remote.documentation)
 
   const statusStyles = mergeValue(base.statusStyles, local.statusStyles, remote.statusStyles, true)
@@ -54,7 +74,14 @@ export function mergeWorkspaces(base: Workspace, local: Workspace, remote: Works
 
 type Item = { id: string }
 
-function mergeLists<T extends Item>(base: T[], local: T[], remote: T[]): T[] {
+type OnConflict = (id: string, field: string, kept: unknown, replaced: unknown) => void
+
+function mergeLists<T extends Item>(
+  base: T[],
+  local: T[],
+  remote: T[],
+  onConflict?: OnConflict,
+): T[] {
   const baseById = new Map(base.map((item) => [item.id, item]))
   const remoteById = new Map(remote.map((item) => [item.id, item]))
   const localIds = new Set(local.map((item) => item.id))
@@ -70,6 +97,9 @@ function mergeLists<T extends Item>(base: T[], local: T[], remote: T[]): T[] {
           (baseItem ?? {}) as Record<string, unknown>,
           localItem as unknown as Record<string, unknown>,
           remoteItem as unknown as Record<string, unknown>,
+          undefined,
+          onConflict &&
+            ((field, kept, replaced) => onConflict(localItem.id, field, kept, replaced)),
         ) as unknown as T,
       )
     } else if (!baseItem || !isEqual(localItem, baseItem)) {
@@ -97,6 +127,7 @@ function mergeRecords(
   local: Record<string, unknown>,
   remote: Record<string, unknown>,
   skip = new Set<string>(),
+  onConflict?: (field: string, kept: unknown, replaced: unknown) => void,
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {}
   const keys = new Set([...Object.keys(local), ...Object.keys(remote), ...Object.keys(base)])
@@ -105,6 +136,16 @@ function mergeRecords(
     if (skip.has(key)) {
       result[key] = local[key]
       continue
+    }
+
+    // Both sides changed it, differently: local wins, and the caller hears about it.
+    if (
+      onConflict &&
+      !isEqual(local[key], remote[key]) &&
+      !isEqual(local[key], base[key]) &&
+      !isEqual(remote[key], base[key])
+    ) {
+      onConflict(key, local[key], remote[key])
     }
 
     const value = mergeValue(base[key], local[key], remote[key])

@@ -261,6 +261,12 @@ export const ptBR: Locale = {
   saveStatusDiskInvalid: 'O arquivo no disco tem um erro',
   overwriteWithMine: 'Sobrescrever com a minha versão',
   externalChangesMerged: 'Alterações feitas fora do Bruto carregadas.',
+  externalConflict: 'Você e {who} mudaram “{note}” ao mesmo tempo ({field}): ficou a sua versão.',
+  externalConflicts:
+    '{count} mudanças feitas fora do Bruto conflitavam com as suas: ficaram as suas.',
+  keepTheirs: 'Usar a deles',
+  anotherTool: 'outra ferramenta',
+  agentReverted: 'A mudança dele foi desfeita ({fields}).',
 
   // Sidebar
   project: 'Projeto',

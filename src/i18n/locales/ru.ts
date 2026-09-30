@@ -262,6 +262,11 @@ export const ru: Locale = {
   saveStatusDiskInvalid: 'В файле на диске ошибка',
   overwriteWithMine: 'Перезаписать моей версией',
   externalChangesMerged: 'Загружены изменения, сделанные вне Bruto.',
+  externalConflict: 'Ты и {who} одновременно изменили «{note}» ({field}): осталась твоя версия.',
+  externalConflicts: 'Изменения вне Bruto ({count}) конфликтовали с твоими: остались твои.',
+  keepTheirs: 'Взять их версию',
+  anotherTool: 'другой инструмент',
+  agentReverted: 'Его изменение отменено ({fields}).',
 
   // Sidebar
   project: 'Проект',

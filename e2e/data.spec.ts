@@ -89,6 +89,40 @@ test('shows which agent answered a note, and locks a note for agents', async ({ 
   await expect(noteCard(page, 'A').locator('.note__lock')).toBeVisible()
 })
 
+test('when an agent changes what the user is changing, the user’s value stays and both are told', async ({
+  page,
+}) => {
+  await openProject(page, workspaceWith([note('a', { status: 'todo' })]))
+  await noteCard(page, 'A').click()
+
+  // The user moves the note on; before it is saved, an agent sends it to review.
+  await page.getByLabel('Estado').selectOption('in-progress')
+
+  const disk = await readDisk(page)
+
+  disk.notes[0] = {
+    ...disk.notes[0],
+    status: 'review',
+    agent: { client: 'claude-code', action: 'status', at: new Date().toISOString() },
+  }
+  await writeDisk(page, JSON.stringify(disk, null, 2))
+
+  await expect(page.getByText(/Tú y claude-code cambiasteis «A» a la vez \(Estado\)/)).toBeVisible()
+  await waitForSaved(page)
+
+  // The file keeps the user's value and tells the agent its change was undone.
+  expect((await readDisk(page)).notes[0]).toMatchObject({
+    status: 'in-progress',
+    agent: { reverted: [{ field: 'status', value: 'review' }] },
+  })
+  await expect(page.getByText(/Se deshizo su cambio \(Estado\)/)).toBeVisible()
+
+  // The user can take the agent's value after all.
+  await page.getByRole('button', { name: 'Usar el suyo' }).click()
+  await waitForSaved(page)
+  expect((await readDisk(page)).notes[0].status).toBe('review')
+})
+
 test('never replaces a broken workspace file with an empty one', async ({ page }) => {
   const broken = '{ "notes": [ { "id": "a", "title": "Importante" } '
 

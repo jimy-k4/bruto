@@ -101,6 +101,19 @@ export interface AgentStamp {
   action: AgentAction
   /** ISO 8601. */
   at: string
+  /**
+   * What of that change didn't stay: the user edited the same fields at the
+   * same time, and their values were kept. The agent reads it on its next look.
+   */
+  reverted?: RevertedChange[]
+  revertedAt?: string
+}
+
+/** A field an agent wrote that the user's own edit replaced. */
+export interface RevertedChange {
+  field: string
+  /** What the agent wrote, when it is short enough to repeat. */
+  value?: string
 }
 
 /** How a note relates to one in another project, seen from this note. */
