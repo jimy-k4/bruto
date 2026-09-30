@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { LOG_FILE, appendLog, type WriteContext } from './audit'
-import { BOARD_FILE, findProject } from './board'
+import { BOARD_FILE, changeBoard, findProject } from './board'
+import { updateNotes } from '../../src/domain/workspace'
 import {
   answerNote,
   connectNotes,
@@ -303,5 +304,51 @@ describe('who changed what', () => {
     expect(lines[0].files['src/login.ts']).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(lines[1]).toMatchObject({ tool: 'set_status', ok: false })
     expect(lines[1].files).toBeUndefined()
+  })
+})
+
+describe('changes that crossed', () => {
+  it('starts over when the app saves the board while an agent is changing it', () => {
+    board({ notes: [note('aaaaaa-1', { status: 'todo' }), note('bbbbbb-1')] })
+
+    let saves = 0
+
+    changeBoard(root, (workspace) => {
+      // The app saves the user's edit to b between the agent's read and write, once.
+      if (saves++ === 0) {
+        board({
+          notes: [note('aaaaaa-1', { status: 'todo' }), note('bbbbbb-1', { description: 'typed' })],
+        })
+      }
+
+      return updateNotes(workspace, ['aaaaaa-1'], { status: 'review' })
+    })
+
+    expect(saved().notes[0].status).toBe('review')
+    expect(saved().notes[1].description).toBe('typed')
+  })
+
+  it('tells the agent, first thing, that the user undid its change', () => {
+    board({
+      notes: [
+        note('aaaaaa-1', {
+          status: 'in-progress',
+          agent: {
+            client: 'claude-code',
+            id: 'reviewer',
+            action: 'status',
+            at: '2026-09-30T09:14:00.000Z',
+            reverted: [{ field: 'status', value: 'review' }],
+            revertedAt: '2026-09-30T09:14:01.000Z',
+          },
+        }),
+      ],
+    })
+
+    expect(listNotes(root)).toMatch(/in-progress · agent change reverted/)
+    expect(getNote(root, 'aaaaaa')).toMatch(
+      /Status: in-progress\nReverted: the user's edit replaced what claude-code \(reviewer\) wrote to status "review"\./,
+    )
+    expect(getContext(root)).toMatch(/Reverted: the user's edit replaced/)
   })
 })

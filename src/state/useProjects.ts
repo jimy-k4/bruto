@@ -11,7 +11,12 @@ import {
 } from '../storage/recentProjects'
 import { createWorkspaceIO, loadWorkspace, projectTitle, restoreWorkspace } from './projectLoader'
 import { createWorkspaceStore, type WorkspaceStore } from './workspaceStore'
-import { createWorkspaceSync, type SaveStatus, type WorkspaceSync } from './workspaceSync'
+import {
+  createWorkspaceSync,
+  type ExternalChange,
+  type SaveStatus,
+  type WorkspaceSync,
+} from './workspaceSync'
 
 export interface ProjectTab {
   id: string
@@ -31,7 +36,7 @@ export interface Recovery {
 }
 
 interface Options {
-  onExternalChange: () => void
+  onExternalChange: (change: ExternalChange) => void
   onError: (error: unknown) => void
 }
 
@@ -94,7 +99,7 @@ export function useProjects({ onExternalChange, onError }: Options) {
       io: createWorkspaceIO(tab.handle),
       diskText: result.diskText,
       onStatus: setSaveStatus,
-      onExternalChange: () => callbacks.current.onExternalChange(),
+      onExternalChange: (change) => callbacks.current.onExternalChange(change),
     })
 
     const project = { ...tab, store, sync }

@@ -261,6 +261,12 @@ export const es = {
   saveStatusDiskInvalid: 'El fichero en disco tiene un error',
   overwriteWithMine: 'Sobrescribir con mi versión',
   externalChangesMerged: 'Cambios hechos fuera de Bruto cargados.',
+  externalConflict: 'Tú y {who} cambiasteis «{note}» a la vez ({field}): se ha quedado lo tuyo.',
+  externalConflicts:
+    '{count} cambios hechos fuera de Bruto chocaban con los tuyos: se han quedado los tuyos.',
+  keepTheirs: 'Usar el suyo',
+  anotherTool: 'otra herramienta',
+  agentReverted: 'Se deshizo su cambio ({fields}).',
 
   // Sidebar
   project: 'Proyecto',

@@ -246,6 +246,11 @@ export const zh: Locale = {
   saveStatusDiskInvalid: '磁盘上的文件有错误',
   overwriteWithMine: '用我的版本覆盖',
   externalChangesMerged: '已载入在 Bruto 之外做出的更改。',
+  externalConflict: '你和 {who} 同时修改了“{note}”（{field}）：保留了你的修改。',
+  externalConflicts: '{count} 处在 Bruto 之外的更改与你的冲突：保留了你的修改。',
+  keepTheirs: '使用对方的',
+  anotherTool: '另一个工具',
+  agentReverted: '它的更改已被撤销（{fields}）。',
 
   // Sidebar
   project: '项目',

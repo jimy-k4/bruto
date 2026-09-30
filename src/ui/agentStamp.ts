@@ -8,11 +8,39 @@ const ACTIONS: Record<AgentAction, TranslationKey> = {
   create: 'agentActionCreate',
 }
 
-/** "Agent: claude-code · reviewer answered it on 30 Sep 2026, 9:14." The audit log has the rest. */
+/** Note fields by the name the editor gives them. */
+const FIELDS: Partial<Record<string, TranslationKey>> = {
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  kind: 'kind',
+  filePaths: 'files',
+  aiResponse: 'aiResponse',
+  aiFilePaths: 'aiFiles',
+  feedback: 'feedback',
+}
+
+/** "Estado", "Respuesta de la IA": a note field as the editor labels it, or its own name. */
+export function fieldLabel(t: Translate, field: string): string {
+  const key = FIELDS[field]
+
+  return key ? t(key) : field
+}
+
+/**
+ * "Agent: claude-code · reviewer answered it on 30 Sep 2026, 9:14." And, when
+ * the user's edit replaced part of that change, which part. The audit log has the rest.
+ */
 export function describeAgentStamp(t: Translate, language: Language, stamp: AgentStamp): string {
-  return t('agentStamp', {
+  const text = t('agentStamp', {
     agent: [stamp.client, stamp.id].filter(Boolean).join(' · '),
     action: t(ACTIONS[stamp.action]),
     when: formatDate(language, Date.parse(stamp.at), true),
   })
+
+  return stamp.reverted?.length
+    ? `${text} ${t('agentReverted', {
+        fields: stamp.reverted.map((change) => fieldLabel(t, change.field)).join(', '),
+      })}`
+    : text
 }

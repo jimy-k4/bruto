@@ -53,6 +53,17 @@ export function describeNote(note: Note): string[] {
   if (note.kind) lines.push(`Kind: ${note.kind}`)
   if (note.status) lines.push(`Status: ${note.status}`)
   if (note.agentAccess === 'read') lines.push('Agents: read only')
+
+  // The agent believed this went through: say it didn't, before anything else about the note.
+  if (note.agent?.reverted?.length) {
+    const changes = note.agent.reverted.map((change) =>
+      change.value === undefined ? change.field : `${change.field} "${change.value}"`,
+    )
+
+    lines.push(
+      `Reverted: the user's edit replaced what ${note.agent.client}${note.agent.id ? ` (${note.agent.id})` : ''} wrote to ${changes.join(', ')}. The values above are the ones that stayed.`,
+    )
+  }
   if (note.description.trim()) lines.push('', note.description.trim())
 
   if (note.filePaths.length > 0) {

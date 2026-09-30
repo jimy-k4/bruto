@@ -261,6 +261,11 @@ export const en: Locale = {
   saveStatusDiskInvalid: 'The file on disk has an error',
   overwriteWithMine: 'Overwrite with my version',
   externalChangesMerged: 'Changes made outside Bruto loaded.',
+  externalConflict: 'You and {who} changed “{note}” at the same time ({field}): yours was kept.',
+  externalConflicts: '{count} changes made outside Bruto clashed with yours: yours were kept.',
+  keepTheirs: 'Use theirs',
+  anotherTool: 'another tool',
+  agentReverted: 'Its change was undone ({fields}).',
 
   // Sidebar
   project: 'Project',

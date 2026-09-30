@@ -68,7 +68,22 @@ export function writeBoard(root: string, workspace: Workspace) {
   renameSync(temporary, path)
 }
 
-/** Reads, changes and writes the board in one go, as close together as possible. */
+const boardText = (root: string) => {
+  try {
+    return readFileSync(join(root, BOARD_FILE), 'utf8')
+  } catch {
+    return null
+  }
+}
+
+/** Times a change starts over when the app saves the board under it, before writing anyway. */
+const RACE_RETRIES = 3
+
+/**
+ * Reads, changes and writes the board in one go. If the file changed between
+ * the read and the write (the app saved, say), the change starts over on
+ * what's there now, so it never writes over someone else's save.
+ */
 export function changeBoard(
   root: string,
   change: (workspace: Workspace) => Workspace,
@@ -80,11 +95,16 @@ export function changeBoard(
     mkdirSync(join(root, '.bruto'), { recursive: true })
   }
 
-  const next = change(readBoard(root, options))
+  for (let attempt = 0; ; attempt++) {
+    const before = boardText(root)
+    const next = change(readBoard(root, options))
 
-  writeBoard(root, next)
+    if (attempt < RACE_RETRIES && boardText(root) !== before) continue
 
-  return next
+    writeBoard(root, next)
+
+    return next
+  }
 }
 
 /**

@@ -1,5 +1,7 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import { createDemoProject, supportsDemo, takeDemoLink } from './demo/demoProject'
+import { noteTitle } from './domain/workspace'
+import { fieldLabel } from './ui/agentStamp'
 import { track } from './ui/analytics'
 import { useI18n } from './i18n'
 import { I18nProvider } from './i18n/I18nProvider'
@@ -51,7 +53,29 @@ function useAppProjects() {
   const toast = useToast()
 
   return useProjects({
-    onExternalChange: () => toast({ message: t('externalChangesMerged') }),
+    onExternalChange: ({ conflicts, workspace, keepTheirs }) => {
+      if (conflicts.length === 0) {
+        toast({ message: t('externalChangesMerged') })
+        return
+      }
+
+      // Both sides changed the same thing: yours stayed, and you get to know it, and to undo that.
+      const [first] = conflicts
+      const note = workspace.notes.find((item) => item.id === first.noteId)
+
+      toast({
+        message:
+          conflicts.length === 1
+            ? t('externalConflict', {
+                who: note?.agent?.client ?? t('anotherTool'),
+                note: note ? noteTitle(note, t('untitled')) : first.noteId,
+                field: fieldLabel(t, first.field),
+              })
+            : t('externalConflicts', { count: conflicts.length }),
+        action: { label: t('keepTheirs'), run: keepTheirs },
+        duration: 12000,
+      })
+    },
     onError: (error) => {
       console.error(error)
       toast({

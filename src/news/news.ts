@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'sync-conflicts',
+    date: '2026-09-30',
+    text: {
+      es: {
+        title: 'Cuando tú y un agente cambiáis lo mismo',
+        body: 'Si cambias un campo de una nota justo cuando un agente lo cambia también, se queda lo tuyo, pero ya no en silencio: te avisa con la opción de **usar el suyo**, la nota le dice al agente que su cambio se deshizo y el registro lo apunta.',
+      },
+      en: {
+        title: 'When you and an agent change the same thing',
+        body: 'If you change a field of a note just as an agent changes it too, yours stays, but no longer silently: you get a notice with the option to **use theirs**, the note tells the agent its change was undone, and the log records it.',
+      },
+      ca: {
+        title: 'Quan tu i un agent canvieu el mateix',
+        body: 'Si canvies un camp d’una nota just quan un agent també el canvia, es queda el teu, però ja no en silenci: t’avisa amb l’opció de **fer servir el seu**, la nota diu a l’agent que el seu canvi s’ha desfet i el registre ho apunta.',
+      },
+      fr: {
+        title: 'Quand vous et un agent modifiez la même chose',
+        body: 'Si vous modifiez un champ d’une note au moment où un agent le modifie aussi, votre version reste, mais plus en silence : un avis vous propose de **garder la leur**, la note dit à l’agent que son changement a été annulé, et le journal le consigne.',
+      },
+      de: {
+        title: 'Wenn du und ein Agent dasselbe ändern',
+        body: 'Änderst du ein Feld einer Notiz genau dann, wenn ein Agent es auch ändert, bleibt deine Änderung, aber nicht mehr stillschweigend: Du bekommst einen Hinweis mit der Option, **ihre zu übernehmen**, die Notiz sagt dem Agenten, dass seine Änderung rückgängig gemacht wurde, und das Protokoll hält es fest.',
+      },
+      'pt-BR': {
+        title: 'Quando você e um agente mudam a mesma coisa',
+        body: 'Se você muda um campo de uma nota justo quando um agente também o muda, fica a sua versão, mas não mais em silêncio: um aviso oferece **usar a deles**, a nota diz ao agente que a mudança dele foi desfeita e o registro anota.',
+      },
+      ru: {
+        title: 'Когда ты и агент меняете одно и то же',
+        body: 'Если ты меняешь поле заметки ровно тогда, когда его меняет и агент, остаётся твоя версия, но уже не молча: появляется уведомление с возможностью **взять их версию**, заметка сообщает агенту, что его изменение отменено, а журнал это записывает.',
+      },
+      ja: {
+        title: 'あなたとエージェントが同じ箇所を変えたとき',
+        body: 'エージェントが変更したのと同時にあなたがノートの同じ項目を変えると、あなたの変更が残ります。ただし黙ってではありません。**相手の変更を使う**選択肢付きで通知され、ノートはエージェントに変更が取り消されたことを伝え、記録にも残ります。',
+      },
+      zh: {
+        title: '当你和智能体同时修改同一处',
+        body: '如果你修改笔记某个字段时智能体也正好在改，会保留你的修改，但不再悄无声息：你会收到提示并可选择**使用对方的**，笔记会告诉智能体它的更改已被撤销，日志也会记录下来。',
+      },
+    },
+  },
+  {
     id: 'agent-audit',
     date: '2026-09-30',
     text: {

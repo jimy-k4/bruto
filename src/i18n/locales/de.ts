@@ -263,6 +263,13 @@ export const de: Locale = {
   saveStatusDiskInvalid: 'Die Datei auf dem Datenträger enthält einen Fehler',
   overwriteWithMine: 'Mit meiner Version überschreiben',
   externalChangesMerged: 'Änderungen von außerhalb von Bruto geladen.',
+  externalConflict:
+    'Du und {who} habt „{note}“ gleichzeitig geändert ({field}): Deine Änderung bleibt.',
+  externalConflicts:
+    '{count} Änderungen außerhalb von Bruto kollidierten mit deinen: Deine bleiben.',
+  keepTheirs: 'Ihre übernehmen',
+  anotherTool: 'ein anderes Tool',
+  agentReverted: 'Seine Änderung wurde rückgängig gemacht ({fields}).',
 
   // Sidebar
   project: 'Projekt',
