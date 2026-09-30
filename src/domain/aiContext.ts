@@ -54,6 +54,18 @@ export function describeNote(note: Note): string[] {
   if (note.status) lines.push(`Status: ${note.status}`)
   if (note.agentAccess === 'read') lines.push('Agents: read only')
 
+  // How old it is and how often it came back from review: a loop that repeats is worth knowing.
+  const history = [
+    note.createdAt && `Created: ${note.createdAt.slice(0, 10)}`,
+    note.sentBack && `sent back ${note.sentBack === 1 ? 'once' : `${note.sentBack} times`}`,
+  ].filter(Boolean)
+
+  if (history.length > 0) {
+    const line = history.join(' · ')
+
+    lines.push(line.charAt(0).toUpperCase() + line.slice(1))
+  }
+
   // The agent believed this went through: say it didn't, before anything else about the note.
   if (note.agent?.reverted?.length) {
     const changes = note.agent.reverted.map((change) =>

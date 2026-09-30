@@ -269,6 +269,9 @@ export const fr: Locale = {
     '{count} changements faits hors de Bruto entraient en conflit avec les vôtres : les vôtres ont été gardés.',
   keepTheirs: 'Garder le leur',
   anotherTool: 'un autre outil',
+  createdOn: 'Créée le {date}',
+  sentBackTimes: 'Renvoyée {count} fois',
+  sentBackTimes_one: 'Renvoyée {count} fois',
   agentReverted: 'Son changement a été annulé ({fields}).',
 
   // Sidebar

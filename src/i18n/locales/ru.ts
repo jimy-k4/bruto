@@ -266,6 +266,8 @@ export const ru: Locale = {
   externalConflicts: 'Изменения вне Bruto ({count}) конфликтовали с твоими: остались твои.',
   keepTheirs: 'Взять их версию',
   anotherTool: 'другой инструмент',
+  createdOn: 'Создана {date}',
+  sentBackTimes: 'Возвращена на доработку: {count}',
   agentReverted: 'Его изменение отменено ({fields}).',
 
   // Sidebar

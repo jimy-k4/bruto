@@ -228,6 +228,8 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   delete note.crossLinks
   delete note.agent
   delete note.agentAccess
+  delete note.createdAt
+  delete note.sentBack
 
   if (status) note.status = status
   if (kind) note.kind = kind
@@ -237,6 +239,12 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   if (crossLinks.length > 0) note.crossLinks = crossLinks
   if (agent) note.agent = agent
   if (raw.agentAccess === 'read') note.agentAccess = 'read'
+  if (typeof raw.createdAt === 'string' && !Number.isNaN(Date.parse(raw.createdAt))) {
+    note.createdAt = raw.createdAt
+  }
+  if (Number.isInteger(raw.sentBack) && (raw.sentBack as number) > 0) {
+    note.sentBack = raw.sentBack as number
+  }
 
   return note
 }
@@ -609,6 +617,7 @@ export function createNote(
     colorTheme: 'concrete',
     pattern: 'raw',
     status,
+    createdAt: new Date().toISOString(),
     ...styleFor(status, workspace.statusStyles),
   }
 
@@ -625,6 +634,11 @@ export function updateNotes(workspace: Workspace, ids: string[], patch: NotePatc
       if (!targets.has(note.id)) return note
 
       const updated: Note = { ...note, ...patch }
+
+      // Another trip back to the AI: the count never resets, as the note's age doesn't.
+      if (patch.status === 'changes-requested' && note.status !== 'changes-requested') {
+        updated.sentBack = (note.sentBack ?? 0) + 1
+      }
 
       // Empty optional texts are removed so the file stays clean.
       for (const key of ['aiResponse', 'feedback'] as const) {
@@ -702,6 +716,11 @@ export function insertNotes(
 
     // The other project's note points back at the original only: a copy's link would be one-sided.
     delete copy.crossLinks
+
+    // A copy is a new task: its own age, no trips back yet, no agent has touched it.
+    copy.createdAt = new Date().toISOString()
+    delete copy.sentBack
+    delete copy.agent
 
     return copy
   })

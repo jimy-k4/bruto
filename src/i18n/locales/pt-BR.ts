@@ -266,6 +266,9 @@ export const ptBR: Locale = {
     '{count} mudanças feitas fora do Bruto conflitavam com as suas: ficaram as suas.',
   keepTheirs: 'Usar a deles',
   anotherTool: 'outra ferramenta',
+  createdOn: 'Criada em {date}',
+  sentBackTimes: 'Devolvida {count} vezes',
+  sentBackTimes_one: 'Devolvida {count} vez',
   agentReverted: 'A mudança dele foi desfeita ({fields}).',
 
   // Sidebar

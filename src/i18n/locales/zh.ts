@@ -250,6 +250,8 @@ export const zh: Locale = {
   externalConflicts: '{count} 处在 Bruto 之外的更改与你的冲突：保留了你的修改。',
   keepTheirs: '使用对方的',
   anotherTool: '另一个工具',
+  createdOn: '创建于 {date}',
+  sentBackTimes: '已退回 {count} 次',
   agentReverted: '它的更改已被撤销（{fields}）。',
 
   // Sidebar

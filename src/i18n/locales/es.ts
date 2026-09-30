@@ -266,6 +266,9 @@ export const es = {
     '{count} cambios hechos fuera de Bruto chocaban con los tuyos: se han quedado los tuyos.',
   keepTheirs: 'Usar el suyo',
   anotherTool: 'otra herramienta',
+  createdOn: 'Creada el {date}',
+  sentBackTimes: 'Devuelta {count} veces',
+  sentBackTimes_one: 'Devuelta {count} vez',
   agentReverted: 'Se deshizo su cambio ({fields}).',
 
   // Sidebar

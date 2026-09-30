@@ -264,6 +264,8 @@ export const ja: Locale = {
     'Bruto の外で行われた {count} 件の変更があなたの変更と衝突しました。あなたの変更を残しました。',
   keepTheirs: '相手の変更を使う',
   anotherTool: '別のツール',
+  createdOn: '{date} に作成',
+  sentBackTimes: '{count} 回差し戻し',
   agentReverted: 'その変更は取り消されました（{fields}）。',
 
   // Sidebar

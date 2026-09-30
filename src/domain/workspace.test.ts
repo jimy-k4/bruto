@@ -187,6 +187,39 @@ describe('parseWorkspace', () => {
     )
   })
 
+  it('keeps a note’s age and counts its trips back from review, never resetting either', () => {
+    const createdAt = '2026-09-24T10:00:00.000Z'
+    let workspace = parseWorkspace(
+      JSON.stringify({
+        version: 4,
+        notes: [
+          { id: 'a', status: 'review', createdAt, sentBack: 1 },
+          { id: 'b', createdAt: 'yesterday', sentBack: -2 },
+        ],
+      }),
+    )
+
+    expect(workspace.notes[0]).toMatchObject({ createdAt, sentBack: 1 })
+    expect(workspace.notes[1]).not.toHaveProperty('createdAt')
+    expect(workspace.notes[1]).not.toHaveProperty('sentBack')
+
+    // Sent back, answered, sent back again: two more trips, and the same age.
+    workspace = updateNotes(workspace, ['a'], { status: 'changes-requested' })
+    workspace = updateNotes(workspace, ['a'], { status: 'changes-requested' })
+    workspace = updateNotes(workspace, ['a'], { status: 'review' })
+    workspace = updateNotes(workspace, ['a'], { status: 'changes-requested' })
+
+    expect(workspace.notes[0]).toMatchObject({ createdAt, sentBack: 3 })
+
+    // A copy is a new task.
+    const copied = duplicateNotes(workspace, ['a'], 'copy')
+    const copy = copied.workspace.notes.find((note) => note.id === copied.ids[0])!
+
+    expect(copy).not.toHaveProperty('sentBack')
+    expect(Date.parse(copy.createdAt!)).toBeGreaterThan(Date.parse(createdAt))
+    expect(createNote(workspace, { x: 0, y: 0 }, 'New').note.createdAt).toBeDefined()
+  })
+
   it('turns the v3 "bug" and "loop" statuses into kinds, rules without a status', () => {
     const workspace = parseWorkspace(
       JSON.stringify({

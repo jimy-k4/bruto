@@ -265,6 +265,9 @@ export const en: Locale = {
   externalConflicts: '{count} changes made outside Bruto clashed with yours: yours were kept.',
   keepTheirs: 'Use theirs',
   anotherTool: 'another tool',
+  createdOn: 'Created on {date}',
+  sentBackTimes: 'Sent back {count} times',
+  sentBackTimes_one: 'Sent back once',
   agentReverted: 'Its change was undone ({fields}).',
 
   // Sidebar
