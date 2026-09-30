@@ -20,6 +20,7 @@
     "test:e2e": "playwright test",
     "check": "prettier --check . && eslint . && tsc -b && vitest run",
     "shots": "playwright test --config playwright.shots.config.ts",
+    "video": "playwright test --config playwright.video.config.ts --reporter=line",
     "prerender": "node scripts/prerender.ts",
     "build:mcp": "node mcp/build.mjs",
     "test:mcp": "node mcp/build.mjs && node mcp/smoke.mjs"
