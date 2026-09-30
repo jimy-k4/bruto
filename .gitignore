@@ -28,3 +28,6 @@ dist-ssr
 test-results
 playwright-report
 mcp/dist
+
+# The launch video (npm run video)
+launch/
