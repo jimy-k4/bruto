@@ -268,31 +268,53 @@ export async function saveNoteImage(
 const MAX_SOURCE_BYTES = 512 * 1024
 /** Safety net for huge projects: at most this many files are read for one lens. */
 const MAX_SOURCE_FILES = 4000
+/** Files read at the same time: one by one, thousands of scripts take seconds. */
+const READS_AT_ONCE = 32
 
 export interface SourceFile {
   path: string
   text: string
 }
 
-/** Reads the text of the indexed files `wanted` accepts, skipping huge ones. */
+/**
+ * Reads the text of the indexed files `wanted` accepts, skipping huge ones.
+ * They come back in index order; `onProgress` hears after each batch.
+ */
 export async function readSources(
   files: IndexedFile[],
   wanted: (path: string) => boolean,
+  onProgress?: (read: number, total: number) => void,
 ): Promise<SourceFile[]> {
+  const chosen = files.filter((file) => wanted(file.path))
+  const total = Math.min(chosen.length, MAX_SOURCE_FILES)
   const sources: SourceFile[] = []
 
-  for (const file of files) {
-    if (sources.length >= MAX_SOURCE_FILES) break
-    if (!wanted(file.path)) continue
+  onProgress?.(0, total)
 
-    try {
-      const blob = await file.handle.getFile()
+  for (
+    let start = 0;
+    start < chosen.length && sources.length < MAX_SOURCE_FILES;
+    start += READS_AT_ONCE
+  ) {
+    const batch = await Promise.all(chosen.slice(start, start + READS_AT_ONCE).map(readSource))
 
-      if (blob.size <= MAX_SOURCE_BYTES) sources.push({ path: file.path, text: await blob.text() })
-    } catch {
-      // Deleted or locked since indexing: leave it out.
+    for (const source of batch) {
+      if (source && sources.length < MAX_SOURCE_FILES) sources.push(source)
     }
+
+    onProgress?.(Math.min(start + READS_AT_ONCE, total), total)
   }
 
   return sources
+}
+
+async function readSource(file: IndexedFile): Promise<SourceFile | null> {
+  try {
+    const blob = await file.handle.getFile()
+
+    return blob.size <= MAX_SOURCE_BYTES ? { path: file.path, text: await blob.text() } : null
+  } catch {
+    // Deleted or locked since indexing: leave it out.
+    return null
+  }
 }

@@ -28,6 +28,8 @@ export const ja: Locale = {
   lensApi: 'API',
   lensDb: 'DB',
   lensLoading: 'コードを読み込み中…',
+  lensReading: 'ファイルを読み込み中… {read} / {total}',
+  lensParsing: '{total} ファイルを解析中…',
   lensEmpty: 'ここに描くものは見つかりませんでした。',
   lensPickHint: '要素をクリックするとノートが表示されます。',
   lensUses: '使用',

@@ -56,6 +56,13 @@ type Lens = 'files' | LensKind
 
 type LensModels = Partial<Record<LensKind, LensModel>>
 
+/** How far a lens is reading its files. */
+interface LensProgress {
+  kind: LensKind
+  read: number
+  total: number
+}
+
 const LENS_ICONS = { web: 'page', api: 'controller', db: 'table' } as const
 const LENS_TITLES = { web: 'lensWeb', api: 'lensApi', db: 'lensDb' } as const
 
@@ -91,7 +98,7 @@ export function StructureView({
   onEditNote,
   onClose,
 }: StructureViewProps) {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const root = useProjectRoot()
   const [index, setIndex] = useState<Index>(null)
   const [reloads, setReloads] = useState(0)
@@ -99,6 +106,7 @@ export function StructureView({
   const [focusPath, setFocusPath] = useState<string | null>(null)
   const [lens, setLens] = useState<Lens>('files')
   const [models, setModels] = useState<LensModels>({})
+  const [progress, setProgress] = useState<LensProgress | null>(null)
   const [lensFocus, setLensFocus] = useState<LensFocus | null>(null)
   // Shared with the files window: both answer "where are my notes?".
   const [onlyNoted, setOnlyNoted] = usePreference('bruto-only-noted-files', false, isBoolean)
@@ -145,24 +153,26 @@ export function StructureView({
   const detected = index && 'lenses' in index ? index.lenses : []
   const activeLens = detected.find((item) => item.kind === lens)
 
-  // A lens reads and parses its code the first time it is opened.
+  // A lens reads and parses its code the first time it is opened, saying how far it is.
   useEffect(() => {
     if (!activeLens || models[activeLens.kind] || !index || !('files' in index)) return
 
-    let cancelled = false
-
+    const loading = new AbortController()
     const kind = activeLens.kind
 
-    loadLens(activeLens, index.files, index.paths)
+    loadLens(activeLens, index.files, index.paths, {
+      signal: loading.signal,
+      onProgress: (read, total) => {
+        if (!loading.signal.aborted) setProgress({ kind, read, total })
+      },
+    })
       // Unreadable code draws an empty lens rather than spinning forever.
       .catch(() => emptyModel(activeLens))
       .then((model) => {
-        if (!cancelled) setModels((current) => ({ ...current, [kind]: model }))
+        if (!loading.signal.aborted) setModels((current) => ({ ...current, [kind]: model }))
       })
 
-    return () => {
-      cancelled = true
-    }
+    return () => loading.abort()
   }, [activeLens, models, index])
 
   // Paths linked by the notes selected on the board, as the map highlights them.
@@ -255,6 +265,16 @@ export function StructureView({
   // With the filter on and no note pointing anywhere in this view, say so rather than draw nothing.
   const nothingNoted =
     onlyNoted && (lens === 'files' ? mapRoot.children.length === 0 : !!model && isEmptyModel(model))
+
+  // Reading 812 of 2,476 files…, then parsing them: big schemas take a while.
+  const reading = progress?.kind === lens ? progress : null
+  const loadingMessage = reading
+    ? t(reading.read < reading.total ? 'lensReading' : 'lensParsing', {
+        count: reading.total,
+        read: reading.read.toLocaleString(language),
+        total: reading.total.toLocaleString(language),
+      })
+    : t('lensLoading')
 
   return (
     <section className="structure" aria-label={t('structure')}>
@@ -356,7 +376,7 @@ export function StructureView({
           />
         ) : !model ? (
           <p className="structure__message" aria-busy="true">
-            {t('lensLoading')}
+            {loadingMessage}
           </p>
         ) : 'elements' in model ? (
           <WebLens model={model} context={context} />

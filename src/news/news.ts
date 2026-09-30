@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'db-lens-worker',
+    date: '2026-09-30',
+    text: {
+      es: {
+        title: 'Esquemas enormes sin congelar la ventana',
+        body: 'La vista de base de datos lee los scripts varios a la vez y los analiza en segundo plano, así que Bruto sigue respondiendo mientras tanto, y te dice por dónde va: «Leyendo 812 de 2476 ficheros…». Un esquema Oracle de casi 2500 scripts ha pasado de tardar 7 s a 1,5 s.',
+      },
+      en: {
+        title: 'Huge schemas without freezing the window',
+        body: 'The database view reads scripts several at a time and parses them in the background, so Bruto keeps responding meanwhile, and tells you how far it is: “Reading 812 of 2,476 files…”. An Oracle schema of almost 2,500 scripts went from 7 s to 1.5 s.',
+      },
+      ca: {
+        title: 'Esquemes enormes sense congelar la finestra',
+        body: 'La vista de base de dades llegeix els scripts de diversos en diversos i els analitza en segon pla, així que Bruto continua responent mentrestant, i et diu per on va: «Llegint 812 de 2.476 fitxers…». Un esquema Oracle de gairebé 2.500 scripts ha passat de trigar 7 s a 1,5 s.',
+      },
+      fr: {
+        title: 'Des schémas énormes sans figer la fenêtre',
+        body: 'La vue base de données lit les scripts plusieurs à la fois et les analyse en arrière-plan : Bruto continue de répondre pendant ce temps et vous dit où il en est : « Lecture des fichiers : 812 sur 2 476… ». Un schéma Oracle de près de 2 500 scripts est passé de 7 s à 1,5 s.',
+      },
+      de: {
+        title: 'Riesige Schemas, ohne dass das Fenster einfriert',
+        body: 'Die Datenbankansicht liest mehrere Skripte gleichzeitig und analysiert sie im Hintergrund. Bruto reagiert währenddessen weiter und zeigt, wie weit es ist: „812 von 2.476 Dateien gelesen…“. Ein Oracle-Schema mit fast 2.500 Skripten braucht jetzt 1,5 s statt 7 s.',
+      },
+      'pt-BR': {
+        title: 'Esquemas enormes sem congelar a janela',
+        body: 'A visão de banco de dados lê vários scripts de uma vez e os analisa em segundo plano, então o Bruto continua respondendo enquanto isso, e mostra até onde chegou: “Lendo 812 de 2.476 arquivos…”. Um esquema Oracle de quase 2.500 scripts passou de 7 s para 1,5 s.',
+      },
+      ru: {
+        title: 'Огромные схемы без зависания окна',
+        body: 'Вид базы данных читает несколько скриптов сразу и разбирает их в фоне, так что Bruto не перестаёт отвечать и показывает, сколько осталось: «Читаем 812 из 2 476 файлов…». Схема Oracle почти из 2 500 скриптов теперь открывается за 1,5 с вместо 7 с.',
+      },
+      ja: {
+        title: '巨大なスキーマでもウィンドウが固まらない',
+        body: 'データベースビューはスクリプトを複数まとめて読み込み、バックグラウンドで解析します。その間も Bruto は操作でき、進み具合も表示されます:「ファイルを読み込み中… 812 / 2,476」。約 2,500 本のスクリプトを持つ Oracle スキーマが 7 秒から 1.5 秒になりました。',
+      },
+      zh: {
+        title: '超大模式也不会让窗口卡住',
+        body: '数据库视图会同时读取多个脚本，并在后台解析，期间 Bruto 仍可正常操作，还会显示进度：“正在读取文件… 812 / 2,476”。一个包含近 2,500 个脚本的 Oracle 模式，从 7 秒缩短到 1.5 秒。',
+      },
+    },
+  },
+  {
     id: 'mcp-worktrees',
     date: '2026-09-30',
     text: {

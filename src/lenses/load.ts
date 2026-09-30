@@ -1,56 +1,67 @@
 import { readSources, type IndexedFile } from '../storage/projectFiles'
-import { WEB_CODE, type DetectedLens } from './detect'
-import { buildApiModel, isDotnetFile, type ApiModel } from './dotnet'
-import { buildDrizzleModel, isDrizzleCandidate } from './drizzle'
-import { buildNextApiModel, isNextFile } from './next'
-import { buildNodeApiModel, isNodeFile } from './node'
-import { buildPrismaModel, isPrismaFile } from './prisma'
-import { buildPythonApiModel, isPythonFile } from './python'
-import { extensionOf } from './source'
-import { buildSpringApiModel, isJavaFile } from './spring'
-import { buildDbModel, isSqlFile, type DbModel } from './sql'
-import { buildWebModel, isWebFile, type WebModel } from './web'
+import type { DetectedLens } from './detect'
+import type { LensJob, LensReply } from './lensWorker'
+import { readerFor, type LensModel } from './readers'
 
-export type LensModel = WebModel | ApiModel | DbModel
+export type { LensModel } from './readers'
 
-/** Reads only the code a lens needs, then parses it with the reader for its stack. */
+export interface LoadOptions {
+  /** How many of the files the lens wants are read, after each batch. */
+  onProgress?: (read: number, total: number) => void
+  /** Stops the parsing: another project or lens took over. */
+  signal?: AbortSignal
+}
+
+/** Reads only the code a lens needs, then parses it with the reader for its stack, off the page. */
 export async function loadLens(
   lens: DetectedLens,
   files: IndexedFile[],
   paths: string[],
+  { onProgress, signal }: LoadOptions = {},
 ): Promise<LensModel> {
-  const read = (wanted: (path: string) => boolean) => readSources(files, wanted)
+  const sources = await readSources(files, readerFor(lens).wanted, onProgress)
 
-  if (lens.kind === 'web') {
-    const sources = await read((path) => WEB_CODE.has(extensionOf(path)) && isWebFile(path))
+  signal?.throwIfAborted()
 
-    return buildWebModel(paths, sources, lens.framework ?? 'react')
-  }
+  return parseInWorker({ lens, paths, sources }, signal)
+}
 
-  if (lens.kind === 'api') {
-    switch (lens.api) {
-      case 'nest':
-      case 'express':
-      case 'fastify':
-        return buildNodeApiModel(await read(isNodeFile), lens.api)
-      case 'next':
-        return buildNextApiModel(await read(isNextFile))
-      case 'fastapi':
-      case 'flask':
-        return buildPythonApiModel(await read(isPythonFile))
-      case 'spring':
-        return buildSpringApiModel(await read(isJavaFile))
-      default:
-        return buildApiModel(await read(isDotnetFile))
+/** Parses in a worker; in the page when there is none, or it can't start (an old tab after a deploy). */
+function parseInWorker(job: LensJob, signal?: AbortSignal): Promise<LensModel> {
+  const parseHere = () => readerFor(job.lens).build(job.sources, job.paths)
+
+  if (typeof Worker === 'undefined') return Promise.resolve(parseHere())
+
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL('./lensWorker.ts', import.meta.url), { type: 'module' })
+    const stop = () => {
+      worker.terminate()
+      signal?.removeEventListener('abort', abort)
     }
-  }
+    const abort = () => {
+      stop()
+      reject(signal?.reason)
+    }
 
-  const dialect = lens.db
+    signal?.addEventListener('abort', abort, { once: true })
 
-  if (dialect === 'prisma') return buildPrismaModel(await read(isPrismaFile))
-  if (dialect === 'drizzle') return buildDrizzleModel(await read(isDrizzleCandidate))
+    worker.onmessage = ({ data }: MessageEvent<LensReply>) => {
+      stop()
+      if ('model' in data) resolve(data.model)
+      else reject(new Error(data.error))
+    }
+    worker.onerror = (event) => {
+      event.preventDefault()
+      stop()
+      try {
+        resolve(parseHere())
+      } catch (error) {
+        reject(error)
+      }
+    }
 
-  return buildDbModel(await read(isSqlFile), dialect ?? 'sql')
+    worker.postMessage(job)
+  })
 }
 
 /** What a lens draws when its code can't be read. */

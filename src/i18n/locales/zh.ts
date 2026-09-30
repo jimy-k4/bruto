@@ -28,6 +28,8 @@ export const zh: Locale = {
   lensApi: 'API',
   lensDb: '数据库',
   lensLoading: '正在读取代码…',
+  lensReading: '正在读取文件… {read} / {total}',
+  lensParsing: '正在分析 {total} 个文件…',
   lensEmpty: '这里没有可绘制的内容。',
   lensPickHint: '点击一个元素查看它的笔记。',
   lensUses: '使用',
