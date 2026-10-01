@@ -623,6 +623,9 @@ export const fr: Locale = {
   linkConfirm: 'Lier',
   tapeBlocked: 'Bloquée',
   tapeBlocking: 'Bloque',
+  agentWorking: '{agent} au travail',
+  agentWorkingNotice:
+    '{agent} travaille sur cette note. Si vous modifiez la même chose que l’IA, votre version est gardée et elle est prévenue.',
   shortcutAltDrag: 'Dupliquer en glissant',
   shortcutAltDragDescription:
     'Faites glisser une note avec Alt enfoncée : l’originale reste et vous emportez la copie.',

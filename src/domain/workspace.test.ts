@@ -3,6 +3,7 @@ import type { Note, Workspace } from '../types'
 import {
   WorkspaceFormatError,
   addConnection,
+  agentAtWork,
   createEmptyWorkspace,
   createNote,
   deleteNotes,
@@ -416,6 +417,38 @@ describe('note operations', () => {
     const next = updateNotes(workspace, ['a', 'c'], { status: 'blocked' })
 
     expect(next.notes.map((item) => item.status)).toEqual(['blocked', undefined, 'blocked'])
+  })
+
+  it('shows an agent at work while it has the note in progress, until the user moves it', () => {
+    const started = { client: 'claude-code', action: 'status' as const, at: '2026-10-01T08:00:00Z' }
+    let workspace = workspaceWith([
+      note('a', { status: 'in-progress', agent: started }),
+      note('b', { status: 'in-progress', agent: { ...started, action: 'create' } }),
+      note('c', { status: 'in-progress', agent: { ...started, action: 'answer' } }),
+      note('d', { status: 'blocked', agent: started }),
+      note('e', { status: 'in-progress' }),
+    ])
+
+    expect(workspace.notes.map((item) => agentAtWork(item)?.client ?? null)).toEqual([
+      'claude-code',
+      'claude-code',
+      null,
+      null,
+      null,
+    ])
+
+    // Moved by the user and back: in progress by their own hand, not the agent's.
+    workspace = updateNotes(workspace, ['a'], { status: 'todo' })
+    expect(agentAtWork(workspace.notes[0])).toBeNull()
+    workspace = updateNotes(workspace, ['a', 'd'], { status: 'in-progress' })
+    expect(workspace.notes[0]).not.toHaveProperty('agent')
+    expect(workspace.notes[3]).not.toHaveProperty('agent')
+
+    // The MCP server stamps its own change, and other edits leave the stamp alone.
+    workspace = updateNotes(workspace, ['a'], { status: 'todo' })
+    workspace = updateNotes(workspace, ['a'], { status: 'in-progress', agent: started })
+    workspace = updateNotes(workspace, ['a'], { title: 'Edited meanwhile' })
+    expect(agentAtWork(workspace.notes[0])).toEqual(started)
   })
 
   it('deletes notes with their connections', () => {

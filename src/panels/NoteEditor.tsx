@@ -4,9 +4,9 @@ import type { LinkedNoteInfo } from '../domain/crossLinks'
 import type { ActiveProject } from '../state/useProjects'
 import { NOTE_KINDS, NOTE_STATUSES } from '../domain/constants'
 import { codeBlocks } from '../domain/richText'
-import { shortId, type NotePatch } from '../domain/workspace'
+import { agentAtWork, shortId, type NotePatch } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
-import { describeAgentStamp } from '../ui/agentStamp'
+import { agentName, describeAgentStamp } from '../ui/agentStamp'
 import { FileTable } from '../ui/FileTable'
 import { formatDate } from '../ui/format'
 import { CrossLinksField } from './CrossLinksField'
@@ -75,6 +75,7 @@ export function NoteEditor({
   }
 
   const responseCode = codeBlocks(note.aiResponse)
+  const working = agentAtWork(note)
 
   // Always at least one field to type a link in; blank ones are dropped when the project loads.
   const links = note.webUrls.length > 0 ? note.webUrls : ['']
@@ -121,6 +122,12 @@ export function NoteEditor({
       }
     >
       <div className="form" onKeyDown={closeOnCtrlEnter}>
+        {working && (
+          <p className="notice notice--working" role="status">
+            {t('agentWorkingNotice', { agent: agentName(working) })}
+          </p>
+        )}
+
         <div className="field">
           <label className="field__label" htmlFor={ids.title}>
             {t('title')}

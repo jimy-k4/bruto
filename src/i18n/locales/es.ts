@@ -617,6 +617,9 @@ export const es = {
   linkConfirm: 'Vincular',
   tapeBlocked: 'Bloqueada',
   tapeBlocking: 'Bloquea',
+  agentWorking: '{agent} trabajando',
+  agentWorkingNotice:
+    '{agent} está trabajando en esta nota. Si cambias lo mismo que la IA, se queda lo tuyo y se le avisa.',
   shortcutAltDrag: 'Duplicar arrastrando',
   shortcutAltDragDescription:
     'Arrastra una nota con Alt pulsada: se queda la original y te llevas la copia.',

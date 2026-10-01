@@ -146,6 +146,12 @@ kbd {
   background: var(--surface);
 }
 
+/* An agent is at work on what is open: the signal colour, as on its note. */
+.notice--working {
+  border-color: var(--signal);
+  border-left-width: 6px;
+}
+
 /* Buttons ------------------------------------------------------------------ */
 
 .button {

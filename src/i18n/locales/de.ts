@@ -629,6 +629,9 @@ export const de: Locale = {
   linkConfirm: 'Verknüpfen',
   tapeBlocked: 'Blockiert',
   tapeBlocking: 'Blockiert andere',
+  agentWorking: '{agent} arbeitet',
+  agentWorkingNotice:
+    '{agent} arbeitet an dieser Notiz. Änderst du dasselbe wie die KI, bleibt deine Version und sie wird benachrichtigt.',
   shortcutAltDrag: 'Durch Ziehen duplizieren',
   shortcutAltDragDescription:
     'Ziehe eine Notiz mit gedrückter Alt-Taste: Das Original bleibt, du trägst die Kopie.',
