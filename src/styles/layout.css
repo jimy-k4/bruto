@@ -98,7 +98,7 @@
   padding: var(--space-4);
   border: var(--border-heavy) solid var(--line);
   background: var(--surface-raised);
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--line);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) var(--shadow-blur) var(--shadow-color);
 }
 
 .project-switcher__menu ul {
@@ -414,7 +414,7 @@
   max-height: calc(100vh - 2 * var(--space-6));
   border: var(--border-heavy) solid var(--line);
   background: var(--surface);
-  box-shadow: 10px 10px 0 var(--line);
+  box-shadow: var(--shadow-lg) var(--shadow-lg) var(--shadow-blur) var(--shadow-color);
 }
 
 .dialog:focus {
@@ -680,4 +680,22 @@
   background: var(--signal);
   color: var(--signal-ink);
   font: 700 10px / 1 var(--font-mono);
+}
+
+/* The soft look toggle: an icon, so the top bar keeps fitting on a laptop. */
+.topbar__look {
+  width: 36px;
+  padding: 0;
+}
+
+.topbar__look[aria-pressed='true'] {
+  background: var(--inverse-bg);
+  color: var(--inverse-ink);
+}
+
+.line-weights {
+  width: 14px;
+  height: 12px;
+  fill: currentColor;
+  shape-rendering: crispEdges;
 }

@@ -130,6 +130,8 @@ export const ja: Locale = {
   language: '言語',
   lightMode: 'ライトモード',
   darkMode: 'ダークモード',
+  softMode: 'ソフトモード',
+  softModeHint: '細い線、やわらかい影、控えめなコントラスト',
   installApp: 'アプリをインストール',
   styles: 'スタイル',
   files: 'ファイル',

@@ -128,6 +128,8 @@ export const zh: Locale = {
   language: '语言',
   lightMode: '浅色模式',
   darkMode: '深色模式',
+  softMode: '柔和模式',
+  softModeHint: '细线条、柔和阴影、更低对比度',
   installApp: '安装应用',
   styles: '样式',
   files: '文件',

@@ -84,8 +84,9 @@ Prefer to run it yourself? See [Development](#development).
   shows what is wrong and offers the latest backup (one is kept each time a project is opened).
 - **Keyboard first and accessible.** Every action has a shortcut, notes are reachable with Tab, dialogs
   trap focus and everything has a readable name for screen readers.
-- **Nine languages**, light and dark themes, a colour and pattern per status, installable, works
-  offline, and tells an open window when a new version is out.
+- **Nine languages**, light and dark themes, a soft mode with fine lines and quiet shadows for long
+  sessions, a colour and pattern per status, installable, works offline, and tells an open window when
+  a new version is out.
 - **Local only.** The app is a static page: it has no server and no storage of its own. The published
   site counts visits and which features get used (opening a project, a lens, copying AI context),
   anonymously and without cookies (Superveil, a small self-hosted counter): nothing about your projects or notes

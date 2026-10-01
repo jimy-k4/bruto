@@ -2,6 +2,9 @@ export type Language = 'es' | 'en' | 'ja' | 'ru' | 'zh' | 'ca' | 'fr' | 'de' | '
 
 export type AppTheme = 'light' | 'dark'
 
+/** How heavy lines and shadows are: bold (the brutalist default) or soft. */
+export type AppLook = 'bold' | 'soft'
+
 export type NoteColorTheme =
   | 'concrete'
   | 'sand'

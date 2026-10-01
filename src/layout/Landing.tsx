@@ -1,4 +1,4 @@
-import type { AppTheme } from '../types'
+import type { AppLook, AppTheme } from '../types'
 import { useI18n, type TranslationKey } from '../i18n'
 import type { RecentProject } from '../storage/recentProjects'
 import { REPOSITORY_URL, SUPPORT_URL } from '../config'
@@ -8,6 +8,8 @@ import { TopBar } from './TopBar'
 interface LandingProps {
   theme: AppTheme
   onToggleTheme: () => void
+  look: AppLook
+  onToggleLook: () => void
   onOpenHelp: () => void
   onOpenPrivacy: () => void
   supported: boolean
@@ -64,6 +66,8 @@ const shot = (language: string, name: string) =>
 export function Landing({
   theme,
   onToggleTheme,
+  look,
+  onToggleLook,
   onOpenHelp,
   onOpenPrivacy,
   supported,
@@ -105,7 +109,13 @@ export function Landing({
 
   return (
     <div className="screen">
-      <TopBar theme={theme} onToggleTheme={onToggleTheme} onOpenHelp={onOpenHelp} />
+      <TopBar
+        theme={theme}
+        onToggleTheme={onToggleTheme}
+        look={look}
+        onToggleLook={onToggleLook}
+        onOpenHelp={onOpenHelp}
+      />
 
       <main className="landing">
         <section className="landing__hero">

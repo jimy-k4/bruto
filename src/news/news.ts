@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'soft-mode',
+    date: '2026-10-01',
+    text: {
+      es: {
+        title: 'Modo suave',
+        body: 'El botón de las tres rayas, junto al del tema, cambia a líneas de 1 px, sombras bajas y difuminadas y menos contraste. Pesa menos con la pizarra llena y funciona en claro y en oscuro. El aspecto bruto sigue siendo el de siempre. Una petición de Product Hunt.',
+      },
+      en: {
+        title: 'Soft mode',
+        body: 'The three-line button, next to the theme one, switches to 1 px lines, low blurred shadows and less contrast. It’s lighter on a full board and works in light and dark. The bold look stays the default. Requested on Product Hunt.',
+      },
+      ca: {
+        title: 'Mode suau',
+        body: 'El botó de les tres ratlles, al costat del del tema, canvia a línies d’1 px, ombres baixes i difuminades i menys contrast. Pesa menys amb la pissarra plena i funciona en clar i en fosc. L’aspecte brut continua sent el de sempre. Una petició de Product Hunt.',
+      },
+      fr: {
+        title: 'Mode doux',
+        body: 'Le bouton aux trois traits, à côté de celui du thème, passe à des traits de 1 px, des ombres basses et floues et moins de contraste. C’est plus léger avec un tableau plein, en clair comme en sombre. L’aspect brut reste celui par défaut. Une demande venue de Product Hunt.',
+      },
+      de: {
+        title: 'Sanfter Modus',
+        body: 'Der Knopf mit den drei Strichen neben dem Theme-Knopf schaltet auf 1-px-Linien, flache, weiche Schatten und weniger Kontrast. Das wirkt bei einem vollen Board leichter und klappt hell wie dunkel. Der kräftige Look bleibt der Standard. Ein Wunsch von Product Hunt.',
+      },
+      'pt-BR': {
+        title: 'Modo suave',
+        body: 'O botão das três linhas, ao lado do botão do tema, muda para linhas de 1 px, sombras baixas e desfocadas e menos contraste. Fica mais leve com o quadro cheio e funciona no claro e no escuro. O visual bruto continua sendo o padrão. Um pedido do Product Hunt.',
+      },
+      ru: {
+        title: 'Мягкий режим',
+        body: 'Кнопка с тремя линиями рядом с кнопкой темы включает линии в 1 px, низкие размытые тени и меньше контраста. С полной доской так легче, и это работает в светлой и тёмной теме. Жёсткий вид остаётся по умолчанию. Просьба с Product Hunt.',
+      },
+      ja: {
+        title: 'ソフトモード',
+        body: 'テーマボタンの隣にある三本線のボタンで、1 px の線、低くぼかした影、控えめなコントラストに切り替わります。ノートの多いボードでも重く感じにくく、ライトでもダークでも使えます。標準はこれまでどおりの力強い見た目です。Product Hunt でいただいた要望です。',
+      },
+      zh: {
+        title: '柔和模式',
+        body: '主题按钮旁边的三条线按钮可切换为 1 px 线条、低而柔和的阴影和更低的对比度。看板满满时也不那么沉重，浅色和深色主题都适用。默认仍是原来的粗犷风格。这是 Product Hunt 上用户提出的建议。',
+      },
+    },
+  },
+  {
     id: 'db-lens-worker',
     date: '2026-09-30',
     text: {

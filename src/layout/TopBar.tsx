@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import type { AppTheme, Language } from '../types'
+import type { AppLook, AppTheme, Language } from '../types'
 import { SUPPORT_URL } from '../config'
 import { LANGUAGES } from '../domain/constants'
 import { useI18n } from '../i18n'
@@ -10,6 +10,9 @@ import { useInstallPrompt } from '../ui/installPrompt'
 interface TopBarProps {
   theme: AppTheme
   onToggleTheme: () => void
+  /** Bold or soft lines and shadows, over either theme. */
+  look: AppLook
+  onToggleLook: () => void
   onOpenHelp: () => void
   /** Project switcher, next to the brand. */
   project?: ReactNode
@@ -17,7 +20,15 @@ interface TopBarProps {
   actions?: ReactNode
 }
 
-export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: TopBarProps) {
+export function TopBar({
+  theme,
+  onToggleTheme,
+  look,
+  onToggleLook,
+  onOpenHelp,
+  project,
+  actions,
+}: TopBarProps) {
   const { t, language, setLanguage } = useI18n()
   const install = useInstallPrompt()
   const [unread, setUnread] = useState(
@@ -95,6 +106,17 @@ export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: T
           {theme === 'dark' ? t('lightMode') : t('darkMode')}
         </button>
 
+        <button
+          type="button"
+          className="button topbar__look"
+          onClick={onToggleLook}
+          aria-pressed={look === 'soft'}
+          aria-label={t('softMode')}
+          title={`${t('softMode')}: ${t('softModeHint')}`}
+        >
+          <LineWeights />
+        </button>
+
         {SUPPORT_URL && (
           <a
             className="button topbar__support"
@@ -113,6 +135,15 @@ export function TopBar({ theme, onToggleTheme, onOpenHelp, project, actions }: T
         <NewsDialog entries={NEWS} unread={newsOpen} onClose={() => setNewsOpen(null)} />
       )}
     </header>
+  )
+}
+
+/** Three lines, heavy to fine: how thick the app draws its lines. */
+function LineWeights() {
+  return (
+    <svg className="line-weights" viewBox="0 0 14 12" aria-hidden="true">
+      <path d="M0 0h14v4H0zM0 6h14v2H0zM0 10h14v1H0z" />
+    </svg>
   )
 }
 

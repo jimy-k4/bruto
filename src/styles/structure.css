@@ -182,7 +182,7 @@
   border-color: var(--line);
   background: var(--surface-raised);
   color: var(--ink);
-  box-shadow: 4px 4px 0 var(--line);
+  box-shadow: var(--shadow-md) var(--shadow-md) var(--shadow-blur) var(--shadow-color);
 }
 
 .structure-block:hover {
@@ -191,17 +191,17 @@
 }
 
 .structure-block.is-linked {
-  outline: 3px dashed var(--signal);
+  outline: var(--outline) dashed var(--signal);
   outline-offset: -8px;
 }
 
 .structure-block.is-focused {
-  outline: 3px solid var(--signal);
-  outline-offset: -3px;
+  outline: var(--outline) solid var(--signal);
+  outline-offset: calc(-1 * var(--outline));
 }
 
 .structure-block:focus-visible {
-  outline: 3px solid var(--signal);
+  outline: var(--outline) solid var(--signal);
   outline-offset: 2px;
   z-index: 1;
 }
@@ -347,7 +347,7 @@
 }
 
 .structure-note:hover {
-  box-shadow: 4px 4px 0 var(--signal);
+  box-shadow: var(--shadow-md) var(--shadow-md) 0 var(--signal);
 }
 
 .structure-note__head {

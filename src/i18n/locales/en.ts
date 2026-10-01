@@ -135,6 +135,8 @@ export const en: Locale = {
   language: 'Language',
   lightMode: 'Light mode',
   darkMode: 'Dark mode',
+  softMode: 'Soft mode',
+  softModeHint: 'Thin lines, soft shadows and less contrast',
   installApp: 'Install app',
   styles: 'Styles',
   files: 'Files',

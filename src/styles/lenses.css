@@ -86,7 +86,7 @@
   border-color: var(--line);
   background: var(--surface-raised);
   color: var(--ink);
-  box-shadow: 4px 4px 0 var(--line);
+  box-shadow: var(--shadow-md) var(--shadow-md) var(--shadow-blur) var(--shadow-color);
 }
 
 :is(
@@ -97,7 +97,7 @@
   .lens-table,
   .lens-package
 ).is-linked {
-  outline: 3px dashed var(--signal);
+  outline: var(--outline) dashed var(--signal);
   outline-offset: 3px;
 }
 
@@ -109,7 +109,7 @@
   .lens-table,
   .lens-package
 ).is-focused {
-  outline: 3px solid var(--signal);
+  outline: var(--outline) solid var(--signal);
   outline-offset: 3px;
 }
 
@@ -733,6 +733,6 @@
 
 /* A table the search found stands out on the diagram. */
 .lens-table.is-match {
-  outline: 3px solid var(--signal);
+  outline: var(--outline) solid var(--signal);
   outline-offset: 2px;
 }

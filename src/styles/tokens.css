@@ -24,8 +24,22 @@
 
   --border: 2px;
   --border-heavy: 3px;
-  --shadow-offset: 6px;
+  /* Focus and selection rings. */
+  --outline: 3px;
+  /* Arrows between notes. */
+  --connection-width: 3px;
   --radius: 0;
+
+  /* Solid shadows: how far things stand off the page, all scaled by --lift. */
+  --lift: 1;
+  --shadow-blur: 0px;
+  --shadow-color: var(--line);
+  --shadow-sm: calc(3px * var(--lift));
+  --shadow-md: calc(4px * var(--lift));
+  --shadow-offset: calc(6px * var(--lift));
+  --shadow-lg: calc(10px * var(--lift));
+  --shadow-xl: calc(12px * var(--lift));
+  --shadow-2xl: calc(14px * var(--lift));
 
   --topbar-height: 60px;
   --statusbar-height: 34px;
@@ -110,4 +124,36 @@
   --status-changes-requested: #b0266f;
   --status-wontfix: #5b5b57;
   --status-loop: #1d6b64;
+}
+
+/*
+ * Soft look, over either theme: fine lines, low blurred shadows and less
+ * contrast, for long sessions on a full board. Bold stays the default; only
+ * tokens change here, so every component follows.
+ */
+:root[data-look='soft'] {
+  --border: 1px;
+  --border-heavy: 1px;
+  --outline: 2px;
+  --connection-width: 2px;
+  --lift: 0.34;
+  --shadow-blur: 8px;
+}
+
+:root[data-look='soft']:not([data-theme='light']) {
+  --bg: #1e1e1d;
+  --line: rgba(237, 236, 229, 0.3);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --noise-opacity: 0.04;
+  --board-line: rgba(237, 236, 229, 0.035);
+  --board-seam: rgba(237, 236, 229, 0.05);
+}
+
+:root[data-look='soft'][data-theme='light'] {
+  --bg: #c4c3bd;
+  --line: rgba(20, 20, 19, 0.28);
+  --shadow-color: rgba(20, 20, 19, 0.2);
+  --noise-opacity: 0.07;
+  --board-line: rgba(20, 20, 19, 0.04);
+  --board-seam: rgba(20, 20, 19, 0.06);
 }

@@ -231,7 +231,7 @@ test('theme and language apply everywhere, dialogs included', async ({ page }) =
 
   const before = await dialog.evaluate((element) => getComputedStyle(element).backgroundColor)
   await page.keyboard.press('Escape')
-  await page.getByRole('button', { name: /mode/i }).click()
+  await page.getByRole('button', { name: /^(dark|light) mode$/i }).click()
   await page.getByRole('button', { name: 'Help' }).click()
   const after = await dialog.evaluate((element) => getComputedStyle(element).backgroundColor)
 

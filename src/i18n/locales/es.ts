@@ -135,6 +135,8 @@ export const es = {
   language: 'Idioma',
   lightMode: 'Modo claro',
   darkMode: 'Modo oscuro',
+  softMode: 'Modo suave',
+  softModeHint: 'Líneas finas, sombras suaves y menos contraste',
   installApp: 'Instalar app',
   styles: 'Estilos',
   files: 'Ficheros',

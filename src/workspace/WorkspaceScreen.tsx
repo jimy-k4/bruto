@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useMemo, useSyncExternalStore } from 'react'
 import { track } from '../ui/analytics'
-import type { AppTheme, CrossLink } from '../types'
+import type { AppLook, AppTheme, CrossLink } from '../types'
 import { Board } from '../board/Board'
 import { BoardSearch } from '../board/BoardSearch'
 import { EmptyBoard, NewNoteButton, SelectionBar, ZoomControls } from '../board/BoardOverlays'
@@ -42,9 +42,18 @@ interface WorkspaceScreenProps {
   projects: Projects
   theme: AppTheme
   onToggleTheme: () => void
+  look: AppLook
+  onToggleLook: () => void
 }
 
-export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: WorkspaceScreenProps) {
+export function WorkspaceScreen({
+  project,
+  projects,
+  theme,
+  onToggleTheme,
+  look,
+  onToggleLook,
+}: WorkspaceScreenProps) {
   const { t } = useI18n()
   const toast = useToast()
   const { workspace } = useSyncExternalStore(project.store.subscribe, project.store.getSnapshot)
@@ -137,6 +146,8 @@ export function WorkspaceScreen({ project, projects, theme, onToggleTheme }: Wor
         <TopBar
           theme={theme}
           onToggleTheme={onToggleTheme}
+          look={look}
+          onToggleLook={onToggleLook}
           onOpenHelp={() => ui.setModal('help')}
           project={
             <ProjectSwitcher

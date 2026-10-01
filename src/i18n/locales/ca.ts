@@ -137,6 +137,8 @@ export const ca: Locale = {
   language: 'Idioma',
   lightMode: 'Mode clar',
   darkMode: 'Mode fosc',
+  softMode: 'Mode suau',
+  softModeHint: 'Línies fines, ombres suaus i menys contrast',
   installApp: "Instal·lar l'app",
   styles: 'Estils',
   files: 'Fitxers',
