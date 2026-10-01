@@ -137,6 +137,8 @@ export const de: Locale = {
   language: 'Sprache',
   lightMode: 'Heller Modus',
   darkMode: 'Dunkler Modus',
+  softMode: 'Sanfter Modus',
+  softModeHint: 'Feine Linien, weiche Schatten und weniger Kontrast',
   installApp: 'App installieren',
   styles: 'Stile',
   files: 'Dateien',

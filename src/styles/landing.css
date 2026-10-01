@@ -58,7 +58,7 @@
   margin: 0;
   border: var(--border-heavy) solid var(--line);
   background: var(--surface);
-  box-shadow: 14px 14px 0 var(--line);
+  box-shadow: var(--shadow-2xl) var(--shadow-2xl) var(--shadow-blur) var(--shadow-color);
 }
 
 .landing__shot img {
@@ -167,7 +167,7 @@
   border: var(--border-heavy) solid var(--line);
   background: var(--inverse-bg);
   color: var(--inverse-ink);
-  box-shadow: 14px 14px 0 var(--signal);
+  box-shadow: var(--shadow-2xl) var(--shadow-2xl) 0 var(--signal);
   font: 500 var(--text-sm) / 1.6 var(--font-mono);
   white-space: pre-wrap;
 }
@@ -211,7 +211,7 @@
   display: flex;
   border: var(--border-heavy) solid var(--line);
   background: var(--surface);
-  box-shadow: 4px 4px 0 var(--line);
+  box-shadow: var(--shadow-md) var(--shadow-md) var(--shadow-blur) var(--shadow-color);
 }
 
 .recent-list__open {

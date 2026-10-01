@@ -18,7 +18,7 @@
 }
 
 .board:focus-visible {
-  outline-offset: -3px;
+  outline-offset: calc(-1 * var(--outline));
 }
 
 .board.is-panning {
@@ -65,7 +65,7 @@
 .connection__line {
   fill: none;
   stroke: var(--line);
-  stroke-width: 3;
+  stroke-width: var(--connection-width);
 }
 
 .connection__hitbox {
@@ -84,7 +84,7 @@
 .connection:hover .connection__line,
 .connection.is-selected .connection__line {
   stroke: var(--signal);
-  stroke-width: 4;
+  stroke-width: calc(var(--connection-width) + 1px);
 }
 
 /* Notes ------------------------------------------------------------------------ */
@@ -98,7 +98,7 @@
   border: var(--border-heavy) solid var(--line);
   background-color: var(--note-bg);
   color: var(--note-ink);
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--line);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) var(--shadow-blur) var(--shadow-color);
   cursor: grab;
   user-select: none;
   touch-action: none;
@@ -109,23 +109,24 @@
 
 .note:hover {
   translate: -2px -2px;
-  box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 var(--line);
+  box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) var(--shadow-blur)
+    var(--shadow-color);
 }
 
 .note:focus-visible,
 .note.is-selected {
-  outline: 3px solid var(--signal);
+  outline: var(--outline) solid var(--signal);
   outline-offset: 4px;
 }
 
 .note.is-dragging {
   cursor: grabbing;
   translate: -4px -4px;
-  box-shadow: 12px 12px 0 var(--line);
+  box-shadow: var(--shadow-xl) var(--shadow-xl) var(--shadow-blur) var(--shadow-color);
 }
 
 .note.is-connecting {
-  outline: 3px dashed var(--signal);
+  outline: var(--outline) dashed var(--signal);
   outline-offset: 4px;
   animation: connecting 900ms steps(2) infinite;
 }
@@ -385,7 +386,7 @@
   display: flex;
   border: var(--border-heavy) solid var(--line);
   background: var(--surface);
-  box-shadow: 4px 4px 0 var(--line);
+  box-shadow: var(--shadow-md) var(--shadow-md) var(--shadow-blur) var(--shadow-color);
 }
 
 .zoom-controls button {
@@ -427,7 +428,7 @@
   padding: var(--space-2);
   border: var(--border-heavy) solid var(--line);
   background: var(--surface);
-  box-shadow: 4px 4px 0 var(--line);
+  box-shadow: var(--shadow-md) var(--shadow-md) var(--shadow-blur) var(--shadow-color);
   transform: translateX(-50%);
 }
 
@@ -453,8 +454,8 @@
 }
 
 .board-search__input:focus-visible {
-  outline: 3px solid var(--signal);
-  outline-offset: -3px;
+  outline: var(--outline) solid var(--signal);
+  outline-offset: calc(-1 * var(--outline));
 }
 
 .board-search__count {
@@ -560,7 +561,7 @@
   border: var(--border-heavy) solid var(--line);
   background: var(--inverse-bg);
   color: var(--inverse-ink);
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--line);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) var(--shadow-blur) var(--shadow-color);
   font: 400 32px / 1 var(--font-display);
 }
 
@@ -571,7 +572,7 @@
 
 .new-note-button:active {
   translate: 3px 3px;
-  box-shadow: 3px 3px 0 var(--line);
+  box-shadow: var(--shadow-sm) var(--shadow-sm) var(--shadow-blur) var(--shadow-color);
 }
 
 .board-status,
@@ -584,7 +585,7 @@
   padding: var(--space-2) var(--space-3);
   border: var(--border-heavy) solid var(--line);
   background: var(--surface);
-  box-shadow: 4px 4px 0 var(--line);
+  box-shadow: var(--shadow-md) var(--shadow-md) var(--shadow-blur) var(--shadow-color);
   font-size: var(--text-sm);
   font-weight: 600;
 }
@@ -616,7 +617,7 @@
   padding: var(--space-6);
   border: var(--border-heavy) solid var(--line);
   background: var(--surface);
-  box-shadow: 10px 10px 0 var(--line);
+  box-shadow: var(--shadow-lg) var(--shadow-lg) var(--shadow-blur) var(--shadow-color);
   transform: translate(-50%, -50%);
 }
 

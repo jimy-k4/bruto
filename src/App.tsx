@@ -9,7 +9,7 @@ import { Landing } from './layout/Landing'
 import { RecoveryScreen } from './layout/RecoveryScreen'
 import { HelpDialog } from './panels/HelpDialog'
 import { PrivacyDialog } from './panels/PrivacyDialog'
-import { useTheme } from './preferences'
+import { useLook, useTheme } from './preferences'
 import { supportsFileSystemAccess, useProjects, type Projects } from './state/useProjects'
 import { ToastProvider } from './ui/ToastProvider'
 import { UpdateNotice } from './ui/UpdateNotice'
@@ -93,6 +93,7 @@ function useAppProjects() {
 
 function Screen({ projects }: { projects: Projects }) {
   const [theme, toggleTheme] = useTheme()
+  const [look, toggleLook] = useLook()
   const [helpOpen, setHelpOpen] = useState(false)
   const [privacyOpen, setPrivacyOpen] = useState(false)
   const { t, language } = useI18n()
@@ -143,6 +144,8 @@ function Screen({ projects }: { projects: Projects }) {
         projects={projects}
         theme={theme}
         onToggleTheme={toggleTheme}
+        look={look}
+        onToggleLook={toggleLook}
       />
     )
   }
@@ -152,6 +155,8 @@ function Screen({ projects }: { projects: Projects }) {
       <Landing
         theme={theme}
         onToggleTheme={toggleTheme}
+        look={look}
+        onToggleLook={toggleLook}
         onOpenHelp={() => setHelpOpen(true)}
         onOpenPrivacy={() => setPrivacyOpen(true)}
         supported={supportsFileSystemAccess()}

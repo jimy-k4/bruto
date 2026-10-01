@@ -142,6 +142,8 @@ export const ru: Locale = {
   language: 'Язык',
   lightMode: 'Светлая тема',
   darkMode: 'Тёмная тема',
+  softMode: 'Мягкий режим',
+  softModeHint: 'Тонкие линии, мягкие тени и меньше контраста',
   installApp: 'Установить приложение',
   styles: 'Стили',
   files: 'Файлы',

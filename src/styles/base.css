@@ -91,7 +91,7 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid var(--signal);
+  outline: var(--outline) solid var(--signal);
   outline-offset: 2px;
 }
 
@@ -232,7 +232,7 @@ kbd {
   padding: 0 var(--space-6);
   border-width: var(--border-heavy);
   font-size: var(--text-md);
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--line);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) var(--shadow-blur) var(--shadow-color);
 }
 
 .button--block {
@@ -426,17 +426,17 @@ kbd {
 
 .swatch-picker__option:hover .swatch {
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 var(--line);
+  box-shadow: var(--shadow-sm) var(--shadow-sm) var(--shadow-blur) var(--shadow-color);
 }
 
 .swatch-picker__option input:checked + .swatch {
-  outline: 3px solid var(--signal);
+  outline: var(--outline) solid var(--signal);
   outline-offset: 2px;
-  box-shadow: 3px 3px 0 var(--line);
+  box-shadow: var(--shadow-sm) var(--shadow-sm) var(--shadow-blur) var(--shadow-color);
 }
 
 .swatch-picker__option input:focus-visible + .swatch {
-  outline: 3px solid var(--signal);
+  outline: var(--outline) solid var(--signal);
   outline-offset: 4px;
 }
 

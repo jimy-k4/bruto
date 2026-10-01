@@ -136,6 +136,8 @@ export const ptBR: Locale = {
   language: 'Idioma',
   lightMode: 'Modo claro',
   darkMode: 'Modo escuro',
+  softMode: 'Modo suave',
+  softModeHint: 'Linhas finas, sombras suaves e menos contraste',
   installApp: 'Instalar app',
   styles: 'Estilos',
   files: 'Arquivos',

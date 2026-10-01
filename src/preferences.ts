@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { AppTheme } from './types'
+import type { AppLook, AppTheme } from './types'
 
 /** localStorage can throw (private mode, blocked storage): preferences then last for the session. */
 function read(key: string): string | null {
@@ -70,6 +70,24 @@ export function useTheme(): [AppTheme, () => void] {
   const toggle = useCallback(() => setTheme(theme === 'dark' ? 'light' : 'dark'), [theme, setTheme])
 
   return [theme, toggle]
+}
+
+const isLook = (value: unknown): value is AppLook => value === 'bold' || value === 'soft'
+
+/**
+ * Bold or soft lines and shadows, on `<html>` like the theme. index.html sets
+ * it before the first paint, including from a `?look=soft` link.
+ */
+export function useLook(): [AppLook, () => void] {
+  const [look, setLook] = usePreference<AppLook>('bruto-look', 'bold', isLook)
+
+  useEffect(() => {
+    document.documentElement.dataset.look = look
+  }, [look])
+
+  const toggle = useCallback(() => setLook(look === 'soft' ? 'bold' : 'soft'), [look, setLook])
+
+  return [look, toggle]
 }
 
 export const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
