@@ -153,8 +153,9 @@ always apply the notes whose kind is "rule".
 ### As an MCP server
 
 Agents that speak MCP (Claude Code, Claude Desktop, Cursor, Windsurf…) can use the board through
-tools instead of editing the file: list and search the notes, read the context, mark one in progress,
-answer it and send it to review, propose new ones. It runs on your machine, and once added works in
+tools instead of editing the file: list and search the notes, read the context, mark one in progress
+(the board shows the agent at work on it, with moving tape), answer it and send it to review, propose
+new ones. It runs on your machine, and once added works in
 every project with a board:
 
 ```bash

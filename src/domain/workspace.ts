@@ -645,6 +645,17 @@ export function updateNotes(workspace: Workspace, ids: string[], patch: NotePatc
         if (key in patch && !updated[key]?.trim()) delete updated[key]
       }
 
+      // Put in progress by the user's own hand: an agent's stamp no longer says who
+      // moved it there, and the board mustn't show that agent at work on it.
+      if (
+        patch.status === 'in-progress' &&
+        note.status !== 'in-progress' &&
+        !('agent' in patch) &&
+        claimsStatus(note.agent)
+      ) {
+        delete updated.agent
+      }
+
       if ('status' in patch && !patch.status) delete updated.status
       if ('kind' in patch && !patch.kind) delete updated.kind
       if ('aiFilePaths' in patch && !updated.aiFilePaths?.length) delete updated.aiFilePaths
@@ -657,6 +668,18 @@ export function updateNotes(workspace: Workspace, ids: string[], patch: NotePatc
   return 'status' in patch || 'kind' in patch
     ? applyStatusStylesToChangedNotes(workspace, next)
     : next
+}
+
+/** A stamp that says an agent set where the note stands: by changing it, or by creating it so. */
+const claimsStatus = (stamp: AgentStamp | undefined) =>
+  stamp?.action === 'status' || stamp?.action === 'create'
+
+/**
+ * The agent at work on a note: one put it in progress through MCP (or created
+ * it in progress) and nobody has moved it since. Null when none is.
+ */
+export function agentAtWork({ status, agent }: Note): AgentStamp | null {
+  return status === 'in-progress' && agent && claimsStatus(agent) ? agent : null
 }
 
 export function deleteNotes(workspace: Workspace, ids: string[]): Workspace {

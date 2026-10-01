@@ -612,6 +612,9 @@ export const en: Locale = {
   linkConfirm: 'Link',
   tapeBlocked: 'Blocked',
   tapeBlocking: 'Blocking',
+  agentWorking: '{agent} working',
+  agentWorkingNotice:
+    '{agent} is working on this note. If you change the same thing as the AI, yours stays and it gets told.',
   shortcutAltDrag: 'Duplicate by dragging',
   shortcutAltDragDescription:
     'Drag a note while holding Alt: the original stays and you carry the copy.',

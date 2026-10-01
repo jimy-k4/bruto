@@ -573,6 +573,9 @@ export const zh: Locale = {
   linkConfirm: '关联',
   tapeBlocked: '被阻塞',
   tapeBlocking: '阻塞他项',
+  agentWorking: '{agent} 工作中',
+  agentWorkingNotice:
+    '{agent} 正在处理这条笔记。如果你修改了和 AI 相同的内容，会保留你的修改，并通知 AI。',
   shortcutAltDrag: '拖动复制',
   shortcutAltDragDescription: '按住 Alt 拖动笔记：原笔记留在原处，你拖走的是副本。',
   kind: '类型',

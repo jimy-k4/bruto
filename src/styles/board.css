@@ -663,6 +663,70 @@
   color: var(--signal-ink);
 }
 
+/*
+ * An agent at work on the note: hazard tape that keeps moving, across it and
+ * around it, so it shows at any zoom and nobody edits it by accident.
+ */
+.note__tape--working {
+  background: var(--hazard-ink);
+  animation: hazard 800ms linear infinite;
+}
+
+.note__tape--working span::after {
+  content: '▮';
+  margin-left: 6px;
+  animation: cursor 1s steps(2, jump-none) infinite;
+}
+
+.note.is-agent-working::before {
+  --frame: 6px;
+
+  content: '';
+  position: absolute;
+  inset: calc(-1 * (var(--border-heavy) + var(--frame)));
+  z-index: -1;
+  padding: var(--frame);
+  background: var(--hazard);
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  animation: hazard 800ms linear infinite;
+  pointer-events: none;
+}
+
+.note.is-agent-working,
+.note__tape--working {
+  /* Signal and a gap, then signal and the ink: one 16 px tile, so moving it by 16 px loops. */
+  --hazard: linear-gradient(
+      -45deg,
+      var(--signal) 25%,
+      transparent 25% 50%,
+      var(--signal) 50% 75%,
+      transparent 75%
+    )
+    0 0 / 16px 16px;
+  --hazard-ink: linear-gradient(
+      -45deg,
+      var(--signal) 25%,
+      var(--ink) 25% 50%,
+      var(--signal) 50% 75%,
+      var(--ink) 75%
+    )
+    0 0 / 16px 16px;
+}
+
+@keyframes hazard {
+  to {
+    background-position: 16px 0;
+  }
+}
+
+@keyframes cursor {
+  to {
+    opacity: 0;
+  }
+}
+
 .note__cross-links {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

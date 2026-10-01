@@ -1,10 +1,10 @@
 import { memo, useCallback, useState } from 'react'
 import type { CrossLink, Note } from '../types'
 import { blockState, linkKey, type LinkedNoteInfo } from '../domain/crossLinks'
-import { noteLinks, noteTitle, shortId } from '../domain/workspace'
+import { agentAtWork, noteLinks, noteTitle, shortId } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
 import { LensIcon } from '../lenses/LensIcon'
-import { describeAgentStamp } from '../ui/agentStamp'
+import { agentName, describeAgentStamp } from '../ui/agentStamp'
 import { FileTable } from '../ui/FileTable'
 import { formatDate } from '../ui/format'
 import { formatAge } from '../ui/noteAge'
@@ -77,6 +77,8 @@ export const NoteCard = memo(function NoteCard({
   const { observe } = handlers
   const crossLinks = note.crossLinks ?? []
   const { blockedBy, blocking } = blockState(note, linkInfo)
+  const working = agentAtWork(note)
+  const workingText = working && t('agentWorking', { agent: agentName(working) })
 
   const ref = useCallback(
     (element: HTMLElement | null) => {
@@ -96,6 +98,7 @@ export const NoteCard = memo(function NoteCard({
     searchMark && `is-${searchMark}`,
     blockedBy.length > 0 && 'is-blocked',
     blocking.length > 0 && 'is-blocking',
+    working && 'is-agent-working',
   ]
 
   // Clicks inside links and buttons must not start a drag.
@@ -113,6 +116,7 @@ export const NoteCard = memo(function NoteCard({
         title,
         note.kind && kindLabel(t, note.kind),
         note.status && statusLabel(t, note.status),
+        workingText,
         readOnly && t('agentReadOnly'),
         note.sentBack && t('sentBackTimes', { count: note.sentBack }),
         selected && t('selected'),
@@ -144,6 +148,16 @@ export const NoteCard = memo(function NoteCard({
           )}
         </span>
       </header>
+
+      {/* An agent at work on it: moving tape, so nobody edits it by accident. */}
+      {working && (
+        <p
+          className="note__tape note__tape--working"
+          title={describeAgentStamp(t, language, working)}
+        >
+          <span>{workingText}</span>
+        </p>
+      )}
 
       {/* Waiting on another project, or holding one up: the same note, taped. */}
       {blockedBy.length > 0 && (

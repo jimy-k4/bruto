@@ -609,6 +609,9 @@ export const ja: Locale = {
   linkConfirm: 'リンク',
   tapeBlocked: 'ブロック中',
   tapeBlocking: '他をブロック',
+  agentWorking: '{agent} 作業中',
+  agentWorkingNotice:
+    '{agent} がこのノートで作業中です。AI と同じ箇所を変更すると、あなたの変更が残り、AI に通知されます。',
   shortcutAltDrag: 'ドラッグで複製',
   shortcutAltDragDescription:
     'Alt を押しながらノートをドラッグすると、元のノートは残り、コピーを動かせます。',

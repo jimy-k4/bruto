@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'agent-working',
+    date: '2026-10-01',
+    text: {
+      es: {
+        title: 'Se ve en qué nota está trabajando la IA',
+        body: 'Cuando un agente pone una nota **En curso** por MCP, la rodea una cinta de obra que se mueve y dice quién es: «claude-code trabajando». Si la abres, el editor te avisa antes de que cambies nada. Se va cuando la IA la contesta o cuando la mueves tú.',
+      },
+      en: {
+        title: 'See which note the AI is working on',
+        body: 'When an agent sets a note **In progress** over MCP, moving hazard tape goes around it and says who it is: “claude-code working”. Open it and the editor warns you before you change anything. It goes away when the AI answers, or when you move the note yourself.',
+      },
+      ca: {
+        title: 'Es veu en quina nota treballa la IA',
+        body: 'Quan un agent posa una nota **En curs** per MCP, l’envolta una cinta d’obra que es mou i diu qui és: «claude-code treballant». Si l’obres, l’editor t’avisa abans que canviïs res. Se’n va quan la IA la contesta o quan la mous tu.',
+      },
+      fr: {
+        title: 'On voit sur quelle note travaille l’IA',
+        body: 'Quand un agent passe une note **En cours** via MCP, un ruban de chantier qui défile l’entoure et dit qui c’est : « claude-code au travail ». Ouvrez-la et l’éditeur vous prévient avant que vous ne changiez quoi que ce soit. Il disparaît quand l’IA répond, ou quand vous déplacez la note vous-même.',
+      },
+      de: {
+        title: 'Man sieht, an welcher Notiz die KI arbeitet',
+        body: 'Setzt ein Agent eine Notiz über MCP auf **In Arbeit**, läuft ein bewegtes Absperrband um sie herum und zeigt, wer es ist: „claude-code arbeitet“. Öffnest du sie, warnt dich der Editor, bevor du etwas änderst. Es verschwindet, wenn die KI antwortet oder du die Notiz selbst verschiebst.',
+      },
+      'pt-BR': {
+        title: 'Dá para ver em qual nota a IA está trabalhando',
+        body: 'Quando um agente coloca uma nota **Em andamento** pelo MCP, uma fita de obra em movimento a contorna e diz quem é: “claude-code trabalhando”. Se você a abrir, o editor avisa antes de você mudar qualquer coisa. Ela some quando a IA responde ou quando você mesmo move a nota.',
+      },
+      ru: {
+        title: 'Видно, над какой заметкой работает ИИ',
+        body: 'Когда агент через MCP ставит заметке статус **В работе**, её окружает бегущая сигнальная лента с именем: «claude-code работает». Откроешь заметку — редактор предупредит, прежде чем ты что-то изменишь. Лента исчезает, когда ИИ отвечает или когда ты сам переводишь заметку.',
+      },
+      ja: {
+        title: 'AI が作業中のノートがひと目でわかる',
+        body: 'エージェントが MCP でノートを **進行中** にすると、動く工事テープがノートを囲み、誰が作業中かを表示します:「claude-code 作業中」。開くと、何か変更する前にエディタが知らせます。AI が回答するか、あなたがノートを動かすと消えます。',
+      },
+      zh: {
+        title: '一眼看出 AI 正在处理哪条笔记',
+        body: '当智能体通过 MCP 把笔记设为 **进行中** 时，笔记周围会出现滚动的警示胶带，并显示是谁：“claude-code 工作中”。打开它时，编辑器会在你修改之前提醒你。AI 作答后，或你自己移动这条笔记时，胶带就会消失。',
+      },
+    },
+  },
+  {
     id: 'soft-mode',
     date: '2026-10-01',
     text: {

@@ -616,6 +616,9 @@ export const ptBR: Locale = {
   linkConfirm: 'Vincular',
   tapeBlocked: 'Bloqueada',
   tapeBlocking: 'Bloqueia',
+  agentWorking: '{agent} trabalhando',
+  agentWorkingNotice:
+    '{agent} está trabalhando nesta nota. Se você mudar o mesmo que a IA, fica o seu e ela é avisada.',
   shortcutAltDrag: 'Duplicar arrastando',
   shortcutAltDragDescription:
     'Arraste uma nota com Alt pressionada: a original fica e você leva a cópia.',
