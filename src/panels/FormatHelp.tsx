@@ -25,7 +25,12 @@ export function FormatHelp() {
 
   return (
     <>
-      <button type="button" className="link-button field__help" onClick={() => setOpen(true)}>
+      <button
+        data-superveil="click:format-help:format-help"
+        type="button"
+        className="link-button field__help"
+        onClick={() => setOpen(true)}
+      >
         {t('formatHelp')}
       </button>
 

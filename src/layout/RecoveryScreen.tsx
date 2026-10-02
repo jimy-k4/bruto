@@ -37,6 +37,7 @@ export function RecoveryScreen({
 
         <div className="recovery__actions">
           <button
+            data-superveil="click:recovery-screen:retry"
             type="button"
             className="button button--primary"
             onClick={onRetry}
@@ -46,12 +47,24 @@ export function RecoveryScreen({
           </button>
 
           {recovery.backup && (
-            <button type="button" className="button" onClick={onRestore} disabled={loading}>
+            <button
+              data-superveil="click:recovery-screen:restore-backup"
+              type="button"
+              className="button"
+              onClick={onRestore}
+              disabled={loading}
+            >
               {t('restoreBackup', { name: recovery.backup.name })}
             </button>
           )}
 
-          <button type="button" className="button" onClick={onCancel} disabled={loading}>
+          <button
+            data-superveil="click:recovery-screen:back"
+            type="button"
+            className="button"
+            onClick={onCancel}
+            disabled={loading}
+          >
             {t('back')}
           </button>
         </div>

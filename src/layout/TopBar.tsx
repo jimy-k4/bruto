@@ -55,7 +55,12 @@ export function TopBar({
 
       <nav className="topbar__actions" aria-label={t('mainActions')}>
         {install && (
-          <button type="button" className="button button--primary" onClick={() => void install()}>
+          <button
+            data-superveil="click:top-bar:install-app"
+            type="button"
+            className="button button--primary"
+            onClick={() => void install()}
+          >
             {t('installApp')}
           </button>
         )}
@@ -63,6 +68,7 @@ export function TopBar({
         {actions}
 
         <button
+          data-superveil="click:top-bar:news"
           type="button"
           className="button topbar__news"
           onClick={openNews}
@@ -78,7 +84,12 @@ export function TopBar({
           )}
         </button>
 
-        <button type="button" className="button" onClick={onOpenHelp}>
+        <button
+          data-superveil="click:top-bar:help"
+          type="button"
+          className="button"
+          onClick={onOpenHelp}
+        >
           {t('help')}
         </button>
 
@@ -98,6 +109,7 @@ export function TopBar({
         </label>
 
         <button
+          data-superveil="click:top-bar:light-mode"
           type="button"
           className="button"
           onClick={onToggleTheme}
@@ -107,6 +119,7 @@ export function TopBar({
         </button>
 
         <button
+          data-superveil="click:top-bar:soft-mode"
           type="button"
           className="button topbar__look"
           onClick={onToggleLook}

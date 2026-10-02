@@ -133,6 +133,7 @@ export function FilesDialog({
       return (
         <li key={node.path}>
           <button
+            data-superveil="click:files-dialog:notes-count"
             type="button"
             className={`file-tree__row ${selected?.path === node.path ? 'is-selected' : ''}`}
             style={{ paddingLeft: 12 + depth * 16 }}
@@ -159,6 +160,7 @@ export function FilesDialog({
     return (
       <li key={node.path}>
         <button
+          data-superveil="click:files-dialog:toggle-folder"
           type="button"
           className="file-tree__row file-tree__row--directory"
           style={{ paddingLeft: 12 + depth * 16 }}
@@ -201,6 +203,7 @@ export function FilesDialog({
             data-autofocus
           />
           <button
+            data-superveil="click:files-dialog:only-with-notes"
             type="button"
             className="button button--toggle"
             aria-pressed={onlyNoted}
@@ -208,7 +211,12 @@ export function FilesDialog({
           >
             {t('onlyWithNotes')}
           </button>
-          <button type="button" className="button" onClick={() => setRefreshKey((key) => key + 1)}>
+          <button
+            data-superveil="click:files-dialog:refresh"
+            type="button"
+            className="button"
+            onClick={() => setRefreshKey((key) => key + 1)}
+          >
             {t('refresh')}
           </button>
         </div>
@@ -246,6 +254,7 @@ export function FilesDialog({
 
                 <div className="button-stack">
                   <button
+                    data-superveil="click:files-dialog:open-file"
                     type="button"
                     className="button button--primary"
                     onClick={() => onOpenFile(selected.path)}
@@ -253,6 +262,7 @@ export function FilesDialog({
                     {t('openFile')}
                   </button>
                   <button
+                    data-superveil="click:files-dialog:copy-path"
                     type="button"
                     className="button"
                     onClick={() => onCopyPath(selected.path)}
@@ -261,6 +271,7 @@ export function FilesDialog({
                   </button>
                   {targetNote && (
                     <button
+                      data-superveil="click:files-dialog:file-already-linked"
                       type="button"
                       className="button"
                       disabled={alreadyLinked}

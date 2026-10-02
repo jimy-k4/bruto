@@ -166,6 +166,7 @@ export function WorkspaceScreen({
           actions={
             <>
               <button
+                data-superveil="click:workspace-screen:search"
                 type="button"
                 className="button"
                 aria-pressed={Boolean(search)}
@@ -175,6 +176,7 @@ export function WorkspaceScreen({
                 {t('search')}
               </button>
               <button
+                data-superveil="click:workspace-screen:structure"
                 type="button"
                 className="button"
                 aria-pressed={structureOpen}
@@ -183,10 +185,20 @@ export function WorkspaceScreen({
               >
                 {t('structure')}
               </button>
-              <button type="button" className="button" onClick={() => ui.setModal('styles')}>
+              <button
+                data-superveil="click:workspace-screen:styles"
+                type="button"
+                className="button"
+                onClick={() => ui.setModal('styles')}
+              >
                 {t('styles')}
               </button>
-              <button type="button" className="button" onClick={() => ui.setModal('files')}>
+              <button
+                data-superveil="click:workspace-screen:files"
+                type="button"
+                className="button"
+                onClick={() => ui.setModal('files')}
+              >
                 {t('files')}
               </button>
             </>

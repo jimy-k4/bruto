@@ -71,6 +71,7 @@ export function LensTile({
 
   return (
     <button
+      data-superveil="click:lens-parts:focus-tile"
       type="button"
       className={elementClasses('lens-tile', context, focusKey, paths, notes)}
       aria-pressed={context.focusKey === focusKey}

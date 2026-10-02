@@ -46,6 +46,7 @@ export function ApiLens({ model, context }: { model: ApiModel; context: LensCont
                 className={elementClasses('lens-resource', context, key, [resource.path], notes)}
               >
                 <button
+                  data-superveil="click:api-lens:requires-auth"
                   type="button"
                   className="lens-resource__head"
                   aria-pressed={context.focusKey === key}
@@ -110,6 +111,7 @@ export function ApiLens({ model, context }: { model: ApiModel; context: LensCont
                     <span className="eyebrow">{t('lensUses')}</span>
                     {services.map(({ type, part }) => (
                       <button
+                        data-superveil="click:api-lens:focus-endpoint"
                         key={type}
                         type="button"
                         className="lens-chip"

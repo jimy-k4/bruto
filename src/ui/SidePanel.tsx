@@ -110,7 +110,13 @@ export function SidePanel({
 
         {headerAside}
 
-        <button type="button" className="icon-button" onClick={onClose} aria-label={t('close')}>
+        <button
+          data-superveil="click:side-panel:close"
+          type="button"
+          className="icon-button"
+          onClick={onClose}
+          aria-label={t('close')}
+        >
           ×
         </button>
       </header>

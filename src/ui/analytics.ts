@@ -3,6 +3,9 @@
  * personal data). Only which feature was used is sent, never what a project
  * or a note contains. Does nothing where the Superveil script isn't loaded:
  * development, tests, offline.
+ *
+ * Button clicks are counted by Superveil itself: every <button> carries
+ * data-superveil="click:<component>:<action>" (analytics.test.ts checks it).
  */
 declare global {
   interface Window {

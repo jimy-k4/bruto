@@ -98,10 +98,16 @@ export function LinkNoteDialog({
       onClose={onClose}
       footer={
         <div className="button-row">
-          <button type="button" className="button" onClick={onClose}>
+          <button
+            data-superveil="click:link-note-dialog:cancel"
+            type="button"
+            className="button"
+            onClick={onClose}
+          >
             {t('cancel')}
           </button>
           <button
+            data-superveil="click:link-note-dialog:link-confirm"
             type="button"
             className="button button--primary"
             disabled={!targetNote || saving}
