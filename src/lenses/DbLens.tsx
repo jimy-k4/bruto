@@ -229,6 +229,7 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
                     .join(' ')}
                 >
                   <button
+                    data-superveil="click:db-lens:table-search-column"
                     type="button"
                     className="lens-search__go"
                     title={match.usedIn?.join('\n')}
@@ -309,6 +310,7 @@ export function DbLens({ model, context }: { model: DbModel; context: LensContex
 
               return (
                 <button
+                  data-superveil="click:db-lens:row-level-security"
                   key={table.name}
                   ref={(element) => {
                     if (element) tableElements.current.set(table.name, element)
@@ -420,6 +422,7 @@ function CopyName({ name }: { name: string }) {
 
   return (
     <button
+      data-superveil="click:db-lens:copy-name"
       type="button"
       className="button button--small"
       aria-label={copied ? t('copied') : t('copyName', { name })}
@@ -468,6 +471,7 @@ function PackageBlock({
   return (
     <article className={elementClasses('lens-package', context, key, program.paths, notes)}>
       <button
+        data-superveil="click:db-lens:focus-program"
         type="button"
         className="lens-package__head"
         aria-pressed={context.focusKey === key}
@@ -512,6 +516,7 @@ function PackageBlock({
           <span className="eyebrow">{t('lensUses')}</span>
           {program.tables.map((table) => (
             <button
+              data-superveil="click:db-lens:open-table"
               key={table}
               type="button"
               className="lens-chip"

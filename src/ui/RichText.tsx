@@ -29,6 +29,7 @@ export function CodeBlock({ code, language }: { code: string; language?: string 
       <div className="code-block__bar">
         <span className="code-block__language">{language || t('code')}</span>
         <button
+          data-superveil="click:rich-text:copy-code"
           type="button"
           className="code-block__copy"
           onPointerDown={stop}

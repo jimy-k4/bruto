@@ -82,6 +82,7 @@ export function AiContextDialog({
 
           <div className="button-row">
             <button
+              data-superveil="click:ai-context-dialog:discard"
               type="button"
               className="button"
               onClick={() => setDraft(workspace.aiContext)}
@@ -90,6 +91,7 @@ export function AiContextDialog({
               {t('discard')}
             </button>
             <button
+              data-superveil="click:ai-context-dialog:save-context"
               type="button"
               className="button button--primary"
               onClick={() => onSaveContext(draft)}
@@ -104,6 +106,7 @@ export function AiContextDialog({
           <div className="scope-tabs" role="radiogroup" aria-label={t('whatToCopy')}>
             {SCOPES.map((item) => (
               <button
+                data-superveil="click:ai-context-dialog:set-scope"
                 key={item.scope}
                 type="button"
                 role="radio"
@@ -128,6 +131,7 @@ export function AiContextDialog({
               {t('tokenEstimate', { count: estimateTokens(preview).toLocaleString() })}
             </span>
             <button
+              data-superveil="click:ai-context-dialog:copy"
               type="button"
               className="button button--primary"
               onClick={() => onCopy(scope, preview)}

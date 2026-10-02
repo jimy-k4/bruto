@@ -125,6 +125,7 @@ export function BoardSearch({
         </output>
 
         <button
+          data-superveil="click:board-search:previous-match"
           type="button"
           className="board-search__button"
           onClick={() => step(-1)}
@@ -135,6 +136,7 @@ export function BoardSearch({
           ↑
         </button>
         <button
+          data-superveil="click:board-search:next-match"
           type="button"
           className="board-search__button"
           onClick={() => step(1)}
@@ -145,6 +147,7 @@ export function BoardSearch({
           ↓
         </button>
         <button
+          data-superveil="click:board-search:close-search"
           type="button"
           className="board-search__button"
           onClick={onClose}
@@ -162,6 +165,7 @@ export function BoardSearch({
 
           return (
             <button
+              data-superveil="click:board-search:filter-cycle-hint"
               key={trait}
               type="button"
               className="board-search__trait"
@@ -185,6 +189,7 @@ export function BoardSearch({
         <div className="board-search__statuses" role="group" aria-label={t('filterByStatus')}>
           {statuses.map((status) => (
             <button
+              data-superveil="click:board-search:toggle-status"
               key={status}
               type="button"
               className={`status-badge status-badge--${status} board-search__status`}
@@ -201,6 +206,7 @@ export function BoardSearch({
         <div className="board-search__statuses" role="group" aria-label={t('filterByKind')}>
           {kinds.map((kind) => (
             <button
+              data-superveil="click:board-search:toggle-kind"
               key={kind}
               type="button"
               className={`status-badge status-badge--${kind === 'task' ? 'task' : KIND_STYLE_KEY[kind]} board-search__status`}

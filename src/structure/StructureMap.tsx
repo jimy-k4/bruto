@@ -145,6 +145,7 @@ export function StructureMap({
 
         return (
           <button
+            data-superveil="click:structure-map:folder-tag"
             key={node.path}
             type="button"
             className={classes.filter(Boolean).join(' ')}

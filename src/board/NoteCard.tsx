@@ -215,6 +215,7 @@ export const NoteCard = memo(function NoteCard({
               return (
                 <li key={linkKey(link)}>
                   <button
+                    data-superveil="click:note-card:cross-link-open"
                     type="button"
                     className={`note__cross-link note__cross-link--${link.kind}`}
                     title={t('crossLinkOpen', { title, project })}
@@ -251,6 +252,7 @@ export const NoteCard = memo(function NoteCard({
         {Boolean(note.aiResponse || note.aiFilePaths?.length) && (
           <div className="note__ai">
             <button
+              data-superveil="click:note-card:ai-response"
               type="button"
               className="note__ai-toggle"
               aria-expanded={aiOpen}

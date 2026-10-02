@@ -113,7 +113,12 @@ export function NoteEditor({
       onClose={onClose}
       autoFocus={false}
       footer={
-        <button type="button" className="button button--primary button--block" onClick={onClose}>
+        <button
+          data-superveil="click:note-editor:done"
+          type="button"
+          className="button button--primary button--block"
+          onClick={onClose}
+        >
           {t('done')}{' '}
           <kbd>
             {t('keyCtrl')} {t('keyEnter')}
@@ -184,7 +189,12 @@ export function NoteEditor({
               ))}
             </select>
           </div>
-          <button type="button" className="link-button" onClick={onOpenStatusStyles}>
+          <button
+            data-superveil="click:note-editor:customize-statuses"
+            type="button"
+            className="link-button"
+            onClick={onOpenStatusStyles}
+          >
             {t('customizeStatuses')} →
           </button>
           {Boolean(note.createdAt || note.sentBack) && (
@@ -247,6 +257,7 @@ export function NoteEditor({
                 />
                 {(links.length > 1 || link) && (
                   <button
+                    data-superveil="click:note-editor:remove-link"
                     type="button"
                     className="icon-button"
                     aria-label={t('removeItem', {
@@ -261,7 +272,12 @@ export function NoteEditor({
             ))}
           </ul>
 
-          <button type="button" className="button button--small" onClick={addLink}>
+          <button
+            data-superveil="click:note-editor:add-link"
+            type="button"
+            className="button button--small"
+            onClick={addLink}
+          >
             + {t('addLink')}
           </button>
         </fieldset>
@@ -281,7 +297,12 @@ export function NoteEditor({
             <p className="field__hint">{t('noFiles')}</p>
           )}
 
-          <button type="button" className="button button--small" onClick={onAddFiles}>
+          <button
+            data-superveil="click:note-editor:add-files"
+            type="button"
+            className="button button--small"
+            onClick={onAddFiles}
+          >
             + {t('addFiles')}
           </button>
         </fieldset>
@@ -301,6 +322,7 @@ export function NoteEditor({
               {note.images.map((path) => (
                 <li key={path} className="image-grid__item">
                   <button
+                    data-superveil="click:note-editor:open-image"
                     type="button"
                     className="image-grid__open"
                     onClick={() => onOpenFile(path)}
@@ -309,6 +331,7 @@ export function NoteEditor({
                     <ProjectImage path={path} alt="" className="image-grid__image" />
                   </button>
                   <button
+                    data-superveil="click:note-editor:remove-image"
                     type="button"
                     className="icon-button icon-button--small image-grid__remove"
                     onClick={() => removeFrom('images', path)}
@@ -324,6 +347,7 @@ export function NoteEditor({
           <p className="field__hint">{t('imagesHint')}</p>
 
           <button
+            data-superveil="click:note-editor:add-images"
             type="button"
             className="button button--small"
             onClick={() => imageInputRef.current?.click()}
@@ -347,6 +371,7 @@ export function NoteEditor({
         <fieldset className="field">
           <legend className="field__label">{t('agents')}</legend>
           <button
+            data-superveil="click:note-editor:agent-read-only"
             type="button"
             className="button button--small button--toggle"
             aria-pressed={note.agentAccess === 'read'}
@@ -422,6 +447,7 @@ export function NoteEditor({
             <div className="suggestion">
               <p>{t('feedbackStatusHint', { status: statusLabel(t, 'changes-requested') })}</p>
               <button
+                data-superveil="click:note-editor:mark-as-status"
                 type="button"
                 className="button button--small"
                 onClick={() => onChange({ status: 'changes-requested' })}
@@ -456,10 +482,16 @@ export function NoteEditor({
               <strong>{t('deleteNoteQuestion')}</strong>
               <p>{t('deleteNoteUndoHint')}</p>
               <div className="button-row">
-                <button type="button" className="button" onClick={() => setConfirmingDelete(false)}>
+                <button
+                  data-superveil="click:note-editor:cancel"
+                  type="button"
+                  className="button"
+                  onClick={() => setConfirmingDelete(false)}
+                >
                   {t('cancel')}
                 </button>
                 <button
+                  data-superveil="click:note-editor:delete"
                   type="button"
                   className="button button--danger"
                   onClick={onDelete}
@@ -471,6 +503,7 @@ export function NoteEditor({
             </div>
           ) : (
             <button
+              data-superveil="click:note-editor:delete-note"
               type="button"
               className="button button--danger"
               onClick={() => setConfirmingDelete(true)}

@@ -68,7 +68,12 @@ function FileRow({
     <tr className={info === 'missing' ? 'file-table__row--missing' : undefined}>
       <td title={path}>
         {onOpen ? (
-          <button type="button" className="link-button" onClick={() => onOpen(path)}>
+          <button
+            data-superveil="click:file-table:open"
+            type="button"
+            className="link-button"
+            onClick={() => onOpen(path)}
+          >
             {label}
           </button>
         ) : (
@@ -91,6 +96,7 @@ function FileRow({
       {onRemove && (
         <td>
           <button
+            data-superveil="click:file-table:remove-item"
             type="button"
             className="icon-button icon-button--small"
             onClick={() => onRemove(path)}

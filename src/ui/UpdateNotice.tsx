@@ -16,10 +16,16 @@ export function UpdateNotice({ onReload }: { onReload: () => void }) {
   return (
     <div className="update-notice" role="status">
       <span>{t('newVersionAvailable')}</span>
-      <button type="button" className="update-notice__button" onClick={onReload}>
+      <button
+        data-superveil="click:update-notice:reload-app"
+        type="button"
+        className="update-notice__button"
+        onClick={onReload}
+      >
         {t('reloadApp')}
       </button>
       <button
+        data-superveil="click:update-notice:close"
         type="button"
         className="update-notice__button"
         onClick={() => setDismissed(true)}

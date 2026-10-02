@@ -63,6 +63,7 @@ export function StatusStylesDialog({
         <div className="styles-import__sources">
           {sources.map((source) => (
             <button
+              data-superveil="click:status-styles-dialog:copy-from"
               key={source.id}
               type="button"
               className="button button--small"
@@ -71,7 +72,12 @@ export function StatusStylesDialog({
               {source.name}
             </button>
           ))}
-          <button type="button" className="button button--small" onClick={onPickSource}>
+          <button
+            data-superveil="click:status-styles-dialog:other-folder"
+            type="button"
+            className="button button--small"
+            onClick={onPickSource}
+          >
             {t('otherFolder')}
           </button>
         </div>
@@ -95,6 +101,7 @@ export function StatusStylesDialog({
 
                 {(config.color || config.pattern) && (
                   <button
+                    data-superveil="click:status-styles-dialog:clear-style"
                     type="button"
                     className="button button--small"
                     onClick={() => onChange(status, undefined)}

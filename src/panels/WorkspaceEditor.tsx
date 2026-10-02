@@ -26,7 +26,12 @@ export function WorkspaceEditor({
       title={workspace.title}
       onClose={onClose}
       footer={
-        <button type="button" className="button button--primary button--block" onClick={onClose}>
+        <button
+          data-superveil="click:workspace-editor:done"
+          type="button"
+          className="button button--primary button--block"
+          onClick={onClose}
+        >
           {t('done')}
         </button>
       }

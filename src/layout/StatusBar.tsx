@@ -44,13 +44,19 @@ export function StatusBar({
         )}
 
         {status.kind === 'error' && (
-          <button type="button" className="button button--small" onClick={onRetry}>
+          <button
+            data-superveil="click:status-bar:retry"
+            type="button"
+            className="button button--small"
+            onClick={onRetry}
+          >
             {t('retry')}
           </button>
         )}
 
         {status.kind === 'disk-invalid' && (
           <button
+            data-superveil="click:status-bar:overwrite-with-mine"
             type="button"
             className="button button--small button--danger"
             onClick={onOverwrite}

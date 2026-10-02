@@ -423,6 +423,7 @@ export function Board(props: BoardProps) {
           <span>{t('connectingHint')}</span>
 
           <button
+            data-superveil="click:board:cancel-connect"
             type="button"
             className="button button--small"
             onClick={() => props.onConnectingChange(null)}
@@ -437,6 +438,7 @@ export function Board(props: BoardProps) {
           <span>{t('connectionSelected')}</span>
 
           <button
+            data-superveil="click:board:delete"
             type="button"
             className="button button--small button--danger"
             onClick={() => props.onDeleteConnection(selectedConnection.id)}
@@ -445,6 +447,7 @@ export function Board(props: BoardProps) {
           </button>
 
           <button
+            data-superveil="click:board:clear-connection"
             type="button"
             className="button button--small"
             onClick={() => props.onSelectConnection(null)}
