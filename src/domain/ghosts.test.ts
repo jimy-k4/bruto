@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Connection, CrossLink, Note, Workspace } from '../types'
-import { ghostArrows, moveGhostZone, placeGhostZones, zonesFrom } from './ghosts'
+import { ghostArrows, moveGhostZone, placeGhostZones, zoneKey, zonesFrom } from './ghosts'
 import { parseWorkspace, serializeWorkspace } from './workspace'
 
 const note = (id: string, x: number, y: number, crossLinks?: CrossLink[]): Note => ({
@@ -82,7 +82,7 @@ describe('ghost zones', () => {
     expect(zone.notes[0].x + zone.offset.x).toBe(0 + 280 + 120)
     expect(zone.notes[0].y + zone.offset.y).toBe(100)
     expect(ghostArrows({ ...p2, ghosts })).toEqual([
-      { key: expect.any(String), from: { zone: 'p1', id: 'a' }, to: { id: 'd' }, directed: true },
+      { key: expect.any(String), from: { zone: 'p1:a', id: 'a' }, to: { id: 'd' }, directed: true },
     ])
   })
 
@@ -135,6 +135,37 @@ describe('ghost zones', () => {
     expect(pushed.map((zone) => zone.project)).toEqual(['api', 'front'])
   })
 
+  it('gives each group of joined notes its own zone, beside its own link', () => {
+    // Two chains in P1 that have nothing to do with each other, each linked to a note in P2.
+    const apart = board(
+      [...p1.notes, note('report', 3000, 900, [link('blocks', 'p2', 'answer')])],
+      p1.connections,
+    )
+    const here = board([...p2.notes, note('answer', 0, 900, [link('blocked-by', 'p1', 'report')])])
+    const zones = zonesFrom({ project: 'p1', workspace: apart }, { project: 'p2' }, NOW)
+    let workspace: Workspace = {
+      ...here,
+      ghosts: placeGhostZones(here, [{ origin: { project: 'p1' }, zones }], { project: 'p2' }),
+    }
+    const [chain, report] = workspace.ghosts!
+
+    expect(workspace.ghosts!.map((zone) => zone.notes.map((ghost) => ghost.id))).toEqual([
+      ['a', 'c', 'b'],
+      ['report'],
+    ])
+    // Each sits by its own note here, not where the other one's board put it.
+    expect(report.notes[0].y + report.offset.y).toBe(900)
+    expect(chain.notes[0].y + chain.offset.y).toBe(100)
+
+    // And each moves alone, keeping its place when read again.
+    workspace = moveGhostZone(workspace, zoneKey(report), { x: 5000, y: 5000 })
+    const again = placeGhostZones(workspace, [{ origin: { project: 'p1' }, zones }], {
+      project: 'p2',
+    })!
+
+    expect(again.map((zone) => zone.offset)).toEqual([chain.offset, { x: 5000, y: 5000 }])
+  })
+
   it('keeps where the user moved a zone, and the last copy of a project it can’t read', () => {
     const read = [
       {
@@ -144,7 +175,7 @@ describe('ghost zones', () => {
     ]
     let workspace: Workspace = { ...p2, ghosts: placeGhostZones(p2, read, { project: 'p2' }) }
 
-    workspace = moveGhostZone(workspace, 'P1', { x: -1000, y: 40.4 })
+    workspace = moveGhostZone(workspace, zoneKey(workspace.ghosts![0]), { x: -1000, y: 40.4 })
     expect(placeGhostZones(workspace, read, { project: 'p2' })![0].offset).toEqual({
       x: -1000,
       y: 40,
@@ -205,10 +236,10 @@ describe('ghost zones', () => {
     expect(frontZone.offset.x - apiZone.offset.x).toBe(apiFront.offset.x)
 
     expect(ghostArrows({ ...db, ghosts }).map(({ from, to }) => [from, to])).toEqual([
-      [{ zone: 'api', id: 'g' }, { id: 'h' }],
+      [{ zone: 'api:d', id: 'g' }, { id: 'h' }],
       [
-        { zone: 'front', id: 'c' },
-        { zone: 'api', id: 'd' },
+        { zone: 'front:a', id: 'c' },
+        { zone: 'api:d', id: 'd' },
       ],
     ])
   })

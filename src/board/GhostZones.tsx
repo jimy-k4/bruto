@@ -1,7 +1,7 @@
 import { memo, useMemo, useRef } from 'react'
 import type { GhostNote, GhostZone, Note, Point } from '../types'
 import { NOTE_MIN_SIZE } from '../domain/constants'
-import { ghostArrows, ghostKey, zoneKey, type GhostEnd } from '../domain/ghosts'
+import { ghostArrows, ghostKey, projectKey, zoneKey, type GhostEnd } from '../domain/ghosts'
 import { shortId } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
 import { formatAge } from '../ui/noteAge'
@@ -21,7 +21,8 @@ const ghostRect = (zone: GhostZone, ghost: GhostNote, sizes: NoteSizes): Rect =>
 export interface GhostZoneHandlers {
   observe: (id: string, element: HTMLElement) => () => void
   screenToWorld: (clientX: number, clientY: number) => Point
-  onMove: (project: string, offset: Point) => void
+  /** Moves a zone, by its key. */
+  onMove: (zone: string, offset: Point) => void
   onMoveEnd: () => void
   /** Goes to the zone's project, at one of its notes. */
   onOpen: (zone: GhostZone, noteId: string) => void
@@ -51,7 +52,9 @@ export const GhostZones = memo(function GhostZones({
     <GhostZoneView
       key={zoneKey(zone)}
       zone={zone}
-      state={states.get(zoneKey({ project: zone.hops > 1 && zone.via ? zone.via : zone.project }))}
+      state={states.get(
+        projectKey({ project: zone.hops > 1 && zone.via ? zone.via : zone.project }),
+      )}
       sizes={sizes}
       handlers={handlers}
       connectingFrom={connectingFrom}
@@ -117,7 +120,7 @@ function GhostZoneView({ zone, state, sizes, handlers, connectingFrom }: GhostZo
     const point = handlers.screenToWorld(event.clientX, event.clientY)
     const { start, offset } = drag.current
 
-    handlers.onMove(zone.project, {
+    handlers.onMove(zoneKey(zone), {
       x: offset.x + point.x - start.x,
       y: offset.y + point.y - start.y,
     })

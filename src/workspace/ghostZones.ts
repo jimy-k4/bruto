@@ -4,6 +4,7 @@ import { linkKey } from '../domain/crossLinks'
 import {
   parseGhostKey,
   placeGhostZones,
+  projectKey,
   zoneKey,
   zonesFrom,
   type ProjectRef,
@@ -76,10 +77,10 @@ async function readLinkedProjects(project: ActiveProject, ask?: string): Promise
 
   for (const origin of linkedProjects(project.store.getWorkspace())) {
     const target = await findLinkedProject(origin, recents)
-    const other = target && (await readOtherWorkspace(target, ask === zoneKey(origin)))
+    const other = target && (await readOtherWorkspace(target, ask === projectKey(origin)))
     const found = target ? { project: target.handle.name, projectId: target.id } : origin
 
-    states.set(zoneKey(origin), !target ? 'missing' : other ? 'read' : 'locked')
+    states.set(projectKey(origin), !target ? 'missing' : other ? 'read' : 'locked')
     read.push({
       origin: found,
       zones: other ? zonesFrom({ ...found, workspace: other }, here, now) : null,
@@ -131,7 +132,7 @@ export function useGhostZones(project: ActiveProject, workspace: Workspace) {
     (zone: GhostZone) =>
       readLinkedProjects(
         project,
-        zoneKey({ project: zone.hops > 1 && zone.via ? zone.via : zone.project }),
+        projectKey({ project: zone.hops > 1 && zone.via ? zone.via : zone.project }),
       ).then(apply),
     [project, apply],
   )
@@ -153,7 +154,10 @@ export async function linkWithGhost(
   const fromGhost = parseGhostKey(from)
   const end = fromGhost ?? parseGhostKey(to)
   const workspace = project.store.getWorkspace()
-  const zone = workspace.ghosts?.find((item) => end && zoneKey(item) === end.zone)
+  const zone = workspace.ghosts?.find(
+    (item) =>
+      end && projectKey(item) === end.project && item.notes.some((ghost) => ghost.id === end.id),
+  )
   const ghost = zone?.notes.find((item) => item.id === end?.id)
   const note = workspace.notes.find((item) => item.id === (fromGhost ? to : from))
   const target = zone && (await findLinkedProject(zone))

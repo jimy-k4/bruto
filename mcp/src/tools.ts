@@ -37,19 +37,30 @@ const standing = (note: Note) =>
 const byReadingOrder = (a: Note, b: Note) => a.y - b.y || a.x - b.x
 
 /** The user set this note to be read, not answered or moved. */
-/** The board's ghost zones, briefly: notes of linked projects to read, never to work on. */
-const ghostZones = (workspace: Workspace) =>
-  workspace.ghosts?.length
-    ? [
-        '',
-        `Ghost zones, read only: ${workspace.ghosts
-          .map(
-            (zone) =>
-              `"${zone.project}" (${zone.notes.length} note${zone.notes.length === 1 ? '' : 's'})`,
-          )
-          .join(', ')}. Notes of linked projects that lead to notes here: get_context shows them.`,
-      ]
-    : []
+const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`
+
+/** The board's ghost zones, briefly, by project: notes of linked projects to read, never to work on. */
+function ghostZones(workspace: Workspace): string[] {
+  const projects = new Map<string, { notes: number; zones: number }>()
+
+  for (const zone of workspace.ghosts ?? []) {
+    const seen = projects.get(zone.project) ?? { notes: 0, zones: 0 }
+
+    projects.set(zone.project, { notes: seen.notes + zone.notes.length, zones: seen.zones + 1 })
+  }
+
+  if (projects.size === 0) return []
+
+  const listed = [...projects].map(
+    ([project, { notes, zones }]) =>
+      `"${project}" (${plural(notes, 'note')}${zones > 1 ? ` in ${zones} zones` : ''})`,
+  )
+
+  return [
+    '',
+    `Ghost zones, read only: ${listed.join(', ')}. Notes of linked projects that lead to notes here: get_context shows them.`,
+  ]
+}
 
 function refuseReadOnly(note: Note) {
   if (note.agentAccess === 'read') {
