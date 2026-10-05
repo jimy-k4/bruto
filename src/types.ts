@@ -177,6 +177,49 @@ export interface Workspace {
   notes: Note[]
   connections: Connection[]
   statusStyles?: StatusStyles
+  /** Notes of linked projects that lead to notes here, copied from their boards. */
+  ghosts?: GhostZone[]
+}
+
+/**
+ * Notes of another project shown on this board, read only, laid out as on
+ * their own: the linked notes and the chain of arrows that leads to them.
+ * Kept apart from `notes` so nothing here, and no agent, edits or answers them.
+ */
+export interface GhostZone {
+  /** The other project's folder name, as links name it. */
+  project: string
+  projectId?: string
+  /** Moves the zone's notes from their own board's positions to where they sit on this one. */
+  offset: Point
+  notes: GhostNote[]
+  /** Arrows between them, as on their board. */
+  connections: Connection[]
+  /** When this copy was taken (ISO 8601). */
+  syncedAt: string
+  /** The project it was learned through, when it wasn't read from its own board. */
+  via?: string
+  /** Boards it went through to get here: 1 when read from its own. */
+  hops: number
+}
+
+/** What a ghost carries of its note: enough to know what it is and where it leads. */
+export interface GhostNote {
+  id: string
+  title: string
+  kind?: NoteKind
+  status?: NoteStatus
+  colorTheme: NoteColorTheme
+  pattern: NotePattern
+  /** Its position on its own board. */
+  x: number
+  y: number
+  /** The start of its description. */
+  description?: string
+  /** Paths in its own project, never in this one. */
+  files?: string[]
+  /** Its links to notes in other projects: how zones and notes here connect. */
+  crossLinks?: Pick<CrossLink, 'kind' | 'project' | 'projectId' | 'noteId'>[]
 }
 
 export type ContextScope = 'current' | 'connected' | 'entire'

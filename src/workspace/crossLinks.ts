@@ -37,7 +37,7 @@ export function linkedNote(link: CrossLink, info: Map<string, LinkedNoteInfo>) {
 /** This project as the other one's links name it. */
 const here = (project: ActiveProject) => ({ project: project.handle.name, projectId: project.id })
 
-const snapshot = (note: Note) => ({
+const snapshot = (note: Pick<Note, 'title' | 'status'>) => ({
   title: note.title,
   ...(note.status && { status: note.status }),
 })
@@ -52,7 +52,8 @@ export async function linkNotes(
   note: Note,
   kind: CrossLinkKind,
   target: RecentProject,
-  targetNote: Note,
+  /** A note there, or the ghost of one shown here. */
+  targetNote: Pick<Note, 'id' | 'title' | 'status'>,
 ): Promise<boolean> {
   const there = { project: target.handle.name, projectId: target.id, noteId: targetNote.id }
 

@@ -25,6 +25,7 @@ import {
   isNoteStatus,
 } from './constants'
 import { normalizeCrossLinks } from './crossLinks'
+import { normalizeGhostZones } from './ghosts'
 
 /** Thrown when `workspace.json` can't be understood. The message is shown to the user. */
 export class WorkspaceFormatError extends Error {
@@ -339,6 +340,11 @@ export function normalizeWorkspace(raw: unknown, fallbackTitle = 'BRUTO'): Works
 
   delete workspace.statusStyles
   if (statusStyles) workspace.statusStyles = statusStyles
+
+  const ghosts = normalizeGhostZones(raw.ghosts)
+
+  delete workspace.ghosts
+  if (ghosts) workspace.ghosts = ghosts
 
   // Up to v2 the status style overrode the note's own look at render time.
   // From v3 it is applied when the status changes, so bake it in once to keep

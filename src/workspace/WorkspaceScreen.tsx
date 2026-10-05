@@ -30,6 +30,8 @@ import { createWorkspaceActions } from './workspaceActions'
 import { useWorkspaceShortcuts } from './useWorkspaceShortcuts'
 import { useWorkspaceUi } from './useWorkspaceUi'
 import { useLinkSnapshotSync, useLinkedNotes } from './crossLinks'
+import { linkWithGhost, useGhostPush, useGhostZones } from './ghostZones'
+import { moveGhostZone, parseGhostKey } from '../domain/ghosts'
 
 // The structure view and its lenses are the heaviest part of the app: loaded on demand.
 const loadStructureView = () => import('../structure/StructureView')
@@ -67,6 +69,8 @@ export function WorkspaceScreen({
 
   const linkInfo = useLinkedNotes(project, workspace)
   useLinkSnapshotSync(project, workspace)
+  const ghostZones = useGhostZones(project, workspace)
+  useGhostPush(project, workspace)
 
   const openLink = async (link: CrossLink) => {
     if (!(await projects.openLinkedNote(link)))
@@ -239,12 +243,53 @@ export function WorkspaceScreen({
                 onMoveEnd={actions.endMove}
                 onMoveBy={actions.moveBy}
                 onConnectingChange={ui.setConnectingFrom}
-                onConnect={actions.connect}
+                onConnect={(from, to) => {
+                  const ghosts = [from, to].filter((key) => parseGhostKey(key)).length
+
+                  if (ghosts === 0) return actions.connect(from, to)
+                  if (ghosts === 2) return
+
+                  // An arrow to or from a ghost links the notes across projects.
+                  void linkWithGhost(project, from, to).then(({ result, project: name }) =>
+                    toast(
+                      result === 'linked'
+                        ? {
+                            tone: 'success',
+                            message: t('crossLinkLinked', { project: name.toUpperCase() }),
+                          }
+                        : result === 'one-sided'
+                          ? {
+                              tone: 'error',
+                              message: t('crossLinkOneSided', { project: name.toUpperCase() }),
+                            }
+                          : {
+                              tone: 'error',
+                              message: t('crossLinkNotFound', { project: name.toUpperCase() }),
+                            },
+                    ),
+                  )
+                }}
                 onSelectConnection={ui.setSelectedConnectionId}
                 onDeleteConnection={actions.deleteConnection}
                 onDuplicateForDrag={actions.duplicateForDrag}
                 onOpenLink={(link) => void openLink(link)}
                 linkInfo={linkInfo}
+                zoneStates={ghostZones.states}
+                onMoveZone={(zone, offset) =>
+                  project.store.update((current) => moveGhostZone(current, zone, offset), {
+                    group: 'zone-drag',
+                  })
+                }
+                onMoveZoneEnd={() => project.store.endGroup()}
+                onOpenGhost={(zone, noteId) =>
+                  void openLink({
+                    kind: 'related',
+                    project: zone.project,
+                    projectId: zone.projectId,
+                    noteId,
+                  })
+                }
+                onRefreshZone={(zone) => void ghostZones.refresh(zone)}
               />
 
               {search && (

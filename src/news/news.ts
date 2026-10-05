@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'ghost-zones',
+    date: '2026-10-05',
+    text: {
+      es: {
+        title: 'Zonas fantasma entre proyectos vinculados',
+        body: 'Cuando una nota está vinculada con otra de otro proyecto, la pizarra muestra esa nota en modo fantasma junto con la cadena de notas que lleva hasta ella, colocadas igual que allí. Las cadenas se encadenan: la BBDD ve las zonas del front y de la API. La zona se mueve entera, se actualiza con un botón y **Abrir** te lleva al original. Los bloqueos funcionan igual.',
+      },
+      en: {
+        title: 'Ghost zones across linked projects',
+        body: 'When a note is linked to one in another project, the board shows that note as a ghost, together with the chain of notes that leads to it, laid out as they are over there. Chains carry on: the database sees the front’s and the API’s zones. Move a zone as a whole, refresh it with a button, and **Open** takes you to the original. Blocks work as before.',
+      },
+      ca: {
+        title: 'Zones fantasma entre projectes vinculats',
+        body: 'Quan una nota està vinculada amb una altra d’un altre projecte, la pissarra mostra aquella nota en mode fantasma juntament amb la cadena de notes que hi porta, col·locades igual que allà. Les cadenes s’encadenen: la BD veu les zones del front i de l’API. La zona es mou sencera, s’actualitza amb un botó i **Obrir** et porta a l’original. Els bloquejos funcionen igual.',
+      },
+      fr: {
+        title: 'Zones fantômes entre projets liés',
+        body: 'Quand une note est liée à une note d’un autre projet, le tableau affiche cette note en fantôme, avec la chaîne de notes qui y mène, disposées comme là-bas. Les chaînes se suivent : la base de données voit les zones du front et de l’API. Une zone se déplace d’un bloc, s’actualise d’un bouton, et **Ouvrir** vous mène à l’original. Les blocages fonctionnent comme avant.',
+      },
+      de: {
+        title: 'Geisterzonen zwischen verknüpften Projekten',
+        body: 'Ist eine Notiz mit einer in einem anderen Projekt verknüpft, zeigt das Board diese Notiz als Geist, zusammen mit der Kette von Notizen, die zu ihr führt, so angeordnet wie dort. Ketten setzen sich fort: Die Datenbank sieht die Zonen von Frontend und API. Eine Zone verschiebst du als Ganzes, aktualisierst sie per Knopf, und **Öffnen** bringt dich zum Original. Blockaden funktionieren wie bisher.',
+      },
+      'pt-BR': {
+        title: 'Zonas fantasma entre projetos vinculados',
+        body: 'Quando uma nota está vinculada a outra de outro projeto, o quadro mostra essa nota como fantasma, junto com a cadeia de notas que leva até ela, dispostas como lá. As cadeias se encadeiam: o banco de dados vê as zonas do front e da API. A zona se move inteira, se atualiza com um botão e **Abrir** leva você ao original. Os bloqueios funcionam como antes.',
+      },
+      ru: {
+        title: 'Зоны-призраки между связанными проектами',
+        body: 'Если заметка связана с заметкой другого проекта, доска показывает ту заметку призраком вместе с цепочкой заметок, ведущей к ней, расположенных как там. Цепочки продолжаются: база данных видит зоны фронтенда и API. Зону можно двигать целиком и обновлять кнопкой, а **Открыть** ведёт к оригиналу. Блокировки работают как раньше.',
+      },
+      ja: {
+        title: 'リンクしたプロジェクト間のゴーストゾーン',
+        body: '別のプロジェクトのノートとリンクすると、そのノートと、そこにつながるノートの流れがゴーストとして表示されます。配置は元のボードと同じです。流れは連鎖します: データベースからはフロントと API のゾーンが見えます。ゾーンはまとめて動かせ、ボタンで更新でき、**開く** で元のプロジェクトへ移動します。ブロックはこれまでどおり機能します。',
+      },
+      zh: {
+        title: '关联项目之间的幽灵区域',
+        body: '当一条笔记关联到另一个项目的笔记时，看板会以幽灵形式显示那条笔记，以及通向它的笔记链，布局与原项目相同。链条会延续：数据库能看到前端和 API 的区域。区域可以整体移动、一键刷新，点击 **打开** 即可前往原项目。阻塞关系照常生效。',
+      },
+    },
+  },
+  {
     id: 'agent-working',
     date: '2026-10-01',
     text: {

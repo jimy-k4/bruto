@@ -620,6 +620,17 @@ export const es = {
   agentWorking: '{agent} trabajando',
   agentWorkingNotice:
     '{agent} está trabajando en esta nota. Si cambias lo mismo que la IA, se queda lo tuyo y se le avisa.',
+  ghostZone: 'Fantasma · {project}',
+  ghostZoneVia: 'vía {project}',
+  ghostZoneFresh: 'Al día',
+  ghostZoneLocked: 'Sin acceso',
+  ghostZoneMissing: 'Proyecto no encontrado',
+  ghostZoneCopy: 'Copia de hace {age}',
+  ghostZoneRefresh: 'Actualizar',
+  ghostZoneOpen: 'Abrir {project}',
+  ghostNote: 'nota fantasma',
+  ghostNoteOf: 'nota fantasma de {project}',
+  ghostNoteOpen: 'Doble clic: abrir en {project}',
   shortcutAltDrag: 'Duplicar arrastrando',
   shortcutAltDragDescription:
     'Arrastra una nota con Alt pulsada: se queda la original y te llevas la copia.',

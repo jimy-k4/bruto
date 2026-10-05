@@ -1,0 +1,437 @@
+import type { Connection, CrossLink, GhostNote, GhostZone, Note, Point, Workspace } from '../types'
+import { NOTE_MIN_SIZE, isNoteColor, isNoteKind, isNotePattern, isNoteStatus } from './constants'
+import { normalizeCrossLinks } from './crossLinks'
+
+/** How far zones travel: a board passes on the zones it holds, up to this many boards away. */
+export const MAX_HOPS = 3
+/** What a ghost keeps of its note: enough for people and models to tell what it is. */
+const DESCRIPTION_LENGTH = 400
+const MAX_FILES = 10
+/** Room left between a new zone and the note here it links to. */
+const PLACE_GAP = 120
+
+/** A project as links name it: its folder, and its id among this browser's recent projects. */
+export interface ProjectRef {
+  project: string
+  projectId?: string
+}
+
+export const sameProject = (a: ProjectRef, b: ProjectRef) =>
+  a.projectId && b.projectId
+    ? a.projectId === b.projectId
+    : a.project.toLowerCase() === b.project.toLowerCase()
+
+/** How a zone is told apart from the others on a board. */
+export const zoneKey = (zone: ProjectRef) => zone.project.toLowerCase()
+
+/** The notes an arrow chain leads from into `seeds`, seeds included. */
+function chainTo(workspace: Workspace, seeds: Set<string>): Set<string> {
+  const chain = new Set(seeds)
+  const queue = [...seeds]
+
+  while (queue.length > 0) {
+    const id = queue.shift()!
+
+    for (const connection of workspace.connections) {
+      if (connection.to === id && !chain.has(connection.from)) {
+        chain.add(connection.from)
+        queue.push(connection.from)
+      }
+    }
+  }
+
+  return chain
+}
+
+function toGhost(note: Note): GhostNote {
+  const description = note.description.trim()
+  const files = [...new Set([...note.filePaths, ...(note.aiFilePaths ?? [])])].slice(0, MAX_FILES)
+  const links = (note.crossLinks ?? []).map(({ kind, project, projectId, noteId }) => ({
+    kind,
+    project,
+    noteId,
+    ...(projectId && { projectId }),
+  }))
+
+  return {
+    id: note.id,
+    title: note.title,
+    ...(note.kind && { kind: note.kind }),
+    ...(note.status && { status: note.status }),
+    colorTheme: note.colorTheme,
+    pattern: note.pattern,
+    x: note.x,
+    y: note.y,
+    ...(description && {
+      description:
+        description.length > DESCRIPTION_LENGTH
+          ? `${description.slice(0, DESCRIPTION_LENGTH).trimEnd()}…`
+          : description,
+    }),
+    ...(files.length > 0 && { files }),
+    ...(links.length > 0 && { crossLinks: links }),
+  }
+}
+
+/**
+ * What a linked project's board brings here: its notes linked to this
+ * project and the chain of arrows that leads to them, plus the zones it holds
+ * that lead into that chain, from projects further away. Offsets are as on
+ * that board: its own notes at 0,0 and its zones where they sit around them.
+ */
+export function zonesFrom(
+  origin: ProjectRef & { workspace: Workspace },
+  here: ProjectRef,
+  now: string,
+): GhostZone[] {
+  const { workspace } = origin
+  const seeds = new Set(
+    workspace.notes
+      .filter((note) => note.crossLinks?.some((link) => sameProject(link, here)))
+      .map((note) => note.id),
+  )
+
+  if (seeds.size === 0) return []
+
+  const chain = chainTo(workspace, seeds)
+  const zone: GhostZone = {
+    project: origin.project,
+    ...(origin.projectId && { projectId: origin.projectId }),
+    offset: { x: 0, y: 0 },
+    notes: workspace.notes.filter((note) => chain.has(note.id)).map(toGhost),
+    connections: workspace.connections.filter(
+      (connection) => chain.has(connection.from) && chain.has(connection.to),
+    ),
+    syncedAt: now,
+    hops: 1,
+  }
+
+  // Its own zones that lead into the chain, as long as they aren't this project's or too far.
+  const passedOn = (workspace.ghosts ?? [])
+    .filter(
+      (other) =>
+        other.hops < MAX_HOPS &&
+        !sameProject(other, here) &&
+        !sameProject(other, origin) &&
+        other.notes.some((ghost) =>
+          ghost.crossLinks?.some((link) => sameProject(link, origin) && chain.has(link.noteId)),
+        ),
+    )
+    .map((other) => ({ ...other, via: origin.project, hops: other.hops + 1 }))
+
+  return [zone, ...passedOn]
+}
+
+const averageX = (points: Point[]) =>
+  points.reduce((sum, point) => sum + point.x, 0) / points.length
+
+/**
+ * Where a new zone goes: wholly beside the note here it links to, level with
+ * it, on the side that keeps the flow of the boards. A chain that runs
+ * leftwards (what leads to a note sits right of it) keeps running leftwards;
+ * the zone's own chain tells, or else the arrows into the note here, or else
+ * what blocks goes left and what waits goes right. A side where the zone
+ * would cover notes here gives way to the other.
+ */
+function placement(workspace: Workspace, origin: ProjectRef, zone: GhostZone): Point {
+  const left = Math.min(...zone.notes.map((ghost) => ghost.x))
+  const right = Math.max(...zone.notes.map((ghost) => ghost.x)) + NOTE_MIN_SIZE.width
+  const top = Math.min(...zone.notes.map((ghost) => ghost.y))
+  const bottom = Math.max(...zone.notes.map((ghost) => ghost.y)) + NOTE_MIN_SIZE.height
+  const notesById = new Map(workspace.notes.map((note) => [note.id, note]))
+
+  for (const note of workspace.notes) {
+    for (const link of note.crossLinks ?? []) {
+      const ghost = sameProject(link, origin) && zone.notes.find((item) => item.id === link.noteId)
+
+      if (!ghost) continue
+
+      const rest = zone.notes.filter((item) => item !== ghost)
+      const before = workspace.connections
+        .filter((connection) => connection.to === note.id)
+        .flatMap((connection) => notesById.get(connection.from) ?? [])
+      const flowsLeft =
+        rest.length > 0 ? averageX(rest) > ghost.x : before.length > 0 && averageX(before) > note.x
+      const preferRight = link.kind === 'blocks' ? !flowsLeft : flowsLeft
+      const y = Math.round(note.y - ghost.y)
+      const at = (onRight: boolean): Point => ({
+        x: Math.round(
+          onRight ? note.x + NOTE_MIN_SIZE.width + PLACE_GAP - left : note.x - PLACE_GAP - right,
+        ),
+        y,
+      })
+      const covers = ({ x }: Point) =>
+        workspace.notes.some(
+          (other) =>
+            other.x < x + right &&
+            other.x + NOTE_MIN_SIZE.width > x + left &&
+            other.y < y + bottom &&
+            other.y + NOTE_MIN_SIZE.height > y + top,
+        )
+      const preferred = at(preferRight)
+
+      return covers(preferred) && !covers(at(!preferRight)) ? at(!preferRight) : preferred
+    }
+  }
+
+  return { x: -left, y: -top }
+}
+
+/** Two copies of one project's zone, from different paths: every note once, the nearest copy first. */
+function mergeZones(kept: GhostZone, other: GhostZone): GhostZone {
+  const [near, far] = other.hops < kept.hops ? [other, kept] : [kept, other]
+  const notes = new Map(far.notes.map((ghost) => [ghost.id, ghost]))
+  const connections = new Map(far.connections.map((connection) => [connection.id, connection]))
+
+  for (const ghost of near.notes) notes.set(ghost.id, ghost)
+  for (const connection of near.connections) connections.set(connection.id, connection)
+
+  return {
+    ...near,
+    offset: kept.offset,
+    notes: [...notes.values()],
+    connections: [...connections.values()],
+  }
+}
+
+/** What reading one linked project gave: its zones, or `null` when it couldn't be read. */
+export interface ReadProject {
+  origin: ProjectRef
+  zones: GhostZone[] | null
+}
+
+/** The project whose board a zone was copied from: its own, or the one that passed it on. */
+const broughtBy = (zone: GhostZone): ProjectRef => ({
+  project: zone.hops > 1 && zone.via ? zone.via : zone.project,
+})
+
+/**
+ * This board's zones after reading the projects it links to. Zones stay
+ * where the user put them; new ones go beside the note here they link to.
+ * A project that couldn't be read keeps its last copy, and so do the zones
+ * it brought. One zone per project, never this one's. With `keepOthers`,
+ * zones brought by projects not in `read` stay too: one project pushing its
+ * own news leaves the rest alone.
+ */
+export function placeGhostZones(
+  workspace: Workspace,
+  read: ReadProject[],
+  here: ProjectRef,
+  { keepOthers = false } = {},
+): GhostZone[] | undefined {
+  const previous = workspace.ghosts ?? []
+  const result: GhostZone[] = []
+
+  const add = (zone: GhostZone) => {
+    if (sameProject(zone, here)) return
+
+    const index = result.findIndex((item) => sameProject(item, zone))
+
+    if (index === -1) result.push(zone)
+    else result[index] = mergeZones(result[index], zone)
+  }
+
+  for (const { origin, zones } of read) {
+    if (!zones) {
+      for (const zone of previous) if (sameProject(broughtBy(zone), origin)) add(zone)
+      continue
+    }
+
+    if (zones.length === 0) continue
+
+    const own = previous.find((zone) => zone.hops === 1 && sameProject(zone, origin))
+    const base = own?.offset ?? placement(workspace, origin, zones[0])
+
+    for (const zone of zones) {
+      const before = previous.find((item) => sameProject(item, zone))
+
+      add({
+        ...zone,
+        offset: before?.offset ?? { x: zone.offset.x + base.x, y: zone.offset.y + base.y },
+      })
+    }
+  }
+
+  if (keepOthers) {
+    for (const zone of previous) {
+      if (!read.some(({ origin }) => sameProject(broughtBy(zone), origin))) add(zone)
+    }
+  }
+
+  return result.length > 0 ? result : undefined
+}
+
+/** How a ghost is told apart from notes wherever ids meet: sizes, connecting. */
+export const ghostKey = (zone: ProjectRef, id: string) => `ghost|${zoneKey(zone)}|${id}`
+
+export function parseGhostKey(key: string): { zone: string; id: string } | null {
+  const [mark, zone, id] = key.split('|')
+
+  return mark === 'ghost' && zone && id ? { zone, id } : null
+}
+
+export function moveGhostZone(workspace: Workspace, project: string, offset: Point): Workspace {
+  return {
+    ...workspace,
+    ghosts: workspace.ghosts?.map((zone) =>
+      zoneKey(zone) === project.toLowerCase()
+        ? { ...zone, offset: { x: Math.round(offset.x), y: Math.round(offset.y) } }
+        : zone,
+    ),
+  }
+}
+
+/** The ghost a short id like "a1b2c3" or "[a1b2c3]" points at, if any. */
+export function findGhost(
+  workspace: Workspace,
+  reference: string,
+): { zone: GhostZone; ghost: GhostNote } | null {
+  const prefix = reference
+    .trim()
+    .replace(/^\[|\]$/g, '')
+    .toLowerCase()
+
+  if (!prefix) return null
+
+  for (const zone of workspace.ghosts ?? [])
+    for (const ghost of zone.notes)
+      if (ghost.id.toLowerCase().startsWith(prefix)) return { zone, ghost }
+
+  return null
+}
+
+/** One end of an arrow across projects: a note here, or a ghost in a zone. */
+export interface GhostEnd {
+  /** The zone's key; absent for a note of this board. */
+  zone?: string
+  id: string
+}
+
+export interface GhostArrow {
+  key: string
+  from: GhostEnd
+  to: GhostEnd
+  /** "Related" links have no direction. */
+  directed: boolean
+}
+
+const endKey = (end: GhostEnd) => `${end.zone ?? ''}|${end.id}`
+
+/**
+ * The arrows between this board and its zones, and between zones: one per
+ * linked pair, pointing from what blocks to what waits on it.
+ */
+export function ghostArrows({ notes, ghosts }: Pick<Workspace, 'notes' | 'ghosts'>): GhostArrow[] {
+  const zones = ghosts ?? []
+  const arrows = new Map<string, GhostArrow>()
+
+  const add = (
+    end: GhostEnd,
+    link: Pick<CrossLink, 'kind' | 'project' | 'projectId' | 'noteId'>,
+  ) => {
+    const zone = zones.find((item) => sameProject(item, link))
+
+    if (!zone?.notes.some((ghost) => ghost.id === link.noteId)) return
+
+    const other = { zone: zoneKey(zone), id: link.noteId }
+    const key = [endKey(end), endKey(other)].sort().join('>')
+
+    if (arrows.has(key)) return
+
+    const [from, to] = link.kind === 'blocked-by' ? [other, end] : [end, other]
+
+    arrows.set(key, { key, from, to, directed: link.kind !== 'related' })
+  }
+
+  for (const note of notes) for (const link of note.crossLinks ?? []) add({ id: note.id }, link)
+
+  for (const zone of zones)
+    for (const ghost of zone.notes)
+      for (const link of ghost.crossLinks ?? []) add({ zone: zoneKey(zone), id: ghost.id }, link)
+
+  return [...arrows.values()]
+}
+
+// ---------------------------------------------------------------------------
+// Reading the file
+
+type UnknownRecord = Record<string, unknown>
+
+const isRecord = (value: unknown): value is UnknownRecord =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const isNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value)
+
+function normalizeGhostNote(raw: UnknownRecord): GhostNote | null {
+  if (typeof raw.id !== 'string' || !raw.id || !isNumber(raw.x) || !isNumber(raw.y)) return null
+
+  const files = Array.isArray(raw.files)
+    ? raw.files.filter((file): file is string => typeof file === 'string')
+    : []
+  const links = normalizeCrossLinks(raw.crossLinks).map(({ kind, project, projectId, noteId }) => ({
+    kind,
+    project,
+    noteId,
+    ...(projectId && { projectId }),
+  }))
+
+  return {
+    id: raw.id,
+    title: typeof raw.title === 'string' ? raw.title : '',
+    ...(isNoteKind(raw.kind) && { kind: raw.kind }),
+    ...(isNoteStatus(raw.status) && { status: raw.status }),
+    colorTheme: isNoteColor(raw.colorTheme) ? raw.colorTheme : 'concrete',
+    pattern: isNotePattern(raw.pattern) ? raw.pattern : 'raw',
+    x: raw.x,
+    y: raw.y,
+    ...(typeof raw.description === 'string' && raw.description && { description: raw.description }),
+    ...(files.length > 0 && { files }),
+    ...(links.length > 0 && { crossLinks: links }),
+  }
+}
+
+/** Valid zones only, one per project: a hand-edited file never breaks the board. */
+export function normalizeGhostZones(value: unknown): GhostZone[] | undefined {
+  if (!Array.isArray(value)) return undefined
+
+  const zones: GhostZone[] = []
+
+  for (const raw of value) {
+    if (!isRecord(raw) || typeof raw.project !== 'string' || !raw.project.trim()) continue
+
+    const project = raw.project
+    const offset = isRecord(raw.offset) ? raw.offset : {}
+    const notes = (Array.isArray(raw.notes) ? raw.notes : [])
+      .filter(isRecord)
+      .map(normalizeGhostNote)
+      .filter((ghost): ghost is GhostNote => ghost !== null)
+    const ids = new Set(notes.map((ghost) => ghost.id))
+    const connections = (Array.isArray(raw.connections) ? raw.connections : [])
+      .filter(isRecord)
+      .filter(
+        (item): item is UnknownRecord & Connection =>
+          typeof item.id === 'string' &&
+          typeof item.from === 'string' &&
+          typeof item.to === 'string' &&
+          ids.has(item.from) &&
+          ids.has(item.to),
+      )
+      .map(({ id, from, to }) => ({ id, from, to }))
+
+    if (notes.length === 0 || zones.some((zone) => sameProject(zone, { project }))) continue
+
+    zones.push({
+      project,
+      ...(typeof raw.projectId === 'string' && raw.projectId && { projectId: raw.projectId }),
+      offset: { x: isNumber(offset.x) ? offset.x : 0, y: isNumber(offset.y) ? offset.y : 0 },
+      notes,
+      connections,
+      syncedAt: typeof raw.syncedAt === 'string' ? raw.syncedAt : '',
+      ...(typeof raw.via === 'string' && raw.via && { via: raw.via }),
+      hops: isNumber(raw.hops) && raw.hops >= 1 ? Math.round(raw.hops) : 1,
+    })
+  }
+
+  return zones.length > 0 ? zones : undefined
+}

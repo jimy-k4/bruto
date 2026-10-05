@@ -1,6 +1,7 @@
 import { isAbsolute, relative } from 'node:path'
 import type { Note, NoteKind, NoteStatus, Point, Workspace } from '../../src/types'
-import { buildAiContext, describeNote } from '../../src/domain/aiContext'
+import { buildAiContext, describeGhostNote, describeNote } from '../../src/domain/aiContext'
+import { findGhost } from '../../src/domain/ghosts'
 import { CLOSED_STATUSES, NOTE_MIN_SIZE } from '../../src/domain/constants'
 import { kindOf, searchNotes as findNotes, type KindFilter } from '../../src/domain/search'
 import {
@@ -36,6 +37,20 @@ const standing = (note: Note) =>
 const byReadingOrder = (a: Note, b: Note) => a.y - b.y || a.x - b.x
 
 /** The user set this note to be read, not answered or moved. */
+/** The board's ghost zones, briefly: notes of linked projects to read, never to work on. */
+const ghostZones = (workspace: Workspace) =>
+  workspace.ghosts?.length
+    ? [
+        '',
+        `Ghost zones, read only: ${workspace.ghosts
+          .map(
+            (zone) =>
+              `"${zone.project}" (${zone.notes.length} note${zone.notes.length === 1 ? '' : 's'})`,
+          )
+          .join(', ')}. Notes of linked projects that lead to notes here: get_context shows them.`,
+      ]
+    : []
+
 function refuseReadOnly(note: Note) {
   if (note.agentAccess === 'read') {
     throw new BoardError(
@@ -78,6 +93,7 @@ export function listNotes(
     ...header,
     '',
     ...notes.map((note) => `- ${ref(note)} — ${standing(note)}`),
+    ...ghostZones(workspace),
     '',
     'Read one with get_note, or everything the AI needs with get_context.',
   ].join('\n')
@@ -148,6 +164,25 @@ export function getContext(
 
 export function getNote(root: string, id: string): string {
   const workspace = readBoard(root)
+  const prefix = id
+    .trim()
+    .replace(/^\[|\]$/g, '')
+    .toLowerCase()
+  const ghost =
+    !workspace.notes.some((item) => item.id.toLowerCase().startsWith(prefix)) &&
+    findGhost(workspace, id)
+
+  // A ghost is read here, never worked on: it says where it is.
+  if (ghost) {
+    return [
+      `### Ghost of a note in project "${ghost.zone.project}" (read only)`,
+      '',
+      ...describeGhostNote(ghost.zone, ghost.ghost),
+      '',
+      'It is worked on in its own project: never answer or change it here.',
+    ].join('\n')
+  }
+
   const note = resolveNote(workspace, id)
   const refsOf = (ids: string[]) =>
     ids

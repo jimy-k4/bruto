@@ -775,3 +775,107 @@
   background: var(--status-loop);
   color: var(--bg);
 }
+
+/* Ghost zones ------------------------------------------------------------------ */
+
+/*
+ * Notes of a linked project, read only and laid out as on their own board:
+ * a dotted perimeter around them, the notes see-through with dotted edges and
+ * their body striped in a lighter shade of their own colour.
+ */
+.ghost-zone__frame {
+  position: absolute;
+  border: var(--border) dotted var(--line);
+  cursor: grab;
+  transition:
+    border-color var(--speed),
+    background-color var(--speed);
+}
+
+.ghost-zone:hover .ghost-zone__frame,
+.ghost-zone:focus-within .ghost-zone__frame {
+  border-color: var(--signal);
+  background-color: color-mix(in srgb, var(--signal) 6%, transparent);
+}
+
+.ghost-zone__label {
+  position: absolute;
+  bottom: 100%;
+  left: calc(-1 * var(--border));
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  color: var(--ink-muted);
+  font: 700 var(--text-xs) / 1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ghost-zone__name {
+  padding: 5px 8px;
+  border: var(--border) dotted var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* What can be done with the zone shows where the pointer or the keyboard is. */
+.ghost-zone__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: var(--space-2);
+  opacity: 0;
+  transition: opacity var(--speed);
+}
+
+.ghost-zone:hover .ghost-zone__actions,
+.ghost-zone:focus-within .ghost-zone__actions {
+  opacity: 1;
+}
+
+.note.note--ghost {
+  border: var(--border) dotted var(--line);
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--note-bg) 58%, var(--bg)) 0 7px,
+    color-mix(in srgb, var(--note-bg) 40%, var(--bg)) 7px 14px
+  );
+  box-shadow: none;
+  opacity: 0.72;
+  transition: opacity var(--speed);
+}
+
+.note.note--ghost:hover {
+  translate: none;
+  box-shadow: none;
+  opacity: 0.95;
+}
+
+.note--ghost .note__description {
+  overflow-wrap: anywhere;
+}
+
+.note--ghost__files {
+  margin: auto 0 0;
+  font: 600 var(--text-xs) / 1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+  text-transform: uppercase;
+}
+
+.ghost-arrow {
+  fill: none;
+  stroke: var(--line);
+  stroke-dasharray: 2 6;
+  stroke-linecap: round;
+  stroke-width: var(--connection-width);
+  opacity: 0.55;
+}
+
+/* Between projects: the link itself, a longer dash. */
+.ghost-arrow--across {
+  stroke-dasharray: 8 6;
+  stroke-linecap: butt;
+  opacity: 0.85;
+}

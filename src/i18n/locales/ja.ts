@@ -612,6 +612,17 @@ export const ja: Locale = {
   agentWorking: '{agent} 作業中',
   agentWorkingNotice:
     '{agent} がこのノートで作業中です。AI と同じ箇所を変更すると、あなたの変更が残り、AI に通知されます。',
+  ghostZone: 'ゴースト · {project}',
+  ghostZoneVia: '{project} 経由',
+  ghostZoneFresh: '最新',
+  ghostZoneLocked: 'アクセス権なし',
+  ghostZoneMissing: 'プロジェクトが見つかりません',
+  ghostZoneCopy: '{age}前のコピー',
+  ghostZoneRefresh: '更新',
+  ghostZoneOpen: '{project} を開く',
+  ghostNote: 'ゴーストノート',
+  ghostNoteOf: '{project} のゴーストノート',
+  ghostNoteOpen: 'ダブルクリック: {project} で開く',
   shortcutAltDrag: 'ドラッグで複製',
   shortcutAltDragDescription:
     'Alt を押しながらノートをドラッグすると、元のノートは残り、コピーを動かせます。',

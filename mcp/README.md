@@ -98,6 +98,13 @@ In a client's settings or a `.mcp.json`:
 Reading tools are marked read-only, so clients can let them run without asking. None of the tools
 deletes anything.
 
+### Ghost zones
+
+A board can hold ghost zones: read-only copies of the notes in linked projects that lead to notes
+here, kept by the app in `ghosts`. `get_context` describes them, with their project and how old the
+copy is, `list_notes` names them and `get_note` reads one. Writing tools refuse them and say which
+project they are worked on in.
+
 And one prompt, `work_on_notes`: fix what was sent back, then do the `todo` notes one by one.
 
 ## Who did what

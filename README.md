@@ -44,6 +44,11 @@ Prefer to run it yourself? See [Development](#development).
 - **Notes across projects.** A note can block, be blocked by or relate to a note in another project
   (Front, CMS, database…). Both boards show the link; the blocked note wears hazard tape until the
   other one is closed, and one click opens the other project with that note in view.
+- **Ghost zones.** A linked project shows up on the board, read only: its linked note and the chain
+  of notes that leads to it, laid out as on its own board, with dotted lines. Chains carry on (the
+  database sees the front through the API), a zone moves as a whole, refreshes with a button and
+  opens its project; an arrow from a ghost to a note links them on both boards. The AI and the MCP
+  server read the zones too, and never edit them.
 - **Formatting.** Notes show Markdown; the editor's **Formatting** link opens a cheat sheet with each
   example next to how it looks.
 - **What's new.** Every feature gets an entry in the top bar's noticeboard the day it ships, with a
