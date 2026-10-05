@@ -27,7 +27,7 @@ export interface BoardCallbacks {
   onDeleteConnection: (id: string) => void
   /** Follows a link to a note in another project. */
   onOpenLink: (link: CrossLink) => void
-  onMoveZone: (project: string, offset: Point) => void
+  onMoveZone: (zone: string, offset: Point) => void
   onMoveZoneEnd: () => void
   /** Goes to a ghost zone's project, at one of its notes. */
   onOpenGhost: (zone: GhostZone, noteId: string) => void

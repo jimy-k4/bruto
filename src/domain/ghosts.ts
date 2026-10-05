@@ -21,8 +21,54 @@ export const sameProject = (a: ProjectRef, b: ProjectRef) =>
     ? a.projectId === b.projectId
     : a.project.toLowerCase() === b.project.toLowerCase()
 
-/** How a zone is told apart from the others on a board. */
-export const zoneKey = (zone: ProjectRef) => zone.project.toLowerCase()
+/** How a project is told apart: the copies' freshness goes by project. */
+export const projectKey = (ref: ProjectRef) => ref.project.toLowerCase()
+
+/**
+ * How a zone is told apart from the others on a board: its project and its
+ * first note. A project can bring several zones, one per group of notes
+ * joined by arrows there.
+ */
+export const zoneKey = (zone: GhostZone) =>
+  `${projectKey(zone)}:${zone.notes.map((ghost) => ghost.id).sort()[0] ?? ''}`
+
+/** A zone cut into its groups of notes joined by arrows: unrelated chains get a zone each. */
+function splitZone(zone: GhostZone): GhostZone[] {
+  const groupOf = new Map<string, number>()
+  let groups = 0
+
+  for (const ghost of zone.notes) {
+    if (groupOf.has(ghost.id)) continue
+
+    const queue = [ghost.id]
+
+    groupOf.set(ghost.id, groups)
+
+    while (queue.length > 0) {
+      const id = queue.shift()!
+
+      for (const { from, to } of zone.connections) {
+        const other = from === id ? to : to === id ? from : null
+
+        if (other && !groupOf.has(other)) {
+          groupOf.set(other, groups)
+          queue.push(other)
+        }
+      }
+    }
+
+    groups++
+  }
+
+  return Array.from({ length: groups }, (_, group) => ({
+    ...zone,
+    notes: zone.notes.filter((ghost) => groupOf.get(ghost.id) === group),
+    connections: zone.connections.filter((connection) => groupOf.get(connection.from) === group),
+  }))
+}
+
+const sharesNotes = (a: GhostZone, b: GhostZone) =>
+  sameProject(a, b) && a.notes.some((ghost) => b.notes.some((other) => other.id === ghost.id))
 
 /** The notes an arrow chain leads from into `seeds`, seeds included. */
 function chainTo(workspace: Workspace, seeds: Set<string>): Set<string> {
@@ -94,7 +140,7 @@ export function zonesFrom(
   if (seeds.size === 0) return []
 
   const chain = chainTo(workspace, seeds)
-  const zone: GhostZone = {
+  const whole: GhostZone = {
     project: origin.project,
     ...(origin.projectId && { projectId: origin.projectId }),
     offset: { x: 0, y: 0 },
@@ -119,7 +165,7 @@ export function zonesFrom(
     )
     .map((other) => ({ ...other, via: origin.project, hops: other.hops + 1 }))
 
-  return [zone, ...passedOn]
+  return [...splitZone(whole), ...passedOn]
 }
 
 const averageX = (points: Point[]) =>
@@ -177,21 +223,39 @@ function placement(workspace: Workspace, origin: ProjectRef, zone: GhostZone): P
   return { x: -left, y: -top }
 }
 
-/** Two copies of one project's zone, from different paths: every note once, the nearest copy first. */
-function mergeZones(kept: GhostZone, other: GhostZone): GhostZone {
-  const [near, far] = other.hops < kept.hops ? [other, kept] : [kept, other]
-  const notes = new Map(far.notes.map((ghost) => [ghost.id, ghost]))
-  const connections = new Map(far.connections.map((connection) => [connection.id, connection]))
+/**
+ * One project's copies, from every path, as its groups: every note once (the
+ * nearest copy wins), then split by arrows. Each group keeps the place and
+ * the details of the first copy that has one of its notes.
+ */
+function regroup(copies: GhostZone[]): GhostZone[] {
+  const nearest = [...copies].sort((a, b) => a.hops - b.hops)
+  const notes = new Map<string, GhostNote>()
+  const connections = new Map<string, Connection>()
 
-  for (const ghost of near.notes) notes.set(ghost.id, ghost)
-  for (const connection of near.connections) connections.set(connection.id, connection)
+  // In the order they came, each note as its nearest copy has it.
+  for (const copy of copies) {
+    for (const ghost of copy.notes) {
+      const best = nearest.find((item) => item.notes.some((other) => other.id === ghost.id))!
 
-  return {
-    ...near,
-    offset: kept.offset,
+      if (!notes.has(ghost.id))
+        notes.set(
+          ghost.id,
+          best.notes.find((other) => other.id === ghost.id)!,
+        )
+    }
+    for (const connection of copy.connections) connections.set(connection.id, connection)
+  }
+
+  return splitZone({
+    ...nearest[0],
     notes: [...notes.values()],
     connections: [...connections.values()],
-  }
+  }).map((group) => {
+    const first = copies.find((copy) => sharesNotes(copy, group)) ?? nearest[0]
+
+    return { ...first, notes: group.notes, connections: group.connections }
+  })
 }
 
 /** What reading one linked project gave: its zones, or `null` when it couldn't be read. */
@@ -220,16 +284,14 @@ export function placeGhostZones(
   { keepOthers = false } = {},
 ): GhostZone[] | undefined {
   const previous = workspace.ghosts ?? []
-  const result: GhostZone[] = []
+  const copies: GhostZone[] = []
 
   const add = (zone: GhostZone) => {
-    if (sameProject(zone, here)) return
-
-    const index = result.findIndex((item) => sameProject(item, zone))
-
-    if (index === -1) result.push(zone)
-    else result[index] = mergeZones(result[index], zone)
+    if (!sameProject(zone, here)) copies.push(zone)
   }
+
+  /** Where a group sat before, when one of its notes was on this board already. */
+  const before = (zone: GhostZone) => previous.find((item) => sharesNotes(item, zone))?.offset
 
   for (const { origin, zones } of read) {
     if (!zones) {
@@ -239,15 +301,19 @@ export function placeGhostZones(
 
     if (zones.length === 0) continue
 
-    const own = previous.find((zone) => zone.hops === 1 && sameProject(zone, origin))
-    const base = own?.offset ?? placement(workspace, origin, zones[0])
+    // Its own groups each go beside the note here they link to; zones it passes on keep
+    // their place around its first group, as on its board.
+    const placed = zones
+      .filter((zone) => zone.hops === 1)
+      .map((zone) => ({ ...zone, offset: before(zone) ?? placement(workspace, origin, zone) }))
+    const base = placed[0]?.offset ?? { x: 0, y: 0 }
 
-    for (const zone of zones) {
-      const before = previous.find((item) => sameProject(item, zone))
+    placed.forEach(add)
 
+    for (const zone of zones.filter((item) => item.hops > 1)) {
       add({
         ...zone,
-        offset: before?.offset ?? { x: zone.offset.x + base.x, y: zone.offset.y + base.y },
+        offset: before(zone) ?? { x: zone.offset.x + base.x, y: zone.offset.y + base.y },
       })
     }
   }
@@ -258,23 +324,29 @@ export function placeGhostZones(
     }
   }
 
+  const projects = [...new Set(copies.map(projectKey))]
+  const result = projects.flatMap((key) =>
+    regroup(copies.filter((copy) => projectKey(copy) === key)),
+  )
+
   return result.length > 0 ? result : undefined
 }
 
 /** How a ghost is told apart from notes wherever ids meet: sizes, connecting. */
-export const ghostKey = (zone: ProjectRef, id: string) => `ghost|${zoneKey(zone)}|${id}`
+export const ghostKey = (zone: ProjectRef, id: string) => `ghost|${projectKey(zone)}|${id}`
 
-export function parseGhostKey(key: string): { zone: string; id: string } | null {
-  const [mark, zone, id] = key.split('|')
+export function parseGhostKey(key: string): { project: string; id: string } | null {
+  const [mark, project, id] = key.split('|')
 
-  return mark === 'ghost' && zone && id ? { zone, id } : null
+  return mark === 'ghost' && project && id ? { project, id } : null
 }
 
-export function moveGhostZone(workspace: Workspace, project: string, offset: Point): Workspace {
+/** Moves one zone, by its key, to a new place on this board. */
+export function moveGhostZone(workspace: Workspace, key: string, offset: Point): Workspace {
   return {
     ...workspace,
     ghosts: workspace.ghosts?.map((zone) =>
-      zoneKey(zone) === project.toLowerCase()
+      zoneKey(zone) === key
         ? { ...zone, offset: { x: Math.round(offset.x), y: Math.round(offset.y) } }
         : zone,
     ),
@@ -329,9 +401,11 @@ export function ghostArrows({ notes, ghosts }: Pick<Workspace, 'notes' | 'ghosts
     end: GhostEnd,
     link: Pick<CrossLink, 'kind' | 'project' | 'projectId' | 'noteId'>,
   ) => {
-    const zone = zones.find((item) => sameProject(item, link))
+    const zone = zones.find(
+      (item) => sameProject(item, link) && item.notes.some((ghost) => ghost.id === link.noteId),
+    )
 
-    if (!zone?.notes.some((ghost) => ghost.id === link.noteId)) return
+    if (!zone) return
 
     const other = { zone: zoneKey(zone), id: link.noteId }
     const key = [endKey(end), endKey(other)].sort().join('>')
@@ -419,7 +493,7 @@ export function normalizeGhostZones(value: unknown): GhostZone[] | undefined {
       )
       .map(({ id, from, to }) => ({ id, from, to }))
 
-    if (notes.length === 0 || zones.some((zone) => sameProject(zone, { project }))) continue
+    if (notes.length === 0) continue
 
     zones.push({
       project,
