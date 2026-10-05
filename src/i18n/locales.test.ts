@@ -58,6 +58,7 @@ const SHARED_WORDS = new Set([
   'Views',
   'Tables',
   'Types',
+  'via {project}',
 ])
 
 const placeholders = (text: string) =>

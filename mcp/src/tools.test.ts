@@ -422,3 +422,59 @@ describe('changes that crossed', () => {
     expect(getContext(root)).toMatch(/Reverted: the user's edit replaced/)
   })
 })
+
+describe('ghost zones', () => {
+  const ghosts = [
+    {
+      project: 'front',
+      offset: { x: 0, y: 0 },
+      syncedAt: '2026-10-05T10:00:00.000Z',
+      hops: 1,
+      notes: [
+        {
+          id: 'aaaa1111',
+          title: 'LOGIN SCREEN',
+          status: 'todo',
+          colorTheme: 'cobalt',
+          pattern: 'raw',
+          x: 0,
+          y: 0,
+          description: 'Shows the form.',
+          files: ['src/Login.tsx'],
+          crossLinks: [{ kind: 'blocks', project: 'api', noteId: 'dddd4444' }],
+        },
+      ],
+      connections: [],
+    },
+  ]
+
+  it('shows the notes of linked projects to read, says where they live and never writes them', () => {
+    board({
+      notes: [
+        note('dddd4444', {
+          title: 'LOGIN API',
+          status: 'todo',
+          crossLinks: [{ kind: 'blocked-by', project: 'front', noteId: 'aaaa1111' }],
+        }),
+      ],
+      ghosts,
+    })
+
+    expect(listNotes(root)).toContain('Ghost zones, read only: "front" (1 note)')
+    expect(getNote(root, '[aaaa]')).toContain('Ghost of a note in project "front" (read only)')
+    expect(getNote(root, 'aaaa')).toContain('Files in project "front": src/Login.tsx')
+
+    const context = getContext(root)
+
+    expect(context).toContain('"GHOST ZONES" are read-only copies')
+    expect(context).toContain('### From project "front" (copied 2026-10-05 10:00 UTC)')
+    expect(context).toContain('- [aaaa11] LOGIN SCREEN in "front" blocks [dddd44] LOGIN API here')
+    expect(getContext(root, { ids: ['dddd'] })).toContain('## GHOST ZONES')
+
+    expect(() => setStatus(root, { id: 'aaaa', status: 'done' })).toThrow(
+      /ghost: a read-only copy of a note in project "front"/,
+    )
+    expect(() => answerNote(root, { id: 'aaaa', response: 'Done.' })).toThrow(/ghost/)
+    expect(saved().ghosts[0].notes[0]).toMatchObject({ id: 'aaaa1111', status: 'todo' })
+  })
+})

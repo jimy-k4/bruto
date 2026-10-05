@@ -1,5 +1,6 @@
-import type { ContextScope, CrossLinkKind, Note, Workspace } from '../types'
+import type { ContextScope, CrossLinkKind, GhostNote, GhostZone, Note, Workspace } from '../types'
 import { CLOSED_STATUSES } from './constants'
+import { ghostArrows, zoneKey, type GhostEnd } from './ghosts'
 import { getConnectedNoteIds, isStandingRule, noteLinks, noteTitle, shortId } from './workspace'
 
 /**
@@ -23,6 +24,10 @@ const RULES_INSTRUCTION =
 /** Only added when some note is read-only for agents. */
 const READ_ONLY_INSTRUCTION =
   '- Notes marked "Agents: read only" (`agentAccess: "read"`) are there to read: never answer them or change their status.'
+
+/** Only added when the board holds ghost zones. */
+const GHOSTS_INSTRUCTION =
+  '- "GHOST ZONES" are read-only copies of notes in linked projects: the notes there that lead to notes here. They are worked on in their own project: never answer, change or move them, and never edit `ghosts` in the file.'
 
 const DOCUMENTATION_LABELS = {
   obsidian: 'OBSIDIAN',
@@ -165,6 +170,7 @@ export function buildAiContext(
   if (workspace.notes.some((note) => note.agentAccess === 'read')) {
     lines.push(READ_ONLY_INSTRUCTION)
   }
+  if (workspace.ghosts?.length) lines.push(GHOSTS_INSTRUCTION)
 
   if (workspace.documentation.length > 0) {
     lines.push(
@@ -217,6 +223,10 @@ export function buildAiContext(
     lines.push('', '## RELATIONSHIPS', '', ...relationships)
   }
 
+  const ghosts = describeGhostZones(workspace, scope, includedIds)
+
+  if (ghosts.length > 0) lines.push('', ...ghosts)
+
   if (closed.length > 0) {
     lines.push(
       '',
@@ -253,6 +263,109 @@ function describeRelationships(workspace: Workspace, includedIds: Set<string>): 
 
     lines.push(`- ${ref(from)} ${bothWays ? '<->' : '->'} ${ref(to)}`)
   }
+
+  return lines
+}
+
+const ghostRef = (ghost: GhostNote) => `[${shortId(ghost.id)}] ${ghost.title.trim() || 'Untitled'}`
+
+/** A ghost as the AI reads it: what it is, briefly, in the project it belongs to. */
+export function describeGhostNote(zone: GhostZone, ghost: GhostNote): string[] {
+  const standing = [ghost.kind, ghost.status].filter(Boolean).join(', ')
+  const lines = [`- ${ghostRef(ghost)}${standing ? ` (${standing})` : ''}`]
+
+  if (ghost.description) lines.push(`  ${ghost.description.replace(/\s+/g, ' ')}`)
+  if (ghost.files?.length) {
+    lines.push(`  Files in project "${zone.project}": ${ghost.files.join(', ')}`)
+  }
+
+  return lines
+}
+
+/**
+ * The ghost zones a copy needs: all of them in a full copy; otherwise those
+ * linked to the notes in it, and the zones linked to those.
+ */
+function describeGhostZones(
+  workspace: Workspace,
+  scope: ContextScope,
+  includedIds: Set<string>,
+): string[] {
+  const zones = workspace.ghosts ?? []
+  const arrows = ghostArrows(workspace)
+  const keys = new Set(scope === 'entire' ? zones.map(zoneKey) : [])
+  const touches = (end: GhostEnd) => (end.zone ? keys.has(end.zone) : includedIds.has(end.id))
+
+  for (let grew = scope !== 'entire'; grew;) {
+    grew = false
+
+    for (const arrow of arrows) {
+      if (!touches(arrow.from) && !touches(arrow.to)) continue
+
+      for (const end of [arrow.from, arrow.to]) {
+        if (end.zone && !keys.has(end.zone)) {
+          keys.add(end.zone)
+          grew = true
+        }
+      }
+    }
+  }
+
+  const shown = zones.filter((zone) => keys.has(zoneKey(zone)))
+
+  if (shown.length === 0) return []
+
+  const notesById = new Map(workspace.notes.map((note) => [note.id, note]))
+  const zonesByKey = new Map(shown.map((zone) => [zoneKey(zone), zone]))
+  const name = (end: GhostEnd) => {
+    if (!end.zone) {
+      const note = notesById.get(end.id)
+
+      return note ? `${ref(note)} here` : null
+    }
+
+    const zone = zonesByKey.get(end.zone)
+    const ghost = zone?.notes.find((item) => item.id === end.id)
+
+    return zone && ghost ? `${ghostRef(ghost)} in "${zone.project}"` : null
+  }
+
+  const lines = [
+    '## GHOST ZONES',
+    '',
+    'Notes of linked projects that lead to notes here, copied from their boards. Read only.',
+  ]
+
+  for (const zone of shown) {
+    const origin = [
+      zone.hops > 1 && zone.via && `through project "${zone.via}"`,
+      zone.syncedAt && `copied ${zone.syncedAt.slice(0, 16).replace('T', ' ')} UTC`,
+    ].filter(Boolean)
+    const byId = new Map(zone.notes.map((ghost) => [ghost.id, ghost]))
+    const inside = zone.connections.flatMap((connection) => {
+      const from = byId.get(connection.from)
+      const to = byId.get(connection.to)
+
+      return from && to ? [`- ${ghostRef(from)} -> ${ghostRef(to)}`] : []
+    })
+
+    lines.push(
+      '',
+      `### From project "${zone.project}"${origin.length ? ` (${origin.join(', ')})` : ''}`,
+      '',
+      ...zone.notes.flatMap((ghost) => describeGhostNote(zone, ghost)),
+    )
+    if (inside.length > 0) lines.push('', 'Arrows:', ...inside)
+  }
+
+  const links = arrows.flatMap((arrow) => {
+    const from = name(arrow.from)
+    const to = name(arrow.to)
+
+    return from && to ? [`- ${from} ${arrow.directed ? 'blocks' : 'relates to'} ${to}`] : []
+  })
+
+  if (links.length > 0) lines.push('', 'Links across projects:', ...links)
 
   return lines
 }

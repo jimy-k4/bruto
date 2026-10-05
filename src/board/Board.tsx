@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { CrossLink, Note, Point, Workspace } from '../types'
+import type { CrossLink, GhostZone, Note, Point, Workspace } from '../types'
 import type { LinkedNoteInfo } from '../domain/crossLinks'
 import { useI18n } from '../i18n'
 import { ConnectionLayer } from './ConnectionLayer'
+import { GhostArrows, GhostZones, type GhostZoneHandlers } from './GhostZones'
 import { NoteCard, type NoteCardHandlers, type NoteFlash } from './NoteCard'
 import { noteRect, rectsOverlap, type NoteSizes, type Rect } from './geometry'
 import type { BoardViewApi } from './useBoardView'
 import { useStableCallback } from '../ui/useStableCallback'
+import type { ZoneState } from '../workspace/ghostZones'
 
 export interface BoardCallbacks {
   /** Replaces the selection. `open` also opens the note editor. */
@@ -25,6 +27,11 @@ export interface BoardCallbacks {
   onDeleteConnection: (id: string) => void
   /** Follows a link to a note in another project. */
   onOpenLink: (link: CrossLink) => void
+  onMoveZone: (project: string, offset: Point) => void
+  onMoveZoneEnd: () => void
+  /** Goes to a ghost zone's project, at one of its notes. */
+  onOpenGhost: (zone: GhostZone, noteId: string) => void
+  onRefreshZone: (zone: GhostZone) => void
 }
 
 interface BoardProps extends BoardCallbacks {
@@ -41,6 +48,8 @@ interface BoardProps extends BoardCallbacks {
   matchIds: Set<string> | null
   /** Linked notes in other projects, as read from them. */
   linkInfo: Map<string, LinkedNoteInfo>
+  /** How each ghost zone's copy stands this session. */
+  zoneStates: Map<string, ZoneState>
 }
 
 /** A drag becomes a move only after this many screen pixels; below it, it's a click. */
@@ -111,7 +120,7 @@ export function Board(props: BoardProps) {
     return () => canvas.removeEventListener('wheel', onWheel)
   }, [canvasRef, zoomAround])
 
-  const connectVia = (id: string) => {
+  const connectVia = useStableCallback((id: string) => {
     const current = latest.current
 
     current.onSelectConnection(null)
@@ -124,7 +133,7 @@ export function Board(props: BoardProps) {
       current.onConnect(current.connectingFrom, id)
       current.onConnectingChange(null)
     }
-  }
+  })
 
   const handleNotePointerDown = useStableCallback(
     (event: React.PointerEvent<HTMLElement>, note: Note) => {
@@ -224,6 +233,21 @@ export function Board(props: BoardProps) {
       element.addEventListener('pointerup', end)
       element.addEventListener('pointercancel', end)
     },
+  )
+
+  // Stable like the cards' handlers: zones don't re-render on every board update.
+  const ghostHandlers = useMemo<GhostZoneHandlers>(
+    () => ({
+      observe: props.observe,
+      screenToWorld: (clientX, clientY) => latest.current.view.screenToWorld(clientX, clientY),
+      onMove: (project, offset) => latest.current.onMoveZone(project, offset),
+      onMoveEnd: () => latest.current.onMoveZoneEnd(),
+      onOpen: (zone, noteId) => latest.current.onOpenGhost(zone, noteId),
+      onRefresh: (zone) => latest.current.onRefreshZone(zone),
+      isConnecting: () => latest.current.connectingFrom !== null,
+      onConnectVia: connectVia,
+    }),
+    [props.observe, connectVia],
   )
 
   const handlers = useMemo<NoteCardHandlers>(
@@ -392,6 +416,10 @@ export function Board(props: BoardProps) {
       </p>
 
       <div className="board__world" style={{ transform }}>
+        {workspace.ghosts && (
+          <GhostArrows notes={workspace.notes} zones={workspace.ghosts} sizes={sizes} />
+        )}
+
         <ConnectionLayer
           notes={workspace.notes}
           connections={workspace.connections}
@@ -400,6 +428,16 @@ export function Board(props: BoardProps) {
           onSelect={props.onSelectConnection}
           onDelete={props.onDeleteConnection}
         />
+
+        {workspace.ghosts && (
+          <GhostZones
+            zones={workspace.ghosts}
+            states={props.zoneStates}
+            sizes={sizes}
+            handlers={ghostHandlers}
+            connectingFrom={connectingFrom}
+          />
+        )}
 
         {workspace.notes.map((note) => (
           <NoteCard

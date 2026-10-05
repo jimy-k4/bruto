@@ -15,6 +15,7 @@ import {
   parseWorkspace,
   serializeWorkspace,
 } from '../../src/domain/workspace'
+import { findGhost } from '../../src/domain/ghosts'
 
 /** Where every project keeps its board, the same file the app reads and writes. */
 export const BOARD_FILE = join('.bruto', 'workspace.json')
@@ -206,6 +207,14 @@ export function resolveNote(workspace: Workspace, reference: string): Note {
   if (matches.length === 1) return matches[0]
 
   if (matches.length === 0) {
+    const found = findGhost(workspace, reference)
+
+    if (found) {
+      throw new BoardError(
+        `[${found.ghost.id.slice(0, 6)}] ${found.ghost.title || 'Untitled'} is a ghost: a read-only copy of a note in project "${found.zone.project}". It is worked on in that project, never here.`,
+      )
+    }
+
     throw new BoardError(
       `No note has an id starting with "${reference}". Call list_notes to see them.`,
     )

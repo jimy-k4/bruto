@@ -632,6 +632,17 @@ export const de: Locale = {
   agentWorking: '{agent} arbeitet',
   agentWorkingNotice:
     '{agent} arbeitet an dieser Notiz. Änderst du dasselbe wie die KI, bleibt deine Version und sie wird benachrichtigt.',
+  ghostZone: 'Geist · {project}',
+  ghostZoneVia: 'über {project}',
+  ghostZoneFresh: 'Aktuell',
+  ghostZoneLocked: 'Kein Zugriff',
+  ghostZoneMissing: 'Projekt nicht gefunden',
+  ghostZoneCopy: 'Kopie von vor {age}',
+  ghostZoneRefresh: 'Aktualisieren',
+  ghostZoneOpen: '{project} öffnen',
+  ghostNote: 'Geisternotiz',
+  ghostNoteOf: 'Geisternotiz aus {project}',
+  ghostNoteOpen: 'Doppelklick: in {project} öffnen',
   shortcutAltDrag: 'Durch Ziehen duplizieren',
   shortcutAltDragDescription:
     'Ziehe eine Notiz mit gedrückter Alt-Taste: Das Original bleibt, du trägst die Kopie.',

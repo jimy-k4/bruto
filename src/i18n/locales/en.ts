@@ -615,6 +615,17 @@ export const en: Locale = {
   agentWorking: '{agent} working',
   agentWorkingNotice:
     '{agent} is working on this note. If you change the same thing as the AI, yours stays and it gets told.',
+  ghostZone: 'Ghost · {project}',
+  ghostZoneVia: 'via {project}',
+  ghostZoneFresh: 'Up to date',
+  ghostZoneLocked: 'No access',
+  ghostZoneMissing: 'Project not found',
+  ghostZoneCopy: 'Copy from {age} ago',
+  ghostZoneRefresh: 'Refresh',
+  ghostZoneOpen: 'Open {project}',
+  ghostNote: 'ghost note',
+  ghostNoteOf: 'ghost note from {project}',
+  ghostNoteOpen: 'Double-click: open in {project}',
   shortcutAltDrag: 'Duplicate by dragging',
   shortcutAltDragDescription:
     'Drag a note while holding Alt: the original stays and you carry the copy.',

@@ -619,6 +619,17 @@ export const ptBR: Locale = {
   agentWorking: '{agent} trabalhando',
   agentWorkingNotice:
     '{agent} está trabalhando nesta nota. Se você mudar o mesmo que a IA, fica o seu e ela é avisada.',
+  ghostZone: 'Fantasma · {project}',
+  ghostZoneVia: 'via {project}',
+  ghostZoneFresh: 'Atualizado',
+  ghostZoneLocked: 'Sem acesso',
+  ghostZoneMissing: 'Projeto não encontrado',
+  ghostZoneCopy: 'Cópia de {age} atrás',
+  ghostZoneRefresh: 'Atualizar',
+  ghostZoneOpen: 'Abrir {project}',
+  ghostNote: 'nota fantasma',
+  ghostNoteOf: 'nota fantasma de {project}',
+  ghostNoteOpen: 'Clique duplo: abrir em {project}',
   shortcutAltDrag: 'Duplicar arrastando',
   shortcutAltDragDescription:
     'Arraste uma nota com Alt pressionada: a original fica e você leva a cópia.',

@@ -624,6 +624,17 @@ export const ru: Locale = {
   agentWorking: '{agent} работает',
   agentWorkingNotice:
     '{agent} работает над этой заметкой. Если изменишь то же, что и ИИ, останется твоё, а ИИ получит уведомление.',
+  ghostZone: 'Призрак · {project}',
+  ghostZoneVia: 'через {project}',
+  ghostZoneFresh: 'Актуально',
+  ghostZoneLocked: 'Нет доступа',
+  ghostZoneMissing: 'Проект не найден',
+  ghostZoneCopy: 'Копия {age} назад',
+  ghostZoneRefresh: 'Обновить',
+  ghostZoneOpen: 'Открыть {project}',
+  ghostNote: 'заметка-призрак',
+  ghostNoteOf: 'заметка-призрак из {project}',
+  ghostNoteOpen: 'Двойной клик: открыть в {project}',
   shortcutAltDrag: 'Дублировать перетаскиванием',
   shortcutAltDragDescription:
     'Перетащите заметку с зажатой Alt: оригинал останется на месте, а вы перенесёте копию.',

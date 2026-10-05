@@ -624,6 +624,17 @@ export const ca: Locale = {
   agentWorking: '{agent} treballant',
   agentWorkingNotice:
     '{agent} està treballant en aquesta nota. Si canvies el mateix que la IA, es queda el teu i se li avisa.',
+  ghostZone: 'Fantasma · {project}',
+  ghostZoneVia: 'via {project}',
+  ghostZoneFresh: 'Al dia',
+  ghostZoneLocked: 'Sense accés',
+  ghostZoneMissing: 'Projecte no trobat',
+  ghostZoneCopy: 'Còpia de fa {age}',
+  ghostZoneRefresh: 'Actualitzar',
+  ghostZoneOpen: 'Obrir {project}',
+  ghostNote: 'nota fantasma',
+  ghostNoteOf: 'nota fantasma de {project}',
+  ghostNoteOpen: 'Doble clic: obrir a {project}',
   shortcutAltDrag: 'Duplicar arrossegant',
   shortcutAltDragDescription:
     'Arrossega una nota amb Alt premuda: l’original es queda i t’emportes la còpia.',

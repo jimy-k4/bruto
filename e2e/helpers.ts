@@ -110,4 +110,7 @@ export const workspaceWith = (notes: unknown[], extra: Record<string, unknown> =
 })
 
 export const noteCard = (page: Page, title: string) =>
-  page.locator('.note', { has: page.getByRole('heading', { name: title, exact: true }) })
+  // This board's own notes: a ghost of another project's note can share its title.
+  page.locator('.note:not(.note--ghost)', {
+    has: page.getByRole('heading', { name: title, exact: true }),
+  })

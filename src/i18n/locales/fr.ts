@@ -626,6 +626,17 @@ export const fr: Locale = {
   agentWorking: '{agent} au travail',
   agentWorkingNotice:
     '{agent} travaille sur cette note. Si vous modifiez la même chose que l’IA, votre version est gardée et elle est prévenue.',
+  ghostZone: 'Fantôme · {project}',
+  ghostZoneVia: 'via {project}',
+  ghostZoneFresh: 'À jour',
+  ghostZoneLocked: 'Sans accès',
+  ghostZoneMissing: 'Projet introuvable',
+  ghostZoneCopy: 'Copie d’il y a {age}',
+  ghostZoneRefresh: 'Actualiser',
+  ghostZoneOpen: 'Ouvrir {project}',
+  ghostNote: 'note fantôme',
+  ghostNoteOf: 'note fantôme de {project}',
+  ghostNoteOpen: 'Double-clic : ouvrir dans {project}',
   shortcutAltDrag: 'Dupliquer en glissant',
   shortcutAltDragDescription:
     'Faites glisser une note avec Alt enfoncée : l’originale reste et vous emportez la copie.',
