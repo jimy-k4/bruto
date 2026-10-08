@@ -42,7 +42,12 @@ export function BulkEditor({ notes, onChange, onDelete, onClose }: BulkEditorPro
       title={t('notesCount', { count: notes.length })}
       onClose={onClose}
       footer={
-        <button type="button" className="button button--primary button--block" onClick={onClose}>
+        <button
+          data-superveil="click:bulk-editor:done"
+          type="button"
+          className="button button--primary button--block"
+          onClick={onClose}
+        >
           {t('done')}
         </button>
       }
@@ -114,7 +119,12 @@ export function BulkEditor({ notes, onChange, onDelete, onClose }: BulkEditorPro
         />
 
         <div className="danger-zone">
-          <button type="button" className="button button--danger" onClick={onDelete}>
+          <button
+            data-superveil="click:bulk-editor:delete-notes-count"
+            type="button"
+            className="button button--danger"
+            onClick={onDelete}
+          >
             {t('deleteNotesCount', { count: notes.length })}
           </button>
         </div>

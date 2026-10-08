@@ -283,6 +283,7 @@ export function StructureView({
           {detected.length > 0 && (
             <div className="structure__lenses" role="group" aria-label={t('lenses')}>
               <button
+                data-superveil="click:structure-view:lens-files"
                 type="button"
                 className="structure__lens"
                 aria-pressed={lens === 'files'}
@@ -293,6 +294,7 @@ export function StructureView({
               </button>
               {detected.map((item) => (
                 <button
+                  data-superveil="click:structure-view:choose-lens"
                   key={item.kind}
                   type="button"
                   className="structure__lens"
@@ -310,6 +312,7 @@ export function StructureView({
           {lens === 'files' && (
             <nav className="structure__crumbs" aria-label={t('structurePath')}>
               <button
+                data-superveil="click:structure-view:structure-up"
                 type="button"
                 className="structure__up"
                 onClick={up}
@@ -324,6 +327,7 @@ export function StructureView({
                 {ancestry(mapRoot, folder.path).map((node, position, chain) => (
                   <li key={node.path}>
                     <button
+                      data-superveil="click:structure-view:breadcrumb"
                       type="button"
                       aria-current={position === chain.length - 1 ? 'location' : undefined}
                       onClick={() => {
@@ -342,6 +346,7 @@ export function StructureView({
 
         <div className="structure__actions">
           <button
+            data-superveil="click:structure-view:only-with-notes"
             type="button"
             className="button button--small button--toggle"
             aria-pressed={onlyNoted}
@@ -350,13 +355,19 @@ export function StructureView({
             {t('onlyWithNotes')}
           </button>
           <button
+            data-superveil="click:structure-view:structure-refresh"
             type="button"
             className="button button--small"
             onClick={() => setReloads((count) => count + 1)}
           >
             {t('structureRefresh')}
           </button>
-          <button type="button" className="button button--small" onClick={onClose}>
+          <button
+            data-superveil="click:structure-view:back-to-board"
+            type="button"
+            className="button button--small"
+            onClick={onClose}
+          >
             {t('backToBoard')} <kbd>Esc</kbd>
           </button>
         </div>
@@ -411,6 +422,7 @@ export function StructureView({
                     {placeNotes.map((note) => (
                       <li key={note.id}>
                         <button
+                          data-superveil="click:structure-view:show-on-board"
                           type="button"
                           className="structure-note"
                           onClick={() => onShowNote(note.id)}
@@ -455,6 +467,7 @@ export function StructureView({
                     note && (
                       <li key={`${link.noteId}:${link.byAi}:${link.path}`}>
                         <button
+                          data-superveil="click:structure-view:edit"
                           type="button"
                           className="structure-note structure-note--broken"
                           onClick={() => onEditNote(note.id)}

@@ -48,6 +48,7 @@ export function Sidebar(props: SidebarProps) {
   if (!visible) {
     return (
       <button
+        data-superveil="click:sidebar:show-sidebar"
         type="button"
         className="sidebar-tab"
         onClick={() => setVisible(true)}
@@ -88,6 +89,7 @@ export function Sidebar(props: SidebarProps) {
   return (
     <aside className="sidebar" style={{ width }} aria-label={t('projectPanel')}>
       <button
+        data-superveil="click:sidebar:hide-sidebar"
         type="button"
         className="icon-button sidebar__hide"
         onClick={() => setVisible(false)}
@@ -124,7 +126,12 @@ function ProjectSection({ workspace, onEditWorkspace }: SidebarProps) {
       <p className="sidebar__title">{workspace.title}</p>
       <p className="sidebar__text">{workspace.description || t('noDescription')}</p>
 
-      <button type="button" className="button button--block" onClick={onEditWorkspace}>
+      <button
+        data-superveil="click:sidebar:edit-project"
+        type="button"
+        className="button button--block"
+        onClick={onEditWorkspace}
+      >
         {t('editProject')}
       </button>
     </section>
@@ -150,6 +157,7 @@ function AiSection({
 
   const copyButton = (scope: ContextScope, label: TranslationKey, key: string, notes: Note[]) => (
     <button
+      data-superveil="click:sidebar:copy-context"
       type="button"
       className="context-button"
       disabled={scope !== 'entire' && !hasSelection}
@@ -179,6 +187,7 @@ function AiSection({
       </div>
 
       <button
+        data-superveil="click:sidebar:open-ai-context"
         type="button"
         className="button button--primary button--block"
         onClick={onOpenAiContext}
@@ -226,6 +235,7 @@ function DocumentationSection({
 
               <div className="doc-list__actions">
                 <button
+                  data-superveil="click:sidebar:edit"
                   type="button"
                   className="button button--small"
                   onClick={() => onEditDocumentation(item)}
@@ -233,6 +243,7 @@ function DocumentationSection({
                   {t('edit')}
                 </button>
                 <button
+                  data-superveil="click:sidebar:remove-item"
                   type="button"
                   className="icon-button icon-button--small"
                   onClick={() => onRemoveDocumentation(item)}
@@ -246,7 +257,12 @@ function DocumentationSection({
         </ul>
       )}
 
-      <button type="button" className="button button--block" onClick={onAddDocumentation}>
+      <button
+        data-superveil="click:sidebar:add-documentation"
+        type="button"
+        className="button button--block"
+        onClick={onAddDocumentation}
+      >
         + {t('addDocumentation')}
       </button>
     </section>
@@ -279,6 +295,7 @@ function StatusSection({ workspace, onSelectStatus, onSelectKind }: SidebarProps
           {counts.map(({ status, count }) => (
             <li key={status}>
               <button
+                data-superveil="click:sidebar:select-status"
                 type="button"
                 className="status-list__item"
                 onClick={() => onSelectStatus(status)}
@@ -299,6 +316,7 @@ function StatusSection({ workspace, onSelectStatus, onSelectKind }: SidebarProps
           {kinds.map(({ kind, count }) => (
             <li key={kind}>
               <button
+                data-superveil="click:sidebar:select-kind"
                 type="button"
                 className="status-list__item"
                 onClick={() => onSelectKind(kind)}

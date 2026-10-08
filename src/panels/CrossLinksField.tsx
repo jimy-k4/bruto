@@ -36,6 +36,7 @@ export function CrossLinksField({
             return (
               <li key={linkKey(link)} className={`cross-link cross-link--${link.kind}`}>
                 <button
+                  data-superveil="click:cross-links-field:cross-link-open"
                   type="button"
                   className="cross-link__open"
                   onClick={() => onOpen(link)}
@@ -57,6 +58,7 @@ export function CrossLinksField({
                   )}
                 </button>
                 <button
+                  data-superveil="click:cross-links-field:remove-item"
                   type="button"
                   className="icon-button"
                   aria-label={t('removeItem', { name: title })}
@@ -72,7 +74,12 @@ export function CrossLinksField({
         <p className="field__hint">{t('crossLinkNone')}</p>
       )}
 
-      <button type="button" className="button button--small" onClick={() => setAdding(true)}>
+      <button
+        data-superveil="click:cross-links-field:cross-link-add"
+        type="button"
+        className="button button--small"
+        onClick={() => setAdding(true)}
+      >
         + {t('crossLinkAdd')}
       </button>
 

@@ -53,6 +53,7 @@ export function WebLens({ model, context }: { model: WebModel; context: LensCont
 
             return (
               <button
+                data-superveil="click:web-lens:no-route"
                 key={page.path}
                 type="button"
                 className={elementClasses('lens-screen', context, key, [page.path], notes)}
@@ -99,6 +100,7 @@ export function WebLens({ model, context }: { model: WebModel; context: LensCont
 
             return (
               <button
+                data-superveil="click:web-lens:uses-count"
                 key={component.path}
                 type="button"
                 className={elementClasses(

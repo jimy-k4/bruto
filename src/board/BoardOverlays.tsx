@@ -19,6 +19,7 @@ export function ZoomControls({
   return (
     <div className="zoom-controls" role="group" aria-label={t('zoom')} onPointerDown={stop}>
       <button
+        data-superveil="click:board-overlays:zoom-out"
         type="button"
         onClick={onZoomOut}
         disabled={zoom <= ZOOM_MIN}
@@ -26,10 +27,22 @@ export function ZoomControls({
       >
         −
       </button>
-      <button type="button" onClick={onReset} aria-label={t('resetView')} title={t('resetView')}>
+      <button
+        data-superveil="click:board-overlays:reset-view"
+        type="button"
+        onClick={onReset}
+        aria-label={t('resetView')}
+        title={t('resetView')}
+      >
         {Math.round(zoom * 100)}%
       </button>
-      <button type="button" onClick={onZoomIn} disabled={zoom >= ZOOM_MAX} aria-label={t('zoomIn')}>
+      <button
+        data-superveil="click:board-overlays:zoom-in"
+        type="button"
+        onClick={onZoomIn}
+        disabled={zoom >= ZOOM_MAX}
+        aria-label={t('zoomIn')}
+      >
         +
       </button>
     </div>
@@ -45,6 +58,7 @@ export function EmptyBoard({ onCreate }: { onCreate: () => void }) {
       <h2 className="empty-board__title">{t('emptyBoardTitle')}</h2>
       <p>{t('emptyBoardText')}</p>
       <button
+        data-superveil="click:board-overlays:create-first-note"
         type="button"
         className="button button--primary"
         onClick={onCreate}
@@ -61,6 +75,7 @@ export function NewNoteButton({ onCreate }: { onCreate: () => void }) {
 
   return (
     <button
+      data-superveil="click:board-overlays:new-note"
       type="button"
       className="new-note-button"
       onClick={onCreate}
@@ -99,19 +114,40 @@ export function SelectionBar({
       onPointerDown={stop}
     >
       <strong>{t('notesCount', { count })}</strong>
-      <button type="button" className="button button--small" onClick={onEdit}>
+      <button
+        data-superveil="click:board-overlays:edit"
+        type="button"
+        className="button button--small"
+        onClick={onEdit}
+      >
         {t('edit')}
       </button>
-      <button type="button" className="button button--small" onClick={onCopyContext}>
+      <button
+        data-superveil="click:board-overlays:copy-current"
+        type="button"
+        className="button button--small"
+        onClick={onCopyContext}
+      >
         {t('copyCurrent')} <kbd>Q</kbd>
       </button>
-      <button type="button" className="button button--small" onClick={onDuplicate}>
+      <button
+        data-superveil="click:board-overlays:duplicate"
+        type="button"
+        className="button button--small"
+        onClick={onDuplicate}
+      >
         {t('duplicate')}
       </button>
-      <button type="button" className="button button--small button--danger" onClick={onDelete}>
+      <button
+        data-superveil="click:board-overlays:delete"
+        type="button"
+        className="button button--small button--danger"
+        onClick={onDelete}
+      >
         {t('delete')}
       </button>
       <button
+        data-superveil="click:board-overlays:clear-selection"
         type="button"
         className="icon-button icon-button--small"
         onClick={onClear}

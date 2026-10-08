@@ -85,6 +85,7 @@ export function Landing({
     <div className="landing__actions">
       {supported && (
         <button
+          data-superveil="click:landing:open-folder"
           type="button"
           className="button button--primary button--large"
           onClick={onOpenFolder}
@@ -96,6 +97,7 @@ export function Landing({
 
       {demoSupported && (
         <button
+          data-superveil="click:landing:try-demo"
           type="button"
           className="button button--large"
           onClick={onTryDemo}
@@ -155,6 +157,7 @@ export function Landing({
               {recents.map((project) => (
                 <li key={project.id} className="recent-list__item">
                   <button
+                    data-superveil="click:landing:open-recent"
                     type="button"
                     className="recent-list__open"
                     onClick={() => onOpenRecent(project)}
@@ -165,6 +168,7 @@ export function Landing({
                   </button>
 
                   <button
+                    data-superveil="click:landing:forget-project"
                     type="button"
                     className="icon-button icon-button--small"
                     onClick={() => onForgetRecent(project)}
@@ -291,7 +295,12 @@ export function Landing({
         <span>BRUTO / {t('localFirst')}</span>
         <span className="statusbar__links">
           {t('noCloud')}
-          <button type="button" className="statusbar__link" onClick={onOpenPrivacy}>
+          <button
+            data-superveil="click:landing:privacy-title"
+            type="button"
+            className="statusbar__link"
+            onClick={onOpenPrivacy}
+          >
             {t('privacyTitle')}
           </button>
           <a href={REPOSITORY_URL} target="_blank" rel="noopener noreferrer">

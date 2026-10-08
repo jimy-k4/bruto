@@ -33,6 +33,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
             {toast.action && (
               <button
+                data-superveil="click:toast-provider:action"
                 type="button"
                 className="toast__action"
                 onClick={() => {

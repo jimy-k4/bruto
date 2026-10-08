@@ -51,10 +51,20 @@ export function DocumentationEditor({
       onClose={onClose}
       footer={
         <div className="button-row">
-          <button type="button" className="button" onClick={onClose}>
+          <button
+            data-superveil="click:documentation-editor:cancel"
+            type="button"
+            className="button"
+            onClick={onClose}
+          >
             {t('cancel')}
           </button>
-          <button type="button" className="button button--primary" onClick={save}>
+          <button
+            data-superveil="click:documentation-editor:save"
+            type="button"
+            className="button button--primary"
+            onClick={save}
+          >
             {t('save')}
           </button>
         </div>
@@ -132,11 +142,16 @@ export function DocumentationEditor({
         </div>
 
         {/* Enter in a field saves. */}
-        <button type="submit" hidden />
+        <button data-superveil="click:documentation-editor:submit" type="submit" hidden />
 
         {!isNew && (
           <div className="danger-zone">
-            <button type="button" className="button button--danger" onClick={onRemove}>
+            <button
+              data-superveil="click:documentation-editor:remove-documentation"
+              type="button"
+              className="button button--danger"
+              onClick={onRemove}
+            >
               {t('removeDocumentation')}
             </button>
           </div>

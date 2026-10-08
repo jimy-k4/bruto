@@ -89,7 +89,13 @@ export function Dialog({
             )}
           </div>
 
-          <button type="button" className="icon-button" onClick={onClose} aria-label={t('close')}>
+          <button
+            data-superveil="click:dialog:close"
+            type="button"
+            className="icon-button"
+            onClick={onClose}
+            aria-label={t('close')}
+          >
             ×
           </button>
         </header>

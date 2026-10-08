@@ -71,6 +71,7 @@ export function ProjectSwitcher({
       }}
     >
       <button
+        data-superveil="click:project-switcher:toggle"
         ref={triggerRef}
         type="button"
         className="project-switcher__trigger"
@@ -92,6 +93,7 @@ export function ProjectSwitcher({
             {tabs.map((tab, index) => (
               <li key={tab.id} className="project-switcher__row">
                 <button
+                  data-superveil="click:project-switcher:switch-tab"
                   type="button"
                   className="project-switcher__project"
                   aria-current={tab.id === current.id ? 'true' : undefined}
@@ -105,6 +107,7 @@ export function ProjectSwitcher({
                 </button>
 
                 <button
+                  data-superveil="click:project-switcher:close-project-named"
                   type="button"
                   className="icon-button icon-button--small"
                   aria-label={t('closeProjectNamed', { name: tab.name })}
@@ -127,6 +130,7 @@ export function ProjectSwitcher({
                 {closedRecents.map((recent) => (
                   <li key={recent.id}>
                     <button
+                      data-superveil="click:project-switcher:open-recent"
                       type="button"
                       className="project-switcher__project project-switcher__project--recent"
                       onClick={() => {
@@ -146,6 +150,7 @@ export function ProjectSwitcher({
           )}
 
           <button
+            data-superveil="click:project-switcher:open-project"
             type="button"
             className="button button--block"
             onClick={() => {
