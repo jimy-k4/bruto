@@ -1,6 +1,16 @@
-import type { Connection, CrossLink, GhostNote, GhostZone, Note, Point, Workspace } from '../types'
+import type {
+  Connection,
+  CrossLink,
+  Environment,
+  GhostNote,
+  GhostZone,
+  Note,
+  Point,
+  Workspace,
+} from '../types'
 import { NOTE_MIN_SIZE, isNoteColor, isNoteKind, isNotePattern, isNoteStatus } from './constants'
 import { normalizeCrossLinks } from './crossLinks'
+import { findEnvironment, isLive, projectEnvironments } from './environments'
 
 /** How far zones travel: a board passes on the zones it holds, up to this many boards away. */
 export const MAX_HOPS = 3
@@ -89,8 +99,9 @@ function chainTo(workspace: Workspace, seeds: Set<string>): Set<string> {
   return chain
 }
 
-function toGhost(note: Note): GhostNote {
+function toGhost(note: Note, environments: readonly Environment[]): GhostNote {
   const description = note.description.trim()
+  const environment = findEnvironment(environments, note.environment)
   const files = [...new Set([...note.filePaths, ...(note.aiFilePaths ?? [])])].slice(0, MAX_FILES)
   const links = (note.crossLinks ?? []).map(({ kind, project, projectId, noteId }) => ({
     kind,
@@ -104,6 +115,10 @@ function toGhost(note: Note): GhostNote {
     title: note.title,
     ...(note.kind && { kind: note.kind }),
     ...(note.status && { status: note.status }),
+    // By name: the environments are that project's own, this one may call them otherwise.
+    ...(environment
+      ? { environment: environment.name, ...(isLive(environments, environment) && { live: true }) }
+      : note.environment && { environment: note.environment }),
     colorTheme: note.colorTheme,
     pattern: note.pattern,
     x: note.x,
@@ -144,7 +159,9 @@ export function zonesFrom(
     project: origin.project,
     ...(origin.projectId && { projectId: origin.projectId }),
     offset: { x: 0, y: 0 },
-    notes: workspace.notes.filter((note) => chain.has(note.id)).map(toGhost),
+    notes: workspace.notes
+      .filter((note) => chain.has(note.id))
+      .map((note) => toGhost(note, projectEnvironments(workspace))),
     connections: workspace.connections.filter(
       (connection) => chain.has(connection.from) && chain.has(connection.to),
     ),
@@ -455,6 +472,9 @@ function normalizeGhostNote(raw: UnknownRecord): GhostNote | null {
     title: typeof raw.title === 'string' ? raw.title : '',
     ...(isNoteKind(raw.kind) && { kind: raw.kind }),
     ...(isNoteStatus(raw.status) && { status: raw.status }),
+    ...(typeof raw.environment === 'string' &&
+      raw.environment.trim() && { environment: raw.environment.trim() }),
+    ...(raw.live === true && { live: true }),
     colorTheme: isNoteColor(raw.colorTheme) ? raw.colorTheme : 'concrete',
     pattern: isNotePattern(raw.pattern) ? raw.pattern : 'raw',
     x: raw.x,

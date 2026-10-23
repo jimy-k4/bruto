@@ -386,6 +386,30 @@ export const ru: Locale = {
   agentActionAnswer: 'ответил',
   agentActionStatus: 'сменил статус',
   agentActionCreate: 'создал',
+  agentActionEnvironment: 'изменил окружение',
+  // Environments
+  environment: 'Окружение',
+  environments: 'Окружения',
+  noEnvironment: 'Без окружения',
+  environmentIn: 'В {environment}',
+  environmentSince: 'В {environment} с {date}',
+  environmentHint:
+    'Докуда дошло изменение. Это не статус: заметка, сделанная в DEV, ещё должна дойти до продакшена.',
+  promoteTo: 'Перевести в {environment}',
+  customizeEnvironments: 'Изменить окружения проекта',
+  environmentsHint:
+    'В том порядке, в каком через них проходит изменение, продакшен последним. Отмеченные «Только вы» — ваши: ни один агент не переносит туда заметку и не забирает её оттуда.',
+  noEnvironments: 'Нет окружений: заметки не говорят, где их изменение.',
+  newEnvironment: 'НОВОЕ',
+  environmentName: 'Название окружения {number}',
+  environmentProtected: 'Только вы',
+  environmentProtectedHint:
+    'Ни один агент не может перенести заметку в это окружение или вывести её из него.',
+  moveEnvironmentUp: 'Переместить {name} выше',
+  moveEnvironmentDown: 'Переместить {name} ниже',
+  addEnvironment: 'Добавить окружение',
+  defaultEnvironments: 'Вернуть LOCAL, DEV, PRE и PRO',
+  filterByEnvironment: 'Фильтр по окружению',
   feedback: 'Что не так',
   feedbackPlaceholder: 'После проверки ответа: что всё ещё не так или чего не хватает.',
   feedbackStatusHint:

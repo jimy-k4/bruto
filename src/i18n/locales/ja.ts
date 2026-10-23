@@ -371,6 +371,30 @@ export const ja: Locale = {
   agentActionAnswer: '回答しました',
   agentActionStatus: 'ステータスを変更しました',
   agentActionCreate: '作成しました',
+  agentActionEnvironment: '環境を変更しました',
+  // Environments
+  environment: '環境',
+  environments: '環境',
+  noEnvironment: '環境なし',
+  environmentIn: '{environment} 環境',
+  environmentSince: '{date} から {environment}',
+  environmentHint:
+    '変更がどこまで進んだか。ステータスとは別です: DEV で完了したノートも、まだ本番に届く必要があります。',
+  promoteTo: '{environment} に進める',
+  customizeEnvironments: 'プロジェクトの環境を変更',
+  environmentsHint:
+    '変更が通る順に並べ、本番を最後にします。「自分だけ」の環境はあなたのものです: エージェントはノートをそこへ移したり、そこから出したりしません。',
+  noEnvironments: '環境なし: ノートは変更がどこにあるかを示しません。',
+  newEnvironment: '新規',
+  environmentName: '環境 {number} の名前',
+  environmentProtected: '自分だけ',
+  environmentProtectedHint:
+    'エージェントはこの環境へノートを移すことも、ここから出すこともできません。',
+  moveEnvironmentUp: '{name} を前へ',
+  moveEnvironmentDown: '{name} を後ろへ',
+  addEnvironment: '環境を追加',
+  defaultEnvironments: 'LOCAL、DEV、PRE、PRO に戻す',
+  filterByEnvironment: '環境で絞り込み',
   feedback: 'うまくいかない点',
   feedbackPlaceholder: '返答を確認したうえで、まだ直っていない点や足りない点。',
   feedbackStatusHint:

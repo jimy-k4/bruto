@@ -1,5 +1,14 @@
-import type { ContextScope, CrossLinkKind, GhostNote, GhostZone, Note, Workspace } from '../types'
+import type {
+  ContextScope,
+  CrossLinkKind,
+  Environment,
+  GhostNote,
+  GhostZone,
+  Note,
+  Workspace,
+} from '../types'
 import { CLOSED_STATUSES } from './constants'
+import { DEFAULT_ENVIRONMENTS, findEnvironment, projectEnvironments } from './environments'
 import { ghostArrows, zoneKey, type GhostEnd } from './ghosts'
 import { getConnectedNoteIds, isStandingRule, noteLinks, noteTitle, shortId } from './workspace'
 
@@ -51,12 +60,35 @@ const quote = (text: string) =>
     .map((line) => `> ${line}`)
     .join('\n')
 
+/** Only added when the project uses environments. */
+function environmentsInstruction(environments: readonly Environment[]) {
+  const names = environments.map((item) => item.name).join(' → ')
+  const protectedNames = environments.filter((item) => item.protected).map((item) => item.name)
+
+  return `- Environments, in order, production last: ${names}. A note's "Environment" is how far its change has got; it is not its status. Set it when you put the change there yourself (set_environment over MCP, or \`environment\` with its id in the file).${protectedNames.length ? ` ${protectedNames.join(' and ')}: only the user moves notes there, or out of there.` : ''}`
+}
+
+/** "Environment: PRE (since 2026-10-20)": the name the project gives it, or what the note says. */
+export function environmentLine(note: Note, environments: readonly Environment[]) {
+  if (!note.environment) return null
+
+  const name = findEnvironment(environments, note.environment)?.name ?? note.environment
+  const since = note.environmentAt ? ` (since ${note.environmentAt.slice(0, 10)})` : ''
+
+  return `Environment: ${name}${since}`
+}
+
 /** A note as the AI reads it: id and title, status, text, files, links, answer and feedback. */
-export function describeNote(note: Note): string[] {
+export function describeNote(
+  note: Note,
+  environments: readonly Environment[] = DEFAULT_ENVIRONMENTS,
+): string[] {
   const lines = [`### ${ref(note)}`]
+  const environment = environmentLine(note, environments)
 
   if (note.kind) lines.push(`Kind: ${note.kind}`)
   if (note.status) lines.push(`Status: ${note.status}`)
+  if (environment) lines.push(environment)
   if (note.agentAccess === 'read') lines.push('Agents: read only')
 
   // How old it is and how often it came back from review: a loop that repeats is worth knowing.
@@ -156,6 +188,7 @@ export function buildAiContext(
     (note) => includedIds.has(note.id) && !isStandingRule(note),
   )
   const isClosed = (note: Note) => Boolean(note.status && CLOSED_STATUSES.includes(note.status))
+  const environments = projectEnvironments(workspace)
 
   // In a full copy, finished work is listed briefly so it doesn't drown the rest.
   const detailed = scope === 'entire' ? included.filter((note) => !isClosed(note)) : included
@@ -171,6 +204,13 @@ export function buildAiContext(
     lines.push(READ_ONLY_INSTRUCTION)
   }
   if (workspace.ghosts?.length) lines.push(GHOSTS_INSTRUCTION)
+  // Only once the project uses them: other copies stay as short as they were.
+  if (
+    environments.length > 0 &&
+    (workspace.environments || workspace.notes.some((note) => note.environment))
+  ) {
+    lines.push(environmentsInstruction(environments))
+  }
 
   if (workspace.documentation.length > 0) {
     lines.push(
@@ -191,7 +231,7 @@ export function buildAiContext(
     lines.push('', '## STANDING RULES')
 
     for (const note of rules) {
-      lines.push('', ...describeNote(note))
+      lines.push('', ...describeNote(note, environments))
     }
   }
 
@@ -212,7 +252,7 @@ export function buildAiContext(
   }
 
   for (const note of detailed) {
-    lines.push('', ...describeNote(note))
+    lines.push('', ...describeNote(note, environments))
   }
 
   for (const note of rules) includedIds.add(note.id)
@@ -232,7 +272,12 @@ export function buildAiContext(
       '',
       '## CLOSED NOTES',
       '',
-      ...closed.map((note) => `- ${ref(note)} (${note.status})`),
+      ...closed.map((note) => {
+        const environment = findEnvironment(environments, note.environment)?.name
+        const where = environment ?? note.environment
+
+        return `- ${ref(note)} (${note.status}${where ? `, in ${where}` : ''})`
+      }),
     )
   }
 
@@ -271,7 +316,9 @@ const ghostRef = (ghost: GhostNote) => `[${shortId(ghost.id)}] ${ghost.title.tri
 
 /** A ghost as the AI reads it: what it is, briefly, in the project it belongs to. */
 export function describeGhostNote(zone: GhostZone, ghost: GhostNote): string[] {
-  const standing = [ghost.kind, ghost.status].filter(Boolean).join(', ')
+  const standing = [ghost.kind, ghost.status, ghost.environment && `in ${ghost.environment}`]
+    .filter(Boolean)
+    .join(', ')
   const lines = [`- ${ghostRef(ghost)}${standing ? ` (${standing})` : ''}`]
 
   if (ghost.description) lines.push(`  ${ghost.description.replace(/\s+/g, ' ')}`)

@@ -4,6 +4,7 @@ import { NOTE_MIN_SIZE } from '../domain/constants'
 import { ghostArrows, ghostKey, projectKey, zoneKey, type GhostEnd } from '../domain/ghosts'
 import { shortId } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
+import { EnvironmentStamp } from '../ui/EnvironmentStamp'
 import { formatAge } from '../ui/noteAge'
 import type { ZoneState } from '../workspace/ghostZones'
 import { boundingRect, connectionPath, noteRect, type NoteSizes, type Rect } from './geometry'
@@ -163,6 +164,7 @@ function GhostZoneView({ zone, state, sizes, handlers, connectingFrom }: GhostZo
 
           <span className="ghost-zone__actions">
             <button
+              data-superveil="click:ghost-zone:refresh"
               type="button"
               className="button button--small"
               onClick={() => handlers.onRefresh(zone)}
@@ -170,6 +172,7 @@ function GhostZoneView({ zone, state, sizes, handlers, connectingFrom }: GhostZo
               {t('ghostZoneRefresh')}
             </button>
             <button
+              data-superveil="click:ghost-zone:open"
               type="button"
               className="button button--small"
               onClick={() => handlers.onOpen(zone, entry.id)}
@@ -223,6 +226,7 @@ function GhostCard({ zone, ghost, sizeKey, connecting, observe, onOpen }: GhostC
         title,
         ghost.kind && kindLabel(t, ghost.kind),
         ghost.status && statusLabel(t, ghost.status),
+        ghost.environment && t('environmentIn', { environment: ghost.environment }),
         t('ghostNoteOf', { project: zone.project.toUpperCase() }),
       ]
         .filter(Boolean)
@@ -256,6 +260,15 @@ function GhostCard({ zone, ghost, sizeKey, connecting, observe, onOpen }: GhostC
           <p className="note--ghost__files">{t('filesCount', { count: ghost.files.length })}</p>
         ) : null}
       </div>
+
+      {ghost.environment && (
+        <EnvironmentStamp
+          name={ghost.environment}
+          live={ghost.live}
+          title={t('environmentIn', { environment: ghost.environment })}
+          className="note__env"
+        />
+      )}
     </article>
   )
 }

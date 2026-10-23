@@ -52,6 +52,7 @@ try {
     'get_note',
     'list_notes',
     'search_notes',
+    'set_environment',
     'set_status',
   ])
 
@@ -65,6 +66,11 @@ try {
     (await text('set_status', { id: 'a1b2c3', status: 'in-progress' })).text,
     /in-progress/,
   )
+
+  // Up to DEV is the agent's to say; PRE and PRO are the user's.
+  assert.match((await text('set_environment', { id: 'a1b2c3', environment: 'dev' })).text, /DEV/)
+  assert.equal((await text('set_environment', { id: 'a1b2c3', environment: 'PRO' })).isError, true)
+  assert.match((await text('list_notes', { environment: ['DEV'] })).text, /in DEV/)
 
   mkdirSync(join(project, 'src'))
   writeFileSync(join(project, 'src', 'login.ts'), 'export const login = true\n')
@@ -109,14 +115,16 @@ try {
     log.map((entry) => [entry.tool, entry.ok]),
     [
       ['set_status', true],
+      ['set_environment', true],
+      ['set_environment', false],
       ['answer_note', true],
       ['answer_note', false],
       ['create_note', true],
     ],
   )
-  assert.equal(log[1].note, login.id)
-  assert.equal(log[1].agent, 'fixer')
-  assert.match(log[1].files['src/login.ts'], /^sha256:[0-9a-f]{64}$/)
+  assert.equal(log[3].note, login.id)
+  assert.equal(log[3].agent, 'fixer')
+  assert.match(log[3].files['src/login.ts'], /^sha256:[0-9a-f]{64}$/)
 
   await worktreeAnswersOnMainBoard()
 

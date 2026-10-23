@@ -383,6 +383,30 @@ export const fr: Locale = {
   agentActionAnswer: 'y a répondu',
   agentActionStatus: 'a changé son statut',
   agentActionCreate: 'l’a créée',
+  agentActionEnvironment: 'a changé son environnement',
+  // Environments
+  environment: 'Environnement',
+  environments: 'Environnements',
+  noEnvironment: 'Sans environnement',
+  environmentIn: 'En {environment}',
+  environmentSince: 'En {environment} depuis le {date}',
+  environmentHint:
+    'Jusqu’où le changement est arrivé. Ce n’est pas le statut : une note terminée en DEV doit encore arriver en production.',
+  promoteTo: 'Passer en {environment}',
+  customizeEnvironments: 'Modifier les environnements du projet',
+  environmentsHint:
+    'Dans l’ordre où un changement les traverse, la production en dernier. Ceux marqués « Vous seul » sont à vous : aucun agent n’y déplace une note ni ne l’en sort.',
+  noEnvironments: 'Aucun environnement : les notes ne disent pas où en est leur changement.',
+  newEnvironment: 'NOUVEAU',
+  environmentName: 'Nom de l’environnement {number}',
+  environmentProtected: 'Vous seul',
+  environmentProtectedHint:
+    'Aucun agent ne peut déplacer une note vers cet environnement, ni l’en sortir.',
+  moveEnvironmentUp: 'Placer {name} avant',
+  moveEnvironmentDown: 'Placer {name} après',
+  addEnvironment: 'Ajouter un environnement',
+  defaultEnvironments: 'Revenir à LOCAL, DEV, PRE et PRO',
+  filterByEnvironment: 'Filtrer par environnement',
   feedback: 'Ce qui ne va pas',
   feedbackPlaceholder:
     'Après relecture de la réponse : ce qui ne va toujours pas ou ce qui manque.',

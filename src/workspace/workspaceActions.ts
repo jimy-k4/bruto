@@ -402,7 +402,7 @@ export function createWorkspaceActions({
 
     // Workspace ------------------------------------------------------------------
 
-    updateWorkspace(patch: Partial<Pick<Workspace, 'title' | 'description'>>) {
+    updateWorkspace(patch: Partial<Pick<Workspace, 'title' | 'description' | 'environments'>>) {
       store.update((workspace) => ({ ...workspace, ...patch }), { group: 'workspace-info' })
     },
 

@@ -17,6 +17,7 @@ import {
   listNotes,
   projectPath,
   searchNotes,
+  setEnvironment,
   setStatus,
 } from './tools'
 
@@ -69,6 +70,10 @@ const kindFilter = z
   .array(kind)
   .optional()
   .describe('Only notes of one of these kinds: "task", "bug" or "rule" (standing rules).')
+const environmentFilter = z
+  .array(z.string())
+  .optional()
+  .describe('Only notes in one of these environments, by name or id, e.g. ["DEV"].')
 
 /** Splits a status filter into statuses and the kinds its old words stand for. */
 function filters(args: { status?: string[]; kind?: KindFilter[] }) {
@@ -182,11 +187,12 @@ server.registerTool(
   {
     title: 'List notes',
     description:
-      'Lists the notes on the Bruto board of a project with their short id, status and kind (bug, rule; none for a task). By default the open ones; filter by status, e.g. ["todo"] or ["changes-requested"], or by kind, e.g. ["bug"].',
+      'Lists the notes on the Bruto board of a project with their short id, status, kind (bug, rule; none for a task) and environment (how far the change has got, e.g. DEV). By default the open ones; filter by status, e.g. ["todo"] or ["changes-requested"], by kind, e.g. ["bug"], or by environment, e.g. ["PRE"].',
     inputSchema: {
       project,
       status: statusFilter,
       kind: kindFilter,
+      environment: environmentFilter,
       includeClosed: z.boolean().optional().describe('Also list done and won’t-fix notes.'),
     },
     annotations: READS,
@@ -195,6 +201,7 @@ server.registerTool(
     run(() =>
       listNotes(projectRoot(args.project), {
         ...filters(args),
+        environments: args.environment,
         includeClosed: args.includeClosed,
       }),
     ),
@@ -309,17 +316,24 @@ server.registerTool(
   {
     title: 'Search notes',
     description:
-      'Finds notes by words in their title, text, files, links, answer or feedback, or by the start of their id; optionally only in some statuses or kinds.',
+      'Finds notes by words in their title, text, files, links, answer or feedback, or by the start of their id; optionally only in some statuses, kinds or environments.',
     inputSchema: {
       project,
       query: z.string().optional().describe('Every word must appear, e.g. "login redirect".'),
       status: statusFilter,
       kind: kindFilter,
+      environment: environmentFilter,
     },
     annotations: READS,
   },
   (args) =>
-    run(() => searchNotes(projectRoot(args.project), { query: args.query, ...filters(args) })),
+    run(() =>
+      searchNotes(projectRoot(args.project), {
+        query: args.query,
+        ...filters(args),
+        environments: args.environment,
+      }),
+    ),
 )
 
 server.registerTool(
@@ -342,6 +356,29 @@ server.registerTool(
       args,
       () => projectRoot(args.project),
       (root, by) => setStatus(root, args, by),
+    ),
+)
+
+server.registerTool(
+  'set_environment',
+  {
+    title: 'Set environment',
+    description:
+      'Says how far a note’s change has got: the environment it is in now (LOCAL, DEV, PRE, PRO by default; get_context lists the project’s). It is not its status: a note done in DEV still has to reach production. Set it when you put the change there yourself, e.g. "DEV" after deploying to development. Protected environments (PRE and PRO by default) are the user’s: you can’t move a note there, or out of there.',
+    inputSchema: {
+      project,
+      id: z.string().describe('Short id of the note.'),
+      environment: z.string().min(1).describe('The environment’s name or id, e.g. "DEV".'),
+      agent,
+    },
+    annotations: { ...WRITES, idempotentHint: true },
+  },
+  (args) =>
+    audited(
+      'set_environment',
+      args,
+      () => projectRoot(args.project),
+      (root, by) => setEnvironment(root, args, by),
     ),
 )
 

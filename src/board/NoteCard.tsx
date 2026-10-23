@@ -1,10 +1,12 @@
 import { memo, useCallback, useState } from 'react'
-import type { CrossLink, Note } from '../types'
+import type { CrossLink, Environment, Note } from '../types'
 import { blockState, linkKey, type LinkedNoteInfo } from '../domain/crossLinks'
+import { findEnvironment } from '../domain/environments'
 import { agentAtWork, noteLinks, noteTitle, shortId } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
 import { LensIcon } from '../lenses/LensIcon'
 import { agentName, describeAgentStamp } from '../ui/agentStamp'
+import { NoteEnvironment } from '../ui/EnvironmentStamp'
 import { FileTable } from '../ui/FileTable'
 import { formatDate } from '../ui/format'
 import { formatAge } from '../ui/noteAge'
@@ -36,6 +38,8 @@ interface NoteCardProps {
   searchMark: SearchMark
   /** Linked notes in other projects, as read from them. */
   linkInfo: Map<string, LinkedNoteInfo>
+  /** The project's environments, to name the note's and place it among them. */
+  environments: readonly Environment[]
   handlers: NoteCardHandlers
 }
 
@@ -67,6 +71,7 @@ export const NoteCard = memo(function NoteCard({
   flash,
   searchMark,
   linkInfo,
+  environments,
   handlers,
 }: NoteCardProps) {
   const { t, language } = useI18n()
@@ -116,6 +121,10 @@ export const NoteCard = memo(function NoteCard({
         title,
         note.kind && kindLabel(t, note.kind),
         note.status && statusLabel(t, note.status),
+        note.environment &&
+          t('environmentIn', {
+            environment: findEnvironment(environments, note.environment)?.name ?? note.environment,
+          }),
         workingText,
         readOnly && t('agentReadOnly'),
         note.sentBack && t('sentBackTimes', { count: note.sentBack }),
@@ -309,6 +318,9 @@ export const NoteCard = memo(function NoteCard({
           ) : null}
         </p>
       )}
+
+      {/* How far its change has got, stamped in the corner like a delivery note. */}
+      <NoteEnvironment note={note} environments={environments} className="note__env" />
 
       <span className="note__brand" aria-hidden="true">
         B

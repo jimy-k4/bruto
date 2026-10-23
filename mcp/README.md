@@ -84,19 +84,28 @@ In a client's settings or a `.mcp.json`:
 
 ## Tools
 
-| Tool            | What it does                                                                        |
-| --------------- | ----------------------------------------------------------------------------------- |
-| `list_notes`    | The notes with their short id and status: the open ones, or the statuses asked for. |
-| `search_notes`  | Notes by words in any of their texts, files or links, or by the start of their id.  |
-| `get_context`   | The Markdown Bruto copies for an AI, with instructions and standing rules.          |
-| `get_note`      | One note in full, with the notes it connects with.                                  |
-| `set_status`    | Marks a note "in-progress" when the AI starts on it: the board shows it at work.    |
-| `answer_note`   | Writes what the AI did, adds the files it touched and sends the note to review.     |
-| `create_note`   | Adds a note, as an idea unless told otherwise, next to the one it follows from.     |
-| `connect_notes` | Draws an arrow between two notes.                                                   |
+| Tool              | What it does                                                                              |
+| ----------------- | ----------------------------------------------------------------------------------------- |
+| `list_notes`      | The notes with their short id, status and environment: the open ones, or those asked for. |
+| `search_notes`    | Notes by words in any of their texts, files or links, or by the start of their id.        |
+| `get_context`     | The Markdown Bruto copies for an AI, with instructions and standing rules.                |
+| `get_note`        | One note in full, with the notes it connects with.                                        |
+| `set_status`      | Marks a note "in-progress" when the AI starts on it: the board shows it at work.          |
+| `set_environment` | Says how far a note's change has got, e.g. DEV once the AI deployed it there.             |
+| `answer_note`     | Writes what the AI did, adds the files it touched and sends the note to review.           |
+| `create_note`     | Adds a note, as an idea unless told otherwise, next to the one it follows from.           |
+| `connect_notes`   | Draws an arrow between two notes.                                                         |
 
 Reading tools are marked read-only, so clients can let them run without asking. None of the tools
 deletes anything.
+
+### Environments
+
+Each note can say how far its change has got: LOCAL, DEV, PRE or PRO by default, or the project's own
+list, kept in `environments` in the board. It is apart from the status: a note done in DEV still has
+to reach production. `list_notes` and `search_notes` filter by environment, by name or id.
+`set_environment` refuses the environments the user protected (PRE and PRO by default): no agent
+moves a note there, or out of there.
 
 ### Ghost zones
 

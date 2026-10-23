@@ -7,6 +7,8 @@ import { en } from './locales/en'
 const SHARED_WORDS = new Set([
   'Code',
   'code',
+  // German says it as English does: "In PRE".
+  'In {environment}',
   'Zoom',
   'Idea',
   'Obsidian',

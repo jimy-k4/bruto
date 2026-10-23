@@ -1,4 +1,4 @@
-import type { Note, NoteStatus } from '../types'
+import type { Environment, Note, NoteStatus } from '../types'
 import {
   NOTE_TRAITS,
   isSearchActive,
@@ -17,6 +17,10 @@ interface BoardSearchProps {
   statuses: NoteStatus[]
   /** Kinds that some note has, likewise. */
   kinds: KindFilter[]
+  /** The project's environments some note is in, in order. */
+  environments: Environment[]
+  /** Production's id: its filter is stamped solid, as on the cards. */
+  liveEnvironment?: string
   /** The selected note, when there's exactly one. */
   currentId: string | null
   onChange: (search: NoteSearch) => void
@@ -41,6 +45,8 @@ export function BoardSearch({
   matches,
   statuses,
   kinds,
+  environments,
+  liveEnvironment,
   currentId,
   onChange,
   onShow,
@@ -66,6 +72,14 @@ export function BoardSearch({
       kinds: search.kinds?.includes(kind)
         ? search.kinds.filter((item) => item !== kind)
         : [...(search.kinds ?? []), kind],
+    })
+
+  const toggleEnvironment = (id: string) =>
+    onChange({
+      ...search,
+      environments: search.environments?.includes(id)
+        ? search.environments.filter((item) => item !== id)
+        : [...(search.environments ?? []), id],
     })
 
   const toggleStatus = (status: NoteStatus) =>
@@ -214,6 +228,23 @@ export function BoardSearch({
               onClick={() => toggleKind(kind)}
             >
               {kindLabel(t, kind === 'task' ? undefined : kind)}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {environments.length > 0 && (
+        <div className="board-search__statuses" role="group" aria-label={t('filterByEnvironment')}>
+          {environments.map((environment) => (
+            <button
+              data-superveil="click:board-search:toggle-environment"
+              key={environment.id}
+              type="button"
+              className={`env-stamp board-search__environment${environment.id === liveEnvironment ? ' env-stamp--live' : ''}`}
+              aria-pressed={search.environments?.includes(environment.id) ?? false}
+              onClick={() => toggleEnvironment(environment.id)}
+            >
+              {environment.name}
             </button>
           ))}
         </div>

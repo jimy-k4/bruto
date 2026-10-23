@@ -22,6 +22,7 @@ import {
   getNote,
   listNotes,
   searchNotes,
+  setEnvironment,
   setStatus,
 } from './tools'
 
@@ -476,5 +477,73 @@ describe('ghost zones', () => {
     )
     expect(() => answerNote(root, { id: 'aaaa', response: 'Done.' })).toThrow(/ghost/)
     expect(saved().ghosts[0].notes[0]).toMatchObject({ id: 'aaaa1111', status: 'todo' })
+  })
+})
+
+describe('environments', () => {
+  const by = (): WriteContext => ({ caller: { client: 'claude-code', agent: 'deployer' } })
+
+  it('moves a note along, by name or id, and lists and filters it by environment', () => {
+    board({ notes: [note('aaaaaa-1', { status: 'done' }), note('bbbbbb-1', { status: 'todo' })] })
+
+    expect(setEnvironment(root, { id: 'aaaaaa', environment: 'local' }, by())).toBe(
+      '[aaaaaa] AAAAAA-1 is now in LOCAL.',
+    )
+    expect(setEnvironment(root, { id: 'aaaaaa', environment: 'DEV' }, by())).toContain('in DEV')
+    expect(saved().notes[0]).toMatchObject({
+      environment: 'dev',
+      agent: { client: 'claude-code', id: 'deployer', action: 'environment' },
+    })
+    expect(Date.parse(saved().notes[0].environmentAt)).not.toBeNaN()
+
+    expect(listNotes(root, { includeClosed: true })).toContain('[aaaaaa] AAAAAA-1 — done · in DEV')
+    expect(listNotes(root, { environments: ['dev'], includeClosed: true })).not.toContain('bbbbbb')
+    expect(searchNotes(root, { environments: ['DEV'] })).toContain('aaaaaa')
+    expect(getNote(root, 'aaaaaa')).toMatch(/Environment: DEV \(since \d{4}-\d\d-\d\d\)/)
+    expect(getContext(root)).toContain(
+      'Environments, in order, production last: LOCAL → DEV → PRE → PRO',
+    )
+  })
+
+  it('never moves a note into a protected environment, or out of one', () => {
+    board({
+      notes: [note('aaaaaa-1', { environment: 'dev' }), note('bbbbbb-1', { environment: 'pro' })],
+    })
+
+    expect(() => setEnvironment(root, { id: 'aaaaaa', environment: 'PRE' }, by())).toThrow(
+      /PRE is protected.*ready for PRE/,
+    )
+    expect(() => setEnvironment(root, { id: 'bbbbbb', environment: 'dev' }, by())).toThrow(
+      /PRO is protected/,
+    )
+    expect(saved().notes.map((item: { environment: string }) => item.environment)).toEqual([
+      'dev',
+      'pro',
+    ])
+  })
+
+  it('names the environments the project has when given one it hasn’t', () => {
+    board({
+      notes: [note('aaaaaa-1')],
+      environments: [
+        { id: 'qa', name: 'QA' },
+        { id: 'live', name: 'LIVE', protected: true },
+      ],
+    })
+
+    expect(() => setEnvironment(root, { id: 'aaaaaa', environment: 'dev' })).toThrow(
+      /no environment "dev"\. Its environments, in order: QA, LIVE/,
+    )
+    expect(() => listNotes(root, { environments: ['pre'] })).toThrow(/no environment "pre"/)
+    expect(setEnvironment(root, { id: 'aaaaaa', environment: 'qa' })).toContain('in QA')
+  })
+
+  it('keeps showing an agent at work on the note while it moves it', () => {
+    board({ notes: [note('aaaaaa-1', { status: 'todo' })] })
+
+    setStatus(root, { id: 'aaaaaa', status: 'in-progress' }, by())
+    setEnvironment(root, { id: 'aaaaaa', environment: 'dev' }, by())
+
+    expect(saved().notes[0].agent).toMatchObject({ action: 'status' })
   })
 })

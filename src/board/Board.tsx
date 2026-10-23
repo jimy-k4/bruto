@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CrossLink, GhostZone, Note, Point, Workspace } from '../types'
 import type { LinkedNoteInfo } from '../domain/crossLinks'
+import { projectEnvironments } from '../domain/environments'
 import { useI18n } from '../i18n'
 import { ConnectionLayer } from './ConnectionLayer'
 import { GhostArrows, GhostZones, type GhostZoneHandlers } from './GhostZones'
@@ -79,6 +80,8 @@ export function Board(props: BoardProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [marquee, setMarquee] = useState<Marquee | null>(null)
   const selected = useMemo(() => new Set(selectedIds), [selectedIds])
+  // Stable between updates (the project's own list, or the defaults): cards stay memoised.
+  const environments = projectEnvironments(workspace)
 
   // Handlers read the latest props without changing identity, so memoised
   // cards don't re-render on every board update.
@@ -449,6 +452,7 @@ export function Board(props: BoardProps) {
             flash={flashed.has(note.id) ? flash!.kind : null}
             searchMark={matchIds ? (matchIds.has(note.id) ? 'match' : 'dimmed') : null}
             linkInfo={props.linkInfo}
+            environments={environments}
             handlers={handlers}
           />
         ))}

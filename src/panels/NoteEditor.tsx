@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import type { CrossLink, Note, NoteStatus } from '../types'
+import type { CrossLink, Environment, Note, NoteStatus } from '../types'
 import type { LinkedNoteInfo } from '../domain/crossLinks'
 import type { ActiveProject } from '../state/useProjects'
 import { NOTE_KINDS, NOTE_STATUSES } from '../domain/constants'
+import { findEnvironment, nextEnvironment } from '../domain/environments'
 import { codeBlocks } from '../domain/richText'
 import { agentAtWork, shortId, type NotePatch } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
@@ -27,6 +28,9 @@ interface NoteEditorProps {
   onOpenFile: (path: string) => void
   onAddImages: (images: File[]) => void
   onOpenStatusStyles: () => void
+  /** The project's environments, production last. */
+  environments: readonly Environment[]
+  onOpenEnvironments: () => void
   project: ActiveProject
   linkInfo: Map<string, LinkedNoteInfo>
   onOpenLink: (link: CrossLink) => void
@@ -42,6 +46,8 @@ export function NoteEditor({
   onOpenFile,
   onAddImages,
   onOpenStatusStyles,
+  environments,
+  onOpenEnvironments,
   project,
   linkInfo,
   onOpenLink,
@@ -53,6 +59,7 @@ export function NoteEditor({
   const ids = {
     title: useId(),
     status: useId(),
+    environment: useId(),
     kind: useId(),
     description: useId(),
     ai: useId(),
@@ -76,6 +83,10 @@ export function NoteEditor({
 
   const responseCode = codeBlocks(note.aiResponse)
   const working = agentAtWork(note)
+  const currentEnvironment = findEnvironment(environments, note.environment)
+  // Only along the list: a note in an environment the project doesn't have isn't promoted.
+  const nextStep =
+    !note.environment || currentEnvironment ? nextEnvironment(environments, note) : undefined
 
   // Always at least one field to type a link in; blank ones are dropped when the project loads.
   const links = note.webUrls.length > 0 ? note.webUrls : ['']
@@ -209,6 +220,59 @@ export function NoteEditor({
             </p>
           )}
         </div>
+
+        {environments.length > 0 && (
+          <div className="field">
+            <label className="field__label" htmlFor={ids.environment}>
+              {t('environment')}
+            </label>
+            <div className="field__row">
+              <select
+                id={ids.environment}
+                className="select select--full"
+                value={note.environment ?? ''}
+                onChange={(event) => onChange({ environment: event.target.value || undefined })}
+              >
+                <option value="">{t('noEnvironment')}</option>
+                {environments.map((environment) => (
+                  <option key={environment.id} value={environment.id}>
+                    {environment.name}
+                  </option>
+                ))}
+                {/* One the project no longer lists stays as the note has it. */}
+                {note.environment && !currentEnvironment && (
+                  <option value={note.environment}>{note.environment}</option>
+                )}
+              </select>
+              {nextStep && (
+                <button
+                  data-superveil="click:note-editor:promote-environment"
+                  type="button"
+                  className="button button--small"
+                  onClick={() => onChange({ environment: nextStep.id })}
+                >
+                  {t('promoteTo', { environment: nextStep.name })} →
+                </button>
+              )}
+            </div>
+            <p className="field__hint">
+              {note.environment && note.environmentAt
+                ? t('environmentSince', {
+                    environment: currentEnvironment?.name ?? note.environment,
+                    date: formatDate(language, Date.parse(note.environmentAt), true),
+                  })
+                : t('environmentHint')}
+            </p>
+            <button
+              data-superveil="click:note-editor:customize-environments"
+              type="button"
+              className="link-button"
+              onClick={onOpenEnvironments}
+            >
+              {t('customizeEnvironments')} →
+            </button>
+          </div>
+        )}
 
         <div className="field">
           <div className="field__label-row">
