@@ -7,6 +7,7 @@ import { EmptyBoard, NewNoteButton, SelectionBar, ZoomControls } from '../board/
 import { useBoardView } from '../board/useBoardView'
 import { useNoteSizes } from '../board/useNoteSizes'
 import { NOTE_STATUSES } from '../domain/constants'
+import { projectEnvironments } from '../domain/environments'
 import { EMPTY_SEARCH, isSearchActive, kindOf, searchNotes } from '../domain/search'
 import { useI18n } from '../i18n'
 import { ProjectSwitcher } from '../layout/ProjectSwitcher'
@@ -134,6 +135,14 @@ export function WorkspaceScreen({
   const usedStatuses = useMemo(
     () => NOTE_STATUSES.filter((status) => workspace.notes.some((note) => note.status === status)),
     [workspace.notes],
+  )
+  const environments = projectEnvironments(workspace)
+  const usedEnvironments = useMemo(
+    () =>
+      environments.filter((environment) =>
+        workspace.notes.some((note) => note.environment === environment.id),
+      ),
+    [environments, workspace.notes],
   )
 
   const closeSearch = () => {
@@ -310,6 +319,8 @@ export function WorkspaceScreen({
                   matches={matches}
                   statuses={usedStatuses}
                   kinds={usedKinds}
+                  environments={usedEnvironments}
+                  liveEnvironment={environments.at(-1)?.id}
                   currentId={singleSelected?.id ?? null}
                   onChange={ui.setSearch}
                   onShow={actions.showNote}
@@ -379,6 +390,8 @@ export function WorkspaceScreen({
               onOpenFile={(path) => void actions.openFile(path)}
               onAddImages={(images) => void actions.addImages(editingNote.id, images)}
               onOpenStatusStyles={() => ui.setModal('styles')}
+              environments={environments}
+              onOpenEnvironments={() => ui.setSide({ kind: 'workspace' })}
               project={project}
               linkInfo={linkInfo}
               onOpenLink={(link) => void openLink(link)}
@@ -388,6 +401,7 @@ export function WorkspaceScreen({
           {side?.kind === 'bulk' && selectedNotes.length > 1 && (
             <BulkEditor
               notes={selectedNotes}
+              environments={environments}
               onChange={(patch) => actions.updateNotes(selectedIds, patch)}
               onDelete={() => actions.deleteNotes(selectedIds)}
               onClose={() => ui.setSide(null)}

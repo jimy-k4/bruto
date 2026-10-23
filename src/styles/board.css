@@ -363,6 +363,19 @@
   opacity: 1;
 }
 
+/* Stamped in the bottom corner, left of the brand, in the note's own ink. */
+.note__env {
+  --stamp-ink: var(--note-ink);
+  --stamp-bg: var(--note-bg);
+
+  position: absolute;
+  right: 38px;
+  bottom: 8px;
+  height: 22px;
+  max-width: calc(100% - 140px);
+  overflow: hidden;
+}
+
 .note__brand {
   position: absolute;
   right: 8px;
@@ -539,6 +552,19 @@
 .board-search__status[aria-pressed='true'] {
   background: var(--inverse-bg);
   color: var(--inverse-ink);
+}
+
+.board-search__environment {
+  cursor: pointer;
+}
+
+/* Picked: a check before the name, as production is already filled. */
+.board-search__environment[aria-pressed='true']::before {
+  content: '✓';
+}
+
+.board-search__environment[aria-pressed='false'] {
+  opacity: 0.7;
 }
 
 /* Notes that don't match stay visible, only quieter. */

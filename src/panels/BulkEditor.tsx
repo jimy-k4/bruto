@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import type { Note, NoteKind, NoteStatus } from '../types'
+import type { Environment, Note, NoteKind, NoteStatus } from '../types'
 import { NOTE_KINDS, NOTE_STATUSES } from '../domain/constants'
 import type { NotePatch } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
@@ -8,10 +8,15 @@ import { ColorPicker, PatternPicker } from '../ui/StylePicker'
 
 interface BulkEditorProps {
   notes: Note[]
+  /** The project's environments, production last. */
+  environments: readonly Environment[]
   onChange: (patch: NotePatch) => void
   onDelete: () => void
   onClose: () => void
 }
+
+/** The placeholder for notes in different environments: a value no environment id takes. */
+const MIXED = '*'
 
 /** The value all notes share, or undefined when they differ. */
 function shared<K extends keyof Note>(notes: Note[], key: K): Note[K] | undefined {
@@ -21,10 +26,10 @@ function shared<K extends keyof Note>(notes: Note[], key: K): Note[K] | undefine
 }
 
 /**
- * Edits what makes sense for several notes at once: status, kind and look. Texts
+ * Edits what makes sense for several notes at once: status, kind, environment and look. Texts
  * and files belong to each note, so they are left out.
  */
-export function BulkEditor({ notes, onChange, onDelete, onClose }: BulkEditorProps) {
+export function BulkEditor({ notes, environments, onChange, onDelete, onClose }: BulkEditorProps) {
   const { t } = useI18n()
   const statusId = useId()
   const sameStatus = notes.every((note) => note.status === notes[0]?.status)
@@ -32,6 +37,9 @@ export function BulkEditor({ notes, onChange, onDelete, onClose }: BulkEditorPro
   const kindId = useId()
   const sameKind = notes.every((note) => note.kind === notes[0]?.kind)
   const kindValue = sameKind ? (notes[0]?.kind ?? '') : 'mixed'
+  const environmentId = useId()
+  const sameEnvironment = notes.every((note) => note.environment === notes[0]?.environment)
+  const environmentValue = sameEnvironment ? (notes[0]?.environment ?? '') : MIXED
   const color = shared(notes, 'colorTheme')
   const pattern = shared(notes, 'pattern')
   const preview = { color: color ?? 'concrete', pattern: pattern ?? 'raw' } as const
@@ -103,6 +111,33 @@ export function BulkEditor({ notes, onChange, onDelete, onClose }: BulkEditorPro
             ))}
           </select>
         </div>
+
+        {environments.length > 0 && (
+          <div className="field">
+            <label className="field__label" htmlFor={environmentId}>
+              {t('environment')}
+            </label>
+            <select
+              id={environmentId}
+              className="select select--full"
+              value={environmentValue}
+              onChange={(event) =>
+                event.target.value !== MIXED &&
+                onChange({ environment: event.target.value || undefined })
+              }
+            >
+              <option value={MIXED} disabled>
+                {t('mixedValues')}
+              </option>
+              <option value="">{t('noEnvironment')}</option>
+              {environments.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <ColorPicker
           label={t('color')}

@@ -294,6 +294,22 @@
   min-height: 40px;
 }
 
+/* An environment: its name, "only you", and moving it along the list. */
+.environment-list {
+  padding: 0;
+  list-style: none;
+}
+
+.environment-list__row .input {
+  min-width: 0;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.environment-list__row .button--toggle {
+  min-height: 40px;
+}
+
 /* What's new ---------------------------------------------------------------------- */
 
 .news-list {

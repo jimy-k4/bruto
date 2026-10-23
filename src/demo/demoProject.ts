@@ -361,6 +361,8 @@ const NOTES: {
   filePaths?: string[]
   aiFilePaths?: string[]
   webUrls?: string[]
+  /** How far its change has got: an id of the default environments. */
+  environment?: string
 }[] = [
   {
     key: 'calendar',
@@ -378,6 +380,7 @@ const NOTES: {
     x: 420,
     y: 60,
     status: 'review',
+    environment: 'dev',
     colorTheme: 'plum',
     pattern: 'dots',
     filePaths: ['app/bookings/actions.ts'],
@@ -393,6 +396,7 @@ const NOTES: {
     x: 780,
     y: 60,
     status: 'changes-requested',
+    environment: 'pre',
     colorTheme: 'wine',
     pattern: 'cross',
     filePaths: ['app/checkout/page.tsx'],
@@ -403,6 +407,7 @@ const NOTES: {
     x: 60,
     y: 560,
     status: 'done',
+    environment: 'pro',
     colorTheme: 'moss',
     pattern: 'bands',
     filePaths: ['app/api/stripe/webhook/route.ts'],

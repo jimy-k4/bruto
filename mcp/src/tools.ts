@@ -1,11 +1,13 @@
 import { isAbsolute, relative } from 'node:path'
-import type { Note, NoteKind, NoteStatus, Point, Workspace } from '../../src/types'
+import type { Environment, Note, NoteKind, NoteStatus, Point, Workspace } from '../../src/types'
 import { buildAiContext, describeGhostNote, describeNote } from '../../src/domain/aiContext'
 import { findGhost } from '../../src/domain/ghosts'
 import { CLOSED_STATUSES, NOTE_MIN_SIZE } from '../../src/domain/constants'
+import { findEnvironment, projectEnvironments } from '../../src/domain/environments'
 import { kindOf, searchNotes as findNotes, type KindFilter } from '../../src/domain/search'
 import {
   addConnection,
+  agentAtWork,
   createNote,
   noteTitle,
   shortId,
@@ -23,11 +25,15 @@ import { BoardError, changeBoard, readBoard, resolveNote } from './board'
 
 const ref = (note: Note) => `[${shortId(note.id)}] ${noteTitle(note)}`
 const isClosed = (note: Note) => Boolean(note.status && CLOSED_STATUSES.includes(note.status))
-/** How a note reads in a list: its status, its kind when it isn't a plain task, and if agents may only read it. */
-const standing = (note: Note) =>
+/** The name the project gives a note's environment, or what the note says. */
+const environmentName = (note: Note, environments: readonly Environment[]) =>
+  note.environment && (findEnvironment(environments, note.environment)?.name ?? note.environment)
+/** How a note reads in a list: its status, its kind when it isn't a plain task, its environment, and if agents may only read it. */
+const standing = (note: Note, environments: readonly Environment[]) =>
   [
     note.status ?? 'no status',
     note.kind,
+    note.environment && `in ${environmentName(note, environments)}`,
     note.agentAccess === 'read' && 'read only',
     note.sentBack && `sent back ${note.sentBack}×`,
     note.agent?.reverted?.length && 'agent change reverted',
@@ -79,15 +85,44 @@ export function projectPath(root: string, path: string): string {
 
 const unique = (items: string[]) => [...new Set(items.filter(Boolean))]
 
+/**
+ * Environment filters, by id or by name, as the project's ids. One the
+ * project doesn't have is refused, with the ones it has.
+ */
+function environmentFilter(workspace: Workspace, wanted: string[] = []): string[] {
+  const environments = projectEnvironments(workspace)
+
+  return wanted.map((value) => {
+    const found = findEnvironment(environments, value)
+
+    if (!found) throw new BoardError(unknownEnvironment(value, environments))
+
+    return found.id
+  })
+}
+
+const unknownEnvironment = (value: string, environments: readonly Environment[]) =>
+  environments.length
+    ? `This project has no environment "${value}". Its environments, in order: ${environments.map((item) => item.name).join(', ')}.`
+    : `This project has no environments: the user turned them off.`
+
 export function listNotes(
   root: string,
   {
     statuses,
     kinds,
+    environments: wanted,
     includeClosed = false,
-  }: { statuses?: NoteStatus[]; kinds?: KindFilter[]; includeClosed?: boolean } = {},
+  }: {
+    statuses?: NoteStatus[]
+    kinds?: KindFilter[]
+    environments?: string[]
+    includeClosed?: boolean
+  } = {},
 ): string {
   const workspace = readBoard(root)
+  const environments = projectEnvironments(workspace)
+  const inEnvironments = environmentFilter(workspace, wanted)
   const notes = workspace.notes
     .filter((note) =>
       statuses?.length
@@ -95,6 +130,11 @@ export function listNotes(
         : includeClosed || !isClosed(note),
     )
     .filter((note) => !kinds?.length || kinds.includes(kindOf(note)))
+    .filter(
+      (note) =>
+        !inEnvironments.length ||
+        Boolean(note.environment && inEnvironments.includes(note.environment)),
+    )
     .sort(byReadingOrder)
   const header = [`# ${workspace.title}`, workspace.description.trim()].filter(Boolean)
 
@@ -103,7 +143,7 @@ export function listNotes(
   return [
     ...header,
     '',
-    ...notes.map((note) => `- ${ref(note)} — ${standing(note)}`),
+    ...notes.map((note) => `- ${ref(note)} — ${standing(note, environments)}`),
     ...ghostZones(workspace),
     '',
     'Read one with get_note, or everything the AI needs with get_context.',
@@ -116,14 +156,76 @@ export function searchNotes(
     query = '',
     statuses = [],
     kinds = [],
-  }: { query?: string; statuses?: NoteStatus[]; kinds?: KindFilter[] },
+    environments: wanted = [],
+  }: { query?: string; statuses?: NoteStatus[]; kinds?: KindFilter[]; environments?: string[] },
 ): string {
   const workspace = readBoard(root)
-  const found = findNotes(workspace.notes, { query, statuses, kinds })
+  const environments = environmentFilter(workspace, wanted)
+  const found = findNotes(workspace.notes, { query, statuses, kinds, environments })
 
   if (found.length === 0) return 'No notes match.'
 
-  return found.map((note) => `- ${ref(note)} — ${standing(note)}`).join('\n')
+  return found
+    .map((note) => `- ${ref(note)} — ${standing(note, projectEnvironments(workspace))}`)
+    .join('\n')
+}
+
+/**
+ * Says how far a note's change has got: the environment it is in now. An
+ * agent sets it when it puts the change there itself. Environments the user
+ * protected (PRE and PRO by default) are theirs: no agent moves a note there,
+ * or out of there.
+ */
+export function setEnvironment(
+  root: string,
+  { id, environment }: { id: string; environment: string },
+  by?: WriteContext,
+): string {
+  let message = ''
+
+  changeBoard(root, (workspace) => {
+    const note = resolveNote(workspace, id)
+    const environments = projectEnvironments(workspace)
+
+    if (by) by.note = note.id
+
+    if (note.kind === 'rule') {
+      throw new BoardError(`${ref(note)} is a standing rule (kind "rule"): it has no environment.`)
+    }
+    refuseReadOnly(note)
+
+    const target = findEnvironment(environments, environment)
+
+    if (!target) throw new BoardError(unknownEnvironment(environment, environments))
+
+    const current = findEnvironment(environments, note.environment)
+
+    if (current?.id === target.id) {
+      message = `${ref(note)} is already in ${target.name}.`
+
+      return workspace
+    }
+
+    for (const guarded of [target, current]) {
+      if (guarded?.protected) {
+        throw new BoardError(
+          `${guarded.name} is protected: only the user moves notes there, or out of there. ${ref(note)} stays${current ? ` in ${current.name}` : ''}. ${guarded === target ? `Tell the user it is ready for ${target.name} instead.` : 'Tell the user what you found instead.'}`,
+        )
+      }
+    }
+
+    message = `${ref(note)} is now in ${target.name}.`
+
+    // An agent at work on it keeps showing so: the audit log has this change.
+    const working = agentAtWork(note)?.client === by?.caller.client
+
+    return updateNotes(workspace, [note.id], {
+      environment: target.id,
+      ...(by && !working && { agent: stamp(by.caller, 'environment') }),
+    })
+  })
+
+  return message
 }
 
 /**
@@ -220,7 +322,7 @@ export function getNote(root: string, id: string): string {
     : []
 
   return [
-    ...describeNote(note),
+    ...describeNote(note, projectEnvironments(workspace)),
     ...agent,
     ...(pointsTo.length ? ['', `Points to: ${pointsTo.join(', ')}`] : []),
     ...(pointedFrom.length ? ['', `Pointed from: ${pointedFrom.join(', ')}`] : []),

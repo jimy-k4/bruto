@@ -3,6 +3,7 @@ import type {
   AgentStamp,
   Connection,
   DocumentationType,
+  Environment,
   Note,
   NoteKind,
   NoteStatus,
@@ -25,6 +26,7 @@ import {
   isNoteStatus,
 } from './constants'
 import { normalizeCrossLinks } from './crossLinks'
+import { findEnvironment, normalizeEnvironments, projectEnvironments } from './environments'
 import { normalizeGhostZones } from './ghosts'
 
 /** Thrown when `workspace.json` can't be understood. The message is shown to the user. */
@@ -46,7 +48,7 @@ const asNumber = (value: unknown, fallback: number): number =>
 const asStringList = (value: unknown): string[] =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
 
-const AGENT_ACTIONS: readonly AgentAction[] = ['answer', 'status', 'create']
+const AGENT_ACTIONS: readonly AgentAction[] = ['answer', 'status', 'create', 'environment']
 
 /** Who changed a note through MCP, if the file says so in a shape Bruto understands. */
 function normalizeAgentStamp(value: unknown): AgentStamp | undefined {
@@ -231,6 +233,8 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   delete note.agentAccess
   delete note.createdAt
   delete note.sentBack
+  delete note.environment
+  delete note.environmentAt
 
   if (status) note.status = status
   if (kind) note.kind = kind
@@ -247,7 +251,28 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
     note.sentBack = raw.sentBack as number
   }
 
+  // Matched to the project's environments once they are known: see `normalizeWorkspace`.
+  const environment = asString(raw.environment).trim()
+
+  if (environment) {
+    note.environment = environment
+    if (!Number.isNaN(Date.parse(asString(raw.environmentAt)))) {
+      note.environmentAt = asString(raw.environmentAt)
+    }
+  }
+
   return note
+}
+
+/**
+ * A note's environment as the project lists it: a model or a hand edit may
+ * write its name ("PRE") where the id goes. One the project doesn't have is
+ * kept as written, so nothing is lost; the card shows it as it is.
+ */
+function matchEnvironment(note: Note, environments: readonly Environment[]): Note {
+  const found = note.environment ? findEnvironment(environments, note.environment) : undefined
+
+  return found && found.id !== note.environment ? { ...note, environment: found.id } : note
 }
 
 function normalizeStatusStyles(value: unknown): StatusStyles | undefined {
@@ -340,6 +365,14 @@ export function normalizeWorkspace(raw: unknown, fallbackTitle = 'BRUTO'): Works
 
   delete workspace.statusStyles
   if (statusStyles) workspace.statusStyles = statusStyles
+
+  const environments = normalizeEnvironments(raw.environments)
+
+  delete workspace.environments
+  if (environments) workspace.environments = environments
+  workspace.notes = workspace.notes.map((note) =>
+    matchEnvironment(note, projectEnvironments(workspace)),
+  )
 
   const ghosts = normalizeGhostZones(raw.ghosts)
 
@@ -662,6 +695,16 @@ export function updateNotes(workspace: Workspace, ids: string[], patch: NotePatc
         delete updated.agent
       }
 
+      // A new environment starts its own clock; leaving them all clears it.
+      if ('environment' in patch && patch.environment !== note.environment) {
+        if (patch.environment)
+          updated.environmentAt = patch.environmentAt ?? new Date().toISOString()
+        else {
+          delete updated.environment
+          delete updated.environmentAt
+        }
+      }
+
       if ('status' in patch && !patch.status) delete updated.status
       if ('kind' in patch && !patch.kind) delete updated.kind
       if ('aiFilePaths' in patch && !updated.aiFilePaths?.length) delete updated.aiFilePaths
@@ -746,10 +789,13 @@ export function insertNotes(
     // The other project's note points back at the original only: a copy's link would be one-sided.
     delete copy.crossLinks
 
-    // A copy is a new task: its own age, no trips back yet, no agent has touched it.
+    // A copy is a new task: its own age, no trips back yet, no agent has touched it,
+    // and its change hasn't got anywhere.
     copy.createdAt = new Date().toISOString()
     delete copy.sentBack
     delete copy.agent
+    delete copy.environment
+    delete copy.environmentAt
 
     return copy
   })

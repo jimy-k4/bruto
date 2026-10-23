@@ -49,6 +49,10 @@ Prefer to run it yourself? See [Development](#development).
   database sees the front through the API), a zone moves as a whole, refreshes with a button and
   opens its project; an arrow from a ghost to a note links them on both boards. The AI and the MCP
   server read the zones too, and never edit them.
+- **Environments.** A stamp on each note says how far its change has got: LOCAL, DEV, PRE or PRO, or
+  the project's own list, with production inked solid. It is apart from the status (a note done in
+  DEV still has to reach production): move it up from the editor or on many notes at once, filter by
+  it, and see it on ghosts too. Agents over MCP move notes up to DEV; PRE and PRO are yours.
 - **Formatting.** Notes show Markdown; the editor's **Formatting** link opens a cheat sheet with each
   example next to how it looks.
 - **What's new.** Every feature gets an entry in the top bar's noticeboard the day it ships, with a
@@ -57,8 +61,8 @@ Prefer to run it yourself? See [Development](#development).
   marked with the notes that point at them. It shows where the work is, and lists links to files
   that no longer exist. _Only with notes_ hides everything no note points at, here, in the lenses and
   in the files window.
-- **Search.** `Ctrl F` finds notes by text, path or id, and filters them by status and by what they
-  have or lack: files, an AI response, code, images, a web link.
+- **Search.** `Ctrl F` finds notes by text, path or id, and filters them by status, kind,
+  environment and by what they have or lack: files, an AI response, code, images, a web link.
 - **Lenses.** When Bruto recognises the project, the structure view offers it drawn by what its files
   are, still with the notes on each element:
   - **Web** (React, Vue, Svelte, Next.js, Nuxt, SvelteKit, Astro, Angular): pages as browser windows
@@ -159,8 +163,8 @@ always apply the notes whose kind is "rule".
 
 Agents that speak MCP (Claude Code, Claude Desktop, Cursor, Windsurf…) can use the board through
 tools instead of editing the file: list and search the notes, read the context, mark one in progress
-(the board shows the agent at work on it, with moving tape), answer it and send it to review, propose
-new ones. It runs on your machine, and once added works in
+(the board shows the agent at work on it, with moving tape), say which environment its change has
+reached, answer it and send it to review, propose new ones. It runs on your machine, and once added works in
 every project with a board:
 
 ```bash
@@ -207,7 +211,9 @@ fields it does not know about, and accepts common status words such as `"pending
       "aiResponse": "Added cancelBooking() with the 2h rule.",
       "aiFilePaths": ["app/bookings/cancel.ts"], // what the AI created or changed
       "feedback": "Still possible after the deadline on mobile.",
-      // Who last changed it through the MCP server: answer · status · create.
+      "environment": "dev", // how far its change has got: an id from "environments"
+      "environmentAt": "2026-10-20T16:30:00Z", // when it got there
+      // Who last changed it through the MCP server: answer · status · create · environment.
       "agent": {
         "client": "claude-code",
         "id": "reviewer",
@@ -226,6 +232,12 @@ fields it does not know about, and accepts common status words such as `"pending
   ],
   "connections": [{ "id": "…", "from": "<note id>", "to": "<note id>" }],
   "statusStyles": { "review": { "color": "plum", "pattern": "dots" } },
+  // In order, production last; left out for LOCAL, DEV, PRE and PRO. "protected": only you move notes there.
+  "environments": [
+    { "id": "dev", "name": "DEV" },
+    { "id": "qa", "name": "QA" },
+    { "id": "pro", "name": "PRO", "protected": true },
+  ],
 }
 ```
 

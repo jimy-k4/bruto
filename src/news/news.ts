@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'environments',
+    date: '2026-10-22',
+    text: {
+      es: {
+        title: 'Cada nota dice en qué entorno está',
+        body: 'Las notas llevan un sello abajo con el entorno al que ha llegado su cambio, **LOCAL**, **DEV**, **PRE** o **PRO**, y unos cuadritos con lo que le queda; PRO va en tinta llena. No es el estado: una nota hecha en DEV aún tiene que llegar a producción. Se cambia en el editor de la nota, con **Subir a…**, o en varias a la vez, y la búsqueda filtra por entorno. Cada proyecto puede tener los suyos y las zonas fantasma muestran el de las notas vinculadas. Por MCP los agentes lo leen y lo mueven hasta DEV; PRE y PRO son solo tuyos.',
+      },
+      en: {
+        title: 'Every note says which environment it’s in',
+        body: 'Notes carry a stamp at the bottom with the environment their change has got to, **LOCAL**, **DEV**, **PRE** or **PRO**, and small squares for what’s left; PRO is inked solid. It isn’t the status: a note done in DEV still has to reach production. Change it in the note’s editor, with **Move up to…**, or on several notes at once, and filter by it when you search. Each project can have its own, and ghost zones show the environment of linked notes. Over MCP agents read it and move it up to DEV; PRE and PRO are yours only.',
+      },
+      ca: {
+        title: 'Cada nota diu en quin entorn és',
+        body: 'Les notes porten un segell a baix amb l’entorn on ha arribat el seu canvi, **LOCAL**, **DEV**, **PRE** o **PRO**, i uns quadrets amb el que li falta; PRO va en tinta plena. No és l’estat: una nota feta a DEV encara ha d’arribar a producció. Es canvia a l’editor de la nota, amb **Pujar a…**, o a diverses alhora, i la cerca filtra per entorn. Cada projecte pot tenir els seus i les zones fantasma mostren el de les notes vinculades. Per MCP els agents el llegeixen i el mouen fins a DEV; PRE i PRO són només teus.',
+      },
+      fr: {
+        title: 'Chaque note dit dans quel environnement elle est',
+        body: 'Les notes portent un tampon en bas avec l’environnement où leur changement est arrivé, **LOCAL**, **DEV**, **PRE** ou **PRO**, et de petits carrés pour ce qui reste ; PRO est encré plein. Ce n’est pas le statut : une note terminée en DEV doit encore arriver en production. Changez-le dans l’éditeur de la note, avec **Passer en…**, ou sur plusieurs notes à la fois, et filtrez par environnement en cherchant. Chaque projet peut avoir les siens, et les zones fantômes montrent celui des notes liées. Par MCP, les agents le lisent et le font avancer jusqu’à DEV ; PRE et PRO sont à vous seul.',
+      },
+      de: {
+        title: 'Jede Notiz zeigt, in welcher Umgebung sie ist',
+        body: 'Notizen tragen unten einen Stempel mit der Umgebung, in der ihre Änderung angekommen ist, **LOCAL**, **DEV**, **PRE** oder **PRO**, und kleine Kästchen für den Rest des Wegs; PRO ist voll eingefärbt. Das ist nicht der Status: Eine in DEV erledigte Notiz muss noch in die Produktion. Ändere sie im Editor der Notiz, mit **Weiter nach…**, oder bei mehreren Notizen zugleich, und filtere bei der Suche danach. Jedes Projekt kann eigene haben, und Geisterzonen zeigen die Umgebung verknüpfter Notizen. Über MCP lesen Agenten sie und setzen sie bis DEV; PRE und PRO gehören nur dir.',
+      },
+      'pt-BR': {
+        title: 'Cada nota diz em que ambiente está',
+        body: 'As notas levam um carimbo embaixo com o ambiente onde a mudança chegou, **LOCAL**, **DEV**, **PRE** ou **PRO**, e quadradinhos com o que falta; PRO vem em tinta cheia. Não é o status: uma nota feita em DEV ainda precisa chegar à produção. Mude no editor da nota, com **Subir para…**, ou em várias de uma vez, e filtre por ambiente na busca. Cada projeto pode ter os seus, e as zonas fantasma mostram o das notas vinculadas. Pelo MCP os agentes o leem e o levam até DEV; PRE e PRO são só seus.',
+      },
+      ru: {
+        title: 'Каждая заметка показывает своё окружение',
+        body: 'На заметках внизу стоит штамп с окружением, до которого дошло изменение, — **LOCAL**, **DEV**, **PRE** или **PRO** — и квадратики с оставшимся путём; PRO закрашен целиком. Это не статус: заметка, сделанная в DEV, ещё должна дойти до продакшена. Меняйте его в редакторе заметки кнопкой **Перевести в…** или сразу для нескольких заметок, а в поиске фильтруйте по нему. У каждого проекта могут быть свои окружения, а зоны-призраки показывают окружение связанных заметок. Через MCP агенты его читают и переводят до DEV; PRE и PRO — только ваши.',
+      },
+      ja: {
+        title: '各ノートがどの環境にあるかを表示',
+        body: 'ノートの下部に、変更が届いた環境 **LOCAL**、**DEV**、**PRE**、**PRO** のスタンプと、残りの道のりを示す小さな四角が付きます。PRO は塗りつぶしです。ステータスとは別です: DEV で完了したノートも、まだ本番に届く必要があります。ノートのエディタの **進める** ボタンや、複数ノートの一括編集で変更でき、検索でも絞り込めます。プロジェクトごとに独自の環境を持てて、ゴーストゾーンにはリンク先ノートの環境も表示されます。MCP 経由のエージェントは環境を読み、DEV まで進められます。PRE と PRO はあなただけのものです。',
+      },
+      zh: {
+        title: '每条笔记都显示所在环境',
+        body: '笔记底部有一个印章，显示变更已到达的环境：**LOCAL**、**DEV**、**PRE** 或 **PRO**，并用小方块表示剩下的路；PRO 是实心的。它不是状态：在 DEV 完成的笔记仍需到达生产环境。可在笔记编辑器中用 **推进到…** 修改，也可一次修改多条，搜索时还能按环境筛选。每个项目可以有自己的环境，幽灵区域也会显示关联笔记的环境。通过 MCP，智能体可以读取环境并推进到 DEV；PRE 和 PRO 只归你。',
+      },
+    },
+  },
+  {
     id: 'ghost-zones',
     date: '2026-10-05',
     text: {

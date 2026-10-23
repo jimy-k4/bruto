@@ -91,12 +91,30 @@ export interface Note {
   agent?: AgentStamp
   /** "read": agents may read the note but never answer it or change its status. Set by the user. */
   agentAccess?: AgentAccess
+  /**
+   * How far its change has got: the id of one of the project's environments
+   * (LOCAL, DEV, PRE, PRO…). Apart from the status: a note done in DEV still
+   * has to reach production.
+   */
+  environment?: string
+  /** When it got to that environment (ISO 8601). */
+  environmentAt?: string
 }
 
 export type AgentAccess = 'read'
 
 /** What an agent did to a note through the MCP server. */
-export type AgentAction = 'answer' | 'status' | 'create'
+export type AgentAction = 'answer' | 'status' | 'create' | 'environment'
+
+/** A place the project's code runs in, from the developer's machine to production. */
+export interface Environment {
+  /** What notes keep: renaming the environment never loses them. */
+  id: string
+  /** What the stamp says, e.g. "PRE". */
+  name: string
+  /** Only the user moves notes here, or out of here: agents never do. */
+  protected?: boolean
+}
 
 /** Who changed a note through the MCP server, and when: the audit log has the rest. */
 export interface AgentStamp {
@@ -177,6 +195,11 @@ export interface Workspace {
   notes: Note[]
   connections: Connection[]
   statusStyles?: StatusStyles
+  /**
+   * Where the project's code runs, in the order a change goes through them,
+   * production last. Absent: LOCAL, DEV, PRE and PRO. Empty: none.
+   */
+  environments?: Environment[]
   /** Notes of linked projects that lead to notes here, copied from their boards. */
   ghosts?: GhostZone[]
 }
@@ -209,6 +232,10 @@ export interface GhostNote {
   title: string
   kind?: NoteKind
   status?: NoteStatus
+  /** Its environment's name, as its own project calls it. */
+  environment?: string
+  /** Its environment is that project's production: the last of its list. */
+  live?: boolean
   colorTheme: NoteColorTheme
   pattern: NotePattern
   /** Its position on its own board. */

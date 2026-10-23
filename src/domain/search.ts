@@ -16,6 +16,8 @@ export interface NoteSearch {
   statuses: NoteStatus[]
   /** Only notes of one of these kinds ("task" for notes without one); empty means any. */
   kinds?: KindFilter[]
+  /** Only notes in one of these environments (by id); empty means anywhere, or nowhere yet. */
+  environments?: string[]
   traits?: TraitFilter
 }
 
@@ -55,6 +57,7 @@ export const isSearchActive = (search: NoteSearch) =>
   search.query.trim() !== '' ||
   search.statuses.length > 0 ||
   (search.kinds?.length ?? 0) > 0 ||
+  (search.environments?.length ?? 0) > 0 ||
   traitEntries(search).length > 0
 
 const searchableText = (note: Note) =>
@@ -90,6 +93,13 @@ export function searchNotes(notes: Note[], search: NoteSearch): Note[] {
       }
 
       if (search.kinds?.length && !search.kinds.includes(kindOf(note))) return false
+
+      if (
+        search.environments?.length &&
+        !(note.environment && search.environments.includes(note.environment))
+      ) {
+        return false
+      }
 
       if (traits.some(([trait, wanted]) => hasTrait[trait](note) !== wanted)) return false
 

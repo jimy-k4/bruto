@@ -6,6 +6,7 @@ const ACTIONS: Record<AgentAction, TranslationKey> = {
   answer: 'agentActionAnswer',
   status: 'agentActionStatus',
   create: 'agentActionCreate',
+  environment: 'agentActionEnvironment',
 }
 
 /** Note fields by the name the editor gives them. */
@@ -14,6 +15,7 @@ const FIELDS: Partial<Record<string, TranslationKey>> = {
   description: 'description',
   status: 'status',
   kind: 'kind',
+  environment: 'environment',
   filePaths: 'files',
   aiResponse: 'aiResponse',
   aiFilePaths: 'aiFiles',

@@ -384,6 +384,30 @@ export const de: Locale = {
   agentActionAnswer: 'hat sie beantwortet',
   agentActionStatus: 'hat ihren Status geändert',
   agentActionCreate: 'hat sie angelegt',
+  agentActionEnvironment: 'hat ihre Umgebung geändert',
+  // Environments
+  environment: 'Umgebung',
+  environments: 'Umgebungen',
+  noEnvironment: 'Keine Umgebung',
+  environmentIn: 'In {environment}',
+  environmentSince: 'In {environment} seit {date}',
+  environmentHint:
+    'Wie weit die Änderung gekommen ist. Das ist nicht der Status: Eine in DEV erledigte Notiz muss noch in die Produktion.',
+  promoteTo: 'Weiter nach {environment}',
+  customizeEnvironments: 'Umgebungen des Projekts ändern',
+  environmentsHint:
+    'In der Reihenfolge, in der eine Änderung sie durchläuft, Produktion zuletzt. Die mit „Nur du“ markierten gehören dir: Kein Agent verschiebt eine Notiz dorthin oder von dort weg.',
+  noEnvironments: 'Keine Umgebungen: Notizen sagen nicht, wo ihre Änderung ist.',
+  newEnvironment: 'NEU',
+  environmentName: 'Name der Umgebung {number}',
+  environmentProtected: 'Nur du',
+  environmentProtectedHint:
+    'Kein Agent kann eine Notiz in diese Umgebung verschieben oder aus ihr heraus.',
+  moveEnvironmentUp: '{name} nach vorn',
+  moveEnvironmentDown: '{name} nach hinten',
+  addEnvironment: 'Umgebung hinzufügen',
+  defaultEnvironments: 'Zurück zu LOCAL, DEV, PRE und PRO',
+  filterByEnvironment: 'Nach Umgebung filtern',
   feedback: 'Was nicht stimmt',
   feedbackPlaceholder: 'Nach dem Prüfen der Antwort: was noch falsch ist oder fehlt.',
   feedbackStatusHint:
