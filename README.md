@@ -257,6 +257,7 @@ Add `.bruto/` to your `.gitignore` if the notes should stay on your machine.
 | `M`                 | Structure view                        | `Backspace`         | Up one folder in the structure view            |
 | `Ctrl F` / `/`      | Search notes (text, path or id)       | `Enter`             | Next result (`Shift` for the previous one)     |
 | `0`                 | Reset zoom and position               | `Esc`               | Close or cancel                                |
+| `O`                 | Tidy the selection, or by levels      |                     |                                                |
 
 Press `?` in the app for the full list.
 

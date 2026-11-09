@@ -566,6 +566,10 @@ export const ca: Locale = {
     'Comença una connexió des de la nota seleccionada. Després fes clic a la de destí.',
   shortcutCenter: 'Centrar',
   shortcutCenterDescription: 'Centra la vista a la selecció, o a tot el tauler.',
+  shortcutArrange: 'Ordenar',
+  shortcutArrangeDescription:
+    'Reparteix la selecció amb la mateixa separació o, si hi ha fletxes entre les notes, per nivells.',
+  arrangeNeedsNotes: 'Selecciona almenys dues notes per ordenar-les.',
   shortcutSearch: 'Cercar notes',
   shortcutSearchDescription:
     'Cerca en títols, textos, rutes i ids. També amb /. Enter salta al resultat següent.',

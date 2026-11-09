@@ -7,6 +7,7 @@ export type ShortcutAction =
   | 'copyConnected'
   | 'copyEntire'
   | 'center'
+  | 'arrange'
   | 'search'
   | 'structure'
   | 'connect'
@@ -142,6 +143,13 @@ export const SHORTCUTS: ShortcutDefinition[] = [
     title: 'shortcutCenter',
     description: 'shortcutCenterDescription',
     patterns: [letter('f')],
+  },
+  {
+    action: 'arrange',
+    keys: ['O'],
+    title: 'shortcutArrange',
+    description: 'shortcutArrangeDescription',
+    patterns: [letter('o')],
   },
   {
     action: 'search',

@@ -30,6 +30,7 @@ import {
   upsertDocumentation,
   type NotePatch,
 } from '../domain/workspace'
+import { arrangeNotes } from '../board/arrange'
 import { boundingRect, noteRect, type NoteSizes } from '../board/geometry'
 import type { BoardViewApi } from '../board/useBoardView'
 import type { Translate } from '../i18n'
@@ -199,6 +200,28 @@ export function createWorkspaceActions({
 
     endMove() {
       store.endGroup()
+    },
+
+    /** Tidies the selection in one undo step: on levels if arrows join the notes, else in rows. */
+    arrange(ids: string[]) {
+      if (ids.length < 2) {
+        toast({ message: t('arrangeNeedsNotes') })
+        return
+      }
+
+      const { notes, connections } = current()
+      const selected = notes.filter((note) => ids.includes(note.id))
+      const positions = arrangeNotes(
+        selected.map((note) => ({ id: note.id, ...noteRect(note, sizes) })),
+        connections,
+      )
+      const changed = selected.some((note) => {
+        const position = positions.get(note.id)
+
+        return position && (position.x !== note.x || position.y !== note.y)
+      })
+
+      if (changed) store.update((workspace) => moveNotes(workspace, positions))
     },
 
     moveBy(ids: string[], delta: Point) {

@@ -563,6 +563,10 @@ export const ptBR: Locale = {
     'Inicia uma conexão a partir da nota selecionada. Depois clique na nota de destino.',
   shortcutCenter: 'Centralizar',
   shortcutCenterDescription: 'Centraliza a visualização na seleção ou em todo o quadro.',
+  shortcutArrange: 'Organizar',
+  shortcutArrangeDescription:
+    'Distribui a seleção com o mesmo espaçamento ou, se houver setas entre as notas, por níveis.',
+  arrangeNeedsNotes: 'Selecione pelo menos duas notas para organizá-las.',
   shortcutSearch: 'Buscar notas',
   shortcutSearchDescription:
     'Busca em títulos, textos, caminhos e ids. Também com /. Enter pula para o próximo resultado.',

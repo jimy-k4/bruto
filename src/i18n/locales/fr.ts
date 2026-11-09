@@ -567,6 +567,10 @@ export const fr: Locale = {
     'Commence un lien depuis la note sélectionnée. Cliquez ensuite sur la note de destination.',
   shortcutCenter: 'Centrer',
   shortcutCenterDescription: 'Centre la vue sur la sélection, ou sur tout le tableau.',
+  shortcutArrange: 'Organiser',
+  shortcutArrangeDescription:
+    'Espace la sélection de façon égale ou, si des flèches relient les notes, les place par niveaux.',
+  arrangeNeedsNotes: 'Sélectionnez au moins deux notes pour les organiser.',
   shortcutSearch: 'Rechercher des notes',
   shortcutSearchDescription:
     'Cherche dans les titres, textes, chemins et ids. Aussi avec /. Entrée passe au résultat suivant.',

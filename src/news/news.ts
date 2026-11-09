@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'arrange-notes',
+    date: '2026-11-09',
+    text: {
+      es: {
+        title: 'Ordena las notas con una tecla',
+        body: 'Selecciona varias notas y pulsa **O**. Si no hay flechas entre ellas, se reparten con la misma separación, respetando las filas que ya formaban. Si las hay, se colocan por niveles: cada nota debajo de las que apuntan a ella, cruzando las menos flechas posible. Con **Ctrl+A** y **O** ordenas todo el tablero, y **Ctrl+Z** lo deja como estaba.',
+      },
+      en: {
+        title: 'Arrange your notes with one key',
+        body: 'Select several notes and press **O**. With no arrows between them, they get the same space apart, keeping the rows they already formed. With arrows, they go on levels: each note below the ones pointing to it, with as few arrows crossing as possible. **Ctrl+A** then **O** arranges the whole board, and **Ctrl+Z** puts it back.',
+      },
+      ca: {
+        title: 'Ordena les notes amb una tecla',
+        body: 'Selecciona diverses notes i prem **O**. Si no hi ha fletxes entre elles, es reparteixen amb la mateixa separació, respectant les files que ja formaven. Si n’hi ha, es col·loquen per nivells: cada nota sota les que hi apunten, creuant les mínimes fletxes possibles. Amb **Ctrl+A** i **O** ordenes tot el tauler, i **Ctrl+Z** el deixa com estava.',
+      },
+      fr: {
+        title: 'Organisez vos notes d’une touche',
+        body: 'Sélectionnez plusieurs notes et appuyez sur **O**. Sans flèches entre elles, elles sont espacées de façon égale, en gardant les rangées qu’elles formaient. Avec des flèches, elles se placent par niveaux : chaque note sous celles qui pointent vers elle, avec le moins de flèches croisées possible. **Ctrl+A** puis **O** organise tout le tableau, et **Ctrl+Z** le remet comme avant.',
+      },
+      de: {
+        title: 'Notizen mit einer Taste anordnen',
+        body: 'Wähle mehrere Notizen aus und drücke **O**. Ohne Pfeile dazwischen bekommen sie gleiche Abstände und behalten ihre Reihen. Mit Pfeilen kommen sie auf Ebenen: jede Notiz unter die, die auf sie zeigen, mit so wenigen Pfeilkreuzungen wie möglich. **Strg+A** und dann **O** ordnet das ganze Board an, und **Strg+Z** macht es rückgängig.',
+      },
+      'pt-BR': {
+        title: 'Organize as notas com uma tecla',
+        body: 'Selecione várias notas e pressione **O**. Sem setas entre elas, ficam com o mesmo espaçamento, mantendo as fileiras que já formavam. Com setas, ficam em níveis: cada nota abaixo das que apontam para ela, com o mínimo possível de setas se cruzando. **Ctrl+A** e **O** organiza todo o quadro, e **Ctrl+Z** deixa como estava.',
+      },
+      ru: {
+        title: 'Упорядочивайте заметки одной клавишей',
+        body: 'Выберите несколько заметок и нажмите **O**. Если стрелок между ними нет, они встанут с равными промежутками, сохранив свои ряды. Если есть, они разместятся по уровням: каждая заметка ниже тех, что на неё указывают, с минимумом пересечений. **Ctrl+A** и **O** упорядочивают всю доску, а **Ctrl+Z** возвращает всё как было.',
+      },
+      ja: {
+        title: 'キー 1 つでノートを整列',
+        body: '複数のノートを選択して **O** を押します。矢印がなければ、今の行を保ったまま等間隔に並びます。矢印があれば階層ごとに並びます。各ノートは指している元のノートの下に置かれ、矢印の交差はできるだけ少なくなります。**Ctrl+A** のあと **O** でボード全体を整列でき、**Ctrl+Z** で元に戻せます。',
+      },
+      zh: {
+        title: '一键整理笔记',
+        body: '选择多条笔记并按 **O**。如果它们之间没有箭头,会保持原有的行并以相同间距排列。如果有箭头,则按层级排列:每条笔记位于指向它的笔记下方,并尽量减少箭头交叉。按 **Ctrl+A** 再按 **O** 可整理整个看板,按 **Ctrl+Z** 可恢复原样。',
+      },
+    },
+  },
+  {
     id: 'note-width',
     date: '2026-11-09',
     text: {

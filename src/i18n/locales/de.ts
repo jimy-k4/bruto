@@ -572,6 +572,10 @@ export const de: Locale = {
     'Startet eine Verbindung von der ausgewählten Notiz. Dann auf die Zielnotiz klicken.',
   shortcutCenter: 'Zentrieren',
   shortcutCenterDescription: 'Zentriert die Ansicht auf die Auswahl oder auf das ganze Board.',
+  shortcutArrange: 'Anordnen',
+  shortcutArrangeDescription:
+    'Verteilt die Auswahl mit gleichen Abständen oder, wenn Pfeile die Notizen verbinden, auf Ebenen.',
+  arrangeNeedsNotes: 'Wähle mindestens zwei Notizen aus, um sie anzuordnen.',
   shortcutSearch: 'Notizen suchen',
   shortcutSearchDescription:
     'Durchsucht Titel, Texte, Pfade und IDs. Auch mit /. Enter springt zum nächsten Treffer.',
