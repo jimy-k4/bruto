@@ -127,7 +127,7 @@ these, so the model knows how to answer:
 - With file access: notes live in `.bruto/workspace.json` (keep it valid JSON). Find a note by the
   start of its `id`. When you finish one, write what you did in its `aiResponse`, add the files you
   created or changed to its `aiFilePaths` (paths relative to the project, keeping the ones already
-  there) and set `status` to "review". Never delete notes or change `x`, `y` or `zIndex`.
+  there) and set `status` to "review". Never delete notes or change `x`, `y`, `width` or `zIndex`.
 - Without file access: answer note by note, starting each answer with its id and ending it with a
   `Files:` line listing the files you created or changed.
 - Status "changes-requested" means the user reviewed your previous answer and wrote what is wrong
@@ -225,6 +225,7 @@ fields it does not know about, and accepts common status words such as `"pending
       "sentBack": 2, // times it went to "changes-requested": the review round trips
       "x": 420,
       "y": 60,
+      "width": 220, // the widest it gets, 180 to 480, never wider than its text; left out: 280
       "zIndex": 2,
       "colorTheme": "plum",
       "pattern": "dots",

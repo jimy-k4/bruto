@@ -66,6 +66,8 @@ export interface Note {
   images: string[]
   x: number
   y: number
+  /** The widest the user wants the card, in pixels; never wider than its text. Absent: 280. */
+  width?: number
   zIndex: number
   colorTheme: NoteColorTheme
   pattern: NotePattern
@@ -241,6 +243,8 @@ export interface GhostNote {
   /** Its position on its own board. */
   x: number
   y: number
+  /** Its own width there, when it has one. */
+  width?: number
   /** The start of its description. */
   description?: string
   /** Paths in its own project, never in this one. */

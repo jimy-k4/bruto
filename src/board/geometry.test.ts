@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { anchorPoints, type Rect } from './geometry'
+import { anchorPoints, resizedWidth, type Rect } from './geometry'
 
 const rect = (x: number, y: number, width = 280, height = 160): Rect => ({ x, y, width, height })
 
@@ -30,8 +30,8 @@ describe('anchorPoints', () => {
     const small = rect(700, 350)
     const points = anchorPoints(wide, small)
 
-    // Out of the bottom of the wide note, into the top of the small one, straight down.
-    expect(points).toEqual({ start: { x: 800, y: 301 }, end: { x: 800, y: 349 } })
+    // Out of the middle of the wide note's bottom, into the middle of the small one's top.
+    expect(points).toEqual({ start: { x: 450, y: 301 }, end: { x: 840, y: 349 } })
     expect(crosses(small, points)).toBe(false)
     expect(crosses(wide, points)).toBe(false)
   })
@@ -47,16 +47,41 @@ describe('anchorPoints', () => {
     expect(crosses(tall, points)).toBe(false)
   })
 
-  it('stays put when a note grows taller, as when its AI response opens', () => {
-    const before = anchorPoints(rect(0, 0), rect(400, 0))
-    const after = anchorPoints(rect(0, 0, 280, 520), rect(400, 0))
+  it('lands in the middle of each side, whatever size each note has', () => {
+    expect(anchorPoints(rect(0, 0, 280, 520), rect(400, 0))).toEqual({
+      start: { x: 281, y: 260 },
+      end: { x: 399, y: 80 },
+    })
+    expect(anchorPoints(rect(0, 0, 180), rect(0, 300, 400))).toEqual({
+      start: { x: 90, y: 161 },
+      end: { x: 200, y: 299 },
+    })
+  })
 
-    expect(after).toEqual(before)
+  it('follows a note as its width changes', () => {
+    const below = rect(0, 300)
 
-    // Also when the growing note is the lower edge of what the two share.
-    const offset = anchorPoints(rect(0, 0), rect(500, 100))
-    const offsetGrown = anchorPoints(rect(0, 0, 280, 700), rect(500, 100))
+    expect(anchorPoints(rect(0, 0, 280), below).start.x).toBe(140)
+    expect(anchorPoints(rect(0, 0, 200), below).start.x).toBe(100)
+    expect(anchorPoints(rect(0, 0, 200), rect(400, 0)).start.x).toBe(201)
+  })
+})
 
-    expect(offsetGrown).toEqual(offset)
+describe('resizedWidth', () => {
+  it('follows the drag between the limits', () => {
+    expect(resizedWidth(250, 400)).toBe(250)
+  })
+
+  it('never goes wider than the text needs', () => {
+    expect(resizedWidth(500, 212)).toBe(212)
+  })
+
+  it('never goes wider than the top limit, however long the text', () => {
+    expect(resizedWidth(900, 2000)).toBe(480)
+  })
+
+  it('never goes narrower than the minimum, however short the text', () => {
+    expect(resizedWidth(40, 400)).toBe(180)
+    expect(resizedWidth(300, 60)).toBe(180)
   })
 })

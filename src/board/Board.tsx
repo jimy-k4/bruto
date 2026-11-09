@@ -6,7 +6,7 @@ import { useI18n } from '../i18n'
 import { ConnectionLayer } from './ConnectionLayer'
 import { GhostArrows, GhostZones, type GhostZoneHandlers } from './GhostZones'
 import { NoteCard, type NoteCardHandlers, type NoteFlash } from './NoteCard'
-import { noteRect, rectsOverlap, type NoteSizes, type Rect } from './geometry'
+import { noteRect, rectsOverlap, resizedWidth, type NoteSizes, type Rect } from './geometry'
 import type { BoardViewApi } from './useBoardView'
 import { useStableCallback } from '../ui/useStableCallback'
 import type { ZoneState } from '../workspace/ghostZones'
@@ -20,6 +20,8 @@ export interface BoardCallbacks {
   onMove: (positions: Map<string, Point>) => void
   onMoveEnd: () => void
   onMoveBy: (ids: string[], delta: Point) => void
+  /** Changes a note's width; `onMoveEnd` closes the drag, as for a move. */
+  onResize: (id: string, width: number) => void
   /** Copies notes in place for an Alt+drag; returns each original's copy. */
   onDuplicateForDrag: (ids: string[]) => Map<string, string>
   onConnectingChange: (id: string | null) => void
@@ -238,6 +240,50 @@ export function Board(props: BoardProps) {
     },
   )
 
+  const handleResizeStart = useStableCallback(
+    (event: React.PointerEvent<HTMLElement>, note: Note) => {
+      // Any other press on the edge is a press on the note: a middle click connects it.
+      if (event.button !== 0 || latest.current.connectingFrom) return
+
+      event.stopPropagation()
+
+      const handle = event.currentTarget
+      const card = handle.parentElement!
+      const startX = event.clientX
+      const startWidth = card.offsetWidth
+      const limit = textWidth(card)
+      let resizing = false
+
+      focusFromPointer.current = true
+      handle.setPointerCapture(event.pointerId)
+
+      const move = (moveEvent: PointerEvent) => {
+        const dx = moveEvent.clientX - startX
+
+        if (!resizing && Math.abs(dx) < DRAG_THRESHOLD) return
+
+        resizing = true
+
+        const now = latest.current
+
+        now.onResize(note.id, resizedWidth(startWidth + dx / now.view.zoom, limit))
+      }
+
+      const end = () => {
+        focusFromPointer.current = false
+        handle.removeEventListener('pointermove', move)
+        handle.removeEventListener('pointerup', end)
+        handle.removeEventListener('pointercancel', end)
+
+        if (resizing) latest.current.onMoveEnd()
+      }
+
+      handle.addEventListener('pointermove', move)
+      handle.addEventListener('pointerup', end)
+      handle.addEventListener('pointercancel', end)
+    },
+  )
+
   // Stable like the cards' handlers: zones don't re-render on every board update.
   const ghostHandlers = useMemo<GhostZoneHandlers>(
     () => ({
@@ -258,6 +304,7 @@ export function Board(props: BoardProps) {
       observe: props.observe,
       onOpenLink: (link: CrossLink) => latest.current.onOpenLink(link),
       onPointerDown: handleNotePointerDown,
+      onResizeStart: handleResizeStart,
       onDoubleClick: (event, note) => {
         event.stopPropagation()
         latest.current.onSelect([note.id], { open: true })
@@ -310,7 +357,7 @@ export function Board(props: BoardProps) {
         }
       },
     }),
-    [props.observe, handleNotePointerDown],
+    [props.observe, handleNotePointerDown, handleResizeStart],
   )
 
   const startCanvasGesture = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -418,7 +465,10 @@ export function Board(props: BoardProps) {
         {t('boardHelp')}
       </p>
 
-      <div className="board__world" style={{ transform }}>
+      <div
+        className="board__world"
+        style={{ transform, '--board-zoom': view.zoom } as React.CSSProperties}
+      >
         {workspace.ghosts && (
           <GhostArrows notes={workspace.notes} zones={workspace.ghosts} sizes={sizes} />
         )}
@@ -500,6 +550,24 @@ export function Board(props: BoardProps) {
       )}
     </div>
   )
+}
+
+/** How wide a card would be with its text on as few lines as it can: its title and description. */
+function textWidth(card: HTMLElement) {
+  const { width, maxWidth } = card.style
+  const sized = card.classList.contains('note--sized')
+
+  card.classList.add('note--sized')
+  card.style.width = 'max-content'
+  card.style.maxWidth = 'none'
+
+  const natural = card.offsetWidth
+
+  card.style.width = width
+  card.style.maxWidth = maxWidth
+  if (!sized) card.classList.remove('note--sized')
+
+  return natural
 }
 
 function toRect(a: Point, b: Point): Rect {

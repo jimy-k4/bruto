@@ -261,6 +261,7 @@ export function WorkspaceScreen({
                 onClearSelection={ui.clearSelection}
                 onRaise={actions.raise}
                 onMove={actions.move}
+                onResize={actions.resize}
                 onMoveEnd={actions.endMove}
                 onMoveBy={actions.moveBy}
                 onConnectingChange={ui.setConnectingFrom}

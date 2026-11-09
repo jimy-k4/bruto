@@ -24,6 +24,7 @@ import {
   isNoteKind,
   isNotePattern,
   isNoteStatus,
+  normalizeNoteWidth,
 } from './constants'
 import { normalizeCrossLinks } from './crossLinks'
 import { findEnvironment, normalizeEnvironments, projectEnvironments } from './environments'
@@ -235,7 +236,11 @@ function normalizeNote(raw: UnknownRecord, index: number): Note {
   delete note.sentBack
   delete note.environment
   delete note.environmentAt
+  delete note.width
 
+  const width = normalizeNoteWidth(raw.width)
+
+  if (width) note.width = width
   if (status) note.status = status
   if (kind) note.kind = kind
   if (aiResponse.trim()) note.aiResponse = aiResponse
@@ -827,6 +832,15 @@ export function moveNotes(workspace: Workspace, positions: Map<string, Point>): 
 
       return position ? { ...note, x: Math.round(position.x), y: Math.round(position.y) } : note
     }),
+  }
+}
+
+export function resizeNote(workspace: Workspace, id: string, width: number): Workspace {
+  const size = normalizeNoteWidth(width)
+
+  return {
+    ...workspace,
+    notes: workspace.notes.map((note) => (note.id === id ? { ...note, width: size } : note)),
   }
 }
 

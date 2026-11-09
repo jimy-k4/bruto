@@ -7,7 +7,14 @@ import { kindLabel, statusLabel, useI18n } from '../i18n'
 import { EnvironmentStamp } from '../ui/EnvironmentStamp'
 import { formatAge } from '../ui/noteAge'
 import type { ZoneState } from '../workspace/ghostZones'
-import { boundingRect, connectionPath, noteRect, type NoteSizes, type Rect } from './geometry'
+import {
+  boundingRect,
+  connectionPath,
+  noteRect,
+  noteWidthStyle,
+  type NoteSizes,
+  type Rect,
+} from './geometry'
 
 /** Room around a zone's notes inside its dotted frame. */
 const FRAME_PADDING = 28
@@ -217,8 +224,12 @@ function GhostCard({ zone, ghost, sizeKey, connecting, observe, onOpen }: GhostC
   return (
     <article
       ref={ref}
-      className={`note note--ghost note-color-${ghost.colorTheme} note-pattern-${ghost.pattern}${connecting ? ' is-connecting' : ''}`}
-      style={{ left: ghost.x + zone.offset.x, top: ghost.y + zone.offset.y }}
+      className={`note note--ghost note-color-${ghost.colorTheme} note-pattern-${ghost.pattern}${ghost.width ? ' note--sized' : ''}${connecting ? ' is-connecting' : ''}`}
+      style={{
+        left: ghost.x + zone.offset.x,
+        top: ghost.y + zone.offset.y,
+        ...noteWidthStyle(ghost.width),
+      }}
       data-ghost-id={ghost.id}
       tabIndex={0}
       aria-roledescription={t('ghostNote')}

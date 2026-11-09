@@ -78,8 +78,23 @@ export const LANGUAGES: readonly { value: Language; label: string }[] = [
   { value: 'zh', label: '中文' },
 ]
 
-/** Minimum size of a note card on the board. Cards grow with their content. */
+/**
+ * Size of a new note card on the board. Cards grow taller with their content,
+ * and their width can be dragged between the limits below.
+ */
 export const NOTE_MIN_SIZE: Size = { width: 280, height: 160 }
+
+/** Narrower, a note's header and stamps no longer fit. */
+export const NOTE_WIDTH_MIN = 180
+/** Wider, a note with one long line of text would take over the board. */
+export const NOTE_WIDTH_MAX = 480
+
+/** A note's own width as a file may have it: within the limits, or none at all. */
+export function normalizeNoteWidth(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined
+
+  return Math.round(Math.min(NOTE_WIDTH_MAX, Math.max(NOTE_WIDTH_MIN, value)))
+}
 
 /** Offset used when duplicating notes so the copy doesn't hide the original. */
 export const DUPLICATE_OFFSET = 36
