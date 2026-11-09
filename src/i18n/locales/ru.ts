@@ -568,6 +568,10 @@ export const ru: Locale = {
   shortcutConnectDescription: 'Начинает связь от выбранной заметки. Затем щёлкните по целевой.',
   shortcutCenter: 'Центрировать',
   shortcutCenterDescription: 'Центрирует вид на выбранном или на всей доске.',
+  shortcutArrange: 'Упорядочить',
+  shortcutArrangeDescription:
+    'Расставляет выбранное с равными промежутками, а если заметки связаны стрелками — по уровням.',
+  arrangeNeedsNotes: 'Выберите хотя бы две заметки, чтобы упорядочить их.',
   shortcutSearch: 'Поиск заметок',
   shortcutSearchDescription:
     'Ищет в заголовках, текстах, путях и id. Также по /. Enter переходит к следующему результату.',

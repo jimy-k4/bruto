@@ -562,6 +562,10 @@ export const es = {
     'Empieza una conexión desde la nota seleccionada. Luego haz clic en la de destino.',
   shortcutCenter: 'Centrar',
   shortcutCenterDescription: 'Centra la vista en la selección, o en todo el tablero.',
+  shortcutArrange: 'Ordenar',
+  shortcutArrangeDescription:
+    'Reparte la selección con la misma separación o, si hay flechas entre las notas, por niveles.',
+  arrangeNeedsNotes: 'Selecciona al menos dos notas para ordenarlas.',
   shortcutSearch: 'Buscar notas',
   shortcutSearchDescription:
     'Busca en títulos, textos, rutas e ids. También con /. Enter salta al siguiente resultado.',

@@ -558,6 +558,10 @@ export const en: Locale = {
     'Starts a connection from the selected note. Then click the target note.',
   shortcutCenter: 'Centre',
   shortcutCenterDescription: 'Centres the view on the selection, or on the whole board.',
+  shortcutArrange: 'Arrange',
+  shortcutArrangeDescription:
+    'Spaces the selection evenly or, if arrows join the notes, puts them on levels.',
+  arrangeNeedsNotes: 'Select at least two notes to arrange them.',
   shortcutSearch: 'Search notes',
   shortcutSearchDescription:
     'Searches titles, texts, paths and ids. Also with /. Enter jumps to the next result.',

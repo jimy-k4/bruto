@@ -24,6 +24,8 @@ describe('matchShortcut', () => {
     expect(matchShortcut(key({ key: 'a', code: 'KeyA' }))?.action).toBe('openAiContext')
     expect(matchShortcut(key({ key: 'f', code: 'KeyF', ctrlKey: true }))?.action).toBe('search')
     expect(matchShortcut(key({ key: 'f', code: 'KeyF' }))?.action).toBe('center')
+    expect(matchShortcut(key({ key: 'o', code: 'KeyO' }))?.action).toBe('arrange')
+    expect(matchShortcut(key({ key: 'o', code: 'KeyO', ctrlKey: true }))).toBeNull()
   })
 
   it('opens the search with / on any layout', () => {

@@ -555,6 +555,10 @@ export const ja: Locale = {
     '選択したノートからつながりを始めます。続けて相手のノートをクリックします。',
   shortcutCenter: '中央に表示',
   shortcutCenterDescription: '選択、またはボード全体を中央に表示します。',
+  shortcutArrange: '整列',
+  shortcutArrangeDescription:
+    '選択を等間隔に並べます。ノートが矢印でつながっている場合は階層ごとに並べます。',
+  arrangeNeedsNotes: '整列するには 2 つ以上のノートを選択してください。',
   shortcutSearch: 'ノートを検索',
   shortcutSearchDescription:
     'タイトル、本文、パス、ID を検索します。/ でも開けます。Enter で次の結果へ。',

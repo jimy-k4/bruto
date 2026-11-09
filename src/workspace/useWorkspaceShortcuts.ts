@@ -39,6 +39,8 @@ export function useWorkspaceShortcuts(
         return actions.copyContext('entire')
       case 'center':
         return actions.center()
+      case 'arrange':
+        return actions.arrange(ids)
       case 'search':
         return ui.setSearch((current) => current ?? EMPTY_SEARCH)
       case 'structure':
