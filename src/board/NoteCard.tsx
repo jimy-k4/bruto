@@ -13,6 +13,7 @@ import { formatAge } from '../ui/noteAge'
 import { ProjectImage } from '../ui/ProjectImage'
 import { RichText } from '../ui/RichText'
 import { KIND_LABELS, linkedNote } from '../workspace/crossLinks'
+import { noteWidthStyle } from './geometry'
 
 export type NoteFlash = 'copied' | 'pasted' | null
 
@@ -25,6 +26,8 @@ export interface NoteCardHandlers {
   onDoubleClick: (event: React.MouseEvent<HTMLElement>, note: Note) => void
   onKeyDown: (event: React.KeyboardEvent<HTMLElement>, note: Note) => void
   onFocus: (note: Note) => void
+  /** A press on the card's right edge: dragging it changes the card's width. */
+  onResizeStart: (event: React.PointerEvent<HTMLElement>, note: Note) => void
   observe: (id: string, element: HTMLElement) => () => void
   onOpenLink: (link: CrossLink) => void
 }
@@ -96,6 +99,7 @@ export const NoteCard = memo(function NoteCard({
     'note',
     `note-color-${note.colorTheme}`,
     `note-pattern-${note.pattern}`,
+    note.width && 'note--sized',
     selected && 'is-selected',
     connecting && 'is-connecting',
     dragging && 'is-dragging',
@@ -113,7 +117,12 @@ export const NoteCard = memo(function NoteCard({
     <article
       ref={ref}
       className={classes.filter(Boolean).join(' ')}
-      style={{ left: note.x, top: note.y, zIndex: aiOpen ? OPEN_ABOVE + note.zIndex : note.zIndex }}
+      style={{
+        left: note.x,
+        top: note.y,
+        zIndex: aiOpen ? OPEN_ABOVE + note.zIndex : note.zIndex,
+        ...noteWidthStyle(note.width),
+      }}
       data-note-id={note.id}
       tabIndex={0}
       aria-roledescription={t('note')}
@@ -325,6 +334,13 @@ export const NoteCard = memo(function NoteCard({
       <span className="note__brand" aria-hidden="true">
         B
       </span>
+
+      <span
+        className="note__resize"
+        aria-hidden="true"
+        onPointerDown={(event) => handlers.onResizeStart(event, note)}
+        onDoubleClick={stop}
+      />
     </article>
   )
 })

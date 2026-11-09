@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'note-width',
+    date: '2026-11-09',
+    text: {
+      es: {
+        title: 'Cada nota, del ancho que quieras',
+        body: 'Arrastra el borde derecho de una nota para cambiar su ancho, desde **180 px** hasta lo que necesite su título o su descripción, con un tope de **480 px**. El alto sigue al contenido. Las flechas apuntan ahora al centro de cada lado y se recolocan solas, y las zonas fantasma muestran las notas con su ancho.',
+      },
+      en: {
+        title: 'Every note, as wide as you like',
+        body: 'Drag a note’s right edge to change its width, from **180 px** up to what its title or description needs, with a limit of **480 px**. The height follows the content. Arrows now point at the middle of each side and follow along, and ghost zones show notes at their own width.',
+      },
+      ca: {
+        title: 'Cada nota, de l’amplada que vulguis',
+        body: 'Arrossega la vora dreta d’una nota per canviar-ne l’amplada, des de **180 px** fins al que necessiti el títol o la descripció, amb un límit de **480 px**. L’alçada segueix el contingut. Les fletxes apunten ara al centre de cada costat i es recol·loquen soles, i les zones fantasma mostren les notes amb la seva amplada.',
+      },
+      fr: {
+        title: 'Chaque note, à la largeur que vous voulez',
+        body: 'Faites glisser le bord droit d’une note pour changer sa largeur, de **180 px** jusqu’à ce qu’il faut à son titre ou à sa description, avec une limite de **480 px**. La hauteur suit le contenu. Les flèches pointent maintenant vers le milieu de chaque côté et suivent le mouvement, et les zones fantômes montrent les notes à leur largeur.',
+      },
+      de: {
+        title: 'Jede Notiz so breit, wie du willst',
+        body: 'Ziehe den rechten Rand einer Notiz, um ihre Breite zu ändern: von **180 px** bis zu dem, was Titel oder Beschreibung brauchen, höchstens **480 px**. Die Höhe folgt dem Inhalt. Pfeile zeigen jetzt auf die Mitte jeder Seite und passen sich an, und Geisterzonen zeigen Notizen in ihrer eigenen Breite.',
+      },
+      'pt-BR': {
+        title: 'Cada nota, da largura que você quiser',
+        body: 'Arraste a borda direita de uma nota para mudar a largura, de **180 px** até o que o título ou a descrição precisarem, com limite de **480 px**. A altura acompanha o conteúdo. As setas agora apontam para o centro de cada lado e se ajustam sozinhas, e as zonas fantasma mostram as notas com a largura delas.',
+      },
+      ru: {
+        title: 'Каждая заметка — нужной вам ширины',
+        body: 'Потяните за правый край заметки, чтобы изменить ширину: от **180 px** до того, что нужно заголовку или описанию, но не больше **480 px**. Высота следует за содержимым. Стрелки теперь указывают на середину каждой стороны и сами подстраиваются, а зоны-призраки показывают заметки с их шириной.',
+      },
+      ja: {
+        title: 'ノートの幅を自由に変更',
+        body: 'ノートの右端をドラッグすると幅を変更できます。**180 px** から、タイトルや説明に必要な幅まで、上限は **480 px** です。高さは内容に合わせて決まります。矢印は各辺の中央を指し、幅に合わせて動きます。ゴーストゾーンのノートもそれぞれの幅で表示されます。',
+      },
+      zh: {
+        title: '每条笔记的宽度由你决定',
+        body: '拖动笔记的右边缘即可更改宽度：从 **180 px** 到标题或描述所需的宽度，上限为 **480 px**。高度随内容变化。箭头现在指向每条边的中点并自动跟随，幽灵区域也按各自的宽度显示笔记。',
+      },
+    },
+  },
+  {
     id: 'environments',
     date: '2026-10-22',
     text: {

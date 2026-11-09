@@ -140,6 +140,56 @@
   animation: pasted 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
+/* With its own width, only the title and the description say how wide the note can get. */
+.note--sized .note__header,
+.note--sized .note__tape,
+.note--sized .note__body > :not(.note__title, .note__description) {
+  width: 0;
+  min-width: 100%;
+}
+
+/* A narrow note has no room for the status between its kind and id: it gets its own row. */
+.note--sized .note__header {
+  container-type: inline-size;
+}
+
+@container (max-width: 240px) {
+  .note__header .status-badge {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+/* The right edge: dragging it changes the width. The height follows the content. */
+.note__resize {
+  /* As easy to grab at any zoom: the same width on screen. */
+  --grab: calc(10px / var(--board-zoom, 1));
+
+  position: absolute;
+  top: 0;
+  right: calc(var(--grab) / -2 - var(--border-heavy));
+  bottom: 0;
+  display: grid;
+  align-items: center;
+  width: var(--grab);
+  cursor: ew-resize;
+}
+
+.note__resize::after {
+  content: '';
+  justify-self: center;
+  width: 4px;
+  height: 28px;
+  background: var(--signal);
+  opacity: 0;
+}
+
+.note:hover > .note__resize::after,
+.note__resize:active::after {
+  opacity: 1;
+}
+
 @keyframes connecting {
   50% {
     outline-color: transparent;
@@ -282,6 +332,7 @@
 
 .note__images {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
@@ -309,6 +360,7 @@
 
 .note__ai-toggle {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
   padding: 0;

@@ -8,8 +8,8 @@ export interface MergeConflict {
   replaced: unknown
 }
 
-/** Where a note sits on the board: moving it is never worth a word. */
-const LAYOUT_FIELDS = new Set(['x', 'y', 'zIndex'])
+/** Where a note sits on the board and how wide: changing them is never worth a word. */
+const LAYOUT_FIELDS = new Set(['x', 'y', 'width', 'zIndex'])
 
 /**
  * Three-way merge of a workspace, used when the file on disk changed while the

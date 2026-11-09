@@ -8,7 +8,14 @@ import type {
   Point,
   Workspace,
 } from '../types'
-import { NOTE_MIN_SIZE, isNoteColor, isNoteKind, isNotePattern, isNoteStatus } from './constants'
+import {
+  NOTE_MIN_SIZE,
+  isNoteColor,
+  isNoteKind,
+  isNotePattern,
+  isNoteStatus,
+  normalizeNoteWidth,
+} from './constants'
 import { normalizeCrossLinks } from './crossLinks'
 import { findEnvironment, isLive, projectEnvironments } from './environments'
 
@@ -123,6 +130,7 @@ function toGhost(note: Note, environments: readonly Environment[]): GhostNote {
     pattern: note.pattern,
     x: note.x,
     y: note.y,
+    ...(note.width && { width: note.width }),
     ...(description && {
       description:
         description.length > DESCRIPTION_LENGTH
@@ -188,6 +196,9 @@ export function zonesFrom(
 const averageX = (points: Point[]) =>
   points.reduce((sum, point) => sum + point.x, 0) / points.length
 
+/** The most a note or ghost can take across: its text may leave it narrower. */
+const widthOf = ({ width }: { width?: number }) => width ?? NOTE_MIN_SIZE.width
+
 /**
  * Where a new zone goes: wholly beside the note here it links to, level with
  * it, on the side that keeps the flow of the boards. A chain that runs
@@ -198,7 +209,7 @@ const averageX = (points: Point[]) =>
  */
 function placement(workspace: Workspace, origin: ProjectRef, zone: GhostZone): Point {
   const left = Math.min(...zone.notes.map((ghost) => ghost.x))
-  const right = Math.max(...zone.notes.map((ghost) => ghost.x)) + NOTE_MIN_SIZE.width
+  const right = Math.max(...zone.notes.map((ghost) => ghost.x + widthOf(ghost)))
   const top = Math.min(...zone.notes.map((ghost) => ghost.y))
   const bottom = Math.max(...zone.notes.map((ghost) => ghost.y)) + NOTE_MIN_SIZE.height
   const notesById = new Map(workspace.notes.map((note) => [note.id, note]))
@@ -219,7 +230,7 @@ function placement(workspace: Workspace, origin: ProjectRef, zone: GhostZone): P
       const y = Math.round(note.y - ghost.y)
       const at = (onRight: boolean): Point => ({
         x: Math.round(
-          onRight ? note.x + NOTE_MIN_SIZE.width + PLACE_GAP - left : note.x - PLACE_GAP - right,
+          onRight ? note.x + widthOf(note) + PLACE_GAP - left : note.x - PLACE_GAP - right,
         ),
         y,
       })
@@ -227,7 +238,7 @@ function placement(workspace: Workspace, origin: ProjectRef, zone: GhostZone): P
         workspace.notes.some(
           (other) =>
             other.x < x + right &&
-            other.x + NOTE_MIN_SIZE.width > x + left &&
+            other.x + widthOf(other) > x + left &&
             other.y < y + bottom &&
             other.y + NOTE_MIN_SIZE.height > y + top,
         )
@@ -466,6 +477,7 @@ function normalizeGhostNote(raw: UnknownRecord): GhostNote | null {
     noteId,
     ...(projectId && { projectId }),
   }))
+  const width = normalizeNoteWidth(raw.width)
 
   return {
     id: raw.id,
@@ -479,6 +491,7 @@ function normalizeGhostNote(raw: UnknownRecord): GhostNote | null {
     pattern: isNotePattern(raw.pattern) ? raw.pattern : 'raw',
     x: raw.x,
     y: raw.y,
+    ...(width && { width }),
     ...(typeof raw.description === 'string' && raw.description && { description: raw.description }),
     ...(files.length > 0 && { files }),
     ...(links.length > 0 && { crossLinks: links }),

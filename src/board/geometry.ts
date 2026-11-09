@@ -1,5 +1,5 @@
 import type { Connection, Note, Point, Size } from '../types'
-import { NOTE_MIN_SIZE } from '../domain/constants'
+import { NOTE_MIN_SIZE, NOTE_WIDTH_MAX, NOTE_WIDTH_MIN } from '../domain/constants'
 
 export type NoteSizes = ReadonlyMap<string, Size>
 
@@ -30,21 +30,28 @@ export function boundingRect(rects: Rect[]): Rect | null {
 export const rectsOverlap = (a: Rect, b: Rect) =>
   a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y
 
-/** How far down a side an arrow may land: the head of a note, which doesn't move as it grows. */
-const SIDE_REACH = NOTE_MIN_SIZE.height
+/**
+ * The inline width of a card with its own width: as wide as its text needs, up
+ * to the width the user gave it, so the text can't leave it half empty.
+ */
+export const noteWidthStyle = (width?: number): React.CSSProperties =>
+  width ? { width: 'max-content', minWidth: NOTE_WIDTH_MIN, maxWidth: width } : {}
+
+/** The width a drag asks for, within the limits and no wider than the card's text needs. */
+export const resizedWidth = (wanted: number, textWidth: number) =>
+  Math.max(NOTE_WIDTH_MIN, Math.min(wanted, textWidth, NOTE_WIDTH_MAX))
 
 /** Space between two ranges; negative when they overlap. */
 const spaceBetween = (a0: number, a1: number, b0: number, b1: number) => Math.max(b0 - a1, a0 - b1)
 
 /**
- * Where a connection leaves one note and enters the other, 1px outside the
- * frame so the arrow head lands on it, not under it.
+ * Where a connection leaves one note and enters the other: the middle of the
+ * sides that face each other, 1px outside the frame so the arrow head lands on
+ * it, not under it.
  *
  * The sides face each other across the widest gap between the notes, not
  * between their centres: a big note next to a small one would otherwise send
- * the arrow through one of them. Arrows run straight where the notes line up.
- * On the left and right sides they land within the head of the note, so
- * opening a section that makes a note taller doesn't move them.
+ * the arrow through one of them.
  */
 export function anchorPoints(from: Rect, to: Rect): { start: Point; end: Point } {
   const gap = 1
@@ -59,32 +66,18 @@ export function anchorPoints(from: Rect, to: Rect): { start: Point; end: Point }
 
   if (sideways) {
     const right = toCenter.x > fromCenter.x
-    const headEnd = (rect: Rect) => rect.y + Math.min(rect.height, SIDE_REACH)
-    const top = Math.max(from.y, to.y)
-    const bottom = Math.min(headEnd(from), headEnd(to))
-    const shared = bottom > top ? (top + bottom) / 2 : null
-    const headMiddle = (rect: Rect) => (rect.y + headEnd(rect)) / 2
 
     return {
-      start: {
-        x: right ? from.x + from.width + gap : from.x - gap,
-        y: shared ?? headMiddle(from),
-      },
-      end: { x: right ? to.x - gap : to.x + to.width + gap, y: shared ?? headMiddle(to) },
+      start: { x: right ? from.x + from.width + gap : from.x - gap, y: fromCenter.y },
+      end: { x: right ? to.x - gap : to.x + to.width + gap, y: toCenter.y },
     }
   }
 
   const down = toCenter.y > fromCenter.y
-  const left = Math.max(from.x, to.x)
-  const right = Math.min(from.x + from.width, to.x + to.width)
-  const shared = right > left ? (left + right) / 2 : null
 
   return {
-    start: {
-      x: shared ?? fromCenter.x,
-      y: down ? from.y + from.height + gap : from.y - gap,
-    },
-    end: { x: shared ?? toCenter.x, y: down ? to.y - gap : to.y + to.height + gap },
+    start: { x: fromCenter.x, y: down ? from.y + from.height + gap : from.y - gap },
+    end: { x: toCenter.x, y: down ? to.y - gap : to.y + to.height + gap },
   }
 }
 

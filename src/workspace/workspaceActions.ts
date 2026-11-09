@@ -19,6 +19,7 @@ import {
   duplicateNotes,
   findNote,
   moveNotes,
+  resizeNote,
   noteTitle,
   raiseNotes,
   removeConnection,
@@ -190,6 +191,10 @@ export function createWorkspaceActions({
 
     move(positions: Map<string, Point>) {
       store.update((workspace) => moveNotes(workspace, positions), { group: 'drag' })
+    },
+
+    resize(id: string, width: number) {
+      store.update((workspace) => resizeNote(workspace, id, width), { group: 'drag' })
     },
 
     endMove() {
