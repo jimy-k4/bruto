@@ -85,6 +85,61 @@ test('O puts notes joined by arrows on levels, each below what points to it', as
   expect(loose.top).toBe(end.bottom + GAP)
 })
 
+test('O takes the ghost zones the notes lead to along, as one block each', async ({ page }) => {
+  await openProject(
+    page,
+    workspaceWith(
+      [
+        note('a', {
+          title: 'AQUÍ',
+          x: 100,
+          y: 100,
+          crossLinks: [{ kind: 'blocks', project: 'api', noteId: 'g' }],
+        }),
+      ],
+      {
+        ghosts: [
+          {
+            project: 'api',
+            offset: { x: 1500, y: 900 },
+            notes: [{ id: 'g', title: 'ALLÍ', colorTheme: 'concrete', pattern: 'raw', x: 0, y: 0 }],
+            connections: [],
+            syncedAt: '2026-11-12T08:00:00Z',
+            hops: 1,
+          },
+        ],
+      },
+    ),
+  )
+
+  await page.keyboard.press('Control+a')
+  await page.keyboard.press('o')
+
+  const here = await box(page, 'AQUÍ')
+  const label = page.locator('.ghost-zone__label')
+
+  // The zone, label included, starts one gap below the note.
+  await expect
+    .poll(async () =>
+      Math.round(
+        await label.evaluate((element) => {
+          const frame = element.parentElement as HTMLElement
+
+          return frame.offsetTop - (element as HTMLElement).offsetHeight
+        }),
+      ),
+    )
+    .toBeGreaterThanOrEqual(here.bottom + GAP - 1)
+  expect(
+    await label.evaluate((element) => (element.parentElement as HTMLElement).offsetTop),
+  ).toBeLessThan(here.bottom + GAP + 60)
+
+  await waitForSaved(page)
+  expect(((await readDisk(page)).ghosts as { offset: { y: number } }[])[0].offset.y).toBeLessThan(
+    900,
+  )
+})
+
 test('O moves only the selection and asks for two notes at least', async ({ page }) => {
   await openProject(
     page,

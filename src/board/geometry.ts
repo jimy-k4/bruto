@@ -1,5 +1,6 @@
-import type { Connection, Note, Point, Size } from '../types'
+import type { Connection, GhostNote, GhostZone, Note, Point, Size } from '../types'
 import { NOTE_MIN_SIZE, NOTE_WIDTH_MAX, NOTE_WIDTH_MIN } from '../domain/constants'
+import { ghostKey } from '../domain/ghosts'
 
 export type NoteSizes = ReadonlyMap<string, Size>
 
@@ -15,6 +16,31 @@ export const noteRect = (note: Note, sizes: NoteSizes): Rect => ({
   y: note.y,
   ...(sizes.get(note.id) ?? NOTE_MIN_SIZE),
 })
+
+/** Room around a zone's notes inside its dotted frame. */
+export const FRAME_PADDING = 28
+/** Room the zone's label takes above its frame. */
+export const ZONE_LABEL_ROOM = 36
+
+/** A ghost card where it sits on this board. */
+export const ghostRect = (zone: GhostZone, ghost: GhostNote, sizes: NoteSizes): Rect => ({
+  x: ghost.x + zone.offset.x,
+  y: ghost.y + zone.offset.y,
+  // Ghost cards are measured like notes, under a key no note id can take.
+  ...(sizes.get(ghostKey(zone, ghost.id)) ?? NOTE_MIN_SIZE),
+})
+
+/** A zone's dotted frame, around its notes. */
+export function zoneFrame(zone: GhostZone, sizes: NoteSizes): Rect {
+  const notes = boundingRect(zone.notes.map((ghost) => ghostRect(zone, ghost, sizes)))!
+
+  return {
+    x: notes.x - FRAME_PADDING,
+    y: notes.y - FRAME_PADDING,
+    width: notes.width + FRAME_PADDING * 2,
+    height: notes.height + FRAME_PADDING * 2,
+  }
+}
 
 export function boundingRect(rects: Rect[]): Rect | null {
   if (rects.length === 0) return null
