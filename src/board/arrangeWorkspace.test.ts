@@ -3,7 +3,7 @@ import type { CrossLink, GhostZone, Note, Workspace } from '../types'
 import { createEmptyWorkspace } from '../domain/workspace'
 import { ARRANGE_GAP } from './arrange'
 import { arrangeWorkspace } from './arrangeWorkspace'
-import { FRAME_PADDING, ZONE_LABEL_ROOM } from './geometry'
+import { FRAME_PADDING, ZONE_LABEL_ROOM, boundingRect, noteRect, zoneFrame } from './geometry'
 
 const note = (id: string, x: number, y: number, crossLinks?: CrossLink[]): Note => ({
   id,
@@ -20,25 +20,23 @@ const note = (id: string, x: number, y: number, crossLinks?: CrossLink[]): Note 
   ...(crossLinks && { crossLinks }),
 })
 
+/** A zone with ghosts at the given places on their own board. */
 const zone = (
   project: string,
-  ghost: string,
   offset: { x: number; y: number },
-  crossLinks?: CrossLink[],
+  ghosts: { id: string; x?: number; y?: number; crossLinks?: CrossLink[] }[],
 ): GhostZone => ({
   project,
   offset,
-  notes: [
-    {
-      id: ghost,
-      title: ghost,
-      colorTheme: 'concrete',
-      pattern: 'raw',
-      x: 0,
-      y: 0,
-      ...(crossLinks && { crossLinks }),
-    },
-  ],
+  notes: ghosts.map(({ id, x = 0, y = 0, crossLinks }) => ({
+    id,
+    title: id,
+    colorTheme: 'concrete',
+    pattern: 'raw',
+    x,
+    y,
+    ...(crossLinks && { crossLinks }),
+  })),
   connections: [],
   syncedAt: '',
   hops: 1,
@@ -56,85 +54,104 @@ const board = (notes: Note[], ghosts: GhostZone[]): Workspace => ({
   ghosts,
 })
 
-/** Where a zone's single ghost sits on the board. */
-const ghostAt = (workspace: Workspace, project: string) => {
-  const found = workspace.ghosts!.find((item) => item.project === project)!
+const NO_SIZES = new Map()
 
-  return { x: found.notes[0].x + found.offset.x, y: found.notes[0].y + found.offset.y }
-}
+const frameOf = (workspace: Workspace, project: string) =>
+  zoneFrame(
+    workspace.ghosts!.find((item) => item.project === project)!,
+    NO_SIZES,
+  )
 
-/** From a zone's top (its label) down to its ghost. */
-const ZONE_TOP_TO_GHOST = ZONE_LABEL_ROOM + FRAME_PADDING
+const notesBox = (workspace: Workspace) =>
+  boundingRect(workspace.notes.map((item) => noteRect(item, NO_SIZES)))!
 
 describe('arrangeWorkspace', () => {
-  it('puts a zone the selection blocks on the level below, label and all', () => {
-    const arranged = arrangeWorkspace(
-      board([note('a', 100, 100, [blocks('api', 'g')])], [zone('api', 'g', { x: 2000, y: 2000 })]),
-      ['a'],
-      new Map(),
-    )!
-
-    expect(arranged.notes[0]).toMatchObject({ x: expect.any(Number), y: 100 })
-    expect(ghostAt(arranged, 'api').y).toBe(100 + 160 + ARRANGE_GAP + ZONE_TOP_TO_GHOST)
-  })
-
-  it('arranges a zone joined by a related link, which has no direction, too', () => {
+  it('keeps the notes close however big a linked zone is', () => {
+    // A zone as spread out as a board that was never tidied.
+    const huge = zone('api', { x: 0, y: 0 }, [{ id: 'g' }, { id: 'far', x: 20_000, y: 30_000 }])
     const arranged = arrangeWorkspace(
       board(
-        [
-          note('a', 100, 100, [{ kind: 'related', project: 'api', noteId: 'g' }]),
-          note('b', 0, 900),
-        ],
-        [zone('api', 'g', { x: 700, y: 120 })],
+        [note('a', 0, 0, [blocks('api', 'g')]), note('b', 5000, 5000), note('c', 9000, 0)],
+        [huge],
+      ),
+      ['a', 'b', 'c'],
+      NO_SIZES,
+    )!
+    const box = notesBox(arranged)
+
+    expect(box.width).toBeLessThan(1000)
+    expect(box.height).toBeLessThan(400)
+  })
+
+  it('puts a linked zone right of the notes, level with the note it links to', () => {
+    const arranged = arrangeWorkspace(
+      board(
+        [note('a', 100, 100), note('b', 100, 600, [blocks('api', 'g')])],
+        [zone('api', { x: 3000, y: -2000 }, [{ id: 'g' }])],
       ),
       ['a', 'b'],
-      new Map(),
+      NO_SIZES,
     )!
+    const notes = notesBox(arranged)
+    const frame = frameOf(arranged, 'api')
+    const b = arranged.notes.find((item) => item.id === 'b')!
 
-    expect(ghostAt(arranged, 'api')).not.toEqual({ x: 700, y: 120 })
+    expect(frame.x).toBe(notes.x + notes.width + ARRANGE_GAP * 2)
+    expect(frame.y - ZONE_LABEL_ROOM).toBe(b.y)
   })
 
-  it('brings zones joined only to other zones, and leaves the rest alone', () => {
+  it('stacks zones without one on another, and brings the zones they lead to', () => {
     const arranged = arrangeWorkspace(
       board(
-        [note('a', 100, 100, [blocks('api', 'g')])],
+        [note('a', 0, 0, [blocks('api', 'g'), blocks('db', 'h')]), note('b', 400, 0)],
         [
-          zone('api', 'g', { x: 2000, y: 2000 }, [blocks('front', 'h')]),
-          zone('front', 'h', { x: 4000, y: 4000 }),
-          zone('other', 'k', { x: 6000, y: 6000 }),
+          zone('api', { x: 5000, y: 5000 }, [{ id: 'g', crossLinks: [blocks('front', 'k')] }]),
+          zone('db', { x: -5000, y: 5000 }, [{ id: 'h' }]),
+          zone('front', { x: 9000, y: 9000 }, [{ id: 'k' }]),
+          zone('other', { x: 7000, y: 7000 }, [{ id: 'z' }]),
         ],
       ),
-      ['a'],
-      new Map(),
+      ['a', 'b'],
+      NO_SIZES,
     )!
+    const frames = ['api', 'db', 'front']
+      .map((project) => frameOf(arranged, project))
+      .sort((one, two) => one.y - two.y)
 
-    expect(ghostAt(arranged, 'front').y).toBeGreaterThan(ghostAt(arranged, 'api').y)
-    expect(ghostAt(arranged, 'front').x).toBeLessThan(4000)
-    expect(ghostAt(arranged, 'other')).toEqual({ x: 6000, y: 6000 })
+    for (let index = 1; index < frames.length; index++) {
+      expect(frames[index].y - ZONE_LABEL_ROOM).toBeGreaterThanOrEqual(
+        frames[index - 1].y + frames[index - 1].height + ARRANGE_GAP,
+      )
+      expect(frames[index].x).toBe(frames[0].x)
+    }
+
+    expect(frameOf(arranged, 'other')).toMatchObject({ x: 7000 - FRAME_PADDING })
   })
 
-  it('arranges one note with its zone, but not one note on its own', () => {
+  it('places the zone of a single note, but has nothing to do for a note on its own', () => {
     expect(
       arrangeWorkspace(
-        board([note('a', 0, 0)], [zone('api', 'g', { x: 9, y: 9 })]),
+        board([note('a', 0, 0)], [zone('api', { x: 9, y: 9 }, [{ id: 'g' }])]),
         ['a'],
-        new Map(),
+        NO_SIZES,
       ),
     ).toBeNull()
-    expect(
-      arrangeWorkspace(
-        board([note('a', 0, 0, [blocks('api', 'g')])], [zone('api', 'g', { x: 9, y: 9 })]),
-        ['a'],
-        new Map(),
-      ),
-    ).not.toBeNull()
+
+    const arranged = arrangeWorkspace(
+      board([note('a', 0, 0, [blocks('api', 'g')])], [zone('api', { x: 9, y: 9 }, [{ id: 'g' }])]),
+      ['a'],
+      NO_SIZES,
+    )!
+
+    expect(arranged.notes[0]).toMatchObject({ x: 0, y: 0 })
+    expect(frameOf(arranged, 'api').x).toBe(280 + ARRANGE_GAP * 2)
   })
 
   it('leaves notes outside the selection where they are', () => {
     const arranged = arrangeWorkspace(
       board([note('a', 0, 0), note('b', 900, 900), note('c', 5000, 5000)], []),
       ['a', 'b'],
-      new Map(),
+      NO_SIZES,
     )!
 
     expect(arranged.notes[2]).toMatchObject({ x: 5000, y: 5000 })

@@ -85,7 +85,7 @@ test('O puts notes joined by arrows on levels, each below what points to it', as
   expect(loose.top).toBe(end.bottom + GAP)
 })
 
-test('O takes the ghost zones the notes lead to along, as one block each', async ({ page }) => {
+test('O places the ghost zones beside the notes, without spreading them', async ({ page }) => {
   await openProject(
     page,
     workspaceWith(
@@ -112,32 +112,77 @@ test('O takes the ghost zones the notes lead to along, as one block each', async
     ),
   )
 
+  // One note and its zone are enough to arrange.
+  await noteCard(page, 'AQUÍ').click()
+  await page.keyboard.press('Escape')
   await page.keyboard.press('Control+a')
   await page.keyboard.press('o')
 
   const here = await box(page, 'AQUÍ')
-  const label = page.locator('.ghost-zone__label')
+  const frame = page.locator('.ghost-zone__frame')
+  const frameBox = () =>
+    frame.evaluate((element) => {
+      const label = element.querySelector('.ghost-zone__label') as HTMLElement
+      const own = element as HTMLElement
 
-  // The zone, label included, starts one gap below the note.
-  await expect
-    .poll(async () =>
-      Math.round(
-        await label.evaluate((element) => {
-          const frame = element.parentElement as HTMLElement
+      return { left: own.offsetLeft, top: own.offsetTop - label.offsetHeight }
+    })
 
-          return frame.offsetTop - (element as HTMLElement).offsetHeight
-        }),
-      ),
-    )
-    .toBeGreaterThanOrEqual(here.bottom + GAP - 1)
-  expect(
-    await label.evaluate((element) => (element.parentElement as HTMLElement).offsetTop),
-  ).toBeLessThan(here.bottom + GAP + 60)
+  // Right of the notes, its label level with the note it links to.
+  await expect.poll(async () => (await frameBox()).left).toBe(here.right + GAP * 2)
+  expect(Math.abs((await frameBox()).top - here.top)).toBeLessThan(8)
+  expect(here).toMatchObject({ left: 100, top: 100 })
 
   await waitForSaved(page)
   expect(((await readDisk(page)).ghosts as { offset: { y: number } }[])[0].offset.y).toBeLessThan(
     900,
   )
+})
+
+test('the middle button pans the board over a ghost zone too', async ({ page }) => {
+  await openProject(
+    page,
+    workspaceWith(
+      [
+        note('a', {
+          title: 'AQUÍ',
+          x: 100,
+          y: 100,
+          crossLinks: [{ kind: 'blocks', project: 'api', noteId: 'g' }],
+        }),
+      ],
+      {
+        ghosts: [
+          {
+            project: 'api',
+            offset: { x: 0, y: 0 },
+            // A zone wide enough to fill the screen.
+            notes: [
+              { id: 'g', title: 'ALLÍ', colorTheme: 'concrete', pattern: 'raw', x: 0, y: 400 },
+              { id: 'h', title: 'LEJOS', colorTheme: 'concrete', pattern: 'raw', x: 6000, y: 4000 },
+            ],
+            connections: [{ id: 'c', from: 'g', to: 'h' }],
+            syncedAt: '2026-11-12T08:00:00Z',
+            hops: 1,
+          },
+        ],
+      },
+    ),
+  )
+
+  const world = page.locator('.board__world')
+  const before = await world.evaluate((element) => (element as HTMLElement).style.transform)
+  const frame = (await page.locator('.ghost-zone__frame').boundingBox())!
+  const start = { x: frame.x + 600, y: frame.y + 120 }
+
+  await page.mouse.move(start.x, start.y)
+  await page.mouse.down({ button: 'middle' })
+  await page.mouse.move(start.x - 200, start.y - 100, { steps: 5 })
+  await page.mouse.up({ button: 'middle' })
+
+  await expect
+    .poll(() => world.evaluate((element) => (element as HTMLElement).style.transform))
+    .not.toBe(before)
 })
 
 test('O moves only the selection and asks for two notes at least', async ({ page }) => {

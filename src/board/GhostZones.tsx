@@ -89,14 +89,17 @@ function GhostZoneView({ zone, state, sizes, handlers, connectingFrom }: GhostZo
 
   // The whole zone moves as one: its notes keep their places as on their board.
   const startDrag = (event: React.PointerEvent<HTMLElement>) => {
-    // Nothing in a zone pans the board or starts a selection; its buttons keep their click.
+    const card = (event.target as HTMLElement).closest<HTMLElement>('[data-ghost-id]')
+
+    // The middle button pans the board over a zone as anywhere else: a zone can fill the screen.
+    if (event.button === 1 && !card) return
+
+    // Nothing else in a zone pans the board or starts a selection; its buttons keep their click.
     event.stopPropagation()
 
     if ((event.target as HTMLElement).closest('button')) return
 
     // A ghost can start or end an arrow, as a note does: middle click, or a click while connecting.
-    const card = (event.target as HTMLElement).closest<HTMLElement>('[data-ghost-id]')
-
     if (card && (event.button === 1 || (event.button === 0 && handlers.isConnecting()))) {
       event.preventDefault()
       handlers.onConnectVia(ghostKey(zone, card.dataset.ghostId!))
