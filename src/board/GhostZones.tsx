@@ -1,6 +1,5 @@
 import { memo, useMemo, useRef } from 'react'
 import type { GhostNote, GhostZone, Note, Point } from '../types'
-import { NOTE_MIN_SIZE } from '../domain/constants'
 import { ghostArrows, ghostKey, projectKey, zoneKey, type GhostEnd } from '../domain/ghosts'
 import { shortId } from '../domain/workspace'
 import { kindLabel, statusLabel, useI18n } from '../i18n'
@@ -8,23 +7,14 @@ import { EnvironmentStamp } from '../ui/EnvironmentStamp'
 import { formatAge } from '../ui/noteAge'
 import type { ZoneState } from '../workspace/ghostZones'
 import {
-  boundingRect,
   connectionPath,
+  ghostRect,
   noteRect,
   noteWidthStyle,
+  zoneFrame,
   type NoteSizes,
   type Rect,
 } from './geometry'
-
-/** Room around a zone's notes inside its dotted frame. */
-const FRAME_PADDING = 28
-
-const ghostRect = (zone: GhostZone, ghost: GhostNote, sizes: NoteSizes): Rect => ({
-  x: ghost.x + zone.offset.x,
-  y: ghost.y + zone.offset.y,
-  // Ghost cards are measured like notes, under a key no note id can take.
-  ...(sizes.get(ghostKey(zone, ghost.id)) ?? NOTE_MIN_SIZE),
-})
 
 export interface GhostZoneHandlers {
   observe: (id: string, element: HTMLElement) => () => void
@@ -82,7 +72,7 @@ function GhostZoneView({ zone, state, sizes, handlers, connectingFrom }: GhostZo
   const { t, language } = useI18n()
   const drag = useRef<{ start: Point; offset: Point } | null>(null)
   const project = zone.project.toUpperCase()
-  const frame = boundingRect(zone.notes.map((ghost) => ghostRect(zone, ghost, sizes)))!
+  const frame = zoneFrame(zone, sizes)
   // The note the zone opens at: one linked to another project, or the first.
   const entry = zone.notes.find((ghost) => ghost.crossLinks?.length) ?? zone.notes[0]
   const age = zone.syncedAt ? formatAge(language, zone.syncedAt) : null
@@ -153,12 +143,7 @@ function GhostZoneView({ zone, state, sizes, handlers, connectingFrom }: GhostZo
     >
       <div
         className="ghost-zone__frame"
-        style={{
-          left: frame.x - FRAME_PADDING,
-          top: frame.y - FRAME_PADDING,
-          width: frame.width + FRAME_PADDING * 2,
-          height: frame.height + FRAME_PADDING * 2,
-        }}
+        style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height }}
       >
         <header className="ghost-zone__label">
           <span className="ghost-zone__name">{t('ghostZone', { project })}</span>

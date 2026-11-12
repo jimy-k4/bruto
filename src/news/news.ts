@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'arrange-ghosts-zoom',
+    date: '2026-11-12',
+    text: {
+      es: {
+        title: 'Ordenar cuenta con las zonas fantasma, y el zoom llega más lejos',
+        body: 'Al pulsar **O**, las zonas fantasma enlazadas con las notas seleccionadas se ordenan con ellas, cada una como un bloque con su etiqueta, y sus flechas entre proyectos cuentan para los niveles. El zoom baja ahora hasta el **10 %**, para ver un tablero grande entero.',
+      },
+      en: {
+        title: 'Arranging takes ghost zones along, and the zoom goes further out',
+        body: 'When you press **O**, the ghost zones linked to the selected notes are arranged with them, each as one block with its label, and their arrows across projects count for the levels. The zoom now goes down to **10%**, to see a big board whole.',
+      },
+      ca: {
+        title: 'Ordenar té en compte les zones fantasma, i el zoom arriba més lluny',
+        body: 'En prémer **O**, les zones fantasma enllaçades amb les notes seleccionades s’ordenen amb elles, cadascuna com un bloc amb la seva etiqueta, i les seves fletxes entre projectes compten per als nivells. El zoom baixa ara fins al **10 %**, per veure un tauler gran sencer.',
+      },
+      fr: {
+        title: 'L’organisation inclut les zones fantômes, et le zoom va plus loin',
+        body: 'Quand vous appuyez sur **O**, les zones fantômes liées aux notes sélectionnées sont organisées avec elles, chacune comme un bloc avec son étiquette, et leurs flèches entre projets comptent pour les niveaux. Le zoom descend maintenant jusqu’à **10 %**, pour voir un grand tableau en entier.',
+      },
+      de: {
+        title: 'Anordnen nimmt Geisterzonen mit, und der Zoom reicht weiter',
+        body: 'Wenn du **O** drückst, werden die mit den ausgewählten Notizen verknüpften Geisterzonen mit angeordnet, jede als ein Block samt Beschriftung, und ihre Pfeile zwischen Projekten zählen für die Ebenen. Der Zoom geht jetzt bis **10 %** hinunter, um ein großes Board ganz zu sehen.',
+      },
+      'pt-BR': {
+        title: 'Organizar leva as zonas fantasma junto, e o zoom vai mais longe',
+        body: 'Ao pressionar **O**, as zonas fantasma ligadas às notas selecionadas são organizadas com elas, cada uma como um bloco com sua etiqueta, e as setas entre projetos contam para os níveis. O zoom agora vai até **10%**, para ver um quadro grande inteiro.',
+      },
+      ru: {
+        title: 'Упорядочивание учитывает зоны-призраки, а масштаб уменьшается сильнее',
+        body: 'По нажатию **O** зоны-призраки, связанные с выбранными заметками, упорядочиваются вместе с ними — каждая как единый блок с подписью, — а их стрелки между проектами учитываются в уровнях. Масштаб теперь уменьшается до **10 %**, чтобы увидеть большую доску целиком.',
+      },
+      ja: {
+        title: '整列がゴーストゾーンも対象に、ズームもさらに遠くまで',
+        body: '**O** を押すと、選択したノートにリンクしたゴーストゾーンも一緒に整列します。各ゾーンはラベルを含めて 1 つのブロックとして扱われ、プロジェクト間の矢印も階層に反映されます。ズームは **10%** まで縮小でき、大きなボードも一画面で見渡せます。',
+      },
+      zh: {
+        title: '整理时考虑幽灵区域,缩放也能更远',
+        body: '按 **O** 时,与所选笔记关联的幽灵区域会一同整理,每个区域连同标签作为一个整体,跨项目的箭头也计入层级。缩放现在可以缩小到 **10%**,一屏看完整个大看板。',
+      },
+    },
+  },
+  {
     id: 'arrange-notes',
     date: '2026-11-09',
     text: {

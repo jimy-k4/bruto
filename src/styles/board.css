@@ -163,8 +163,8 @@
 
 /* The right edge: dragging it changes the width. The height follows the content. */
 .note__resize {
-  /* As easy to grab at any zoom: the same width on screen. */
-  --grab: calc(10px / var(--board-zoom, 1));
+  /* As easy to grab at any zoom: the same width on screen, short of covering a far-off note. */
+  --grab: min(calc(10px / var(--board-zoom, 1)), 40px);
 
   position: absolute;
   top: 0;

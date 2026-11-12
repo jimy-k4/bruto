@@ -30,7 +30,8 @@ import {
   upsertDocumentation,
   type NotePatch,
 } from '../domain/workspace'
-import { arrangeNotes } from '../board/arrange'
+import { arrangeWorkspace } from '../board/arrangeWorkspace'
+import { isEqual } from '../domain/merge'
 import { boundingRect, noteRect, type NoteSizes } from '../board/geometry'
 import type { BoardViewApi } from '../board/useBoardView'
 import type { Translate } from '../i18n'
@@ -202,26 +203,20 @@ export function createWorkspaceActions({
       store.endGroup()
     },
 
-    /** Tidies the selection in one undo step: on levels if arrows join the notes, else in rows. */
+    /**
+     * Tidies the selection and the ghost zones it leads to, in one undo step:
+     * on levels if arrows join them, else in rows.
+     */
     arrange(ids: string[]) {
-      if (ids.length < 2) {
+      const workspace = current()
+      const arranged = arrangeWorkspace(workspace, ids, sizes)
+
+      if (!arranged) {
         toast({ message: t('arrangeNeedsNotes') })
         return
       }
 
-      const { notes, connections } = current()
-      const selected = notes.filter((note) => ids.includes(note.id))
-      const positions = arrangeNotes(
-        selected.map((note) => ({ id: note.id, ...noteRect(note, sizes) })),
-        connections,
-      )
-      const changed = selected.some((note) => {
-        const position = positions.get(note.id)
-
-        return position && (position.x !== note.x || position.y !== note.y)
-      })
-
-      if (changed) store.update((workspace) => moveNotes(workspace, positions))
+      if (!isEqual(arranged, workspace)) store.update(() => arranged)
     },
 
     moveBy(ids: string[], delta: Point) {

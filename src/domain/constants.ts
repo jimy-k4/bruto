@@ -99,7 +99,8 @@ export function normalizeNoteWidth(value: unknown): number | undefined {
 /** Offset used when duplicating notes so the copy doesn't hide the original. */
 export const DUPLICATE_OFFSET = 36
 
-export const ZOOM_MIN = 0.25
+/** Far enough to see a big board, its ghost zones included, in one screen. */
+export const ZOOM_MIN = 0.1
 export const ZOOM_MAX = 2
 
 export function isNoteKind(value: unknown): value is NoteKind {
