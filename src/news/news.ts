@@ -26,39 +26,39 @@ export const NEWS: NewsEntry[] = [
     text: {
       es: {
         title: 'Ordenar cuenta con las zonas fantasma, y el zoom llega más lejos',
-        body: 'Al pulsar **O**, las zonas fantasma enlazadas con las notas seleccionadas se ordenan con ellas, cada una como un bloque con su etiqueta, y sus flechas entre proyectos cuentan para los niveles. El zoom baja ahora hasta el **10 %**, para ver un tablero grande entero.',
+        body: 'Al pulsar **O**, las zonas fantasma enlazadas con las notas seleccionadas se colocan en una columna a su derecha, cada una a la altura de la nota con la que enlaza, sin separar las notas. Con el botón central puedes mover el tablero también sobre una zona. El zoom baja ahora hasta el **10 %**, para ver un tablero grande entero.',
       },
       en: {
         title: 'Arranging takes ghost zones along, and the zoom goes further out',
-        body: 'When you press **O**, the ghost zones linked to the selected notes are arranged with them, each as one block with its label, and their arrows across projects count for the levels. The zoom now goes down to **10%**, to see a big board whole.',
+        body: 'When you press **O**, the ghost zones linked to the selected notes go in a column on their right, each level with the note it links to, without spreading the notes apart. The middle button pans the board over a zone too. The zoom now goes down to **10%**, to see a big board whole.',
       },
       ca: {
         title: 'Ordenar té en compte les zones fantasma, i el zoom arriba més lluny',
-        body: 'En prémer **O**, les zones fantasma enllaçades amb les notes seleccionades s’ordenen amb elles, cadascuna com un bloc amb la seva etiqueta, i les seves fletxes entre projectes compten per als nivells. El zoom baixa ara fins al **10 %**, per veure un tauler gran sencer.',
+        body: 'En prémer **O**, les zones fantasma enllaçades amb les notes seleccionades es col·loquen en una columna a la seva dreta, cadascuna a l’altura de la nota amb què enllaça, sense separar les notes. Amb el botó central també pots moure el tauler sobre una zona. El zoom baixa ara fins al **10 %**, per veure un tauler gran sencer.',
       },
       fr: {
         title: 'L’organisation inclut les zones fantômes, et le zoom va plus loin',
-        body: 'Quand vous appuyez sur **O**, les zones fantômes liées aux notes sélectionnées sont organisées avec elles, chacune comme un bloc avec son étiquette, et leurs flèches entre projets comptent pour les niveaux. Le zoom descend maintenant jusqu’à **10 %**, pour voir un grand tableau en entier.',
+        body: 'Quand vous appuyez sur **O**, les zones fantômes liées aux notes sélectionnées se placent dans une colonne à leur droite, chacune à la hauteur de la note qu’elle relie, sans écarter les notes. Le bouton du milieu déplace aussi le tableau au-dessus d’une zone. Le zoom descend maintenant jusqu’à **10 %**, pour voir un grand tableau en entier.',
       },
       de: {
         title: 'Anordnen nimmt Geisterzonen mit, und der Zoom reicht weiter',
-        body: 'Wenn du **O** drückst, werden die mit den ausgewählten Notizen verknüpften Geisterzonen mit angeordnet, jede als ein Block samt Beschriftung, und ihre Pfeile zwischen Projekten zählen für die Ebenen. Der Zoom geht jetzt bis **10 %** hinunter, um ein großes Board ganz zu sehen.',
+        body: 'Wenn du **O** drückst, kommen die mit den ausgewählten Notizen verknüpften Geisterzonen in eine Spalte rechts davon, jede auf Höhe der Notiz, mit der sie verknüpft ist, ohne die Notizen auseinanderzuschieben. Mit der mittleren Maustaste verschiebst du das Board auch über einer Zone. Der Zoom geht jetzt bis **10 %** hinunter, um ein großes Board ganz zu sehen.',
       },
       'pt-BR': {
         title: 'Organizar leva as zonas fantasma junto, e o zoom vai mais longe',
-        body: 'Ao pressionar **O**, as zonas fantasma ligadas às notas selecionadas são organizadas com elas, cada uma como um bloco com sua etiqueta, e as setas entre projetos contam para os níveis. O zoom agora vai até **10%**, para ver um quadro grande inteiro.',
+        body: 'Ao pressionar **O**, as zonas fantasma ligadas às notas selecionadas ficam numa coluna à direita delas, cada uma na altura da nota a que se liga, sem afastar as notas. O botão do meio também move o quadro sobre uma zona. O zoom agora vai até **10%**, para ver um quadro grande inteiro.',
       },
       ru: {
         title: 'Упорядочивание учитывает зоны-призраки, а масштаб уменьшается сильнее',
-        body: 'По нажатию **O** зоны-призраки, связанные с выбранными заметками, упорядочиваются вместе с ними — каждая как единый блок с подписью, — а их стрелки между проектами учитываются в уровнях. Масштаб теперь уменьшается до **10 %**, чтобы увидеть большую доску целиком.',
+        body: 'По нажатию **O** зоны-призраки, связанные с выбранными заметками, встают в столбец справа от них, каждая на уровне связанной заметки, не раздвигая заметки. Средняя кнопка теперь двигает доску и над зоной. Масштаб теперь уменьшается до **10 %**, чтобы увидеть большую доску целиком.',
       },
       ja: {
         title: '整列がゴーストゾーンも対象に、ズームもさらに遠くまで',
-        body: '**O** を押すと、選択したノートにリンクしたゴーストゾーンも一緒に整列します。各ゾーンはラベルを含めて 1 つのブロックとして扱われ、プロジェクト間の矢印も階層に反映されます。ズームは **10%** まで縮小でき、大きなボードも一画面で見渡せます。',
+        body: '**O** を押すと、選択したノートにリンクしたゴーストゾーンが右側に 1 列に並び、それぞれリンク先のノートと同じ高さに置かれます。ノート同士の間隔は広がりません。ゾーンの上でも中ボタンでボードを動かせます。ズームは **10%** まで縮小でき、大きなボードも一画面で見渡せます。',
       },
       zh: {
         title: '整理时考虑幽灵区域,缩放也能更远',
-        body: '按 **O** 时,与所选笔记关联的幽灵区域会一同整理,每个区域连同标签作为一个整体,跨项目的箭头也计入层级。缩放现在可以缩小到 **10%**,一屏看完整个大看板。',
+        body: '按 **O** 时,与所选笔记关联的幽灵区域会排成一列放在右侧,每个区域与其关联的笔记对齐,不会把笔记拉开。在幽灵区域上也可以用中键拖动看板。缩放现在可以缩小到 **10%**,一屏看完整个大看板。',
       },
     },
   },
