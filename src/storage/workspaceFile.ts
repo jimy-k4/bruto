@@ -1,5 +1,11 @@
 import type { Workspace } from '../types'
 import { WorkspaceFormatError, parseWorkspace } from '../domain/workspace'
+import {
+  type SyncStamps,
+  isConflictCopyName,
+  mergeCopy,
+  readSyncStamps,
+} from '../domain/syncStamps'
 
 export const BRUTO_DIRECTORY = '.bruto'
 const WORKSPACE_FILE = 'workspace.json'
@@ -10,7 +16,16 @@ const BACKUPS_TO_KEEP = 10
 export type DiskState =
   | { kind: 'missing' }
   | { kind: 'invalid'; text: string; error: string }
-  | { kind: 'ok'; text: string; workspace: Workspace }
+  | {
+      kind: 'ok'
+      /** Exactly what `workspace.json` holds. */
+      text: string
+      /** The board, with any conflicted copies merged in. */
+      workspace: Workspace
+      stamps?: SyncStamps
+      /** Conflicted copies a sync tool left, merged into `workspace`: archive them once it is saved. */
+      copies?: string[]
+    }
 
 const queues = new Map<string, Promise<unknown>>()
 
@@ -88,9 +103,10 @@ async function readOnce(
   }
 
   const text = await file.text()
+  let board
 
   try {
-    return { kind: 'ok', text, workspace: parseWorkspace(text, fallbackTitle) }
+    board = { workspace: parseWorkspace(text, fallbackTitle), stamps: readSyncStamps(text) }
   } catch (error) {
     if (error instanceof WorkspaceFormatError) {
       return { kind: 'invalid', text, error: error.message }
@@ -98,13 +114,94 @@ async function readOnce(
 
     throw error
   }
+
+  const copies: string[] = []
+
+  for (const { name, text: copyText } of await readConflictCopies(root)) {
+    try {
+      board = mergeCopy(board, {
+        workspace: parseWorkspace(copyText, fallbackTitle),
+        stamps: readSyncStamps(copyText),
+      })
+      copies.push(name)
+    } catch {
+      // A copy that can't be read stays where it is, for the user to look at.
+    }
+  }
+
+  return { kind: 'ok', text, ...board, copies }
 }
 
-/** Cheap check used to notice changes made by other tools. */
+/** Copies of `workspace.json` a sync tool left next to it, by name. */
+async function conflictCopyNames(root: FileSystemDirectoryHandle): Promise<string[]> {
+  let directory: FileSystemDirectoryHandle
+
+  try {
+    directory = await root.getDirectoryHandle(BRUTO_DIRECTORY)
+  } catch {
+    return []
+  }
+
+  const names: string[] = []
+
+  for await (const [name, handle] of directory.entries()) {
+    if (handle.kind === 'file' && isConflictCopyName(name)) names.push(name)
+  }
+
+  return names.sort()
+}
+
+async function readConflictCopies(root: FileSystemDirectoryHandle) {
+  const names = await conflictCopyNames(root)
+
+  if (names.length === 0) return []
+
+  const directory = await root.getDirectoryHandle(BRUTO_DIRECTORY)
+  const copies: { name: string; text: string }[] = []
+
+  for (const name of names) {
+    try {
+      const file = await (await directory.getFileHandle(name)).getFile()
+
+      copies.push({ name, text: await file.text() })
+    } catch {
+      // Gone already (another window archived it): nothing to merge.
+    }
+  }
+
+  return copies
+}
+
+/**
+ * Moves conflicted copies, once merged and saved, into `.bruto/backups`: they
+ * stop showing up, and are still there if the merge got something wrong.
+ */
+export async function archiveConflictCopies(root: FileSystemDirectoryHandle, names: string[]) {
+  if (names.length === 0) return
+
+  const directory = await getBrutoDirectory(root)
+  const backups = await directory.getDirectoryHandle(BACKUP_DIRECTORY, { create: true })
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-')
+
+  for (const [index, name] of names.entries()) {
+    try {
+      const text = await (await (await directory.getFileHandle(name)).getFile()).text()
+
+      await writeText(backups, `workspace-${stamp}-copy${index + 1}.json`, text)
+      await directory.removeEntry(name)
+    } catch {
+      // Gone already, or still locked by the sync tool: it is tried again next time.
+    }
+  }
+}
+
+/** Cheap check used to notice changes made by other tools, and copies a sync tool left. */
 export async function getWorkspaceFileStamp(root: FileSystemDirectoryHandle): Promise<string> {
   const file = await getWorkspaceFile(root)
+  const copies = await conflictCopyNames(root)
+  const stamp = file ? `${file.lastModified}:${file.size}` : 'missing'
 
-  return file ? `${file.lastModified}:${file.size}` : 'missing'
+  return copies.length > 0 ? `${stamp}|${copies.join('|')}` : stamp
 }
 
 async function writeText(directory: FileSystemDirectoryHandle, name: string, text: string) {

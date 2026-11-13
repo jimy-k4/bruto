@@ -230,3 +230,53 @@ test('a file caught half-written by another tool is read again, not reported as 
   await expect(noteCard(page, 'B')).toBeVisible()
   await expect(page.locator('.save-status')).not.toContainText(/error/i)
 })
+
+test('merges the conflicted copy a sync tool leaves, and puts it away', async ({ page }) => {
+  await openProject(page, workspaceWith([note('a'), note('b', { x: 400 })]))
+  await waitForSaved(page)
+
+  // The other computer added a note from the same board; the sync tool kept
+  // its version as a copy next to this one.
+  const copy = workspaceWith([note('a'), note('b', { x: 400 }), note('c', { x: 700 })], {
+    sync: { changed: { 'note:c': new Date().toISOString() }, deleted: {} },
+  })
+  const name = 'workspace.sync-conflict-20261113-101010-LAPTOP.json'
+
+  await page.evaluate(
+    async ({ name, text }) => {
+      const root = await navigator.storage.getDirectory()
+      const bruto = await (await root.getDirectoryHandle('demo')).getDirectoryHandle('.bruto')
+      const file = await (await bruto.getFileHandle(name, { create: true })).createWritable()
+
+      await file.write(text)
+      await file.close()
+    },
+    { name, text: JSON.stringify(copy, null, 2) },
+  )
+
+  await expect(noteCard(page, 'C')).toBeVisible()
+  await waitForSaved(page)
+
+  const files = () =>
+    page.evaluate(async () => {
+      const root = await navigator.storage.getDirectory()
+      const bruto = await (await root.getDirectoryHandle('demo')).getDirectoryHandle('.bruto')
+      const backups = await bruto.getDirectoryHandle('backups', { create: true })
+      const names = async (directory: FileSystemDirectoryHandle) => {
+        const list: string[] = []
+        for await (const key of (directory as unknown as { keys(): AsyncIterable<string> }).keys())
+          list.push(key)
+        return list
+      }
+
+      return { bruto: await names(bruto), backups: await names(backups) }
+    })
+
+  await expect.poll(async () => (await files()).bruto).not.toContain(name)
+  expect((await files()).backups.some((file) => file.includes('-copy'))).toBe(true)
+
+  const disk = await readDisk(page)
+
+  expect(disk.notes.map((item) => item.id)).toEqual(['a', 'b', 'c'])
+  expect(disk.sync).toMatchObject({ changed: { 'note:c': expect.any(String) } })
+})

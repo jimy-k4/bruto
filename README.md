@@ -96,6 +96,11 @@ Prefer to run it yourself? See [Development](#development).
 - **Nine languages**, light and dark themes, a soft mode with fine lines and quiet shadows for long
   sessions, a colour and pattern per status, installable, works offline, and tells an open window when
   a new version is out.
+- **Your computers, no server.** Keep the project in a synced folder (Syncthing, OneDrive, Dropbox,
+  Google Drive, iCloud) and open it on each computer. When both changed the board before syncing,
+  Bruto merges the conflicted copy the tool leaves: new notes from either side stay, a note edited on
+  both keeps the latest change, and the copy is put away in `.bruto/backups`. See
+  [Syncing between computers](#syncing-between-computers).
 - **Local only.** The app is a static page: it has no server and no storage of its own. The published
   site counts visits and which features get used (opening a project, a lens, copying AI context),
   anonymously and without cookies (Superveil, a small self-hosted counter): nothing about your projects or notes
@@ -239,10 +244,32 @@ fields it does not know about, and accepts common status words such as `"pending
     { "id": "qa", "name": "QA" },
     { "id": "pro", "name": "PRO", "protected": true },
   ],
+  // Written by Bruto and its MCP server: when each part last changed, and what was deleted. Leave it be.
+  "sync": {
+    "changed": { "note:b72f10aa-…": "2026-11-13T10:05:00Z" },
+    "deleted": { "note:0c1d…": "2026-11-12T18:40:00Z" },
+  },
 }
 ```
 
 Add `.bruto/` to your `.gitignore` if the notes should stay on your machine.
+
+### Syncing between computers
+
+Bruto has no server, so the board travels with whatever already syncs your folders. Put the project
+(or just its `.bruto` folder) in a synced folder and open it in Bruto on each computer:
+
+- **Syncthing** keeps it between your own machines, with no cloud in between: the most private choice.
+- **OneDrive, Dropbox, Google Drive, iCloud or Nextcloud** work the same way, through their servers.
+- **A private git repository** works too, if you commit `.bruto/` on purpose.
+
+While one computer has the board open, changes from the other show up within seconds, merged with
+whatever you are typing. If both changed the board before syncing, the tool keeps one version as
+`workspace.json` and the other as a conflicted copy next to it (`workspace.sync-conflict-…`,
+`workspace (conflicted copy …)`, `workspace-PC.json`…). Bruto merges it as soon as it sees it, using
+the `sync` stamps in the file: notes added on either computer stay, a note deleted on one goes unless
+the other changed it later, and a note edited on both keeps the latest edit. The copy then goes to
+`.bruto/backups`, in case you want to look at it.
 
 ## Shortcuts
 

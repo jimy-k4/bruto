@@ -6,6 +6,7 @@ import {
   serializeWorkspace,
   updateNotes,
 } from '../domain/workspace'
+import { emptyStamps, readSyncStamps, stampChanges } from '../domain/syncStamps'
 import type { DiskState } from '../storage/workspaceFile'
 import type { WorkspaceStore } from './workspaceStore'
 
@@ -25,6 +26,8 @@ export interface WorkspaceIO {
   stamp(): Promise<string>
   /** Adds lines to `.bruto/log.jsonl`, the agents' audit log. */
   appendLog?(lines: string): Promise<void>
+  /** Puts away conflicted copies a sync tool left, once merged and saved. */
+  archiveCopies?(names: string[]): Promise<void>
 }
 
 /** Changes made by someone else, merged in. */
@@ -82,6 +85,8 @@ export function createWorkspaceSync({
   /** Last version known to be on disk: the common ancestor for merges. */
   let base = store.getWorkspace()
   let diskText = initialText
+  /** Sync stamps last written: what changes are stamped against when the file can't be read. */
+  let stamps = readSyncStamps(initialText)
   let diskStamp: string | null = null
   let timer: ReturnType<typeof setTimeout> | null = null
   let queue: Promise<void> = Promise.resolve()
@@ -121,7 +126,9 @@ export function createWorkspaceSync({
     let external = false
     const conflicts: MergeConflict[] = []
 
-    if (disk.kind === 'ok' && disk.text !== diskText) {
+    const copies = disk.kind === 'ok' ? (disk.copies ?? []) : []
+
+    if (disk.kind === 'ok' && (disk.text !== diskText || copies.length > 0)) {
       const merged = applyStatusStylesToChangedNotes(
         local,
         mergeWorkspaces(base, local, disk.workspace, conflicts),
@@ -132,7 +139,13 @@ export function createWorkspaceSync({
       next = external ? markReverted(merged, base, conflicts) : local
     }
 
-    const text = serializeWorkspace(next)
+    const nextStamps = stampChanges(
+      next,
+      disk.kind === 'ok'
+        ? { workspace: disk.workspace, stamps: disk.stamps ?? emptyStamps() }
+        : { workspace: base, stamps },
+    )
+    const text = serializeWorkspace(next, nextStamps)
 
     if (disk.kind !== 'ok' || disk.text !== text) {
       // Someone wrote the file since we read it (an agent, say): start over with what's there.
@@ -144,7 +157,11 @@ export function createWorkspaceSync({
       await io.write(text)
     }
 
+    // Their notes are in the board now: the copies can go.
+    if (copies.length > 0) await io.archiveCopies?.(copies)
+
     diskText = text
+    stamps = nextStamps
     base = next
     diskStamp = await io.stamp()
 

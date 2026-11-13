@@ -4,9 +4,11 @@ import {
   WorkspaceFormatError,
   createEmptyWorkspace,
   parseWorkspace,
+  serializeStamped,
   serializeWorkspace,
   updateNotes,
 } from '../domain/workspace'
+import { emptyStamps, mergeCopy, readSyncStamps } from '../domain/syncStamps'
 import type { DiskState } from '../storage/workspaceFile'
 import { createWorkspaceStore } from './workspaceStore'
 import { createWorkspaceSync, type SaveStatus, type WorkspaceIO } from './workspaceSync'
@@ -31,6 +33,8 @@ function fakeDisk(initial: Workspace) {
   let text = serializeWorkspace(initial)
   let version = 0
   let log = ''
+  /** Conflicted copies a sync tool left next to the file, by name. */
+  const copies = new Map<string, string>()
   /** Another tool writing right after the app reads, before it writes back. */
   let afterRead: (() => void) | null = null
 
@@ -42,7 +46,16 @@ function fakeDisk(initial: Workspace) {
       afterRead = null
 
       try {
-        return { kind: 'ok', text: read, workspace: parseWorkspace(read) }
+        let board = { workspace: parseWorkspace(read), stamps: readSyncStamps(read) }
+
+        for (const copy of copies.values()) {
+          board = mergeCopy(board, {
+            workspace: parseWorkspace(copy),
+            stamps: readSyncStamps(copy),
+          })
+        }
+
+        return { kind: 'ok', text: read, ...board, copies: [...copies.keys()] }
       } catch (error) {
         if (error instanceof WorkspaceFormatError) {
           return { kind: 'invalid', text: read, error: error.message }
@@ -53,6 +66,9 @@ function fakeDisk(initial: Workspace) {
     },
     async appendLog(lines: string) {
       log += lines
+    },
+    async archiveCopies(names: string[]) {
+      for (const name of names) copies.delete(name)
     },
     write: vi.fn(async (next: string) => {
       text = next
@@ -78,6 +94,7 @@ function fakeDisk(initial: Workspace) {
         .filter(Boolean)
         .map((line) => JSON.parse(line))
     },
+    copies,
     /** Another tool writes the file. */
     externalWrite(next: string) {
       text = next
@@ -157,6 +174,37 @@ describe('workspace sync', () => {
 
     expect(store.getWorkspace().notes.map((item) => item.id)).toEqual(['a', 'b', 'c'])
     expect(store.getSnapshot().dirty).toBe(false)
+  })
+
+  it('merges a copy a sync tool left when both computers changed the board', async () => {
+    const { disk, store, sync, onExternalChange } = setup(initial())
+
+    // This computer adds a note and saves it.
+    store.update((workspace) => ({ ...workspace, notes: [...workspace.notes, note('pc')] }))
+    await sync.saveNow()
+
+    // The other computer had added another one from the same board. The sync
+    // tool keeps theirs as the board, and ours as a conflicted copy.
+    disk.copies.set('workspace.sync-conflict-20261113-101010-PC.json', disk.text)
+    disk.externalWrite(
+      serializeStamped(
+        { ...initial(), notes: [...initial().notes, note('laptop')] },
+        { workspace: initial(), stamps: emptyStamps() },
+      ),
+    )
+    await sync.checkDisk()
+
+    const ids = ['a', 'b', 'laptop', 'pc']
+
+    expect(disk.workspace.notes.map((item) => item.id).sort()).toEqual(ids)
+    expect(
+      store
+        .getWorkspace()
+        .notes.map((item) => item.id)
+        .sort(),
+    ).toEqual(ids)
+    expect(disk.copies.size).toBe(0)
+    expect(onExternalChange).toHaveBeenCalled()
   })
 
   it('never overwrites a broken file on its own', async () => {

@@ -21,6 +21,48 @@ export interface NewsEntry {
  */
 export const NEWS: NewsEntry[] = [
   {
+    id: 'sync-between-computers',
+    date: '2026-11-13',
+    text: {
+      es: {
+        title: 'El mismo tablero en tus ordenadores, sin servidor',
+        body: 'Pon el proyecto en una carpeta sincronizada (Syncthing, OneDrive, Dropbox, Google Drive o iCloud) y abre la misma carpeta en cada ordenador. Si cambias el tablero en los dos antes de que se sincronicen, Bruto junta la **copia en conflicto** que deja la herramienta: no se pierde ninguna nota nueva y, si editaste la misma nota en los dos, gana el último cambio. La copia se guarda en `.bruto/backups`. Tus notas solo pasan por la herramienta que tú elijas.',
+      },
+      en: {
+        title: 'The same board on your computers, no server',
+        body: 'Keep the project in a synced folder (Syncthing, OneDrive, Dropbox, Google Drive or iCloud) and open that folder on each computer. If you change the board on both before they sync, Bruto merges the **conflicted copy** the tool leaves: no new note is lost, and a note edited on both keeps the latest change. The copy goes to `.bruto/backups`. Your notes only travel through the tool you choose.',
+      },
+      ca: {
+        title: 'El mateix tauler als teus ordinadors, sense servidor',
+        body: 'Posa el projecte en una carpeta sincronitzada (Syncthing, OneDrive, Dropbox, Google Drive o iCloud) i obre la mateixa carpeta a cada ordinador. Si canvies el tauler als dos abans que se sincronitzin, Bruto ajunta la **còpia en conflicte** que deixa l’eina: no es perd cap nota nova i, si vas editar la mateixa nota als dos, guanya l’últim canvi. La còpia es desa a `.bruto/backups`. Les teves notes només passen per l’eina que triïs.',
+      },
+      fr: {
+        title: 'Le même tableau sur vos ordinateurs, sans serveur',
+        body: 'Placez le projet dans un dossier synchronisé (Syncthing, OneDrive, Dropbox, Google Drive ou iCloud) et ouvrez ce dossier sur chaque ordinateur. Si vous modifiez le tableau sur les deux avant la synchronisation, Bruto fusionne la **copie en conflit** que laisse l’outil : aucune nouvelle note n’est perdue, et une note modifiée des deux côtés garde le dernier changement. La copie est rangée dans `.bruto/backups`. Vos notes ne passent que par l’outil que vous choisissez.',
+      },
+      de: {
+        title: 'Dasselbe Board auf deinen Computern, ohne Server',
+        body: 'Lege das Projekt in einen synchronisierten Ordner (Syncthing, OneDrive, Dropbox, Google Drive oder iCloud) und öffne diesen Ordner auf jedem Computer. Änderst du das Board auf beiden, bevor sie sich abgleichen, führt Bruto die **Konfliktkopie** zusammen, die das Tool hinterlässt: Keine neue Notiz geht verloren, und eine auf beiden bearbeitete Notiz behält die letzte Änderung. Die Kopie landet in `.bruto/backups`. Deine Notizen laufen nur über das Tool, das du wählst.',
+      },
+      'pt-BR': {
+        title: 'O mesmo quadro nos seus computadores, sem servidor',
+        body: 'Coloque o projeto numa pasta sincronizada (Syncthing, OneDrive, Dropbox, Google Drive ou iCloud) e abra essa pasta em cada computador. Se você mudar o quadro nos dois antes de sincronizarem, o Bruto junta a **cópia em conflito** que a ferramenta deixa: nenhuma nota nova se perde, e uma nota editada nos dois fica com a última mudança. A cópia vai para `.bruto/backups`. Suas notas só passam pela ferramenta que você escolher.',
+      },
+      ru: {
+        title: 'Одна доска на всех ваших компьютерах, без сервера',
+        body: 'Положите проект в синхронизируемую папку (Syncthing, OneDrive, Dropbox, Google Drive или iCloud) и откройте её на каждом компьютере. Если вы изменили доску на обоих до синхронизации, Bruto объединит **конфликтную копию**, которую оставит программа: новые заметки не теряются, а у заметки, изменённой на обоих, остаётся последнее изменение. Копия сохраняется в `.bruto/backups`. Ваши заметки проходят только через выбранную вами программу.',
+      },
+      ja: {
+        title: '複数のパソコンで同じボードを、サーバーなしで',
+        body: 'プロジェクトを同期フォルダ(Syncthing、OneDrive、Dropbox、Google Drive、iCloud)に置き、各パソコンで同じフォルダを開きます。同期される前に両方でボードを変更しても、ツールが残す**競合コピー**を Bruto がまとめます。新しいノートは失われず、両方で編集したノートは最後の変更が残ります。コピーは `.bruto/backups` に保存されます。ノートはあなたが選んだツールだけを通ります。',
+      },
+      zh: {
+        title: '多台电脑用同一个看板,无需服务器',
+        body: '把项目放在同步文件夹中(Syncthing、OneDrive、Dropbox、Google Drive 或 iCloud),在每台电脑上打开同一个文件夹。如果两台电脑在同步前都改了看板,Bruto 会合并同步工具留下的**冲突副本**:新笔记不会丢失,两边都改过的笔记保留最后一次修改。副本会存到 `.bruto/backups`。你的笔记只经过你选择的工具。',
+      },
+    },
+  },
+  {
     id: 'arrange-ghosts-zoom',
     date: '2026-11-12',
     text: {

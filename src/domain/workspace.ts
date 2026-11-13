@@ -14,6 +14,7 @@ import type {
   Workspace,
   WorkspaceDocumentation,
 } from '../types'
+import { type StampedBoard, type SyncStamps, stampChanges, stampsForFile } from './syncStamps'
 import {
   CLOSED_STATUSES,
   DUPLICATE_OFFSET,
@@ -371,6 +372,9 @@ export function normalizeWorkspace(raw: unknown, fallbackTitle = 'BRUTO'): Works
   delete workspace.statusStyles
   if (statusStyles) workspace.statusStyles = statusStyles
 
+  // The sync stamps belong to the file, not the board: they are read and written apart.
+  delete (workspace as unknown as Record<string, unknown>).sync
+
   const environments = normalizeEnvironments(raw.environments)
 
   delete workspace.environments
@@ -442,9 +446,19 @@ export function parseWorkspace(text: string, fallbackTitle?: string): Workspace 
   return normalizeWorkspace(raw, fallbackTitle)
 }
 
-export function serializeWorkspace(workspace: Workspace): string {
-  return `${JSON.stringify(workspace, null, 2)}\n`
+/** The board as written to `workspace.json`, with its sync stamps last when it has any. */
+export function serializeWorkspace(workspace: Workspace, stamps?: SyncStamps | null): string {
+  const sync = stamps ? stampsForFile(stamps) : null
+
+  return `${JSON.stringify(sync ? { ...workspace, sync } : workspace, null, 2)}\n`
 }
+
+/**
+ * The text to write for `next` over `previous` (what is on disk), stamping
+ * what changed so a copy left by a sync tool can be merged later.
+ */
+export const serializeStamped = (next: Workspace, previous: StampedBoard | null, now?: Date) =>
+  serializeWorkspace(next, stampChanges(next, previous, now))
 
 export function createEmptyWorkspace(title: string): Workspace {
   return {
