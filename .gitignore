@@ -31,3 +31,7 @@ mcp/dist
 
 # The launch video (npm run video)
 launch/
+
+# Syncthing, for sharing .bruto between computers
+.stfolder/
+.stignore

@@ -1,5 +1,0 @@
-# This directory is a Syncthing folder marker.
-# Do not delete.
-
-folderID: thzno-nmvzm
-created: 2026-11-13T10:38:32+01:00
