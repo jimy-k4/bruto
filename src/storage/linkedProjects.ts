@@ -1,5 +1,6 @@
 import type { CrossLink, Workspace } from '../types'
-import { serializeWorkspace } from '../domain/workspace'
+import { serializeStamped } from '../domain/workspace'
+import { emptyStamps } from '../domain/syncStamps'
 import { ensureAccess, listRecentProjects, type RecentProject } from './recentProjects'
 import { exclusive, readWorkspaceFile, writeWorkspaceFile } from './workspaceFile'
 
@@ -81,7 +82,13 @@ export async function updateOtherWorkspace(
       const next = change(state.workspace)
 
       if (next !== state.workspace)
-        await writeWorkspaceFile(project.handle, serializeWorkspace(next))
+        await writeWorkspaceFile(
+          project.handle,
+          serializeStamped(next, {
+            workspace: state.workspace,
+            stamps: state.stamps ?? emptyStamps(),
+          }),
+        )
 
       return true
     })

@@ -13,8 +13,9 @@ import {
   WorkspaceFormatError,
   createEmptyWorkspace,
   parseWorkspace,
-  serializeWorkspace,
+  serializeStamped,
 } from '../../src/domain/workspace'
+import { type StampedBoard, readSyncStamps } from '../../src/domain/syncStamps'
 import { findGhost } from '../../src/domain/ghosts'
 
 /** Where every project keeps its board, the same file the app reads and writes. */
@@ -144,11 +145,12 @@ export function readBoard(root: string, { createIfMissing = false } = {}): Works
  * the board, so the app (which reloads it every second and a half) never
  * reads half of it.
  */
-export function writeBoard(root: string, workspace: Workspace) {
+export function writeBoard(root: string, workspace: Workspace, previous: StampedBoard | null) {
   const path = join(root, BOARD_FILE)
   const temporary = `${path}.${process.pid}.tmp`
 
-  writeFileSync(temporary, serializeWorkspace(workspace))
+  // Stamped like the app does, so a copy a sync tool leaves can be merged.
+  writeFileSync(temporary, serializeStamped(workspace, previous))
   renameSync(temporary, path)
 }
 
@@ -181,11 +183,16 @@ export function changeBoard(
 
   for (let attempt = 0; ; attempt++) {
     const before = boardText(root)
-    const next = change(readBoard(root, options))
+    const current = readBoard(root, options)
+    const next = change(current)
 
     if (attempt < RACE_RETRIES && boardText(root) !== before) continue
 
-    writeBoard(root, next)
+    writeBoard(
+      root,
+      next,
+      before === null ? null : { workspace: current, stamps: readSyncStamps(before) },
+    )
 
     return next
   }

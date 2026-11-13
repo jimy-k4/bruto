@@ -2,6 +2,7 @@ import type { Workspace } from '../types'
 import { createEmptyWorkspace, serializeWorkspace } from '../domain/workspace'
 import {
   appendLogLines,
+  archiveConflictCopies,
   exclusive,
   getWorkspaceFileStamp,
   readLatestValidBackup,
@@ -29,6 +30,7 @@ export function createWorkspaceIO(handle: FileSystemDirectoryHandle): WorkspaceI
     write: (text) => exclusive(handle, () => writeWorkspaceFile(handle, text)),
     stamp: () => getWorkspaceFileStamp(handle),
     appendLog: (lines) => exclusive(handle, () => appendLogLines(handle, lines)),
+    archiveCopies: (names) => exclusive(handle, () => archiveConflictCopies(handle, names)),
   }
 }
 
@@ -63,12 +65,15 @@ async function loadWorkspaceNow(handle: FileSystemDirectoryHandle): Promise<Load
   // One backup per opening: a safety net if a session goes wrong.
   await writeBackup(handle, disk.text).catch(() => undefined)
 
-  const text = serializeWorkspace(disk.workspace)
+  const text = serializeWorkspace(disk.workspace, disk.stamps)
 
-  // Normalised or migrated on load: write it back so every tool sees the same file.
+  // Normalised, migrated or merged with a sync tool's copies on load: write it
+  // back so every tool sees the same file.
   if (text !== disk.text) {
     await writeWorkspaceFile(handle, text)
   }
+
+  await archiveConflictCopies(handle, disk.copies ?? [])
 
   return { kind: 'ready', workspace: disk.workspace, diskText: text }
 }
